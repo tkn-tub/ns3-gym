@@ -30,6 +30,7 @@ namespace ns3 {
 
 /**
  * \ingroup configstore
+ * \brief A class to enable saving of configuration store in an XML file
  *
  */
 class XmlConfigSave : public FileConfig
@@ -43,12 +44,12 @@ public:
   virtual void Global (void);
   virtual void Attributes (void);
 private:
-  xmlTextWriterPtr m_writer;
+  xmlTextWriterPtr m_writer; ///< XML writer
 };
 
 /**
  * \ingroup configstore
- *
+ * \brief A class to enable loading of configuration store from an XML file
  */
 class XmlConfigLoad : public FileConfig
 {
@@ -61,7 +62,7 @@ public:
   virtual void Global (void);
   virtual void Attributes (void);
 private:
-  std::string m_filename;
+  std::string m_filename; ///< the file name
 };
 
 } // namespace ns3

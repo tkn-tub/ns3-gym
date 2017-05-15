@@ -6,9 +6,19 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup configstore-examples
+ * \ingroup examples
+ *
+ * \brief Example class to demonstrate use of the ns-3 Config Store
+ */
 class ConfigExample : public Object
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("ns3::ConfigExample")
       .SetParent<Object> ()
@@ -19,7 +29,7 @@ public:
       ;
       return tid;
     }
-  int16_t m_int16;
+  int16_t m_int16; ///< value to configure
 };
 
 NS_OBJECT_ENSURE_REGISTERED (ConfigExample);

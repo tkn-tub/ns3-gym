@@ -256,6 +256,9 @@ create_view (GtkTreeStore *model)
 /**
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
+ * 
+ * \param button (unused)
+ * \param user_data 
  */
 void
 save_clicked (GtkButton *button, gpointer user_data)
@@ -417,7 +420,15 @@ cell_edited_callback_config_default (GtkCellRendererText *cell, gchar *path_stri
  * This function is used to display a tooltip whenever the user puts the mouse
  * over a type ID or an attribute. It will give the type and the possible values of
  * an attribute value and the type of the object for an attribute object or a 
- * typeID object 
+ * typeID object
+ 
+ * \param widget is the display object
+ * \param x is the x position
+ * \param y is the y position
+ * \param keyboard_tip
+ * \param tooltip is the tooltip information to be displayed
+ * \param user_data
+ * \return false if the tooltip is not displayed
  */
 gboolean
 cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
@@ -479,6 +490,9 @@ cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
 /**
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
+ *
+ * \param button (unused)
+ * \param user_data 
  */
 void
 save_clicked_default (GtkButton *button, gpointer user_data)
@@ -510,6 +524,9 @@ save_clicked_default (GtkButton *button, gpointer user_data)
 
 /**
  * If the user presses the button load, it will load the config file into memory.
+ *
+ * \param button (unused)
+ * \param user_data 
  */
 void
 load_clicked_default (GtkButton *button, gpointer user_data)

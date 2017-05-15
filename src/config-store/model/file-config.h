@@ -27,21 +27,35 @@ namespace ns3 {
 
 /**
  * \ingroup configstore
+ * \brief base class for ConfigStore classes using files
  *
  */
 class FileConfig
 {
 public:
   virtual ~FileConfig ();
+  /**
+   * Set the file name
+   * \param filename the filename
+   */
   virtual void SetFilename (std::string filename) = 0;
+  /**
+   * Load or save the default values
+   */
   virtual void Default (void) = 0;
+  /**
+   * Load or save the global values
+   */
   virtual void Global (void) = 0;
+  /**
+   * Load or save the attributes values
+   */
   virtual void Attributes (void) = 0;
 };
 
 /**
  * \ingroup configstore
- *
+ * \brief A dummy class (does nothing)
  */
 class NoneFileConfig : public FileConfig
 {

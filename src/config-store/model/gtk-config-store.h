@@ -32,7 +32,13 @@ class GtkConfigStore
 public:
   GtkConfigStore ();
 
+  /**
+   * Process default values
+   */
   void ConfigureDefaults (void);
+  /**
+   * Process attribute values
+   */
   void ConfigureAttributes (void);
 };
 

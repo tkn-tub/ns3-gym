@@ -28,22 +28,37 @@ enum
   COL_TYPEID = 0, COL_LASTID
 };
 
+/**
+ * \ingroup configstore
+ * \brief A class used in the implementation of the GtkConfigStore
+ */
 struct ModelTypeid
 {
+  /**
+   * \enum node type
+   * \brief Whether the node represents an attribute or TypeId
+   */
   enum
   {
     // store TypeId + attribute name +defaultValue and index
     NODE_ATTRIBUTE,
     // store TypeId
     NODE_TYPEID
-  } type;
+  } type; ///< node type
+  /// TypeId name
   std::string name;
+  /// TypeId default value
   std::string defaultValue;
-  //The TypeId object and if it is an attribute, it's the TypeId object of the attribute
+  /// The TypeId object and if it is an attribute, it's the TypeId object of the attribute
   TypeId tid;
-  //stores the index of the attribute in list of attributes for a given TypeId
+  /// stores the index of the attribute in list of attributes for a given TypeId
   uint32_t index;
 };
+
+/**
+ * \ingroup configstore
+ * \brief ModelTypeIdCreator class
+ */
 class ModelTypeidCreator : public AttributeDefaultIterator
 {
 public:
@@ -74,9 +89,9 @@ private:
    * Removes the last GtkTreeIterator from m_iters
    */
   void Remove (void);
-  //this is the TreeStore model corresponding to the view
+  /// this is the TreeStore model corresponding to the view
   GtkTreeStore *m_treestore;
-  //This contains a vector of iterators used to build the TreeStore
+  /// This contains a vector of iterators used to build the TreeStore
   std::vector<GtkTreeIter *> m_iters;
 };
 }

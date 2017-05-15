@@ -29,6 +29,7 @@ namespace ns3 {
 
 /**
  * \ingroup configstore
+ * \brief A class to enable saving of configuration store in a raw text file
  *
  */
 class RawTextConfigSave : public FileConfig
@@ -41,11 +42,13 @@ public:
   virtual void Global (void);
   virtual void Attributes (void);
 private:
+  /// Config store output stream
   std::ofstream *m_os;
 };
 
 /**
  * \ingroup configstore
+ * \brief A class to enable loading of configuration store from a raw text file
  *
  */
 class RawTextConfigLoad : public FileConfig
@@ -58,7 +61,13 @@ public:
   virtual void Global (void);
   virtual void Attributes (void);
 private:
-  std::string Strip (std::string value);
+  /**
+   * Strip out attribute value
+   * \param value the input string
+   * \returns the updated string
+   */
+  std::string Strip (std::string value); 
+  /// Config store input stream
   std::ifstream *m_is;
 };
 
