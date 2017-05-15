@@ -56,7 +56,7 @@ struct GraReplyEntry
    *
    * \param t IPv4 address to reply to
    * \param f IPv4 address to hear from
-   * \param h gratitious hold off time
+   * \param h gratuitous hold off time
    */
   GraReplyEntry (Ipv4Address t, Ipv4Address f, Time h)
     : m_replyTo (t),
@@ -82,18 +82,26 @@ public:
   virtual ~DsrGraReply ();
 
   /// Set the gratuitous reply table size
+  /// \param g The gratuitous reply table size
   void SetGraTableSize (uint32_t g)
   {
     GraReplyTableSize = g;
   }
   /// Get the gratuitous reply table size
+  /// \returns The gratuitous reply table size
   uint32_t GetGraTableSize () const
   {
     return GraReplyTableSize;
   }
   /// Add a new gratuitous reply entry
+  /// \param graTableEntry The gratuitous reply entry
+  /// \return true on success
   bool AddEntry (GraReplyEntry & graTableEntry);
-  /// Update the route entry if found, create a new one if not
+  /// Update the route entry if found
+  /// \param replyTo Entry directed to
+  /// \param replyFrom Entry heard from
+  /// \param gratReplyHoldoff New gratuitous reply holdoff time
+  /// \return true on success
   bool FindAndUpdate (Ipv4Address replyTo, Ipv4Address replyFrom, Time gratReplyHoldoff);
   /// Remove all expired entries
   void Purge ();

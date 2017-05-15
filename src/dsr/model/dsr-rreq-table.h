@@ -288,12 +288,16 @@ public:
   }
 
   /// Remove the least used entry
-  void RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDstMap);
+  void RemoveLeastExpire ();
   /// Find the entry in the route request queue to see if already exists
+  /// \param dst Destination IP
   void FindAndUpdate (Ipv4Address dst);
   /// Remove route request entry for dst
+  /// \param dst Destination IP
   void RemoveRreqEntry (Ipv4Address dst);
   /// Get the request count number for one destination address
+  /// \param dst Destination IP
+  /// \return the route request counter
   uint32_t GetRreqCnt (Ipv4Address dst);
 
   /**

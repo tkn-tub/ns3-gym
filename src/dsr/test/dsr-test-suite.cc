@@ -54,7 +54,7 @@ using namespace dsr;
 
 // -----------------------------------------------------------------------------
 /**
- * \ingroup dsr-test
+ * \ingroup dsr
  * \defgroup dsr-test DSR routing module tests
  */
 

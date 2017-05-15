@@ -203,6 +203,7 @@ public:
   Ptr<Node> GetNodeWithAddress (Ipv4Address ipv4Address);
   /**
     * \brief Print the route vector.
+    * \param vec the vector to print.
     */
   void PrintVector (std::vector<Ipv4Address>& vec);
   /**
@@ -394,21 +395,21 @@ public:
   void SalvagePacket (Ptr<const Packet> packet, Ipv4Address source, Ipv4Address dst, uint8_t protocol);
   /**
    * \brief Schedule the packet retransmission based on link-layer acknowledgment
-   * \param mb maintainenace buffer entry
+   * \param mb maintenance buffer entry
    * \param protocol the protocol number
    */
   void ScheduleLinkPacketRetry   (DsrMaintainBuffEntry & mb,
                                   uint8_t protocol);
   /**
    * \brief Schedule the packet retransmission based on passive acknowledgment
-   * \param mb maintainenace buffer entry
+   * \param mb maintenance buffer entry
    * \param protocol the protocol number
    */
   void SchedulePassivePacketRetry   (DsrMaintainBuffEntry & mb,
                                      uint8_t protocol);
   /**
    * \brief Schedule the packet retransmission based on network layer acknowledgment
-   * \param mb maintainenace buffer entry
+   * \param mb maintenance buffer entry
    * \param isFirst see if this is the first packet retry or not
    * \param protocol the protocol number
    */
@@ -417,21 +418,35 @@ public:
                                      uint8_t protocol);
   /**
    * \brief This function deals with packet retransmission timer expire using link acknowledgment
+   * \param mb maintenance buffer entry
+   * \param protocol the protocol number
    */
   void LinkScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
                                  uint8_t protocol);
   /**
    * \brief This function deals with packet retransmission timer expire using network acknowledgment
+   * \param mb maintenance buffer entry
+   * \param protocol the protocol number
    */
   void NetworkScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
                                     uint8_t protocol);
   /**
    * \brief This function deals with packet retransmission timer expire using passive acknowledgment
+   * \param mb maintenance buffer entry
+   * \param protocol the protocol number
    */
   void PassiveScheduleTimerExpire  (DsrMaintainBuffEntry & mb,
                                     uint8_t protocol);
   /**
    * \brief Forward the packet using the route saved in the source route option header
+   * \param packet The packet
+   * \param sourceRoute Source route saved in option header
+   * \param ipv4Header IPv4 Header
+   * \param source source address
+   * \param destination destination address
+   * \param targetAddress target address
+   * \param protocol protocol number
+   * \param route route
    */
   void ForwardPacket (Ptr<const Packet> packet,
                       DsrOptionSRHeader &sourceRoute,
@@ -443,6 +458,9 @@ public:
                       Ptr<Ipv4Route> route);
   /**
    * \brief Broadcast the route request packet in subnet
+   * \param source source address
+   * \param destination destination address
+   * \param protocol protocol number
    */
   void SendInitialRequest (Ipv4Address source,
                            Ipv4Address destination,
@@ -640,6 +658,8 @@ private:
   void Start ();
   /**
    * \brief Send the route error message when the link breaks to the next hop.
+   * \param nextHop next hop address
+   * \param protocol protocol number
    */
   void SendRerrWhenBreaksLinkToNextHop (Ipv4Address nextHop, uint8_t protocol);
   /**

@@ -140,6 +140,7 @@ class DsrLinkStab
 public:
   /**
    * \brief Constructor
+   * \param linkStab duration of the link stability
    */
   DsrLinkStab (Time linkStab = Simulator::Now ());
   /**
@@ -231,6 +232,7 @@ public:
   virtual ~DsrRouteCacheEntry ();
 
   /// Mark entry as "down" (i.e. disable it)
+  /// \param badLinkLifetime Time before purging the link for real.
   void Invalidate (Time badLinkLifetime);
 
   // Fields
@@ -317,6 +319,7 @@ public:
 
   /**
    * \brief Print necessary fields
+   * \param os the output stream
    */
   void Print (std::ostream & os) const;
   /**
@@ -386,6 +389,7 @@ public:
 
   /**
    * \brief Remove the aged route cache entries when the route cache is full
+   * \param rtVector the route cache to scan.
    */
   void RemoveLastEntry (std::list<DsrRouteCacheEntry> & rtVector);
   /**
@@ -614,6 +618,7 @@ public:
   /// Delete all outdated entries and invalidate valid entry if Lifetime is expired
   void Purge ();
   /// Print route cache
+  /// \param os the output stream
   void Print (std::ostream &os);
 
   //------------------------------------------------------------------------------------------
@@ -715,6 +720,7 @@ public:
   }
 
   /// Handle link failure callback
+  /// \param cb the callback to be set
   void SetCallback (Callback<void, Ipv4Address, uint8_t > cb)
   {
     m_handleLinkFailure = cb;
@@ -727,14 +733,15 @@ public:
 
 private:
   /**
-   * \brief assignment operator
+   * \brief assignment operator - defined but not implemented to avoid misuse.
+   * \return
    */
   DsrRouteCache & operator= (DsrRouteCache const &);
   DsrRouteCacheEntry::IP_VECTOR m_vector;               ///< The route vector to save the ip addresses for intermediate nodes.
   uint32_t m_maxCacheLen;                               ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time     RouteCacheTimeout;                           ///< The maximum period of time that dsr is allowed to for an unused route.
   Time     m_badLinkLifetime;                           ///< The time for which the neighboring node is put into the blacklist.
-  /**
+  /*
    * Define the parameters for link cache type
    */
   uint32_t m_stabilityDecrFactor; ///< stability decrease factor
@@ -777,7 +784,7 @@ private:
    * \brief used by LookupRoute when LinkCache
    * \param id the ip address we are looking for
    * \param rt the route cache entry to store the found one
-   * \return true if route rute found
+   * \return true if route route found
    */
   bool LookupRoute_Link (Ipv4Address id, DsrRouteCacheEntry & rt);
   /**
@@ -851,9 +858,14 @@ public:
 
   Time m_delay;                                                         ///< This timeout deals with the passive ack
 
-  Mac48Address LookupMacAddress (Ipv4Address);                          ///< Find MAC address by IP using list of ARP caches
+  /// Find MAC address by IP using list of ARP caches
+  /// \param addr the IPv4 address to look for
+  /// \return The MAC address
+  Mac48Address LookupMacAddress (Ipv4Address addr);
 
-  void ProcessTxError (WifiMacHeader const &);                          ///< Process layer 2 TX error notification
+  /// Process layer 2 TX error notification
+  /// \param hdr Wi-Fi Mac Header
+  void ProcessTxError (WifiMacHeader const &hdr);
 };
 } // namespace dsr
 } // namespace ns3

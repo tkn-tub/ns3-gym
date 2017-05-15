@@ -268,14 +268,26 @@ public:
   virtual ~DsrPassiveBuffer ();
 
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  /// \param entry Buffer Entry
+  /// \return true on success adding the Entry.
   bool Enqueue (DsrPassiveBuffEntry & entry);
   /// Return first found (the earliest) entry for given destination
+  /// \param [in] dst Entry destination
+  /// \param [out] entry The Entry found (if any).
+  /// \return true on success
   bool Dequeue (Ipv4Address dst, DsrPassiveBuffEntry & entry);
   /// Finds whether a packet with destination dst exists in the queue
-  bool Find (Ipv4Address dst);
+  /// \param dst Destination.
+  /// \return true if there is a packet.
+ bool Find (Ipv4Address dst);
   /// Check if all the entries in passive buffer entry is all equal or not
+ /// \note For real this function checks if at most one entry is equal. If it is,
+ /// that entry is removed. Further entries are NOT checked. This could be a bug.
+ /// \param entry The Entry to check
+ /// \return true if an Entry was found and removed.
   bool AllEqual (DsrPassiveBuffEntry & entry);
   /// Number of entries
+  /// \return The number of entries.
   uint32_t GetSize ();
 
   // Fields
@@ -318,14 +330,21 @@ private:
   /// Remove all expired entries
   void Purge ();
   /// Notify that packet is dropped from queue by timeout
+  /// \param en BuffEntry Buffer entry
+  /// \param reason Drop reason
   void Drop (DsrPassiveBuffEntry en, std::string reason);
   /// Notify that packet is dropped from queue by timeout
+  /// \param en BuffEntry Buffer entry
+  /// \param reason Drop reason
   void DropLink (DsrPassiveBuffEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_passiveBufferTimeout;
   /// Check if the send buffer entry is the same or not
+  /// \param en The Entry to check
+  /// \param link The link to check
+  /// \return true if an Entry source and Next hop are equal to the Link parameters
   static bool LinkEqual (DsrPassiveBuffEntry en, const std::vector<Ipv4Address> link)
   {
     return ((en.GetSource () == link[0]) && (en.GetNextHop () == link[1]));

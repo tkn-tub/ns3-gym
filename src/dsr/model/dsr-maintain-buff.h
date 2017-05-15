@@ -401,14 +401,23 @@ public:
   {
   }
   /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  /// \param entry Maintain Buffer Entry
+  /// \return true on success adding the Entry.
   bool Enqueue (DsrMaintainBuffEntry & entry);
   /// Return first found (the earliest) entry for given destination
+  /// \param [in] dst Entry destination
+  /// \param [out] entry The Entry found (if any).
+  /// \return true on success
   bool Dequeue (Ipv4Address dst, DsrMaintainBuffEntry & entry);
-  /// Remove all packets with destination IP address dst
+  /// Remove all packets with next hop IP address dst
+  /// \param nextHop Next hop in the route.
   void DropPacketWithNextHop (Ipv4Address nextHop);
-  /// Finds whether a packet with destination dst exists in the queue
+  /// Finds whether a packet with next hop dst exists in the queue
+  /// \param nextHop Next hop in the route.
+  /// \return true if there is a packet directed to the next hop.
   bool Find (Ipv4Address nextHop);
   /// Number of entries
+  /// \return The number of entries.
   uint32_t GetSize ();
 
   // Fields
@@ -444,13 +453,23 @@ public:
   {
     m_maintainBufferTimeout = t;
   }
-  /// Verify if all the elements in the maintainence buffer entry is the same
+  /// Verify if all the elements in the maintenance buffer entry is the same
+  /// \note For real this function checks if at most one entry is equal. If it is,
+  /// that entry is removed. Further entries are NOT checked. This could be a bug.
+  /// \param entry The Entry to check
+  /// \return true if an Entry was found and removed.
   bool AllEqual (DsrMaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for link ack
+  /// \param entry The Entry to check
+  /// \return true if an Entry was found and removed.
   bool LinkEqual (DsrMaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for network ack
+  /// \param entry The Entry to check
+  /// \return true if an Entry was found and removed.
   bool NetworkEqual (DsrMaintainBuffEntry & entry);
   /// Verify if the maintain buffer entry is the same in every field for promiscuous ack
+  /// \param entry The Entry to check
+  /// \return true if an Entry was found and removed.
   bool PromiscEqual (DsrMaintainBuffEntry & entry);
 
 private:
@@ -465,6 +484,9 @@ private:
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_maintainBufferTimeout;
   /// Verify if the maintain buffer is equal or not
+  /// \param en The Entry to check
+  /// \param nextHop The next hop to check
+  /// \return true if an Entry next hop is equal to the function second parameter
   static bool IsEqual (DsrMaintainBuffEntry en, const Ipv4Address nextHop)
   {
     return (en.GetNextHop () == nextHop);

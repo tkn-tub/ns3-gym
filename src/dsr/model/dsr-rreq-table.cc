@@ -63,13 +63,13 @@ DsrRreqTable::~DsrRreqTable ()
 }
 
 void
-DsrRreqTable::RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDstMap)
+DsrRreqTable::RemoveLeastExpire ()
 {
   NS_LOG_FUNCTION (this);
   Ipv4Address firstExpire;
   Time max = Seconds (0.0);
   for (std::map<Ipv4Address, RreqTableEntry >::const_iterator i =
-         rreqDstMap.begin (); i != rreqDstMap.end (); ++i)
+      m_rreqDstMap.begin (); i != m_rreqDstMap.end (); ++i)
     {
       Ipv4Address dst = i->first;
       RreqTableEntry rreqTableEntry = i->second;
@@ -79,7 +79,7 @@ DsrRreqTable::RemoveLeastExpire (std::map<Ipv4Address, RreqTableEntry > & rreqDs
           firstExpire = dst;
         }
     }
-  rreqDstMap.erase (firstExpire);
+  m_rreqDstMap.erase (firstExpire);
 }
 
 void
@@ -96,7 +96,7 @@ DsrRreqTable::FindAndUpdate (Ipv4Address dst)
        */
       if (m_rreqDstMap.size () >= m_requestTableSize)
         {
-          RemoveLeastExpire (m_rreqDstMap);
+          RemoveLeastExpire ();
           NS_LOG_INFO ("The request table size after erase " << (uint32_t)m_rreqDstMap.size ());
         }
       RreqTableEntry rreqTableEntry;

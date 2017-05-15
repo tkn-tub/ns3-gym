@@ -209,13 +209,29 @@ public:
    * \return true if entry added
    */
   bool Enqueue (DsrErrorBuffEntry & entry);
-  /// Return first found (the earliest) entry for given destination
+  /**
+   * Return first found (the earliest) entry for given destination
+   * \param [in] dst The destination to look for
+   * \param [out] entry The entry
+   * \return true if an entry is found
+   */
   bool Dequeue (Ipv4Address dst, DsrErrorBuffEntry & entry);
-  /// Remove all packets with the error link
+  /**
+   * Remove all packets with the error link
+   * \param source The source
+   * \param nextHop The next hop
+   */
   void DropPacketForErrLink (Ipv4Address source, Ipv4Address nextHop);
-  /// Finds whether a packet with destination dst exists in the queue
+  /**
+   * Finds whether a packet with destination dst exists in the queue
+   * \param dst The destination
+   * \return true if a packet is found.
+   */
   bool Find (Ipv4Address dst);
-  /// Number of entries
+  /**
+   * Returns the number of entries in the queue.
+   * \return the number of entries in the queue.
+   */
   uint32_t GetSize ();
 
   // Fields
@@ -265,15 +281,30 @@ private:
   std::vector<DsrErrorBuffEntry> m_errorBuffer;
   /// Remove all expired entries
   void Purge ();
-  /// Notify that packet is dropped from queue by timeout
+  /**
+   * Notify that packet is dropped from queue by timeout
+   * \param en Error Buffer Entry
+   * \param reason Drop reason.
+   */
+  ///
   void Drop (DsrErrorBuffEntry en, std::string reason);
-  /// Notify that packet is dropped from queue by timeout
+  /**
+   * Notify that packet is dropped from queue by link error
+   * \param en Error Buffer Entry
+   * \param reason Drop reason.
+   */
   void DropLink (DsrErrorBuffEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_errorBufferTimeout;
-  /// Check if the send buffer entry is the same or not
+  /**
+   * Check if the send buffer entry is the same or not
+   * \param en Buffer Entry
+   * \param link Link description.
+   * \return true if the entry is compatible with the link description (source and next hop)
+   */
+  ///
   static bool LinkEqual (DsrErrorBuffEntry en, const std::vector<Ipv4Address> link)
   {
     return ((en.GetSource () == link[0]) && (en.GetNextHop () == link[1]));

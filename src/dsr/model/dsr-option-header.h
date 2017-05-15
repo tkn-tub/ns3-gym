@@ -774,6 +774,7 @@ public:
   virtual Ipv4Address GetErrorSrc () const;
   /**
    * \brief Set the salvage value of the packet
+   * \param salvage The salvage value of the packet
    */
   virtual void SetSalvage (uint8_t salvage);
   /**
@@ -909,6 +910,7 @@ public:
   virtual Ipv4Address GetErrorSrc () const;
   /**
    * \brief Set the salvage value of the packet
+   * \param salvage The salvage value of the packet
    */
   virtual void SetSalvage (uint8_t salvage);
   /**

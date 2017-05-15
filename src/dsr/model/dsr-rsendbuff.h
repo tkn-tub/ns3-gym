@@ -251,7 +251,12 @@ public:
 private:
   std::vector<DsrSendBuffEntry> m_sendBuffer;                   ///< The send buffer to cache unsent packet
   void Purge ();                                                ///< Remove all expired entries
-  void Drop (DsrSendBuffEntry en, std::string reason);          ///< Notify that packet is dropped from queue by timeout
+
+  /// Notify that packet is dropped from queue by timeout
+  /// \param en BuffEntry Buffer entry
+  /// \param reason Drop reason
+  void Drop (DsrSendBuffEntry en, std::string reason);
+
   uint32_t m_maxLen;                                            ///< The maximum number of packets that we allow a routing protocol to buffer.
   Time m_sendBufferTimeout;                                     ///< The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   /**
