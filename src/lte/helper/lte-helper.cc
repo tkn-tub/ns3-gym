@@ -205,8 +205,8 @@ void
 LteHelper::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  m_downlinkChannel.clear ();
-  m_uplinkChannel.clear ();
+  m_downlinkChannel = 0;
+  m_uplinkChannel = 0;
   m_componentCarrierPhyParams.clear();
   Object::DoDispose ();
 }
@@ -214,19 +214,13 @@ LteHelper::DoDispose ()
 Ptr<SpectrumChannel>
 LteHelper::GetUplinkSpectrumChannel (void) const
 {
-  return m_uplinkChannel.at(0);
+  return m_uplinkChannel;
 }
 
 Ptr<SpectrumChannel>
 LteHelper::GetDownlinkSpectrumChannel (void) const
 {
-  return m_downlinkChannel.at(0);
-}
-
-Ptr<SpectrumChannel>
-LteHelper::GetDownlinkSpectrumChannel (uint8_t carrierId) const
-{
-  return m_downlinkChannel.at(carrierId);
+  return m_downlinkChannel;
 }
 
 void
@@ -236,51 +230,44 @@ LteHelper::ChannelModelInitialization (void)
   // PathLossModel Objects are vectors --> in InstallSingleEnb we will set the frequency
   NS_LOG_FUNCTION (this << m_noOfCcs);
 
-  for (uint16_t i = 0; i < m_noOfCcs; i++)
+  m_downlinkChannel = m_channelFactory.Create<SpectrumChannel> ();
+  m_uplinkChannel = m_channelFactory.Create<SpectrumChannel> ();
+
+  m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
+  if (dlSplm != 0)
     {
-      Ptr<SpectrumChannel> downlinkChannelElem = m_channelFactory.Create<SpectrumChannel> ();
-      Ptr<SpectrumChannel> uplinkChannelElem = m_channelFactory.Create<SpectrumChannel> ();
+      NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in DL");
+      m_downlinkChannel->AddSpectrumPropagationLossModel (dlSplm);
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
+      Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModel->GetObject<PropagationLossModel> ();
+      NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
+      m_downlinkChannel->AddPropagationLossModel (dlPlm);
+    }
 
-      Ptr<Object> downlinkPathlossModelElem = m_dlPathlossModelFactory.Create ();
-      Ptr<SpectrumPropagationLossModel> dlSplm = downlinkPathlossModelElem->GetObject<SpectrumPropagationLossModel> ();
-      if (dlSplm != 0)
-        {
-          NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in DL");
-          downlinkChannelElem->AddSpectrumPropagationLossModel (dlSplm);
-        }
-      else
-        {
-          NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
-          Ptr<PropagationLossModel> dlPlm = downlinkPathlossModelElem->GetObject<PropagationLossModel> ();
-          NS_ASSERT_MSG (dlPlm != 0, " " << downlinkPathlossModelElem << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
-          downlinkChannelElem->AddPropagationLossModel (dlPlm);
-        }
-
-      Ptr<Object> uplinkPathlossModelElem = m_ulPathlossModelFactory.Create ();
-      Ptr<SpectrumPropagationLossModel> ulSplm = uplinkPathlossModelElem->GetObject<SpectrumPropagationLossModel> ();
-      if (ulSplm != 0)
-        {
-          NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
-          uplinkChannelElem->AddSpectrumPropagationLossModel (ulSplm);
-        }
-      else
-        {
-          NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
-          Ptr<PropagationLossModel> ulPlm = uplinkPathlossModelElem->GetObject<PropagationLossModel> ();
-          NS_ASSERT_MSG (ulPlm != 0, " " << uplinkPathlossModelElem << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
-          uplinkChannelElem->AddPropagationLossModel (ulPlm);
-        }
-      if (!m_fadingModelType.empty ())
-        {
-          m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
-          m_fadingModule->Initialize ();
-          downlinkChannelElem->AddSpectrumPropagationLossModel (m_fadingModule);
-          uplinkChannelElem->AddSpectrumPropagationLossModel (m_fadingModule);
-        }
-      m_downlinkChannel.push_back (downlinkChannelElem);
-      m_uplinkChannel.push_back (uplinkChannelElem);
-      m_uplinkPathlossModel.push_back (uplinkPathlossModelElem);
-      m_downlinkPathlossModel.push_back (downlinkPathlossModelElem);
+  m_uplinkPathlossModel = m_ulPathlossModelFactory.Create ();
+  Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
+  if (ulSplm != 0)
+    {
+      NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
+      m_uplinkChannel->AddSpectrumPropagationLossModel (ulSplm);
+    }
+  else
+    {
+      NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
+      Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModel->GetObject<PropagationLossModel> ();
+      NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModel << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
+      m_uplinkChannel->AddPropagationLossModel (ulPlm);
+    }
+  if (!m_fadingModelType.empty ())
+    {
+      m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_fadingModule->Initialize ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
 }
 
@@ -581,8 +568,8 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       pInterf->AddCallback (MakeCallback (&LteEnbPhy::ReportInterference, phy));
       ulPhy->AddInterferenceDataChunkProcessor (pInterf);   // for interference power tracing
 
-      dlPhy->SetChannel (m_downlinkChannel.at (it->first));
-      ulPhy->SetChannel (m_uplinkChannel.at (it->first));
+      dlPhy->SetChannel (m_downlinkChannel);
+      ulPhy->SetChannel (m_uplinkChannel);
 
       Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
       NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallEnbDevice ()");
@@ -730,7 +717,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       NS_LOG_LOGIC ("set the propagation model frequencies");
       double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (it->second->m_dlEarfcn);
       NS_LOG_LOGIC ("DL freq: " << dlFreq);
-      bool dlFreqOk = m_downlinkPathlossModel.at (it->first)->SetAttributeFailSafe ("Frequency", DoubleValue (dlFreq));
+      bool dlFreqOk = m_downlinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (dlFreq));
       if (!dlFreqOk)
         {
           NS_LOG_WARN ("DL propagation model does not have a Frequency attribute");
@@ -739,7 +726,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (it->second->m_ulEarfcn);
 
       NS_LOG_LOGIC ("UL freq: " << ulFreq);
-      bool ulFreqOk = m_uplinkPathlossModel.at(it->first)->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
+      bool ulFreqOk = m_uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
       if (!ulFreqOk)
         {
           NS_LOG_WARN ("UL propagation model does not have a Frequency attribute");
@@ -751,7 +738,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   for (it = ccMap.begin (); it != ccMap.end (); ++it)
     {
-      m_uplinkChannel.at (it->first)->AddRx (it->second->GetPhy ()->GetUlSpectrumPhy ());
+      m_uplinkChannel->AddRx (it->second->GetPhy ()->GetUlSpectrumPhy ());
     }
 
   if (m_epcHelper != 0)
@@ -840,8 +827,8 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
           pCtrl->AddCallback (MakeCallback (&LteUePhy::GenerateCtrlCqiReport, phy));
         }
 
-      dlPhy->SetChannel (m_downlinkChannel.at (it->first));
-      ulPhy->SetChannel (m_uplinkChannel.at (it->first));
+      dlPhy->SetChannel (m_downlinkChannel);
+      ulPhy->SetChannel (m_uplinkChannel);
 
       Ptr<MobilityModel> mm = n->GetObject<MobilityModel> ();
       NS_ASSERT_MSG (mm, "MobilityModel needs to be set on node before calling LteHelper::InstallUeDevice ()");

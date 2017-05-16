@@ -662,14 +662,6 @@ public:
    */
   Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (void) const;
 
-  /**
-   * Get downlink spectrum channel of a given carrier.
-   *
-   * \param carrierId the carrier ID
-   * \return a pointer to the SpectrumChannel instance used for the downlink on a given carrier
-   */
-  Ptr<SpectrumChannel> GetDownlinkSpectrumChannel (uint8_t carrierId) const;
-
 
 protected:
   // inherited from Object
@@ -736,13 +728,13 @@ private:
    */
 
   /// The downlink LTE channel used in the simulation.
-  std::vector <Ptr<SpectrumChannel> > m_downlinkChannel;
+  Ptr<SpectrumChannel> m_downlinkChannel;
   /// The uplink LTE channel used in the simulation.
-  std::vector< Ptr<SpectrumChannel> > m_uplinkChannel;
+  Ptr<SpectrumChannel> m_uplinkChannel;
   /// The path loss model used in the downlink channel.
-  std::vector< Ptr<Object> >  m_downlinkPathlossModel;
+  Ptr<Object>  m_downlinkPathlossModel;
   /// The path loss model used in the uplink channel.
-  std::vector< Ptr<Object> > m_uplinkPathlossModel;
+  Ptr<Object> m_uplinkPathlossModel;
 
   /// Factory of MAC scheduler object.
   ObjectFactory m_schedulerFactory;
