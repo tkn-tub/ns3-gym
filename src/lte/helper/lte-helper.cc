@@ -241,8 +241,8 @@ LteHelper::ChannelModelInitialization (void)
       Ptr<SpectrumChannel> downlinkChannelElem = m_channelFactory.Create<SpectrumChannel> ();
       Ptr<SpectrumChannel> uplinkChannelElem = m_channelFactory.Create<SpectrumChannel> ();
 
-      Ptr<Object> m_downlinkPathlossModelElem = m_dlPathlossModelFactory.Create ();
-      Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModelElem->GetObject<SpectrumPropagationLossModel> ();
+      Ptr<Object> downlinkPathlossModelElem = m_dlPathlossModelFactory.Create ();
+      Ptr<SpectrumPropagationLossModel> dlSplm = downlinkPathlossModelElem->GetObject<SpectrumPropagationLossModel> ();
       if (dlSplm != 0)
         {
           NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in DL");
@@ -251,13 +251,13 @@ LteHelper::ChannelModelInitialization (void)
       else
         {
           NS_LOG_LOGIC (this << " using a PropagationLossModel in DL");
-          Ptr<PropagationLossModel> dlPlm = m_downlinkPathlossModelElem->GetObject<PropagationLossModel> ();
-          NS_ASSERT_MSG (dlPlm != 0, " " << m_downlinkPathlossModelElem << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
+          Ptr<PropagationLossModel> dlPlm = downlinkPathlossModelElem->GetObject<PropagationLossModel> ();
+          NS_ASSERT_MSG (dlPlm != 0, " " << downlinkPathlossModelElem << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
           downlinkChannelElem->AddPropagationLossModel (dlPlm);
         }
 
-      Ptr<Object> m_uplinkPathlossModelElem = m_ulPathlossModelFactory.Create ();
-      Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPathlossModelElem->GetObject<SpectrumPropagationLossModel> ();
+      Ptr<Object> uplinkPathlossModelElem = m_ulPathlossModelFactory.Create ();
+      Ptr<SpectrumPropagationLossModel> ulSplm = uplinkPathlossModelElem->GetObject<SpectrumPropagationLossModel> ();
       if (ulSplm != 0)
         {
           NS_LOG_LOGIC (this << " using a SpectrumPropagationLossModel in UL");
@@ -266,8 +266,8 @@ LteHelper::ChannelModelInitialization (void)
       else
         {
           NS_LOG_LOGIC (this << " using a PropagationLossModel in UL");
-          Ptr<PropagationLossModel> ulPlm = m_uplinkPathlossModelElem->GetObject<PropagationLossModel> ();
-          NS_ASSERT_MSG (ulPlm != 0, " " << m_uplinkPathlossModelElem << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
+          Ptr<PropagationLossModel> ulPlm = uplinkPathlossModelElem->GetObject<PropagationLossModel> ();
+          NS_ASSERT_MSG (ulPlm != 0, " " << uplinkPathlossModelElem << " is neither PropagationLossModel nor SpectrumPropagationLossModel");
           uplinkChannelElem->AddPropagationLossModel (ulPlm);
         }
       if (!m_fadingModelType.empty ())
@@ -279,8 +279,8 @@ LteHelper::ChannelModelInitialization (void)
         }
       m_downlinkChannel.push_back (downlinkChannelElem);
       m_uplinkChannel.push_back (uplinkChannelElem);
-      m_uplinkPathlossModel.push_back (m_uplinkPathlossModelElem);
-      m_downlinkPathlossModel.push_back (m_downlinkPathlossModelElem);
+      m_uplinkPathlossModel.push_back (uplinkPathlossModelElem);
+      m_downlinkPathlossModel.push_back (downlinkPathlossModelElem);
     }
 }
 
