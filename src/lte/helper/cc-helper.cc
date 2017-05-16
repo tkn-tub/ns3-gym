@@ -175,8 +175,11 @@ CcHelper::EquallySpacedCcs ()
   for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
       bool pc =false;
-      uint32_t ul = m_ulEarfcn + i * m_ulBandwidth;
-      uint32_t dl = m_dlEarfcn + i * m_dlBandwidth;
+
+      // One RB is 200 kHz wide, while increment by 1 in corresponds to 100 kHz shift
+      // Therefore, we need to multiply by 2 here.
+      uint32_t ul = m_ulEarfcn + i * 2 * m_ulBandwidth;
+      uint32_t dl = m_dlEarfcn + i * 2 * m_dlBandwidth;
       if (i == 0)
         {
           pc = true;
