@@ -61,12 +61,12 @@ TypeId CcHelper::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&CcHelper::m_numberOfComponentCarriers),
                    MakeUintegerChecker<uint16_t> (MIN_CC, MAX_CC))
-    .AddAttribute ("UlFreq",
+    .AddAttribute ("UlEarfcn",
                    "Set Ul Channel [EARFCN] for the first carrier component",
                    UintegerValue (0),
                    MakeUintegerAccessor (&CcHelper::m_ulEarfcn),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("DlFreq",
+    .AddAttribute ("DlEarfcn",
                    "Set Dl Channel [EARFCN] for the first carrier component",
                    UintegerValue (0),
                    MakeUintegerAccessor (&CcHelper::m_dlEarfcn),
