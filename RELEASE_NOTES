@@ -103,6 +103,7 @@ Bugs fixed
 - Bug 2671 - ArpCache::Entry::SetMacAddress is misspelled
 - Bug 2717 - Fix mask generation for Ipv4RoutingTableEntry::CreateDefaultRoute
 - Bug 2722 - 802.11g sends DSSS spectrum signals using CreateOfdmTxPowerSpectralDensity
+- Bug 2741 - IPv4 fragmentation fails when last fragment have to be re-fragmented.
 
 Known issues
 ------------

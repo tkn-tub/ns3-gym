@@ -1422,15 +1422,9 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Head
 
   uint16_t offset = 0;
   bool moreFragment = true;
-  uint16_t originalOffset = 0;
-  bool alreadyFragmented = false;
+  uint16_t originalOffset = ipv4Header.GetFragmentOffset();
+  bool isLastFragment = ipv4Header.IsLastFragment();
   uint32_t currentFragmentablePartSize = 0;
-
-  if (!ipv4Header.IsLastFragment())
-    {
-      alreadyFragmented = true;
-      originalOffset = ipv4Header.GetFragmentOffset();
-    }
 
   // IPv4 fragments are all 8 bytes aligned but the last.
   // The IP payload size is:
@@ -1453,7 +1447,7 @@ Ipv4L3Protocol::DoFragmentation (Ptr<Packet> packet, const Ipv4Header & ipv4Head
         {
           moreFragment = false;
           currentFragmentablePartSize = p->GetSize () - offset;
-          if (alreadyFragmented)
+          if (!isLastFragment)
             {
               fragmentHeader.SetMoreFragments ();
             }
