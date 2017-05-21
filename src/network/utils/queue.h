@@ -210,7 +210,7 @@ public:
   // a buffer with the date of arrival of past received packets
   // which are within the average window
   // so, it is quite costly to do it all the time.
-  // Hence, it is disabled by default and must be explicitely
+  // Hence, it is disabled by default and must be explicitly
   // enabled with this method which specifies the size
   // of the average window in time units.
   void EnableRunningAverage (Time averageWindow);
@@ -254,6 +254,7 @@ private:
   uint32_t m_maxBytes;                //!< max bytes in the queue
   QueueMode m_mode;                   //!< queue mode (packets or bytes)
 
+  /// Friend class
   template <typename Item>
   friend class Queue;
 };
@@ -330,6 +331,7 @@ public:
 
 protected:
 
+  /// Const iterator.
   typedef typename std::list<Ptr<Item> >::const_iterator ConstIterator;
 
   /**

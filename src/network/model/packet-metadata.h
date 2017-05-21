@@ -84,10 +84,11 @@ public:
    */
   struct Item 
   {
-    enum {
-      PAYLOAD,
-      HEADER,
-      TRAILER
+    /// Type of data in the packet
+    enum ItemType {
+      PAYLOAD,  //!< Payload
+      HEADER,   //!< Header
+      TRAILER   //!< Trailer
     } type; //!< metadata type
     /**
      * true: this is a fragmented header, trailer, or, payload.
@@ -252,6 +253,8 @@ private:
 
   /**
    * \brief Initialize the item iterator to the buffer begin
+   * \param buffer buffer to initialize.
+   * \return the buffer iterator.
    */
   ItemIterator BeginItem (Buffer buffer) const;
 
@@ -501,6 +504,7 @@ public:
   };
 
   friend DataFreeList::~DataFreeList ();
+  /// Friend class
   friend class ItemIterator;
 
   PacketMetadata ();
@@ -596,6 +600,7 @@ public:
 
   /**
    * \brief Get the total size used by the metadata
+   * \return the metadata used size
    */
   uint32_t GetTotalSize (void) const;
 

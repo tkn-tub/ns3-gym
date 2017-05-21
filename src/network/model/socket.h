@@ -1024,6 +1024,8 @@ protected:
   /**
    * \brief Notify through the callback (if set) that a new connection has been
    *        created.
+   * \param socket The socket receiving the new connection.
+   * \param from The address of the node initiating the connection.
    */
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
 

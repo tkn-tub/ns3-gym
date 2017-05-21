@@ -107,9 +107,9 @@ public:
    */
   void SetPacketType (PacketType type);
 
-  //! Inherited from ObjectBase
+  // Inherited from ObjectBase
   virtual TypeId GetInstanceTypeId (void) const;
-  //! Inherited from Header
+  // Inherited from Header
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);

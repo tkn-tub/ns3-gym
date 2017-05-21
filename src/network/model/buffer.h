@@ -382,6 +382,7 @@ public:
     uint32_t GetRemainingSize (void) const;
 
 private:
+    /// Friend class
     friend class Buffer;
     /**
      * Constructor - initializes the iterator to point to the buffer start
