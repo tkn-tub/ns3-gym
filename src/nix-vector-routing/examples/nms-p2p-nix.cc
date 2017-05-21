@@ -60,62 +60,91 @@ void Progress ()
   Simulator::Schedule (Seconds (0.1), Progress);
 }
 
+/**
+ * \ingroup nix-vector-routing
+ * 2D array used in nix-vector-routing example "nms-p2p-nix.cc"
+ */
 template <typename T>
 class Array2D
 {
-  public:
-    Array2D (const size_t x, const size_t y) : p (new T*[x]), m_xMax (x) 
-      {
-        for (size_t i = 0; i < m_xMax; i++)
-          p[i] = new T[y];
-      }
+public:
+  /**
+   * Constructor
+   * \param x number of rows
+   * \param y number of columns
+   */
+  Array2D (const size_t x, const size_t y) :
+    p (new T*[x]), m_xMax (x)
+  {
+    for (size_t i = 0; i < m_xMax; i++)
+      p[i] = new T[y];
+  }
 
-    ~Array2D (void)
-      {
-        for (size_t i = 0; i < m_xMax; i++)
-          delete[] p[i];
-        delete[] p;
-        p = 0;
-      }
+  ~Array2D (void)
+  {
+    for (size_t i = 0; i < m_xMax; i++)
+      delete[] p[i];
+    delete[] p;
+    p = 0;
+  }
 
-    T* operator[] (const size_t i)
-      {
-         return p[i];
-      }
-  private:
-    T** p;
-    const size_t m_xMax;
+  /**
+   * Accessor operator
+   * \param i index to be retrieved
+   * \return a pointer to the indexed element
+   */
+  T* operator[] (const size_t i)
+  {
+    return p[i];
+  }
+private:
+  T** p;  //!< Stored elements
+  const size_t m_xMax;  //!< maximum number of rows
 };
 
+/**
+ * \ingroup nix-vector-routing
+ * 3D array used in nix-vector-routing example "nms-p2p-nix.cc"
+ */
 template <typename T>
 class Array3D
 {
-  public:
-    Array3D (const size_t x, const size_t y, const size_t z)
-      : p (new Array2D<T>*[x]), m_xMax (x)
-      {
-        for (size_t i = 0; i < m_xMax; i++)
-          p[i] = new Array2D<T> (y, z);
-      }
+public:
+  /**
+   * Constructor
+   * \param x number of rows
+   * \param y number of columns
+   * \param z number of layers
+   */
+  Array3D (const size_t x, const size_t y, const size_t z) : p (new Array2D<T>*[x]), m_xMax (x)
+  {
+    for (size_t i = 0; i < m_xMax; i++)
+      p[i] = new Array2D<T> (y, z);
+  }
 
-    ~Array3D (void)
+  ~Array3D (void)
+  {
+    for (size_t i = 0; i < m_xMax; i++)
       {
-        for (size_t i = 0; i < m_xMax; i++)
-          {
-            delete p[i];
-            p[i] = 0;
-          }
-        delete[] p;
-        p = 0;
+        delete p[i];
+        p[i] = 0;
       }
+    delete[] p;
+    p = 0;
+  }
 
-    Array2D<T>& operator[] (const size_t i)
-      {
-        return *(p[i]);
-      }
-  private:
-    Array2D<T>** p;
-    const size_t m_xMax;
+  /**
+   * Accessor operator
+   * \param i index to be retrieved
+   * \return a reference to an Array2D of the indexed element
+   */
+  Array2D<T>& operator[] (const size_t i)
+  {
+    return *(p[i]);
+  }
+private:
+  Array2D<T>** p;  //!< Stored elements
+  const size_t m_xMax;  //!< maximum number of rows
 };
 
 int

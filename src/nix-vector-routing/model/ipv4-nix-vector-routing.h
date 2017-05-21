@@ -57,7 +57,7 @@ public:
   ~Ipv4NixVectorRouting ();
   /**
    * @brief The Interface ID of the Global Router interface.
-   *
+   * @return The Interface ID
    * @see Object::GetObject ()
    */
   static TypeId GetTypeId (void);
@@ -83,63 +83,117 @@ public:
 
 private:
 
-  /* flushes the cache which stores nix-vector based on
-   * destination IP */
+  /**
+   * Flushes the cache which stores nix-vector based on
+   * destination IP
+   */
   void FlushNixCache (void) const;
 
-  /* flushes the cache which stores the Ipv4 route
-   * based on the destination IP */
+  /**
+   * Flushes the cache which stores the Ipv4 route
+   * based on the destination IP
+   */
   void FlushIpv4RouteCache (void) const;
 
-  /* upon a run-time topology change caches are
+  /**
+   * Upon a run-time topology change caches are
    * flushed and the total number of neighbors is
-   * reset to zero */
+   * reset to zero
+   */
   void ResetTotalNeighbors (void);
 
-  /*  takes in the source node and dest IP and calls GetNodeByIp,
-   *  BFS, accounting for any output interface specified, and finally
-   *  BuildNixVector to return the built nix-vector */
-  Ptr<NixVector> GetNixVector (Ptr<Node>, Ipv4Address, Ptr<NetDevice>);
+  /**
+   * Takes in the source node and dest IP and calls GetNodeByIp,
+   * BFS, accounting for any output interface specified, and finally
+   * BuildNixVector to return the built nix-vector
+   *
+   * \param source Source node
+   * \param dest Destination node address
+   * \param oif Preferred output interface
+   * \returns The NixVector to be used in routing.
+   */
+  Ptr<NixVector> GetNixVector (Ptr<Node> source, Ipv4Address dest, Ptr<NetDevice> oif);
 
-  /* checks the cache based on dest IP for the nix-vector */
-  Ptr<NixVector> GetNixVectorInCache (Ipv4Address);
+  /**
+   * Checks the cache based on dest IP for the nix-vector
+   * \param address Address to check
+   * \returns The NixVector to be used in routing.
+   */
+  Ptr<NixVector> GetNixVectorInCache (Ipv4Address address);
 
-  /* checks the cache based on dest IP for the Ipv4Route */
-  Ptr<Ipv4Route> GetIpv4RouteInCache (Ipv4Address);
+  /**
+   * Checks the cache based on dest IP for the Ipv4Route
+   * \param address Address to check
+   * \returns The cached route.
+   */
+  Ptr<Ipv4Route> GetIpv4RouteInCache (Ipv4Address address);
 
-  /* given a net-device returns all the adjacent net-devices,
-   * essentially getting the neighbors on that channel */
-  void GetAdjacentNetDevices (Ptr<NetDevice>, Ptr<Channel>, NetDeviceContainer &);
+  /**
+   * Given a net-device returns all the adjacent net-devices,
+   * essentially getting the neighbors on that channel
+   * \param [in] netDevice the NetDevice attached to the channel.
+   * \param [in] channel the channel to check
+   * \param [out] netDeviceContainer the NetDeviceContainer of the NetDevices in the channel.
+   */
+  void GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Channel> channel, NetDeviceContainer & netDeviceContainer);
 
-  /* iterates through the node list and finds the one
-   * corresponding to the given Ipv4Address */
-  Ptr<Node> GetNodeByIp (Ipv4Address);
+  /**
+   * Iterates through the node list and finds the one
+   * corresponding to the given Ipv4Address
+   * \param dest detination node IP
+   * \return The node with the specified IP.
+   */
+  Ptr<Node> GetNodeByIp (Ipv4Address dest);
 
-  /* Recurses the parent vector, created by BFS and actually builds the nixvector */
+  /**
+   * Recurses the parent vector, created by BFS and actually builds the nixvector
+   * \param [in] parentVector Parent vector for retracing routes
+   * \param [in] source Source Node index
+   * \param [in] dest Destination Node index
+   * \param [out] nixVector the NixVector to be used for routing
+   * \returns true on success, false otherwise.
+   */
   bool BuildNixVector (const std::vector< Ptr<Node> > & parentVector, uint32_t source, uint32_t dest, Ptr<NixVector> nixVector);
 
-  /* special variation of BuildNixVector for when a node is sending to itself */
+  /**
+   * Special variation of BuildNixVector for when a node is sending to itself
+   * \param [out] nixVector the NixVector to be used for routing
+   * \returns true on success, false otherwise.
+   */
   bool BuildNixVectorLocal (Ptr<NixVector> nixVector);
 
-  /* simple iterates through the nodes net-devices and determines
-   * how many neighbors it has */
+  /**
+   * Simple iterates through the nodes net-devices and determines
+   * how many neighbors it has
+   * \returns the number of neighbors.
+   */
   uint32_t FindTotalNeighbors (void);
 
-  /* determine if the netdevice is bridged */
+  /**
+   * Determine if the NetDevice is bridged
+   * \param nd the NetDevice to check
+   * \returns the bridging NetDevice (or null if the NetDevice is not bridged)
+   */
   Ptr<BridgeNetDevice> NetDeviceIsBridged (Ptr<NetDevice> nd) const;
 
 
-  /* Nix index is with respect to the neighbors.  The net-device index must be
-   * derived from this */
+  /**
+   * Nix index is with respect to the neighbors.  The net-device index must be
+   * derived from this
+   * \param [in] nodeIndex Nix Node index
+   * \param [out] gatewayIp IP address of the gateway
+   * \returns the index of the NetDevice in the node.
+   */
   uint32_t FindNetDeviceForNixIndex (uint32_t nodeIndex, Ipv4Address & gatewayIp);
 
-  /* Breadth first search algorithm
-   * Param1: total number of nodes
-   * Param2: Source Node
-   * Param3: Dest Node
-   * Param4: (returned) Parent vector for retracing routes
-   * Param5: specific output interface to use from source node, if not null
-   * Returns: false if dest not found, true o.w.
+  /**
+   * \brief Breadth first search algorithm.
+   * \param [in] numberOfNodes total number of nodes
+   * \param [in] source Source Node
+   * \param [in] dest Destination Node
+   * \param [out] parentVector Parent vector for retracing routes
+   * \param [in] oif specific output interface to use from source node, if not null
+   * \returns false if dest not found, true o.w.
    */
   bool BFS (uint32_t numberOfNodes,
             Ptr<Node> source,
@@ -161,28 +215,27 @@ private:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
  
-  /* 
+  /**
    * Flushes routing caches if required.
    */
   void CheckCacheStateAndFlush (void) const;
 
-  /* 
+  /**
    * Flag to mark when caches are dirty and need to be flushed.  
    * Used for lazy cleanup of caches when there are many topology changes.
    */
   static bool g_isCacheDirty;
 
-  /* Cache stores nix-vectors based on destination ip */
+  /** Cache stores nix-vectors based on destination ip */
   mutable NixMap_t m_nixCache;
 
-  /* Cache stores Ipv4Routes based on destination ip */
+  /** Cache stores Ipv4Routes based on destination ip */
   mutable Ipv4RouteMap_t m_ipv4RouteCache;
 
-  Ptr<Ipv4> m_ipv4;
-  Ptr<Node> m_node;
+  Ptr<Ipv4> m_ipv4; //!< IPv4 object
+  Ptr<Node> m_node; //!< Node object
 
-  /* Total neighbors used for nix-vector to determine
-   * number of bits */
+  /** Total neighbors used for nix-vector to determine number of bits */
   uint32_t m_totalNeighbors;
 };
 } // namespace ns3
