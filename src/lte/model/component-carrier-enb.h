@@ -58,7 +58,13 @@ public:
 
   virtual ~ComponentCarrierEnb (void);
   virtual void DoDispose (void);
-  
+
+  /**
+   * Get cell identifier
+   * \return cell identifer
+   */
+  uint16_t GetCellId ();
+
   /**
    * \return a pointer to the physical layer.
    */
@@ -78,6 +84,13 @@ public:
    * \return a pointer to the Mac Scheduler.
    */
   Ptr<FfMacScheduler> GetFfMacScheduler ();
+
+  /**
+   * Set physical cell identifier
+   * \param cellId cell identifier
+   */
+  void SetCellId (uint16_t cellId);
+
   /**
    * Set the LteEnbPhy
    * \param s a pointer to the LteEnbPhy
@@ -107,6 +120,7 @@ protected:
 
 private:
 
+  uint16_t m_cellId; ///< Cell identifer
   Ptr<LteEnbPhy> m_phy; ///< the Phy instance of this eNodeB component carrier
   Ptr<LteEnbMac> m_mac; ///< the MAC instance of this eNodeB component carrier
   Ptr<FfMacScheduler> m_scheduler; ///< the scheduler instance of this eNodeB component carrier

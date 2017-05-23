@@ -116,11 +116,24 @@ ComponentCarrierEnb::DoInitialize (void)
 
 }
 
+uint16_t
+ComponentCarrierEnb::GetCellId ()
+{
+  return m_cellId;
+}
+
 Ptr<LteEnbPhy>
 ComponentCarrierEnb::GetPhy ()
 {
   NS_LOG_FUNCTION (this);
   return m_phy;
+}
+
+void
+ComponentCarrierEnb::SetCellId (uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << cellId);
+  m_cellId = cellId;
 }
 
 void 
