@@ -851,7 +851,7 @@ public:
    * \param ccPhyConf the component carrier configuration
    * \param numberOfCarriers the number of carriers
    */
-  void ConfigureCarriers (std::map<uint8_t, ComponentCarrier > ccPhyConf, uint16_t numberOfCarriers);
+  void ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf, uint16_t numberOfCarriers);
 
   /** 
    * set the cell id of this eNB
@@ -1549,7 +1549,7 @@ private:
 
   bool m_carriersConfigured; ///< are carriers configured
 
-  std::map<uint8_t, ComponentCarrier> m_componentCarrierPhyConf; ///< component carrier phy configuration
+  std::map<uint8_t, Ptr<ComponentCarrierEnb>> m_componentCarrierPhyConf; ///< component carrier phy configuration
 
 }; // end of `class LteEnbRrc`
 

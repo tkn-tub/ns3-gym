@@ -1398,26 +1398,26 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
   std::list<LteRrcSap::SCellToAddMod> SccCon;
 
   // sCellToReleaseList is always empty since no Scc is released
-  std::map<uint8_t, ComponentCarrier >::iterator it = m_rrc->m_componentCarrierPhyConf.begin();
+  auto it = m_rrc->m_componentCarrierPhyConf.begin();
 
   it++;
   for (;it!=m_rrc->m_componentCarrierPhyConf.end(); it++)
     {
 
       uint8_t ccId = it->first;
-      ComponentCarrier eNbCcm = it->second;
+      Ptr<ComponentCarrierEnb> eNbCcm = it->second;
       LteRrcSap::SCellToAddMod component;
       component.sCellIndex = ccId;
-      component.cellIdentification.physCellId = m_rrc->m_cellId;
-      component.cellIdentification.dlCarrierFreq = eNbCcm.m_dlEarfcn;
+      component.cellIdentification.physCellId = eNbCcm->GetCellId ();
+      component.cellIdentification.dlCarrierFreq = eNbCcm->GetDlEarfcn ();
       component.radioResourceConfigCommonSCell.haveNonUlConfiguration = true;
-      component.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth = eNbCcm.m_dlBandwidth;
+      component.radioResourceConfigCommonSCell.nonUlConfiguration.dlBandwidth = eNbCcm->GetDlBandwidth ();
       component.radioResourceConfigCommonSCell.nonUlConfiguration.antennaInfoCommon.antennaPortsCount = 0;
       component.radioResourceConfigCommonSCell.nonUlConfiguration.pdschConfigCommon.referenceSignalPower = m_rrc->m_cphySapProvider.at (0)->GetReferenceSignalPower ();
       component.radioResourceConfigCommonSCell.nonUlConfiguration.pdschConfigCommon.pb = 0;
       component.radioResourceConfigCommonSCell.haveUlConfiguration = true;
-      component.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulCarrierFreq = eNbCcm.m_ulEarfcn;
-      component.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulBandwidth = eNbCcm.m_ulBandwidth;
+      component.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulCarrierFreq = eNbCcm->GetUlEarfcn ();
+      component.radioResourceConfigCommonSCell.ulConfiguration.ulFreqInfo.ulBandwidth = eNbCcm->GetUlBandwidth ();
       component.radioResourceConfigCommonSCell.ulConfiguration.ulPowerControlCommonSCell.alpha = 0;
       //component.radioResourceConfigCommonSCell.ulConfiguration.soundingRsUlConfigCommon.type = LteRrcSap::SoundingRsUlConfigDedicated::SETUP;
       component.radioResourceConfigCommonSCell.ulConfiguration.soundingRsUlConfigCommon.srsBandwidthConfig = 0;
@@ -1495,7 +1495,7 @@ LteEnbRrc::LteEnbRrc ()
   m_ffrRrcSapProvider.push_back (0);
 }
 
-void LteEnbRrc::ConfigureCarriers(std::map<uint8_t, ComponentCarrier > ccPhyConf, uint16_t numberOfComponentCarriers)
+void LteEnbRrc::ConfigureCarriers(std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf, uint16_t numberOfComponentCarriers)
 {
   NS_ASSERT_MSG (!m_carriersConfigured, "Secondary carriers can be configured only once.");
   m_componentCarrierPhyConf = ccPhyConf;
@@ -2004,23 +2004,23 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 void
 LteEnbRrc::ConfigureCell (uint16_t cellId)
 {
-  std::map<uint8_t, ComponentCarrier >::iterator it = m_componentCarrierPhyConf.begin ();
-  uint8_t ulBandwidth = it->second.m_ulBandwidth;
-  uint8_t dlBandwidth = it->second.m_dlBandwidth;
-  uint32_t ulEarfcn = it->second.m_ulEarfcn;
-  uint32_t dlEarfcn = it->second.m_dlEarfcn;
+  auto it = m_componentCarrierPhyConf.begin ();
+  uint8_t ulBandwidth = it->second->GetUlBandwidth ();
+  uint8_t dlBandwidth = it->second->GetDlBandwidth ();
+  uint32_t ulEarfcn = it->second->GetUlEarfcn ();
+  uint32_t dlEarfcn = it->second->GetDlEarfcn ();
   NS_LOG_FUNCTION (this << (uint16_t) ulBandwidth << (uint16_t) dlBandwidth
                         << ulEarfcn << dlEarfcn << cellId);
   NS_ASSERT (!m_configured);
 
   for (it = m_componentCarrierPhyConf.begin (); it != m_componentCarrierPhyConf.end (); ++it)
     {
-      m_cphySapProvider[it->first]->SetBandwidth (it->second.m_ulBandwidth, it->second.m_dlBandwidth);
-      m_cphySapProvider[it->first]->SetEarfcn (it->second.m_ulEarfcn, it->second.m_dlEarfcn);
+      m_cphySapProvider[it->first]->SetBandwidth (it->second->GetUlBandwidth (), it->second->GetDlBandwidth ());
+      m_cphySapProvider[it->first]->SetEarfcn (it->second->GetUlEarfcn (), it->second->GetDlEarfcn ());
       m_cphySapProvider[it->first]->SetCellId (cellId);
-      m_cmacSapProvider[it->first]->ConfigureMac (it->second.m_ulBandwidth, it->second.m_dlBandwidth);
+      m_cmacSapProvider[it->first]->ConfigureMac (it->second->GetUlBandwidth (), it->second->GetDlBandwidth ());
       m_ffrRrcSapProvider[it->first]->SetCellId (cellId);
-      m_ffrRrcSapProvider[it->first]->SetBandwidth (it->second.m_ulBandwidth, it->second.m_dlBandwidth);
+      m_ffrRrcSapProvider[it->first]->SetBandwidth (it->second->GetUlBandwidth (), it->second->GetDlBandwidth ());
     }
 
   m_dlEarfcn = dlEarfcn;
