@@ -843,8 +843,10 @@ public:
    * `LteHelper::InstallEnbDevice` (i.e. before the simulation starts).
    *
    * \warning Raises an error when executed more than once.
+   *
+   * \param ccPhyConf the component carrier configuration
    */
-  void ConfigureCell (uint16_t cellId);
+  void ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf);
 
   /**
    * \brief Configure carriers.

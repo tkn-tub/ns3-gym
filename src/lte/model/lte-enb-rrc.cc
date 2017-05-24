@@ -2002,25 +2002,27 @@ LteEnbRrc::AddUeMeasReportConfig (LteRrcSap::ReportConfigEutra config)
 }
 
 void
-LteEnbRrc::ConfigureCell (uint16_t cellId)
+LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
 {
-  auto it = m_componentCarrierPhyConf.begin ();
+  auto it = ccPhyConf.begin ();
+  NS_ASSERT (it != ccPhyConf.end ());
   uint8_t ulBandwidth = it->second->GetUlBandwidth ();
   uint8_t dlBandwidth = it->second->GetDlBandwidth ();
   uint32_t ulEarfcn = it->second->GetUlEarfcn ();
   uint32_t dlEarfcn = it->second->GetDlEarfcn ();
+  uint16_t cellId = it->second->GetCellId ();
   NS_LOG_FUNCTION (this << (uint16_t) ulBandwidth << (uint16_t) dlBandwidth
-                        << ulEarfcn << dlEarfcn << cellId);
+                        << ulEarfcn << dlEarfcn);
   NS_ASSERT (!m_configured);
 
-  for (it = m_componentCarrierPhyConf.begin (); it != m_componentCarrierPhyConf.end (); ++it)
+  for (const auto &it: ccPhyConf)
     {
-      m_cphySapProvider[it->first]->SetBandwidth (it->second->GetUlBandwidth (), it->second->GetDlBandwidth ());
-      m_cphySapProvider[it->first]->SetEarfcn (it->second->GetUlEarfcn (), it->second->GetDlEarfcn ());
-      m_cphySapProvider[it->first]->SetCellId (cellId);
-      m_cmacSapProvider[it->first]->ConfigureMac (it->second->GetUlBandwidth (), it->second->GetDlBandwidth ());
-      m_ffrRrcSapProvider[it->first]->SetCellId (cellId);
-      m_ffrRrcSapProvider[it->first]->SetBandwidth (it->second->GetUlBandwidth (), it->second->GetDlBandwidth ());
+      m_cphySapProvider.at (it.first)->SetBandwidth (it.second->GetUlBandwidth (), it.second->GetDlBandwidth ());
+      m_cphySapProvider.at (it.first)->SetEarfcn (it.second->GetUlEarfcn (), it.second->GetDlEarfcn ());
+      m_cphySapProvider.at (it.first)->SetCellId (it.second->GetCellId ());
+      m_cmacSapProvider.at (it.first)->ConfigureMac (it.second->GetUlBandwidth (), it.second->GetDlBandwidth ());
+      m_ffrRrcSapProvider.at (it.first)->SetCellId (it.second->GetCellId ());
+      m_ffrRrcSapProvider.at (it.first)->SetBandwidth (it.second->GetUlBandwidth (), it.second->GetDlBandwidth ());
     }
 
   m_dlEarfcn = dlEarfcn;
@@ -2064,10 +2066,10 @@ LteEnbRrc::ConfigureCell (uint16_t cellId)
   m_sib1.cellSelectionInfo.qQualMin = -34; // not used, set as minimum value
   m_sib1.cellSelectionInfo.qRxLevMin = m_qRxLevMin; // set as minimum value
 
-  for (it = m_componentCarrierPhyConf.begin (); it != m_componentCarrierPhyConf.end (); ++it)
+  for (const auto &it: ccPhyConf)
     {
-      m_cphySapProvider.at (it->first)->SetMasterInformationBlock (mib);
-      m_cphySapProvider.at (it->first)->SetSystemInformationBlockType1 (m_sib1);
+      m_cphySapProvider.at (it.first)->SetMasterInformationBlock (mib);
+      m_cphySapProvider.at (it.first)->SetSystemInformationBlockType1 (m_sib1);
     }
   /*
    * Enabling transmission of other SIB. The first time System Information is

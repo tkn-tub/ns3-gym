@@ -390,7 +390,8 @@ LteEnbNetDevice::UpdateConfig (void)
         {
           NS_LOG_LOGIC (this << " Configure cell " << m_cellId);
           // we have to make sure that this function is called only once
-          m_rrc->ConfigureCell (m_cellId);
+          NS_ASSERT (!m_ccMap.empty ());
+          m_rrc->ConfigureCell (m_ccMap);
           m_isConfigured = true;
         }
 
