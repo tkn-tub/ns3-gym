@@ -692,9 +692,9 @@ private:
   LteAsSapProvider* m_asSapProvider; ///< AS SAP provider
   LteAsSapUser* m_asSapUser; ///< AS SAP user
 
-  // Receive API calls from the LteUeComponetCarrierManager  instance.
+  // Receive API calls from the LteUeComponentCarrierManager  instance.
   // LteCcmRrcSapUser* m_ccmRrcSapUser;
-  /// Interface to the LteUeComponetCarrierManage instance.
+  /// Interface to the LteUeComponentCarrierManage instance.
   LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; ///< CCM RRC SAP provider
   LteUeCcmRrcSapUser* m_ccmRrcSapUser; ///< CCM RRC SAP user
 

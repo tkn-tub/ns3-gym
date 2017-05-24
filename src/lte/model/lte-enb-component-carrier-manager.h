@@ -187,7 +187,7 @@ protected:
    * So, LteEnbComponentCarrierManager class will receive function calls that are meant for MAC, and
    * will forward them to the MAC of the component carriers based on the logic implemented
    * in LteComponentCarrierManager. This attribute will be initialized by using class that implements
-   * LteMacSapProvider interface and class that implements LteEnbComponetnCarrierManager base class
+   * LteMacSapProvider interface and class that implements LteEnbComponentCarrierManager base class
    * e.g.:EnbMacMemberLteMacSapProvider <LteEnbComponentCarrierManagerImpl>
    */
   LteMacSapProvider* m_macSapProvider;//!< A pointer to main SAP interface of the MAC instance, which is in this case handled by CCM.

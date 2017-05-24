@@ -1303,9 +1303,9 @@ private:
   /// Interface to the handover algorithm instance.
   LteHandoverManagementSapProvider* m_handoverManagementSapProvider;
 
-  /// Receive API calls from the LteEnbComponetCarrierManager instance.
+  /// Receive API calls from the LteEnbComponentCarrierManager instance.
   LteCcmRrcSapUser* m_ccmRrcSapUser;
-  /// Interface to the LteEnbComponetCarrierManager instance.
+  /// Interface to the LteEnbComponentCarrierManager instance.
   LteCcmRrcSapProvider* m_ccmRrcSapProvider;
 
   /// Receive API calls from the ANR instance.

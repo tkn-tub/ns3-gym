@@ -135,8 +135,8 @@ public:
   void SetLteEnbPhySapProvider (LteEnbPhySapProvider* s);
 
   /**
-  * \brief Get the eNB-ComponetCarrierManager SAP User
-  * \return a pointer to the SAP User of the ComponetCarrierManager
+  * \brief Get the eNB-ComponentCarrierManager SAP User
+  * \return a pointer to the SAP User of the ComponentCarrierManager
   */
   LteCcmMacSapProvider* GetLteCcmMacSapProvider ();
 
