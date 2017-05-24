@@ -754,7 +754,7 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
             path_cmd = os.path.join (NS3_BUILDDIR, shell_command)
 
     if valgrind:
-        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 %s" % (suppressions_path, 
+        cmd = "valgrind --suppressions=%s --leak-check=full --show-reachable=yes --error-exitcode=2 --errors-for-leak-kinds=all %s" % (suppressions_path,
             path_cmd)
     else:
         cmd = path_cmd
@@ -781,18 +781,6 @@ def run_job_synchronously(shell_command, directory, valgrind, is_python, build_p
         print(stderr_results)
         retval = 1
 
-    #
-    # valgrind sometimes has its own idea about what kind of memory management
-    # errors are important.  We want to detect *any* leaks, so the way to do 
-    # that is to look for the presence of a valgrind leak summary section.
-    #
-    # If another error has occurred (like a test suite has failed), we don't 
-    # want to trump that error, so only do the valgrind output scan if the 
-    # test has otherwise passed (return code was zero).
-    #
-    if valgrind and retval == 0 and "== LEAK SUMMARY:" in stderr_results:
-        retval = 2
-    
     if options.verbose:
         print("Return code = ", retval)
         print("stderr = ", stderr_results)
