@@ -342,6 +342,7 @@ LteEnbNetDevice::GetCcMap ()
 void
 LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierEnb> > ccm)
 {
+  NS_ASSERT_MSG (!m_isConfigured, "attempt to set CC map after configuration");
   m_ccMap = ccm;
 }
 
