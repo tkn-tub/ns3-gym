@@ -138,7 +138,11 @@ public:
                enum Direction direction,
                Ptr<WimaxConnection> connection);
   ~ServiceFlow (void);
-  /// assignment operator
+  /**
+   * assignment operator
+   * \param o the service flow to assign
+   * \returns the service flow
+   */
   ServiceFlow & operator = (ServiceFlow const& o);
 
   /// Initial values
@@ -500,7 +504,7 @@ public:
   void SetArqSyncLoss (uint16_t syncLoss);
   /**
    * Set ARQ deliver in order
-   * /param inOrder the deliver in order setting
+   * \param inOrder the deliver in order setting
    */
   void SetArqDeliverInOrder (uint8_t inOrder);
   /**

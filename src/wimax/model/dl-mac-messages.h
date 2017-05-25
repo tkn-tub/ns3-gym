@@ -301,20 +301,28 @@ public:
    * \returns the type
    */
   uint8_t GetType (void) const;
-  /// Get length field
+  /** \returns the length field */
   uint8_t GetLength (void) const;
-  /// Get DIUC field
+  /** \returns the DIUC field */
   uint8_t GetDiuc (void) const;
 
-  /// Get FEC code type functon
+  /** \returns the FEC code type */
   uint8_t GetFecCodeType (void) const;
 
-  /// Get size
+  /** \returns the size */
   uint16_t GetSize (void) const;
 
-  /// Write item
+  /**
+   * Write item
+   * \param start the starting item iterator
+   * \returns the iterator
+   */
   Buffer::Iterator Write (Buffer::Iterator start) const;
-  /// Read item
+  /**
+   * Read item
+   * \param start the starting item iterator
+   * \returns the iterator
+   */
   Buffer::Iterator Read (Buffer::Iterator start);
 private:
   uint8_t m_type; ///< type

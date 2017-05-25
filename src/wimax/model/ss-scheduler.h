@@ -82,7 +82,10 @@ protected:
 private:
   /// type conversion operator
   SSScheduler (const SSScheduler &);
-  /// assignment operator
+  /**
+   * assignment operator
+   * \returns the SS scheduler
+   */
   SSScheduler & operator= (const SSScheduler &);
 
   /**

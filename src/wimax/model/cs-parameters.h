@@ -46,10 +46,13 @@ public:
   ~CsParameters ();
   /**
    * \brief creates a convergence sub-layer parameters from a tlv
+   * \param tlv the TLV
    */
   CsParameters (Tlv tlv);
   /**
    * \brief creates a convergence sub-layer parameters from an ipcs classifier record
+   * \param classifierDscAction the DCS action type
+   * \param classifier the IPCS classifier record
    */
   CsParameters (enum Action classifierDscAction, IpcsClassifierRecord classifier);
   /**
@@ -59,6 +62,7 @@ public:
   void SetClassifierDscAction (enum Action action);
   /**
    * \brief sets the packet classifier rules
+   * \param packetClassifierRule the IPCS classifier record
    */
   void SetPacketClassifierRule (IpcsClassifierRecord packetClassifierRule);
   /**

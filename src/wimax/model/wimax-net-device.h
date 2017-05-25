@@ -476,7 +476,10 @@ public:
 private:
   /// copy constructor (disabled)
   WimaxNetDevice (const WimaxNetDevice &);
-  /// assignment operator (disabled)
+  /**
+   * assignment operator (disabled)
+   * \returns the wimax net device
+   */
   WimaxNetDevice & operator= (const WimaxNetDevice &);
 
   /// Maximum MSDU size

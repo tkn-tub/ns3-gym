@@ -114,6 +114,7 @@ public:
   virtual void Send (SendParams *params) = 0;
   /**
    * \brief Get the type of the physical layer
+   * \returns the phy type
    */
   virtual PhyType GetPhyType (void) const = 0;
   /**

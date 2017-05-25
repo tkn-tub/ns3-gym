@@ -63,7 +63,10 @@ public:
    * \returns the  
    */
   virtual uint32_t Deserialize (Buffer::Iterator start, uint64_t valueLen ) = 0;
-  /// Copy function
+  /**
+   * Copy function
+   * \returns the TLV value
+   */
   virtual TlvValue * Copy (void) const = 0;
 private:
 };
@@ -141,9 +144,16 @@ public:
    * \returns the TLV value
    */
   TlvValue * CopyValue (void) const;
-  /// assignment operator
+  /**
+   * assignment operator
+   * \param o the TLV to assign
+   * \returns the TLV
+   */
   Tlv &operator = (Tlv const& o);
-  /// type conversion operator
+  /**
+   * type conversion operator
+   * \param tlv the TLV
+   */
   Tlv (const Tlv & tlv);
 
 private:

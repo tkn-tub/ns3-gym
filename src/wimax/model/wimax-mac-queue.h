@@ -118,7 +118,10 @@ public:
    */
   Ptr<Packet> Peek (MacHeaderType::HeaderType packetType, Time &timeStamp) const;
 
-  /// Check if queue is empty
+  /**
+   * Check if queue is empty
+   * \returns true if empty
+   */
   bool IsEmpty (void) const;
 
   /**

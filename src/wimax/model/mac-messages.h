@@ -78,7 +78,7 @@ public:
    */
   uint8_t GetType (void) const;
 
-  /// Get name field
+  /** \returns the name field */
   std::string GetName (void) const;
   /**
    * \brief Get the type ID.

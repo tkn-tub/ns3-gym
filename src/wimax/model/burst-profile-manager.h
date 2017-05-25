@@ -98,7 +98,10 @@ public:
 private:
   /// Type conversion operator
   BurstProfileManager (const BurstProfileManager &);
-  /// Assignment operator
+  /**
+   * Assignment operator
+   * \returns burst profile manager
+   */
   BurstProfileManager& operator= (const BurstProfileManager &);
 
   Ptr<WimaxNetDevice> m_device; ///< the device

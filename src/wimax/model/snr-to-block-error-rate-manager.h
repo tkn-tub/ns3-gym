@@ -97,6 +97,7 @@ public:
   void ReLoadTraces (void);
   /**
    * \brief If activate loss is called with false, all the returned BlcER will be 0 (no losses)
+   * \param loss true to activates losses
    */
   void ActivateLoss (bool loss);
 private:

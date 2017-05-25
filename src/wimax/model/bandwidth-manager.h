@@ -102,7 +102,10 @@ public:
 private:
   /// Bandwidth manager type conversion operator
   BandwidthManager (const BandwidthManager &);
-  /// Bandwidth manager assignement operator
+  /**
+   * Bandwidth manager assignment operator
+   * \returns the bandwidth manager
+   */
   BandwidthManager& operator= (const BandwidthManager &);
 
   Ptr<WimaxNetDevice> m_device; ///< the device

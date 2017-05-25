@@ -257,6 +257,7 @@ public:
 
   /**
    * Set requested bandwidth
+   * \param sfr the service flow record
    */
   void OnSetRequestedBandwidth (ServiceFlowRecord *sfr);
 

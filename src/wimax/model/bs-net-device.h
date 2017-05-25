@@ -330,8 +330,10 @@ private:
   void CreateMapMessages (void);
   /**
    * \brief creates the channel descriptor MAC management messages DCD and UCD
+   * \param sendDcd true if send DCD
+   * \param sendUcd true if send UCD
    */
-  void CreateDescriptorMessages (bool sendDcd, bool senUcd);
+  void CreateDescriptorMessages (bool sendDcd, bool sendUcd);
   /**
    * \brief Send burst function
    */

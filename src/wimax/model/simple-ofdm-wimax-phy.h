@@ -90,6 +90,7 @@ public:
   void DoAttach (Ptr<WimaxChannel> channel);
   /**
    * \brief set the callback function to call when a burst is received
+   * \param callback the receive callback function
    */
   void SetReceiveCallback (Callback<void, Ptr<PacketBurst>, Ptr<WimaxConnection> > callback);
   /**

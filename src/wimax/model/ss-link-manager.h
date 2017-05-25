@@ -134,7 +134,10 @@ public:
 private:
   /// type conversion operator 
   SSLinkManager (const SSLinkManager &);
-  /// assignment operator
+  /**
+   * assignment operator
+   * \returns SS link manager
+   */
   SSLinkManager & operator= (const SSLinkManager &);
 
   /**

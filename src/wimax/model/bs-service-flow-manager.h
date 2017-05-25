@@ -102,6 +102,8 @@ public:
   void AllocateServiceFlows (const DsaReq &dsaReq, Cid cid);
   /**
    * \brief add a multicast service flow
+   * \param sf the service flow
+   * \param modulation the wimax phy modulation type
    */
   void AddMulticastServiceFlow (ServiceFlow sf, enum WimaxPhy::ModulationType modulation);
   /**
@@ -133,6 +135,8 @@ private:
   uint8_t GetMaxDsaRspRetries (void) const;
   /**
    * Create DSA response function
+   * \param serviceFlow service flow
+   * \param cid the identifier of the connection on which the message was received
    */
   void ScheduleDsaRsp (ServiceFlow *serviceFlow, Cid cid);
   Ptr<WimaxNetDevice> m_device; ///< the device

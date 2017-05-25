@@ -116,26 +116,32 @@ public:
    *
    * The method return the UGS connection that have packets to transmits,
    * according to the MaxLatency specifications.
-   * \param connection will point to a connection that have packets to be sent
+   * \param connection will point to a connection that has packets to be sent
    * \return true if successful
    */
   bool SelectUGSConnection (Ptr<WimaxConnection> &connection);
   /**
    * \brief Check for rtPS connections that have packets to transmit.
+   * \param connection will point to a connection that has packets to be sent
+   * \returns false if no connection has packets to be sent, true otherwise
    */
   bool SelectRTPSConnection (Ptr<WimaxConnection> &connection);
   /**
    * \brief Check for nrtPS connections that have packets to transmit.
+   * \param connection will point to a connection that has packets to be sent
+   * \returns false if no connection has packets to be sent, true otherwise
    */
   bool SelectNRTPSConnection (Ptr<WimaxConnection> &connection);
   /**
    * \brief Check for BE connections that have packets to transmit.
+   * \param connection will point to a connection that has packets to be sent
+   * \returns false if no connection has packets to be sent, true otherwise
    */
   bool SelectBEConnection (Ptr<WimaxConnection> &connection);
 
   /**
    * \brief Selects a connection from the list of connections having packets to be sent .
-   * \param connection will point to a connection that have packets to be sent
+   * \param connection will point to a connection that has packets to be sent
    * \returns false if no connection has packets to be sent, true otherwise
    */
   bool SelectConnection (Ptr<WimaxConnection> &connection);

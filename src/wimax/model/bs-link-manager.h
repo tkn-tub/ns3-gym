@@ -67,12 +67,17 @@ public:
   void ProcessRangingRequest (Cid cid, RngReq rngreq);
   /**
    * \brief Verifies at the end of an invited ranging interval if SS sent ranging message in it or not
+   * \param cid the connection identifier in which the ranging message was received
+   * \param uiuc the ranging
    */
   void VerifyInvitedRanging (Cid cid, uint8_t uiuc);
 private:
   /// copy constructor (disabled)
   BSLinkManager (const BSLinkManager &);
-  /// assignment operator (disabled)
+  /**
+   * assignment operator (disabled)
+   * \returns the BS link manager
+   */
   BSLinkManager & operator= (const BSLinkManager &);
 
   /**

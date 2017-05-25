@@ -132,6 +132,7 @@ public:
   typedef std::list<Ptr<const Packet> > FragmentsQueue;
   /**
    * \brief get a queue of received fragments
+   * \returns the fragments queue
    */
   const FragmentsQueue GetFragmentsQueue (void) const;
   /**

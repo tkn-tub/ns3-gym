@@ -92,6 +92,7 @@ public:
   static Cid InitialRanging (void);
 
 private:
+  /// allow CidFactory class friend access
   friend class CidFactory;
   /// equality operator
   friend bool operator == (const Cid &lhs, const Cid &rhs);
