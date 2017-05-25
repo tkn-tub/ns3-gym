@@ -292,11 +292,11 @@ public:
   /// EnbInfo structure
   struct EnbInfo
   {
-    Ipv4Address enbAddr; ///< ENB address
+    Ipv4Address enbAddr; ///< eNB address
     Ipv4Address sgwAddr; ///< SGW address
   };
 
-  std::map<uint16_t, EnbInfo> m_enbInfoByCellId; ///< END infor by cell ID
+  std::map<uint16_t, EnbInfo> m_enbInfoByCellId; ///< eNB info by cell ID
 };
 
 } //namespace ns3
