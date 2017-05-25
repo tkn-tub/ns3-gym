@@ -45,7 +45,7 @@ public:
   /// RachConfig structure
   struct RachConfig
   {
-    uint8_t numberOfRaPreambles; ///< nuber of RA preambles
+    uint8_t numberOfRaPreambles; ///< number of RA preambles
     uint8_t preambleTransMax; ///< preamble transmit maximum
     uint8_t raResponseWindowSize; ///< RA response window size
   };
