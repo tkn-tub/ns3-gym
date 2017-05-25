@@ -68,8 +68,14 @@ def options(opt):
 
 
 def split_version(version):
-    ver = re.split('[.+]', version)[:4]
-    return (int(ver[0]), int(ver[1]), int(ver[2]), int(ver[3].split('post')[1]))
+    if (re.search ('post', version)):
+        # Version format such as '0.17.0.post58+ngcf00cc0'
+        ver = re.split('[.+]', version)[:4]
+        return (int(ver[0]), int(ver[1]), int(ver[2]), int(ver[3].split('post')[1]))
+    else:
+        # Version format such as '0.18.0'
+        ver = re.split('[.]', version)[:3]
+        return (int(ver[0]), int(ver[1]), int(ver[2]), 0)
 
 
 def configure(conf):
