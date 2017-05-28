@@ -696,7 +696,7 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   Time now = Simulator::Now ();
   if (m_isAdaptMaxP && now > m_lastSet + m_interval)
     {
-      UpdateMaxP(newAve);
+      UpdateMaxP (newAve);
     }
   else if (m_isFengAdaptive)
     {
@@ -711,8 +711,9 @@ uint32_t
 RedQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 {
   NS_LOG_FUNCTION (this << item << qSize);
-  m_vProb1 = CalculatePNew (m_qAvg, m_maxTh, m_isGentle, m_vA, m_vB, m_vC, m_vD, m_curMaxP);
-  m_vProb = ModifyP (m_vProb1, m_count, m_countBytes, m_meanPktSize, m_isWait, item->GetSize ());
+
+  double prob1 = CalculatePNew ();
+  m_vProb = ModifyP (prob1, item->GetSize ());
 
   // Drop probability is computed, pick random number and act
   if (m_cautious == 1)
@@ -769,19 +770,18 @@ RedQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 
 // Returns a probability using these function parameters for the DropEarly funtion
 double
-RedQueueDisc::CalculatePNew (double qAvg, double maxTh, bool isGentle, double vA,
-                         double vB, double vC, double vD, double maxP)
+RedQueueDisc::CalculatePNew (void)
 {
-  NS_LOG_FUNCTION (this << qAvg << maxTh << isGentle << vA << vB << vC << vD << maxP);
+  NS_LOG_FUNCTION (this);
   double p;
 
-  if (isGentle && qAvg >= maxTh)
+  if (m_isGentle && m_qAvg >= m_maxTh)
     {
       // p ranges from maxP to 1 as the average queue
       // Size ranges from maxTh to twice maxTh
-      p = vC * qAvg + vD;
+      p = m_vC * m_qAvg + m_vD;
     }
-  else if (!isGentle && qAvg >= maxTh)
+  else if (!m_isGentle && m_qAvg >= m_maxTh)
     {
       /* 
        * OLD: p continues to range linearly above max_p as
@@ -796,14 +796,14 @@ RedQueueDisc::CalculatePNew (double qAvg, double maxTh, bool isGentle, double vA
        * p ranges from 0 to max_p as the average queue size ranges from
        * th_min to th_max
        */
-      p = vA * qAvg + vB;
+      p = m_vA * m_qAvg + m_vB;
 
       if (m_isNonlinear)
         {
           p *= p * 1.5;
         }
 
-      p *= maxP;
+      p *= m_curMaxP;
     }
 
   if (p > 1.0)
@@ -816,18 +816,17 @@ RedQueueDisc::CalculatePNew (double qAvg, double maxTh, bool isGentle, double vA
 
 // Returns a probability using these function parameters for the DropEarly funtion
 double 
-RedQueueDisc::ModifyP (double p, uint32_t count, uint32_t countBytes,
-                   uint32_t meanPktSize, bool isWait, uint32_t size)
+RedQueueDisc::ModifyP (double p, uint32_t size)
 {
-  NS_LOG_FUNCTION (this << p << count << countBytes << meanPktSize << isWait << size);
-  double count1 = (double) count;
+  NS_LOG_FUNCTION (this << p << size);
+  double count1 = (double) m_count;
 
   if (GetMode () == QUEUE_DISC_MODE_BYTES)
     {
-      count1 = (double) (countBytes / meanPktSize);
+      count1 = (double) (m_countBytes / m_meanPktSize);
     }
 
-  if (isWait)
+  if (m_isWait)
     {
       if (count1 * p < 1.0)
         {
@@ -856,7 +855,7 @@ RedQueueDisc::ModifyP (double p, uint32_t count, uint32_t countBytes,
 
   if ((GetMode () == QUEUE_DISC_MODE_BYTES) && (p < 1.0))
     {
-      p = (p * size) / meanPktSize;
+      p = (p * size) / m_meanPktSize;
     }
 
   if (p > 1.0)

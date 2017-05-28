@@ -298,30 +298,16 @@ private:
   uint32_t DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize);
   /**
    * \brief Returns a probability using these function parameters for the DropEarly function
-   * \param qAvg Average queue length
-   * \param maxTh Max avg length threshold
-   * \param gentle "gentle" algorithm
-   * \param vA vA
-   * \param vB vB
-   * \param vC vC
-   * \param vD vD
-   * \param maxP max_p
    * \returns Prob. of packet drop before "count"
    */
-  double CalculatePNew (double qAvg, double , bool gentle, double vA,
-                        double vB, double vC, double vD, double maxP);
+  double CalculatePNew (void);
   /**
    * \brief Returns a probability using these function parameters for the DropEarly function
    * \param p Prob. of packet drop before "count"
-   * \param count number of packets since last random number generation
-   * \param countBytes number of bytes since last drop
-   * \param meanPktSize Avg pkt size
-   * \param wait True for waiting between dropped packets
    * \param size packet size
    * \returns Prob. of packet drop
    */
-  double ModifyP (double p, uint32_t count, uint32_t countBytes,
-                  uint32_t meanPktSize, bool wait, uint32_t size);
+  double ModifyP (double p, uint32_t size);
 
   Stats m_stats; //!< RED statistics
 
@@ -356,7 +342,6 @@ private:
   bool m_useHardDrop;       //!< True if packets are always dropped above max threshold
 
   // ** Variables maintained by RED
-  double m_vProb1;          //!< Prob. of packet drop before "count"
   double m_vA;              //!< 1.0 / (m_maxTh - m_minTh)
   double m_vB;              //!< -m_minTh / (m_maxTh - m_minTh)
   double m_vC;              //!< (1.0 - m_curMaxP) / m_maxTh - used in "gentle" mode
