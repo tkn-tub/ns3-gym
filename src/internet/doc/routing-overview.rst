@@ -81,135 +81,6 @@ unicast routing capability that is intended to globally build routing
 tables at simulation time t=0 for simulation users who do not care
 about dynamic routing.
 
-.. _Global-centralized-routing:
-
-Global centralized routing
-**************************
-
-Global centralized routing is sometimes called "God" routing; it is a special
-implementation that walks the simulation topology and runs a shortest path
-algorithm, and populates each node's routing tables. No actual protocol overhead
-(on the simulated links) is incurred with this approach. It does have a few
-constraints:
-
-* **Wired only:**  It is not intended for use in wireless networks.
-* **Unicast only:** It does not do multicast.
-* **Scalability:**  Some users of this on large topologies (e.g. 1000 nodes)
-  have noticed that the current implementation is not very scalable. The global
-  centralized routing will be modified in the future to reduce computations and
-  runtime performance.
-
-Presently, global centralized IPv4 unicast routing over both point-to-point and
-shared (CSMA) links is supported.
-
-By default, when using the |ns3| helper API and the default InternetStackHelper,
-global routing capability will be added to the node, and global routing will be
-inserted as a routing protocol with lower priority than the static routes (i.e.,
-users can insert routes via Ipv4StaticRouting API and they will take precedence
-over routes found by global routing).
-
-Global Unicast Routing API
-++++++++++++++++++++++++++
-
-The public API is very minimal. User scripts include the following::
-
-    #include "ns3/internet-module.h"
-
-If the default InternetStackHelper is used, then an instance of global routing
-will be aggregated to each node.  After IP addresses are configured, the
-following function call will cause all of the nodes that have an Ipv4 interface
-to receive forwarding tables entered automatically by the GlobalRouteManager::
-
-  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
-*Note:* A reminder that the wifi NetDevice will work but does not take any
-wireless effects into account. For wireless, we recommend OLSR dynamic routing
-described below.
-
-It is possible to call this function again in the midst of a simulation using
-the following additional public function::
-
-  Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
-
-which flushes the old tables, queries the nodes for new interface information,
-and rebuilds the routes.
-
-For instance, this scheduling call will cause the tables to be rebuilt
-at time 5 seconds::
-
-  Simulator::Schedule (Seconds (5),
-                       &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
-
-
-There are two attributes that govern the behavior. The first is
-Ipv4GlobalRouting::RandomEcmpRouting. If set to true, packets are randomly
-routed across equal-cost multipath routes. If set to false (default), only one
-route is consistently used. The second is
-Ipv4GlobalRouting::RespondToInterfaceEvents. If set to true, dynamically
-recompute the global routes upon Interface notification events (up/down, or
-add/remove address). If set to false (default), routing may break unless the
-user manually calls RecomputeRoutingTables() after such events. The default is
-set to false to preserve legacy |ns3| program behavior.
-
-Global Routing Implementation
-+++++++++++++++++++++++++++++
-
-This section is for those readers who care about how this is implemented.  A
-singleton object (GlobalRouteManager) is responsible for populating the static
-routes on each node, using the public Ipv4 API of that node.  It queries each
-node in the topology for a "globalRouter" interface.  If found, it uses the API
-of that interface to obtain a "link state advertisement (LSA)" for the router.
-Link State Advertisements are used in OSPF routing, and we follow their
-formatting.
-
-It is important to note that all of these computations are done before 
-packets are flowing in the network.  In particular, there are no
-overhead or control packets being exchanged when using this implementation.
-Instead, this global route manager just walks the list of nodes to
-build the necessary information and configure each node's routing table.
-
-The GlobalRouteManager populates a link state database with LSAs gathered from
-the entire topology. Then, for each router in the topology, the
-GlobalRouteManager executes the OSPF shortest path first (SPF) computation on
-the database, and populates the routing tables on each node.
-
-The quagga (`<http://www.quagga.net>`_) OSPF implementation was used as the
-basis for the routing computation logic. One benefit of following an existing
-OSPF SPF implementation is that OSPF already has defined link state
-advertisements for all common types of network links:
-
-* point-to-point (serial links)
-* point-to-multipoint (Frame Relay, ad hoc wireless)
-* non-broadcast multiple access (ATM)
-* broadcast (Ethernet)
-
-Therefore, we think that enabling these other link types will be more
-straightforward now that the underlying OSPF SPF framework is in place.
-
-Presently, we can handle IPv4 point-to-point, numbered links, as well as shared
-broadcast (CSMA) links.  Equal-cost multipath is also supported.  Although
-wireless link types are supported by the implementation, note that due
-to the nature of this implementation, any channel effects will not be
-considered and the routing tables will assume that every node on the
-same shared channel is reachable from every other node (i.e. it will
-be treated like a broadcast CSMA link).
-
-The GlobalRouteManager first walks the list of nodes and aggregates
-a GlobalRouter interface to each one as follows::
-
-  typedef std::vector < Ptr<Node> >::iterator Iterator;
-  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
-    {
-      Ptr<Node> node = *i;
-      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> (node);
-      node->AggregateObject (globalRouter);
-    }
-
-This interface is later queried and used to generate a Link State
-Advertisement for each router, and this link state database is
-fed into the OSPF shortest path computation logic. The Ipv4 API
-is finally used to populate the routes themselves. 
-
 .. _Unicast-routing:
 
 Unicast routing
@@ -285,52 +156,135 @@ the list of routing protocols, in priority order, until a route is found. Such
 routing protocol will invoke the appropriate callback and no further routing
 protocols will be searched.  
 
-Optimized Link State Routing (OLSR)
-+++++++++++++++++++++++++++++++++++
+.. _Global-centralized-routing:
 
-This IPv4 routing protocol was originally ported from the OLSR-UM implementation
-for ns-2. The implementation is found in the src/olsr directory, and an
-example script is in examples/simple-point-to-point-olsr.cc.
+Global centralized routing
+++++++++++++++++++++++++++
 
-Typically, OLSR is enabled in a main program by use of an OlsrHelper class that
-installs OLSR into an Ipv4ListRoutingProtocol object. The following sample
-commands will enable OLSR in a simulation using this helper class along with
-some other routing helper objects. The setting of priority value 10, ahead of
-the staticRouting priority of 0, means that OLSR will be consulted for a route
-before the node's static routing table.::
+Global centralized routing is sometimes called "God" routing; it is a special
+implementation that walks the simulation topology and runs a shortest path
+algorithm, and populates each node's routing tables. No actual protocol overhead
+(on the simulated links) is incurred with this approach. It does have a few
+constraints:
 
-  NodeContainer c:
-  ...
-  // Enable OLSR
-  NS_LOG_INFO ("Enabling OLSR Routing.");
-  OlsrHelper olsr;
+* **Wired only:**  It is not intended for use in wireless networks.
+* **Unicast only:** It does not do multicast.
+* **Scalability:**  Some users of this on large topologies (e.g. 1000 nodes)
+  have noticed that the current implementation is not very scalable. The global
+  centralized routing will be modified in the future to reduce computations and
+  runtime performance.
 
-  Ipv4StaticRoutingHelper staticRouting;
+Presently, global centralized IPv4 unicast routing over both point-to-point and
+shared (CSMA) links is supported.
 
-  Ipv4ListRoutingHelper list;
-  list.Add (staticRouting, 0);
-  list.Add (olsr, 10);
+By default, when using the |ns3| helper API and the default InternetStackHelper,
+global routing capability will be added to the node, and global routing will be
+inserted as a routing protocol with lower priority than the static routes (i.e.,
+users can insert routes via Ipv4StaticRouting API and they will take precedence
+over routes found by global routing).
 
-  InternetStackHelper internet;
-  internet.SetRoutingHelper (list);
-  internet.Install (c);
+Global Unicast Routing API
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once installed,the OLSR "main interface" can be set with the SetMainInterface()
-command. If the user does not specify a main address, the protocol will select
-the first primary IP address that it finds, starting first the loopback
-interface and then the next non-loopback interface found, in order of Ipv4
-interface index. The loopback address of 127.0.0.1 is not selected. In addition,
-a number of protocol constants are defined in olsr-routing-protocol.cc.
+The public API is very minimal. User scripts include the following::
 
-Olsr is started at time zero of the simulation, based on a call to
-Object::Start() that eventually calls OlsrRoutingProtocol::DoStart(). Note:  a
-patch to allow the user to start and stop the protocol at other times would be
-welcome.
+    #include "ns3/internet-module.h"
 
-Presently, OLSR is limited to use with an Ipv4ListRouting object, and does not
-respond to dynamic changes to a device's IP address or link up/down
-notifications; i.e. the topology changes are due to loss/gain of connectivity
-over a wireless channel.
+If the default InternetStackHelper is used, then an instance of global routing
+will be aggregated to each node.  After IP addresses are configured, the
+following function call will cause all of the nodes that have an Ipv4 interface
+to receive forwarding tables entered automatically by the GlobalRouteManager::
+
+  Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+*Note:* A reminder that the wifi NetDevice will work but does not take any
+wireless effects into account. For wireless, we recommend OLSR dynamic routing
+described below.
+
+It is possible to call this function again in the midst of a simulation using
+the following additional public function::
+
+  Ipv4GlobalRoutingHelper::RecomputeRoutingTables ();
+
+which flushes the old tables, queries the nodes for new interface information,
+and rebuilds the routes.
+
+For instance, this scheduling call will cause the tables to be rebuilt
+at time 5 seconds::
+
+  Simulator::Schedule (Seconds (5),
+                       &Ipv4GlobalRoutingHelper::RecomputeRoutingTables);
+
+
+There are two attributes that govern the behavior. The first is
+Ipv4GlobalRouting::RandomEcmpRouting. If set to true, packets are randomly
+routed across equal-cost multipath routes. If set to false (default), only one
+route is consistently used. The second is
+Ipv4GlobalRouting::RespondToInterfaceEvents. If set to true, dynamically
+recompute the global routes upon Interface notification events (up/down, or
+add/remove address). If set to false (default), routing may break unless the
+user manually calls RecomputeRoutingTables() after such events. The default is
+set to false to preserve legacy |ns3| program behavior.
+
+Global Routing Implementation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section is for those readers who care about how this is implemented.  A
+singleton object (GlobalRouteManager) is responsible for populating the static
+routes on each node, using the public Ipv4 API of that node.  It queries each
+node in the topology for a "globalRouter" interface.  If found, it uses the API
+of that interface to obtain a "link state advertisement (LSA)" for the router.
+Link State Advertisements are used in OSPF routing, and we follow their
+formatting.
+
+It is important to note that all of these computations are done before 
+packets are flowing in the network.  In particular, there are no
+overhead or control packets being exchanged when using this implementation.
+Instead, this global route manager just walks the list of nodes to
+build the necessary information and configure each node's routing table.
+
+The GlobalRouteManager populates a link state database with LSAs gathered from
+the entire topology. Then, for each router in the topology, the
+GlobalRouteManager executes the OSPF shortest path first (SPF) computation on
+the database, and populates the routing tables on each node.
+
+The quagga (`<http://www.quagga.net>`_) OSPF implementation was used as the
+basis for the routing computation logic. One benefit of following an existing
+OSPF SPF implementation is that OSPF already has defined link state
+advertisements for all common types of network links:
+
+* point-to-point (serial links)
+* point-to-multipoint (Frame Relay, ad hoc wireless)
+* non-broadcast multiple access (ATM)
+* broadcast (Ethernet)
+
+Therefore, we think that enabling these other link types will be more
+straightforward now that the underlying OSPF SPF framework is in place.
+
+Presently, we can handle IPv4 point-to-point, numbered links, as well as shared
+broadcast (CSMA) links.  Equal-cost multipath is also supported.  Although
+wireless link types are supported by the implementation, note that due
+to the nature of this implementation, any channel effects will not be
+considered and the routing tables will assume that every node on the
+same shared channel is reachable from every other node (i.e. it will
+be treated like a broadcast CSMA link).
+
+The GlobalRouteManager first walks the list of nodes and aggregates
+a GlobalRouter interface to each one as follows::
+
+  typedef std::vector < Ptr<Node> >::iterator Iterator;
+  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+    {
+      Ptr<Node> node = *i;
+      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> (node);
+      node->AggregateObject (globalRouter);
+    }
+
+This interface is later queried and used to generate a Link State
+Advertisement for each router, and this link state database is
+fed into the OSPF shortest path computation logic. The Ipv4 API
+is finally used to populate the routes themselves. 
+
 
 RIP and RIPng
 +++++++++++++
@@ -449,6 +403,21 @@ Support for this option may be considered in the future.
 There is no support for CIDR prefix aggregation. As a result, both routing 
 tables and route advertisements may be larger than necessary. 
 Prefix aggregation may be added in the future.
+
+
+Other routing protocols
++++++++++++++++++++++++
+
+Other routing protocols documentation can be found under the respective
+modules sections, e.g.:
+
+* AODV
+* Click
+* DSDV
+* DSR
+* NixVectorRouting
+* OLSR
+* etc.
 
 
 .. _Multicast-routing:

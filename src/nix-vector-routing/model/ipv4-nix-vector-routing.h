@@ -36,6 +36,13 @@
 namespace ns3 {
 
 /**
+ * \defgroup nix-vector-routing Nix-Vector Routing
+ *
+ * Nix-vector routing is a simulation specific routing protocol and is
+ * intended for large network topologies.
+ */
+
+/**
  * \ingroup nix-vector-routing
  * Map of Ipv4Address to NixVector
  */

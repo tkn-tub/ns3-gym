@@ -47,6 +47,41 @@ The usage pattern is the one of all the Internet routing protocols.
 Since OLSR is not installed by default in the Internet stack, it is necessary to
 set it in the Internet Stack helper by using ``InternetStackHelper::SetRoutingHelper``
 
+Typically, OLSR is enabled in a main program by use of an OlsrHelper class that
+installs OLSR into an Ipv4ListRoutingProtocol object. The following sample
+commands will enable OLSR in a simulation using this helper class along with
+some other routing helper objects. The setting of priority value 10, ahead of
+the staticRouting priority of 0, means that OLSR will be consulted for a route
+before the node's static routing table.::
+
+  NodeContainer c:
+  ...
+  // Enable OLSR
+  NS_LOG_INFO ("Enabling OLSR Routing.");
+  OlsrHelper olsr;
+
+  Ipv4StaticRoutingHelper staticRouting;
+
+  Ipv4ListRoutingHelper list;
+  list.Add (staticRouting, 0);
+  list.Add (olsr, 10);
+
+  InternetStackHelper internet;
+  internet.SetRoutingHelper (list);
+  internet.Install (c);
+
+Once installed,the OLSR "main interface" can be set with the SetMainInterface()
+command. If the user does not specify a main address, the protocol will select
+the first primary IP address that it finds, starting first the loopback
+interface and then the next non-loopback interface found, in order of Ipv4
+interface index. The loopback address of 127.0.0.1 is not selected. In addition,
+a number of protocol constants are defined in olsr-routing-protocol.cc.
+
+Olsr is started at time zero of the simulation, based on a call to
+Object::Start() that eventually calls OlsrRoutingProtocol::DoStart(). Note:  a
+patch to allow the user to start and stop the protocol at other times would be
+welcome.
+
 Examples
 ++++++++
 
@@ -93,6 +128,11 @@ The available traces are:
 
 Caveats
 +++++++
+
+Presently, OLSR is limited to use with an Ipv4ListRouting object, and does not
+respond to dynamic changes to a device's IP address or link up/down
+notifications; i.e. the topology changes are due to loss/gain of connectivity
+over a wireless channel.
 
 The code does not present any known issue.
 
