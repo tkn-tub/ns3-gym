@@ -184,6 +184,8 @@ def register_types(module):
     module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
     ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc [class]
     module.add_class('RedQueueDisc', parent=root_module['ns3::QueueDisc'])
+    ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc::FengStatus [enumeration]
+    module.add_enum('FengStatus', ['Above', 'Between', 'Below'], outer_class=root_module['ns3::RedQueueDisc'])
     ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc [enumeration]
     module.add_enum('', ['DTYPE_NONE', 'DTYPE_FORCED', 'DTYPE_UNFORCED'], outer_class=root_module['ns3::RedQueueDisc'])
     ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc::QueueDiscMode [enumeration]
@@ -318,6 +320,8 @@ def register_types(module):
     module.add_class('Mac48AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## mac48-address.h (module 'network'): ns3::Mac48AddressValue [class]
     module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
+    ## mq-queue-disc.h (module 'traffic-control'): ns3::MqQueueDisc [class]
+    module.add_class('MqQueueDisc', parent=root_module['ns3::QueueDisc'])
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
@@ -591,6 +595,7 @@ def register_methods(root_module):
     register_Ns3LogNormalRandomVariable_methods(root_module, root_module['ns3::LogNormalRandomVariable'])
     register_Ns3Mac48AddressChecker_methods(root_module, root_module['ns3::Mac48AddressChecker'])
     register_Ns3Mac48AddressValue_methods(root_module, root_module['ns3::Mac48AddressValue'])
+    register_Ns3MqQueueDisc_methods(root_module, root_module['ns3::MqQueueDisc'])
     register_Ns3NetDevice_methods(root_module, root_module['ns3::NetDevice'])
     register_Ns3NixVector_methods(root_module, root_module['ns3::NixVector'])
     register_Ns3Node_methods(root_module, root_module['ns3::Node'])
@@ -3292,6 +3297,14 @@ def register_Ns3RedQueueDisc_methods(root_module, cls):
     cls.add_method('GetAredBeta', 
                    'double', 
                    [])
+    ## red-queue-disc.h (module 'traffic-control'): double ns3::RedQueueDisc::GetFengAdaptiveA() [member function]
+    cls.add_method('GetFengAdaptiveA', 
+                   'double', 
+                   [])
+    ## red-queue-disc.h (module 'traffic-control'): double ns3::RedQueueDisc::GetFengAdaptiveB() [member function]
+    cls.add_method('GetFengAdaptiveB', 
+                   'double', 
+                   [])
     ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc::QueueDiscMode ns3::RedQueueDisc::GetMode() [member function]
     cls.add_method('GetMode', 
                    'ns3::RedQueueDisc::QueueDiscMode', 
@@ -3317,6 +3330,14 @@ def register_Ns3RedQueueDisc_methods(root_module, cls):
     cls.add_method('SetAredBeta', 
                    'void', 
                    [param('double', 'beta')])
+    ## red-queue-disc.h (module 'traffic-control'): void ns3::RedQueueDisc::SetFengAdaptiveA(double a) [member function]
+    cls.add_method('SetFengAdaptiveA', 
+                   'void', 
+                   [param('double', 'a')])
+    ## red-queue-disc.h (module 'traffic-control'): void ns3::RedQueueDisc::SetFengAdaptiveB(double b) [member function]
+    cls.add_method('SetFengAdaptiveB', 
+                   'void', 
+                   [param('double', 'b')])
     ## red-queue-disc.h (module 'traffic-control'): void ns3::RedQueueDisc::SetMode(ns3::RedQueueDisc::QueueDiscMode mode) [member function]
     cls.add_method('SetMode', 
                    'void', 
@@ -5162,6 +5183,46 @@ def register_Ns3Mac48AddressValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Mac48Address const &', 'value')])
+    return
+
+def register_Ns3MqQueueDisc_methods(root_module, cls):
+    ## mq-queue-disc.h (module 'traffic-control'): static ns3::TypeId ns3::MqQueueDisc::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mq-queue-disc.h (module 'traffic-control'): ns3::MqQueueDisc::MqQueueDisc() [constructor]
+    cls.add_constructor([])
+    ## mq-queue-disc.h (module 'traffic-control'): ns3::QueueDisc::WakeMode ns3::MqQueueDisc::GetWakeMode() const [member function]
+    cls.add_method('GetWakeMode', 
+                   'ns3::QueueDisc::WakeMode', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## mq-queue-disc.h (module 'traffic-control'): bool ns3::MqQueueDisc::DoEnqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   visibility='private', is_virtual=True)
+    ## mq-queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::MqQueueDisc::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## mq-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::MqQueueDisc::DoPeek() const [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::QueueDiscItem const >', 
+                   [], 
+                   is_const=True, visibility='private', is_virtual=True)
+    ## mq-queue-disc.h (module 'traffic-control'): bool ns3::MqQueueDisc::CheckConfig() [member function]
+    cls.add_method('CheckConfig', 
+                   'bool', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## mq-queue-disc.h (module 'traffic-control'): void ns3::MqQueueDisc::InitializeParams() [member function]
+    cls.add_method('InitializeParams', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3NetDevice_methods(root_module, cls):
