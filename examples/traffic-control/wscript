@@ -11,3 +11,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('red-vs-fengadaptive', ['point-to-point', 'point-to-point-layout', 'internet', 'applications', 'traffic-control'])
     obj.source = 'red-vs-fengadaptive.cc'
+
+    obj = bld.create_ns3_program('red-vs-nlred', ['point-to-point', 'point-to-point-layout', 'internet', 'applications', 'traffic-control'])
+    obj.source = 'red-vs-nlred.cc'

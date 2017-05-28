@@ -239,6 +239,8 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
     uint32_t test7;
     uint32_t test11;
     uint32_t test12;
+    uint32_t test13;
+    uint32_t test14;
   } drop;
 
 
@@ -473,6 +475,59 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
   st = StaticCast<RedQueueDisc> (queue)->GetStats ();
   drop.test12 = st.unforcedDrop;
   NS_TEST_EXPECT_MSG_LT (drop.test12, drop.test11, "Test 12 should have less drops due to probability mark than test 11");
+
+
+  // test 11: RED with Linear drop probability
+  queue = CreateObject<RedQueueDisc> ();
+  minTh = 30 * modeSize;
+  maxTh = 90 * modeSize;
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300, false);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  drop.test13 = st.unforcedDrop;
+  NS_TEST_EXPECT_MSG_NE (drop.test13, 0, "There should some dropped packets due to probability mark");
+
+
+  // test 14: RED with Nonlinear drop probability
+  queue = CreateObject<RedQueueDisc> ();
+  minTh = 30 * modeSize;
+  maxTh = 90 * modeSize;
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
+                         "Verify that we can actually set the attribute Mode");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MinTh", DoubleValue (minTh)), true,
+                         "Verify that we can actually set the attribute MinTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxTh", DoubleValue (maxTh)), true,
+                         "Verify that we can actually set the attribute MaxTh");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
+                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QW", DoubleValue (0.002)), true,
+                         "Verify that we can actually set the attribute QW");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("LInterm", DoubleValue (2)), true,
+                         "Verify that we can actually set the attribute LInterm");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Gentle", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute Gentle");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("NLRED", BooleanValue (true)), true,
+                         "Verify that we can actually set the attribute NLRED");
+  queue->Initialize ();
+  Enqueue (queue, pktSize, 300, false);
+  st = StaticCast<RedQueueDisc> (queue)->GetStats ();
+  drop.test14 = st.unforcedDrop;
+  NS_TEST_EXPECT_MSG_LT (drop.test14, drop.test13, "Test 14 should have less drops due to probability mark than test 13");
+
 }
 
 void 

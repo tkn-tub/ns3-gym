@@ -119,6 +119,11 @@ TypeId RedQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_isFengAdaptive),
                    MakeBooleanChecker ())
+    .AddAttribute ("NLRED",
+                   "True to enable Nonlinear RED",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RedQueueDisc::m_isNonlinear),
+                   MakeBooleanChecker ())
     .AddAttribute ("MinTh",
                    "Minimum average length threshold in packets/bytes",
                    DoubleValue (5),
@@ -792,6 +797,12 @@ RedQueueDisc::CalculatePNew (double qAvg, double maxTh, bool isGentle, double vA
        * th_min to th_max
        */
       p = vA * qAvg + vB;
+
+      if (m_isNonlinear)
+        {
+          p *= p * 1.5;
+        }
+
       p *= maxP;
     }
 

@@ -41,6 +41,12 @@ Feng's Adaptive RED is a variant of RED that adapts the maximum drop
 probability. The model in ns-3 contains implementation of this feature, and is a
 port of ns-2 Feng's Adaptive RED model.
 
+Nonlinear Random Early Detection (NLRED)
+========================================
+NLRED is a variant of RED in which the linear packet dropping function of
+RED is replaced by a nonlinear quadratic function. This approach makes packet
+dropping gentler for light traffic load and aggressive for heavy traffic load.
+
 Explicit Congestion Notification (ECN)
 ======================================
 This RED model supports an ECN mode of operation to notify endpoints of
@@ -72,6 +78,9 @@ S. Floyd et al, http://www.icir.org/floyd/papers/adaptiveRed.pdf
 Feng's Adaptive RED queue implementation is based on the algorithm
 provided in:
 W. C. Feng et al, http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=752150
+
+NLRED queue implementation is based on the algorithm provided in:
+Kaiyu Zhou et al, http://www.sciencedirect.com/science/article/pii/S1389128606000879
 
 The addition of explicit congestion notification (ECN) to IP:
 K. K. Ramakrishnan et al, https://tools.ietf.org/html/rfc3168
@@ -117,6 +126,10 @@ attributes:
 * FengAlpha     (increment parameter for m_curMaxP, Default: 3)
 * FengBeta      (decrement parameter for m_curMaxP, Default: 2)
 
+The following attribute should be turned on to simulate NLRED queue disc:
+
+* NLRED (Boolean attribute. Default: false)
+
 Consult the ns-3 documentation for explanation of these attributes.
 
 Simulating ARED
@@ -161,6 +174,16 @@ set to true, as done in ``examples/traffic-control/red-vs-fengadaptive.cc``:
 
   Config::SetDefault ("ns3::RedQueueDisc::FengAdaptive", BooleanValue (true));
 
+Simulating NLRED
+================
+
+To switch on NLRED algorithm, the attribute NLRED must be set to true,
+as shown below:
+
+.. sourcecode:: cpp
+
+Config::SetDefault ("ns3::RedQueueDisc::NLRED", BooleanValue (true));
+
 Examples
 ========
 
@@ -172,6 +195,9 @@ ARED queue examples can be found at:
 
 Feng's Adaptive RED example can be found at:
 ``examples/traffic-control/red-vs-fengadaptive.cc``
+
+NLRED queue example can be found at:
+``examples/traffic-control/red-vs-nlred.cc``
 
 Validation
 **********

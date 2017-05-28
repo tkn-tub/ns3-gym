@@ -346,6 +346,7 @@ private:
   double m_beta;            //!< Decrement parameter for m_curMaxP in ARED
   Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
   bool m_isFengAdaptive;    //!< True to enable Feng's Adaptive RED
+  bool m_isNonlinear;       //!< True to enable Nonlinear RED
   double m_b;               //!< Increment parameter for m_curMaxP in Feng's Adaptive RED
   double m_a;               //!< Decrement parameter for m_curMaxP in Feng's Adaptive RED
   bool m_isNs1Compat;       //!< Ns-1 compatibility
