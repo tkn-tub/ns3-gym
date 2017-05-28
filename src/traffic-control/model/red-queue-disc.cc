@@ -430,9 +430,9 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         {
           /* 
            * The average queue size has just crossed the
-           * threshold from below to above "minthresh", or
-           * from above "minthresh" with an empty queue to
-           * above "minthresh" with a nonempty queue.
+           * threshold from below to above m_minTh, or
+           * from above m_minTh with an empty queue to
+           * above m_minTh with a nonempty queue.
            */
           m_count = 1;
           m_countBytes = item->GetSize ();
@@ -700,7 +700,7 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
     }
   else if (m_isFengAdaptive)
     {
-      UpdateMaxPFeng (newAve);  // Update MaxP in MIMD fashion.
+      UpdateMaxPFeng (newAve);  // Update m_curMaxP in MIMD fashion.
     }
 
   return newAve;
@@ -777,15 +777,15 @@ RedQueueDisc::CalculatePNew (void)
 
   if (m_isGentle && m_qAvg >= m_maxTh)
     {
-      // p ranges from maxP to 1 as the average queue
-      // Size ranges from maxTh to twice maxTh
+      // p ranges from m_curMaxP to 1 as the average queue
+      // size ranges from m_maxTh to twice m_maxTh
       p = m_vC * m_qAvg + m_vD;
     }
   else if (!m_isGentle && m_qAvg >= m_maxTh)
     {
       /* 
-       * OLD: p continues to range linearly above max_p as
-       * the average queue size ranges above th_max.
+       * OLD: p continues to range linearly above m_curMaxP as
+       * the average queue size ranges above m_maxTh.
        * NEW: p is set to 1.0
        */
       p = 1.0;
@@ -793,8 +793,8 @@ RedQueueDisc::CalculatePNew (void)
   else
     {
       /*
-       * p ranges from 0 to max_p as the average queue size ranges from
-       * th_min to th_max
+       * p ranges from 0 to m_curMaxP as the average queue size ranges from
+       * m_minTh to m_maxTh
        */
       p = m_vA * m_qAvg + m_vB;
 
