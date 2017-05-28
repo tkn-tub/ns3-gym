@@ -99,6 +99,16 @@ public:
   virtual ~RedQueueDisc ();
 
   /**
+   * \brief Used in Feng's Adaptive RED
+   */
+  enum FengStatus
+    {
+      Above,        //!< When m_qAvg > m_maxTh
+      Between,      //!< When m_maxTh < m_qAvg < m_minTh
+      Below,        //!< When m_qAvg < m_minTh
+    };
+
+  /**
    * \brief Stats
    */
   typedef struct
@@ -179,6 +189,34 @@ public:
     */
    double GetAredBeta (void);
 
+   /**
+    * \brief Set the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
+    *
+    * \param a The value of alpha to adapt m_curMaxP in Feng's Adaptive RED.
+    */
+   void SetFengAdaptiveA (double a);
+
+   /**
+    * \brief Get the alpha value to adapt m_curMaxP in Feng's Adaptive RED.
+    *
+    * \returns The alpha value to adapt m_curMaxP in Feng's Adaptive RED.
+    */
+   double GetFengAdaptiveA (void);
+
+   /**
+    * \brief Set the beta value to adapt m_curMaxP in Feng's Adaptive RED.
+    *
+    * \param b The value of beta to adapt m_curMaxP in Feng's Adaptive RED.
+    */
+   void SetFengAdaptiveB (double b);
+
+   /**
+    * \brief Get the beta value to adapt m_curMaxP in Feng's Adaptive RED.
+    *
+    * \returns The beta value to adapt m_curMaxP in Feng's Adaptive RED.
+    */
+   double GetFengAdaptiveB (void);
+
   /**
    * \brief Set the limit of the queue.
    *
@@ -246,6 +284,11 @@ private:
     * \param newAve new average queue length
     */
   void UpdateMaxP (double newAve);
+   /**
+    * \brief Update m_curMaxP based on Feng's Adaptive RED
+    * \param newAve new average queue length
+    */
+  void UpdateMaxPFeng (double newAve);
   /**
    * \brief Check if a packet needs to be dropped due to probability mark
    * \param item queue item
@@ -302,6 +345,9 @@ private:
   double m_alpha;           //!< Increment parameter for m_curMaxP in ARED
   double m_beta;            //!< Decrement parameter for m_curMaxP in ARED
   Time m_rtt;               //!< Rtt to be considered while automatically setting m_bottom in ARED
+  bool m_isFengAdaptive;    //!< True to enable Feng's Adaptive RED
+  double m_b;               //!< Increment parameter for m_curMaxP in Feng's Adaptive RED
+  double m_a;               //!< Decrement parameter for m_curMaxP in Feng's Adaptive RED
   bool m_isNs1Compat;       //!< Ns-1 compatibility
   DataRate m_linkBandwidth; //!< Link bandwidth
   Time m_linkDelay;         //!< Link delay
@@ -323,6 +369,7 @@ private:
   double m_ptc;             //!< packet time constant in packets/second
   double m_qAvg;            //!< Average queue length
   uint32_t m_count;         //!< Number of packets since last random number generation
+  FengStatus m_fengStatus;  //!< For use in Feng's Adaptive RED
   /**
    * 0 for default RED
    * 1 experimental (see red-queue-disc.cc)

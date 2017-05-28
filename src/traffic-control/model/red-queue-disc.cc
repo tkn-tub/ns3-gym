@@ -114,6 +114,11 @@ TypeId RedQueueDisc::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&RedQueueDisc::m_isAdaptMaxP),
                    MakeBooleanChecker ())
+    .AddAttribute ("FengAdaptive",
+                   "True to enable Feng's Adaptive RED",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&RedQueueDisc::m_isFengAdaptive),
+                   MakeBooleanChecker ())
     .AddAttribute ("MinTh",
                    "Minimum average length threshold in packets/bytes",
                    DoubleValue (5),
@@ -169,6 +174,16 @@ TypeId RedQueueDisc::GetTypeId (void)
                    DoubleValue (0.9),
                    MakeDoubleAccessor (&RedQueueDisc::SetAredBeta),
                    MakeDoubleChecker <double> (0, 1))
+    .AddAttribute ("FengAlpha",
+                   "Decrement parameter for m_curMaxP in Feng's Adaptive RED",
+                   DoubleValue (3.0),
+                   MakeDoubleAccessor (&RedQueueDisc::SetFengAdaptiveA),
+                   MakeDoubleChecker <double> ())
+    .AddAttribute ("FengBeta",
+                   "Increment parameter for m_curMaxP in Feng's Adaptive RED",
+                   DoubleValue (2.0),
+                   MakeDoubleAccessor (&RedQueueDisc::SetFengAdaptiveB),
+                   MakeDoubleChecker <double> ())
     .AddAttribute ("LastSet",
                    "Store the last time m_curMaxP was updated",
                    TimeValue (Seconds (0.0)),
@@ -279,6 +294,44 @@ RedQueueDisc::GetAredBeta (void)
 {
   NS_LOG_FUNCTION (this);
   return m_beta;
+}
+
+void
+RedQueueDisc::SetFengAdaptiveA (double a)
+{
+  NS_LOG_FUNCTION (this << a);
+  m_a = a;
+
+  if (m_a != 3)
+    {
+      NS_LOG_WARN ("Alpha value does not follow the recommendations!");
+    }
+}
+
+double
+RedQueueDisc::GetFengAdaptiveA (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_a;
+}
+
+void
+RedQueueDisc::SetFengAdaptiveB (double b)
+{
+  NS_LOG_FUNCTION (this << b);
+  m_b = b;
+
+  if (m_b != 2)
+    {
+      NS_LOG_WARN ("Beta value does not follow the recommendations!");
+    }
+}
+
+double
+RedQueueDisc::GetFengAdaptiveB (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_b;
 }
 
 void
@@ -465,6 +518,12 @@ RedQueueDisc::InitializeParams (void)
       m_isAdaptMaxP = true;
     }
 
+  if (m_isFengAdaptive)
+    {
+      // Initialize m_fengStatus
+      m_fengStatus = Above;
+    }
+
   if (m_minTh == 0 && m_maxTh == 0)
     {
       m_minTh = 5.0;
@@ -568,6 +627,30 @@ RedQueueDisc::InitializeParams (void)
                              << m_vC << "; m_vD " <<  m_vD);
 }
 
+// Updating m_curMaxP, following the pseudocode
+// from: A Self-Configuring RED Gateway, INFOCOMM '99.
+// They recommend m_a = 3, and m_b = 2.
+void
+RedQueueDisc::UpdateMaxPFeng (double newAve)
+{
+  NS_LOG_FUNCTION (this << newAve);
+
+  if (m_minTh < newAve && newAve < m_maxTh)
+    {
+      m_fengStatus = Between;
+    }
+  else if (newAve < m_minTh && m_fengStatus != Below)
+    {
+      m_fengStatus = Below;
+      m_curMaxP = m_curMaxP / m_a;
+    }
+  else if (newAve > m_maxTh && m_fengStatus != Above)
+    {
+      m_fengStatus = Above;
+      m_curMaxP = m_curMaxP * m_b;
+    }
+}
+
 // Update m_curMaxP to keep the average queue length within the target range.
 void
 RedQueueDisc::UpdateMaxP (double newAve)
@@ -609,6 +692,10 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
   if (m_isAdaptMaxP && now > m_lastSet + m_interval)
     {
       UpdateMaxP(newAve);
+    }
+  else if (m_isFengAdaptive)
+    {
+      UpdateMaxPFeng (newAve);  // Update MaxP in MIMD fashion.
     }
 
   return newAve;
@@ -881,6 +968,11 @@ RedQueueDisc::CheckConfig (void)
     {
       NS_LOG_ERROR ("The size of the internal queue is less than the queue disc limit");
       return false;
+    }
+
+  if ((m_isARED || m_isAdaptMaxP) && m_isFengAdaptive)
+    {
+      NS_LOG_ERROR ("m_isAdaptMaxP and m_isFengAdaptive cannot be simultaneously true");
     }
 
   return true;
