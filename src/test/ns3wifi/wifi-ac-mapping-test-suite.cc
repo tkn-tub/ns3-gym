@@ -41,6 +41,9 @@
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/packet-sink-helper.h"
 #include "ns3/on-off-helper.h"
+#include "ns3/traffic-control-helper.h"
+#include "ns3/traffic-control-layer.h"
+#include "ns3/llc-snap-header.h"
 
 using namespace ns3;
 
@@ -53,15 +56,54 @@ public:
   virtual void DoRun (void);
 
 private:
+  static void PacketEnqueuedInQueueDisc (uint8_t tos, uint8_t* count, Ptr<const QueueDiscItem> item);
+  static void PacketEnqueuedInWifiMacQueue (uint8_t tos, uint8_t* count, Ptr<const WifiMacQueueItem> item);
   uint8_t m_tos;
   uint8_t m_expectedQueue;
+  uint8_t m_QueueDiscCount[4];
+  uint8_t m_WifiMacQueueCount[4];
 };
 
 WifiAcMappingTest::WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue)
-  : TestCase ("User priority to Access Category mapping test"),
+  : TestCase ("User priority to Access Category mapping test. Checks that packets are"
+              "enqueued in the correct child queue disc of the mq root queue disc and"
+              "in the correct wifi MAC queue"),
     m_tos (tos),
     m_expectedQueue (expectedQueue)
 {
+  for (uint8_t i = 0; i < 4; i++)
+    {
+      m_QueueDiscCount[i] = 0;
+      m_WifiMacQueueCount[i] = 0;
+    }
+}
+
+void
+WifiAcMappingTest::PacketEnqueuedInQueueDisc (uint8_t tos, uint8_t* count, Ptr<const QueueDiscItem> item)
+{
+  uint8_t val;
+  if (item->GetUint8Value (QueueItem::IP_DSFIELD, val) && val == tos)
+    {
+      (*count)++;
+    }
+}
+
+void
+WifiAcMappingTest::PacketEnqueuedInWifiMacQueue (uint8_t tos, uint8_t* count, Ptr<const WifiMacQueueItem> item)
+{
+  LlcSnapHeader llc;
+  Ptr<Packet> packet = item->GetPacket ()->Copy ();
+  packet->RemoveHeader (llc);
+
+  if (llc.GetType () == Ipv4L3Protocol::PROT_NUMBER)
+    {
+      Ipv4Header iph;
+      packet->PeekHeader (iph);
+      if (iph.GetTos () == tos)
+        {
+          (*count)++;
+        }
+    }
 }
 
 void
@@ -111,6 +153,17 @@ WifiAcMappingTest::DoRun (void)
   stack.Install (ap);
   stack.Install (sta);
 
+  TrafficControlHelper tch;
+  uint16_t handle = tch.SetRootQueueDisc ("ns3::MqQueueDisc");
+  TrafficControlHelper::ClassIdList cls = tch.AddQueueDiscClasses (handle, 4, "ns3::QueueDiscClass");
+  TrafficControlHelper::HandleList hdl = tch.AddChildQueueDiscs (handle, cls, "ns3::FqCoDelQueueDisc");
+  for (auto h : hdl)
+    {
+      tch.AddPacketFilter (h, "ns3::FqCoDelIpv4PacketFilter");
+    }
+  tch.Install (apDev);
+  tch.Install (staDev);
+
   Ipv4AddressHelper address;
   address.SetBase ("192.168.0.0", "255.255.255.0");
   Ipv4InterfaceContainer staNodeInterface, apNodeInterface;
@@ -123,7 +176,7 @@ WifiAcMappingTest::DoRun (void)
                                InetSocketAddress (Ipv4Address::GetAny (), udpPort));
   ApplicationContainer sinkApp = packetSink.Install (sta.Get (0));
   sinkApp.Start (Seconds (0));
-  sinkApp.Stop (Seconds (3.0));
+  sinkApp.Stop (Seconds (4.0));
 
   // The packet source is an on-off application on the AP device
   InetSocketAddress dest (staNodeInterface.GetAddress (0), udpPort);
@@ -132,41 +185,49 @@ WifiAcMappingTest::DoRun (void)
   onoff.SetConstantRate (DataRate ("5kbps"), 500);
   ApplicationContainer sourceApp = onoff.Install (ap.Get (0));
   sourceApp.Start (Seconds (1.0));
-  sourceApp.Stop (Seconds (3.0));
+  sourceApp.Stop (Seconds (4.0));
 
   // The first packet will be transmitted at time 1+(500*8)/5000 = 1.8s.
-  // Let this packet be transmitted successfully, so that the AP can resolve
-  // the IP address of the station and get its MAC address.
   // The second packet will be transmitted at time 1.8+(500*8)/5000 = 2.6s.
-  // Put the AP in sleep mode at time 2.0s, so that the second packet remains
-  // in a wifi mac queue and we can discover the queue it has been sent to.
-  Ptr<WifiPhy> apPhy = DynamicCast<WifiNetDevice> (apDev.Get (0))->GetPhy ();
-  Simulator::ScheduleWithContext (ap.Get (0)->GetId (), Seconds (2.0),
-                                  &WifiPhy::SetSleepMode, apPhy);
+  // The third packet will be transmitted at time 2.6+(500*8)/5000 = 3.4s.
 
-  Simulator::Stop (Seconds (4.0));
+  Simulator::Stop (Seconds (5.0));
+
+  Ptr<QueueDisc> root = ap.Get (0)->GetObject<TrafficControlLayer> ()->GetRootQueueDiscOnDevice (apDev.Get (0));
+  NS_TEST_ASSERT_MSG_EQ (root->GetNQueueDiscClasses (), 4, "The root queue disc should have 4 classes");
+  // Get the four child queue discs and connect their Enqueue trace to the PacketEnqueuedInQueueDisc
+  // method, which counts how many packets with the given ToS value have been enqueued
+  root->GetQueueDiscClass (0)->GetQueueDisc ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInQueueDisc, m_tos, m_QueueDiscCount));
+
+  root->GetQueueDiscClass (1)->GetQueueDisc ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInQueueDisc, m_tos, m_QueueDiscCount+1));
+
+  root->GetQueueDiscClass (2)->GetQueueDisc ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInQueueDisc, m_tos, m_QueueDiscCount+2));
+
+  root->GetQueueDiscClass (3)->GetQueueDisc ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInQueueDisc, m_tos, m_QueueDiscCount+3));
 
   Ptr<WifiMac> apMac = DynamicCast<WifiNetDevice> (apDev.Get (0))->GetMac ();
   PointerValue ptr;
-  Ptr<WifiMacQueue> queues[4];
-  // Get the four wifi mac queues and set their MaxDelay attribute to a large
-  // value, so that packets are not removed by the Cleanup method
+  // Get the four wifi mac queues and connect their Enqueue trace to the PacketEnqueuedInWifiMacQueue
+  // method, which counts how many packets with the given ToS value have been enqueued
   apMac->GetAttribute ("BE_EdcaTxopN", ptr);
-  queues[0] = ptr.Get<EdcaTxopN> ()->GetQueue ();
-  queues[0]->SetAttribute ("MaxDelay", TimeValue (Seconds (10.0)));
+  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount));
 
   apMac->GetAttribute ("BK_EdcaTxopN", ptr);
-  queues[1] = ptr.Get<EdcaTxopN> ()->GetQueue ();
-  queues[1]->SetAttribute ("MaxDelay", TimeValue (Seconds (10.0)));
+  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+1));
 
   apMac->GetAttribute ("VI_EdcaTxopN", ptr);
-  queues[2] = ptr.Get<EdcaTxopN> ()->GetQueue ();
-  queues[2]->SetAttribute ("MaxDelay", TimeValue (Seconds (10.0)));
+  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+2));
 
   apMac->GetAttribute ("VO_EdcaTxopN", ptr);
-  queues[3] = ptr.Get<EdcaTxopN> ()->GetQueue ();
-  queues[3]->SetAttribute ("MaxDelay", TimeValue (Seconds (10.0)));
-
+  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+                        MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+3));
 
   Simulator::Run ();
 
@@ -174,19 +235,21 @@ WifiAcMappingTest::DoRun (void)
     {
       if (i == m_expectedQueue)
         {
-          NS_TEST_ASSERT_MSG_EQ (queues[i]->GetNPackets (), 1, "There is no packet in the expected queue " << i);
+          NS_TEST_ASSERT_MSG_GT_OR_EQ (m_QueueDiscCount[i], 1, "There is no packet in the expected queue disc " << i);
+          NS_TEST_ASSERT_MSG_GT_OR_EQ (m_WifiMacQueueCount[i], 1, "There is no packet in the expected Wifi MAC queue " << i);
         }
       else
         {
-          NS_TEST_ASSERT_MSG_EQ (queues[i]->GetNPackets (), 0, "Unexpectedly, there is a packet in queue " << i);
+          NS_TEST_ASSERT_MSG_EQ (m_QueueDiscCount[i], 0, "Unexpectedly, there is a packet in queue disc " << i);
+          NS_TEST_ASSERT_MSG_EQ (m_WifiMacQueueCount[i], 0, "Unexpectedly, there is a packet in Wifi MAC queue " << i);
         }
     }
 
   uint32_t totalOctetsThrough =
     DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
 
-  // Check that the first packet has been received
-  NS_TEST_ASSERT_MSG_EQ (totalOctetsThrough, 500, "A single packet should have been received");
+  // Check that the three packets have been received
+  NS_TEST_ASSERT_MSG_EQ (totalOctetsThrough, 1500, "Three packets should have been received");
 
   Simulator::Destroy ();
 }

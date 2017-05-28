@@ -17,6 +17,7 @@ def build(bld):
       'model/codel-queue-disc.cc',
       'model/fq-codel-queue-disc.cc',
       'model/pie-queue-disc.cc',
+      'model/mq-queue-disc.cc',
       'helper/traffic-control-helper.cc',
       'helper/queue-disc-container.cc'
         ]
@@ -41,6 +42,7 @@ def build(bld):
       'model/codel-queue-disc.h',
       'model/fq-codel-queue-disc.h',
       'model/pie-queue-disc.h',
+      'model/mq-queue-disc.h',
       'helper/traffic-control-helper.h',
       'helper/queue-disc-container.h'
         ]
