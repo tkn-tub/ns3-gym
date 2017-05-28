@@ -30,16 +30,35 @@ using namespace ns3;
 
 namespace {
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Base header-type class to check the proper header concatenation
+ *
+ * \note Class internal to packet-metadata-test.cc
+ */
 class HistoryHeaderBase : public Header
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   HistoryHeaderBase ();
+  /**
+   * Checks if the header has deserialization errors
+   * \returns True if no error found.
+   */
   bool IsOk (void) const;
 protected:
+  /**
+   * Signal that an error has been found in deserialization.
+   */
   void ReportError (void);
 private:
-  bool m_ok;
+  bool m_ok; //!< True if no error is signalled.
 };
 
 TypeId 
@@ -68,11 +87,23 @@ HistoryHeaderBase::ReportError (void)
 }
 
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Template header-type class to check the proper header concatenation
+ *
+ * \note Class internal to packet-metadata-test.cc
+ */
 template <int N>
 class HistoryHeader : public HistoryHeaderBase
 {
 public:
   HistoryHeader ();
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
@@ -138,16 +169,35 @@ HistoryHeader<N>::Deserialize (Buffer::Iterator start)
   return N;
 }
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Base trailer-type class to check the proper trailer concatenation
+ *
+ * \note Class internal to packet-metadata-test.cc
+ */
 class HistoryTrailerBase : public Trailer
 {
 public:
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   HistoryTrailerBase ();
+  /**
+   * Checks if the header has deserialization errors
+   * \returns True if no error found.
+   */
   bool IsOk (void) const;
 protected:
+  /**
+   * Signal that an error has been found in deserialization.
+   */
   void ReportError (void);
 private:
-  bool m_ok;
+  bool m_ok; //!< True if no error is signalled.
 };
 
 TypeId 
@@ -174,20 +224,30 @@ HistoryTrailerBase::ReportError (void)
 }
 
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Template trailer-type class to check the proper trailer concatenation
+ *
+ * \note Class internal to packet-metadata-test.cc
+ */
 template <int N>
 class HistoryTrailer : public HistoryTrailerBase
 {
 public:
   HistoryTrailer ();
 
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-private:
-  bool m_ok;
 };
 
 template <int N>
@@ -250,13 +310,32 @@ HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
 
 }
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * Packet Metadata unit tests.
+ */
 class PacketMetadataTest : public TestCase {
 public:
   PacketMetadataTest ();
   virtual ~PacketMetadataTest ();
+  /**
+   * Checks the packet header and trailer history
+   * \param p The packet
+   * \param file The file name
+   * \param line The line number
+   * \param n The number of variable arguments
+   * \param ... The variable arguments
+   */
   void CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
   virtual void DoRun (void);
 private:
+  /**
+   * Adds an header to the packet
+   * \param p The packet
+   * \return The packet with the header added.
+   */
   Ptr<Packet> DoAddHeader (Ptr<Packet> p);
 };
 
@@ -822,7 +901,14 @@ PacketMetadataTest::DoRun (void)
   delete [] buf;
   NS_TEST_EXPECT_MSG_EQ (msg, std::string ("hello world"), "Could not find original data in received packet");
 }
-//-----------------------------------------------------------------------------
+
+
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Packet Metadata TestSuite
+ */
 class PacketMetadataTestSuite : public TestSuite
 {
 public:
@@ -835,4 +921,4 @@ PacketMetadataTestSuite::PacketMetadataTestSuite ()
   AddTestCase (new PacketMetadataTest, TestCase::QUICK);
 }
 
-PacketMetadataTestSuite g_packetMetadataTest;
+static PacketMetadataTestSuite g_packetMetadataTest; //!< Static variable for test initialization

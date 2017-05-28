@@ -22,6 +22,12 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * DropTailQueue unit tests.
+ */
 class DropTailQueueTestCase : public TestCase
 {
 public:
@@ -77,7 +83,13 @@ DropTailQueueTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ ((packet == 0), true, "There are really no packets in there");
 }
 
-static class DropTailQueueTestSuite : public TestSuite
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief DropTail Queue TestSuite
+ */
+class DropTailQueueTestSuite : public TestSuite
 {
 public:
   DropTailQueueTestSuite ()
@@ -85,4 +97,6 @@ public:
   {
     AddTestCase (new DropTailQueueTestCase (), TestCase::QUICK);
   }
-} g_dropTailQueueTestSuite;
+};
+
+static DropTailQueueTestSuite g_dropTailQueueTestSuite; //!< Static variable for test initialization

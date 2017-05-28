@@ -26,10 +26,21 @@
 
 using namespace ns3;
 
+namespace {
+
+
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test object using sequence numbers
+ *
+ * \note Class internal to sequence-number-test-suite.cc
+ */
 class SequenceNumberTestObj : public Object
 {
+  /// Test traced sequence number.
   TracedValue<SequenceNumber32> m_testTracedSequenceNumber;
-
 
 public:
 
@@ -38,6 +49,10 @@ public:
     m_testTracedSequenceNumber = SequenceNumber32 (0);
   }
 
+  /**
+   * \brief Get the type ID.
+   * \return The object TypeId.
+   */
   static TypeId GetTypeId (void)
   {
     static TypeId tid = TypeId ("ns3::SequenceNumberTestObj")
@@ -56,19 +71,31 @@ public:
     return GetTypeId ();
   }
 
+  /// Increment the sequence number.
   void IncSequenceNumber ()
   {
     m_testTracedSequenceNumber += 1;
   }
-
-
 };
 
+}
+
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Sequence Number Unit Test
+ */
 class SequenceNumberTestCase : public TestCase
 {
-  SequenceNumber32 m_oldval;
-  SequenceNumber32 m_newval;
+  SequenceNumber32 m_oldval;  //!< Old value
+  SequenceNumber32 m_newval;  //!< New value
 
+  /**
+   * Sequence number tracker
+   * \param oldval Old value
+   * \param newval New value
+   */
   void SequenceNumberTracer (SequenceNumber32 oldval, SequenceNumber32 newval);
 
 public:
@@ -181,7 +208,13 @@ void SequenceNumberTestCase::DoRun (void)
 
 }
 
-static class SequenceNumberTestSuite : public TestSuite
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Sequence Number TestSuite
+ */
+class SequenceNumberTestSuite : public TestSuite
 {
 public:
   SequenceNumberTestSuite ()
@@ -189,4 +222,6 @@ public:
   {
     AddTestCase (new SequenceNumberTestCase (), TestCase::QUICK);
   }
-} g_seqNumTests;
+};
+
+static SequenceNumberTestSuite g_seqNumTests; //!< Static variable for test initialization

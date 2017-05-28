@@ -77,10 +77,13 @@ CheckFileLength (std::string filename, uint64_t sizeExpected)
   return sizeActual == sizeExpected;
 }
 
-// ===========================================================================
-// Test case to make sure that the Pcap File Object can do its most basic job 
-// and create an empty pcap file.
-// ===========================================================================
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test case to make sure that the Pcap File Object can do its
+ * most basic job and create an empty pcap file.
+ */
 class WriteModeCreateTestCase : public TestCase
 {
 public:
@@ -92,7 +95,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  std::string m_testFilename;
+  std::string m_testFilename; //!< File name
 };
 
 WriteModeCreateTestCase::WriteModeCreateTestCase ()
@@ -192,10 +195,13 @@ WriteModeCreateTestCase::DoRun (void)
                          ") returns error");
 }
 
-// ===========================================================================
-// Test case to make sure that the Pcap File Object can open an existing pcap
-// file.
-// ===========================================================================
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test case to make sure that the Pcap File Object can open an
+ * existing pcap file.
+ */
 class ReadModeCreateTestCase : public TestCase
 {
 public:
@@ -207,7 +213,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  std::string m_testFilename;
+  std::string m_testFilename; //!< File name
 };
 
 ReadModeCreateTestCase::ReadModeCreateTestCase ()
@@ -410,10 +416,14 @@ AppendModeCreateTestCase::DoRun (void)
 }
 #endif
 
-// ===========================================================================
-// Test case to make sure that the Pcap File Object can write out correct pcap
-// file headers in both endian cases, and then read them in correctly.
-// ===========================================================================
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test case to make sure that the Pcap File Object can
+ * write out correct pcap file headers in both endian cases,
+ * and then read them in correctly.
+ */
 class FileHeaderTestCase : public TestCase
 {
 public:
@@ -425,7 +435,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  std::string m_testFilename;
+  std::string m_testFilename; //!< File name
 };
 
 FileHeaderTestCase::FileHeaderTestCase ()
@@ -650,10 +660,14 @@ FileHeaderTestCase::DoRun (void)
   f.Close ();
 }
 
-// ===========================================================================
-// Test case to make sure that the Pcap File Object can write pcap packet 
-// records in both endian cases, and then read them in correctly.
-// ===========================================================================
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test case to make sure that the Pcap File Object can
+ * write pcap packet records in both endian cases, and then read
+ * them in correctly.
+ */
 class RecordHeaderTestCase : public TestCase
 {
 public:
@@ -665,7 +679,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  std::string m_testFilename;
+  std::string m_testFilename; //!< File name
 };
 
 RecordHeaderTestCase::RecordHeaderTestCase ()
@@ -956,10 +970,13 @@ RecordHeaderTestCase::DoRun (void)
   f.Close ();
 }
 
-// ===========================================================================
-// Test case to make sure that the Pcap File Object can read out the contents
-// of a known good pcap file.
-// ===========================================================================
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test case to make sure that the Pcap File Object can read
+ * out the contents of a known good pcap file.
+ */
 class ReadFileTestCase : public TestCase
 {
 public:
@@ -971,7 +988,7 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
-  std::string m_testFilename;
+  std::string m_testFilename; //!< File name
 };
 
 ReadFileTestCase::ReadFileTestCase ()
@@ -996,12 +1013,15 @@ ReadFileTestCase::DoTeardown (void)
 static const uint32_t N_KNOWN_PACKETS = 6;
 static const uint32_t N_PACKET_BYTES = 16;
 
+/**
+ * PCAP Packet structure
+ */
 typedef struct PACKET_ENTRY {
-  uint32_t tsSec;
-  uint32_t tsUsec;
-  uint32_t inclLen;
-  uint32_t origLen;
-  uint16_t data[N_PACKET_BYTES];
+  uint32_t tsSec;   //!< Time (seconds part)
+  uint32_t tsUsec;  //!< Time (micro seconds part)
+  uint32_t inclLen; //!< Length of the entry in the PCAP
+  uint32_t origLen; //!< length of the original packet
+  uint16_t data[N_PACKET_BYTES];  //!< Packet data
 } PacketEntry;
 
 static const PacketEntry knownPackets[] = {
@@ -1066,9 +1086,12 @@ ReadFileTestCase::DoRun (void)
   f.Close ();
 }
 
-// ===========================================================================
-// Test case to make sure that the Pcap::Diff method works as expected
-// ===========================================================================
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief Test case to make sure that the Pcap::Diff method works as expected.
+ */
 class DiffTestCase : public TestCase
 {
 public:
@@ -1121,6 +1144,12 @@ DiffTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (usec, 3696, "Files are different from 2.3696 seconds");
 }
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief PCAP file utils TestSuite
+ */
 class PcapFileTestSuite : public TestSuite
 {
 public:
@@ -1140,4 +1169,4 @@ PcapFileTestSuite::PcapFileTestSuite ()
   AddTestCase (new DiffTestCase, TestCase::QUICK);
 }
 
-static PcapFileTestSuite pcapFileTestSuite;
+static PcapFileTestSuite pcapFileTestSuite; //!< Static variable for test initialization

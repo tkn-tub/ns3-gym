@@ -32,15 +32,26 @@
 using namespace ns3;
 
 
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief PacketSocket apps Unit Test
+ */
 class PacketSocketAppsTest : public TestCase
 {
-  uint32_t m_receivedPacketSize;
-  uint32_t m_receivedPacketNumber;
+  uint32_t m_receivedPacketSize;    //!< Received packet size
+  uint32_t m_receivedPacketNumber;  //!< Number of received packets
 
 public:
   virtual void DoRun (void);
   PacketSocketAppsTest ();
 
+  /**
+   * Receive a packet
+   * \param packet The packet
+   * \param from Address of the sender
+   */
   void ReceivePkt (Ptr<const Packet> packet, const Address &from);
 };
 
@@ -114,8 +125,12 @@ PacketSocketAppsTest::DoRun (void)
 }
 
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
+/**
+ * \ingroup network-test
+ * \ingroup tests
+ *
+ * \brief PacketSocket apps TestSuite
+ */
 class PacketSocketAppsTestSuite : public TestSuite
 {
 public:
@@ -123,4 +138,6 @@ public:
   {
     AddTestCase (new PacketSocketAppsTest, TestCase::QUICK);
   }
-} g_packetSocketAppsTestSuite;
+};
+
+static PacketSocketAppsTestSuite g_packetSocketAppsTestSuite; //!< Static variable for test initialization
