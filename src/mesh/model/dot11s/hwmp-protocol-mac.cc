@@ -108,7 +108,9 @@ HwmpProtocolMac::ReceiveAction (Ptr<Packet> packet, const WifiMacHeader & header
       return true;
     }
   MeshInformationElementVector elements;
-  packet->RemoveHeader (elements);
+  // To determine header size here, we can rely on the knowledge that
+  // this is the last header to remove.
+  packet->RemoveHeader (elements, packet->GetSize ());
   std::vector<HwmpProtocol::FailedDestination> failedDestinations;
   for (MeshInformationElementVector::Iterator i = elements.Begin (); i != elements.End (); i++)
     {

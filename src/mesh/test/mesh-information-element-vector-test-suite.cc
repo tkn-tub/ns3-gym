@@ -145,8 +145,9 @@ MeshInformationElementVectorBist::DoRun ()
   }
   Ptr<Packet> packet = Create<Packet> ();
   packet->AddHeader (vector);
+  uint32_t size = vector.GetSerializedSize ();
   MeshInformationElementVector resultVector;
-  packet->RemoveHeader (resultVector);
+  packet->RemoveHeader (resultVector, size);
   NS_TEST_ASSERT_MSG_EQ (vector, resultVector, "Roundtrip serialization of all known information elements works");
 }
 
