@@ -93,6 +93,7 @@ private:
   uint32_t  m_nIfaces; ///< number interfaces
   bool      m_chan; ///< channel
   bool      m_pcap; ///< PCAP
+  bool      m_ascii; ///< ASCII
   std::string m_stack; ///< stack
   std::string m_root; ///< root
   /// List of network nodes
@@ -124,6 +125,7 @@ MeshTest::MeshTest () :
   m_nIfaces (1),
   m_chan (true),
   m_pcap (false),
+  m_ascii (false),
   m_stack ("ns3::Dot11sStack"),
   m_root ("ff:ff:ff:ff:ff:ff")
 {
@@ -143,12 +145,17 @@ MeshTest::Configure (int argc, char *argv[])
   cmd.AddValue ("interfaces", "Number of radio interfaces used by each mesh point", m_nIfaces);
   cmd.AddValue ("channels",   "Use different frequency channels for different interfaces", m_chan);
   cmd.AddValue ("pcap",   "Enable PCAP traces on interfaces", m_pcap);
+  cmd.AddValue ("ascii",   "Enable Ascii traces on interfaces", m_ascii);
   cmd.AddValue ("stack",  "Type of protocol stack. ns3::Dot11sStack by default", m_stack);
   cmd.AddValue ("root", "Mac address of root mesh point in HWMP", m_root);
 
   cmd.Parse (argc, argv);
   NS_LOG_DEBUG ("Grid:" << m_xSize << "*" << m_ySize);
   NS_LOG_DEBUG ("Simulation time: " << m_totalTime << " s");
+  if (m_ascii)
+    {
+      PacketMetadata::Enable ();
+    }
 }
 void
 MeshTest::CreateNodes ()
@@ -203,6 +210,11 @@ MeshTest::CreateNodes ()
   mobility.Install (nodes);
   if (m_pcap)
     wifiPhy.EnablePcapAll (std::string ("mp-"));
+  if (m_ascii)
+    {
+      AsciiTraceHelper ascii;
+      wifiPhy.EnableAsciiAll (ascii.CreateFileStream ("mesh.tr"));
+    }
 }
 void
 MeshTest::InstallInternetStack ()
