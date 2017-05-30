@@ -80,13 +80,15 @@ uint32_t
 WifiInformationElementVector::Deserialize (Buffer::Iterator start, Buffer::Iterator end)
 {
   uint32_t size = start.GetDistanceFrom (end);
-  while (size > 0)
+  uint32_t remaining = size;
+  while (remaining > 0)
     {
       uint32_t deserialized = DeserializeSingleIe (start);
       start.Next (deserialized);
-      NS_ASSERT (deserialized <= size);
-      size -= deserialized;
+      NS_ASSERT (deserialized <= remaining);
+      remaining -= deserialized;
     }
+  NS_ASSERT_MSG (remaining == 0, "Error in deserialization");
   return size;
 }
 
