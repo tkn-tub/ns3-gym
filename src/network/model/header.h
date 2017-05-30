@@ -48,6 +48,8 @@ public:
    */
   static TypeId GetTypeId (void);
   virtual ~Header ();
+
+  using Chunk::Deserialize;
   /**
    * \returns the expected size of the header.
    *

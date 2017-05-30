@@ -79,9 +79,27 @@ public:
    * representation of this trailer in real networks.
    * The input iterator points to the end of the area where the 
    * data shall be written. This method is thus expected to call
-   * Buffer::Iterator::Prev prio to actually reading any data.
+   * Buffer::Iterator::Prev prior to actually reading any data.
    */
   virtual uint32_t Deserialize (Buffer::Iterator end) = 0;
+  /**
+   * \param start an iterator which points to the start of the buffer
+   *        where the trailer should be read from.
+   * \param end an iterator which points to the end of the buffer
+   *        where the trailer should be read from.
+   * \returns the number of bytes read.
+   *
+   * This method is used by Packet::RemoveTrailer to
+   * re-create a trailer from the byte buffer of a packet. 
+   * The data read is expected to match bit-for-bit the 
+   * representation of this trailer in real networks.
+   * The input iterator end points to the end of the area where the 
+   * data shall be written. 
+   *
+   * This variant should be provided by any variable-sized trailer subclass
+   * (i.e. if GetSerializedSize () does not return a constant). 
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start, Buffer::Iterator end);
   /**
    * \param os output stream
    * This method is used by Packet::Print to print the 

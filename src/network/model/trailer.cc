@@ -42,6 +42,14 @@ Trailer::GetTypeId (void)
   return tid;
 }
 
+// This default implementation is provided for backward compatibility
+// reasons.  Subclasses should implement this method themselves.
+uint32_t
+Trailer::Deserialize (Buffer::Iterator start, Buffer::Iterator end)
+{
+  return Deserialize (end);
+}
+
 std::ostream & operator << (std::ostream &os, const Trailer &trailer)
 {
   trailer.Print (os);
