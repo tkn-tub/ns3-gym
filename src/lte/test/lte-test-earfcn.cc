@@ -160,7 +160,7 @@ LteEarfcnUlTestCase::DoRun (void)
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test suite for testing correct conversion of freuquencies in 
+ * \brief Test suite for testing correct conversion of frequencies in
  * the downlink and the uplink, and general EARFCN frequencies.
  */
 class LteEarfcnTestSuite : public TestSuite
