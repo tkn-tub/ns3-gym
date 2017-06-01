@@ -754,10 +754,8 @@ private:
   ObjectFactory m_ueNetDeviceFactory;
   /// Factory of antenna object for UE.
   ObjectFactory m_ueAntennaModelFactory;
-  /// Factory of path loss model object for the downlink channel.
-  ObjectFactory m_dlPathlossModelFactory;
-  /// Factory of path loss model object for the uplink channel.
-  ObjectFactory m_ulPathlossModelFactory;
+  /// Factory of path loss model object.
+  ObjectFactory m_pathlossModelFactory;
   /// Factory of both the downlink and uplink LTE channels.
   ObjectFactory m_channelFactory;
 

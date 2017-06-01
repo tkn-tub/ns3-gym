@@ -233,7 +233,7 @@ LteHelper::ChannelModelInitialization (void)
   m_downlinkChannel = m_channelFactory.Create<SpectrumChannel> ();
   m_uplinkChannel = m_channelFactory.Create<SpectrumChannel> ();
 
-  m_downlinkPathlossModel = m_dlPathlossModelFactory.Create ();
+  m_downlinkPathlossModel = m_pathlossModelFactory.Create ();
   Ptr<SpectrumPropagationLossModel> dlSplm = m_downlinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
   if (dlSplm != 0)
     {
@@ -248,7 +248,7 @@ LteHelper::ChannelModelInitialization (void)
       m_downlinkChannel->AddPropagationLossModel (dlPlm);
     }
 
-  m_uplinkPathlossModel = m_ulPathlossModelFactory.Create ();
+  m_uplinkPathlossModel = m_pathlossModelFactory.Create ();
   Ptr<SpectrumPropagationLossModel> ulSplm = m_uplinkPathlossModel->GetObject<SpectrumPropagationLossModel> ();
   if (ulSplm != 0)
     {
@@ -388,18 +388,15 @@ void
 LteHelper::SetPathlossModelType (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
-  m_dlPathlossModelFactory = ObjectFactory ();
-  m_dlPathlossModelFactory.SetTypeId (type);
-  m_ulPathlossModelFactory = ObjectFactory ();
-  m_ulPathlossModelFactory.SetTypeId (type);
+  m_pathlossModelFactory = ObjectFactory ();
+  m_pathlossModelFactory.SetTypeId (type);
 }
 
 void 
 LteHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
-  m_dlPathlossModelFactory.Set (n, v);
-  m_ulPathlossModelFactory.Set (n, v);
+  m_pathlossModelFactory.Set (n, v);
 }
 
 void
@@ -1316,7 +1313,7 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
   LogComponentEnable ("LteChunkProcessor", LOG_LEVEL_ALL);
 
-  std::string propModelStr = m_dlPathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
+  std::string propModelStr = m_pathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
   LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
