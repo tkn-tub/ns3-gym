@@ -835,7 +835,7 @@ private:
 
   /**
    * The `UseCa` attribute. If true, Carrier Aggregation is enabled.
-   * Hence, the helper will expec a valid component carrier map
+   * Hence, the helper will expect a valid component carrier map
    * If it is false, the component carrier will be created within the LteHelper
    * this is to mantain the backwards compatibility with user script
    */
