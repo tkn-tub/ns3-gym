@@ -33,6 +33,7 @@ class EpcHelper;
 
 class EpcUeNas : public Object
 {
+  /// allow MemberLteAsSapUser<EpcUeNas> class friend access
   friend class MemberLteAsSapUser<EpcUeNas>;
 public:
 

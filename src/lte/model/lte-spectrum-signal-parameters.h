@@ -49,6 +49,7 @@ struct LteSpectrumSignalParameters : public SpectrumSignalParameters
 
   /**
    * copy constructor
+   * \param p the LteSpectrumSignalParameters to copy
    */
   LteSpectrumSignalParameters (const LteSpectrumSignalParameters& p);
 
@@ -79,6 +80,7 @@ struct LteSpectrumSignalParametersDataFrame : public SpectrumSignalParameters
   
   /**
   * copy constructor
+  * \param p the LteSpectrumSignalParametersDataFrame to copy
   */
   LteSpectrumSignalParametersDataFrame (const LteSpectrumSignalParametersDataFrame& p);
   
@@ -111,6 +113,7 @@ struct LteSpectrumSignalParametersDlCtrlFrame : public SpectrumSignalParameters
   
   /**
   * copy constructor
+  * \param p the LteSpectrumSignalParametersDlCtrlFrame to copy
   */
   LteSpectrumSignalParametersDlCtrlFrame (const LteSpectrumSignalParametersDlCtrlFrame& p);
 
@@ -141,6 +144,7 @@ struct LteSpectrumSignalParametersUlSrsFrame : public SpectrumSignalParameters
   
   /**
   * copy constructor
+  * \param p the LteSpectrumSignalParametersUlSrsFrame to copy
   */
   LteSpectrumSignalParametersUlSrsFrame (const LteSpectrumSignalParametersUlSrsFrame& p);
   

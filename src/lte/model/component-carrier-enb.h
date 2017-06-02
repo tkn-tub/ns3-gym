@@ -80,24 +80,24 @@ public:
   Ptr<FfMacScheduler> GetFfMacScheduler ();
   /**
    * Set the LteEnbPhy
-   * \ param s a pointer to the LteEnbPhy
+   * \param s a pointer to the LteEnbPhy
    */
   void SetPhy (Ptr<LteEnbPhy> s);
   /**
    * Set the LteEnbMac
-   * \ param s a pointer to the LteEnbMac
+   * \param s a pointer to the LteEnbMac
    */
   void SetMac (Ptr<LteEnbMac> s);
 
   /**
    * Set the FfMacScheduler Algorithm
-   * \ param s a pointer to the FfMacScheduler
+   * \param s a pointer to the FfMacScheduler
    */
   void SetFfMacScheduler (Ptr<FfMacScheduler> s);
 
   /**
    * Set the LteFfrAlgorithm
-   * \ param s a pointer to the LteFfrAlgorithm
+   * \param s a pointer to the LteFfrAlgorithm
    */
   void SetFfrAlgorithm (Ptr<LteFfrAlgorithm> s);
   

@@ -58,11 +58,13 @@ public:
 
 
 
-  // let the forwarder class access the protected and private members
+  /// let the forwarder class access the protected and private members
   friend class MemberLteUeCcmRrcSapProvider<SimpleUeComponentCarrierManager>;
   //friend class MemberLteUeCcmRrcSapUser<SimpleUeComponentCarrierManager>;
   
+  /// allow SimpleUeCcmMacSapProvider class friend access
   friend class SimpleUeCcmMacSapProvider;
+  /// allow SimpleUeCcmMacSapUser class friend access
   friend class SimpleUeCcmMacSapUser;
 
 protected:

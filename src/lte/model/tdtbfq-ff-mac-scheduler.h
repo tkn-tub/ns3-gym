@@ -109,7 +109,9 @@ public:
   virtual void SetLteFfrSapProvider (LteFfrSapProvider* s);
   virtual LteFfrSapUser* GetLteFfrSapUser ();
 
+  /// allow MemberCschedSapProvider<TdTbfqFfMacScheduler> class friend access
   friend class MemberCschedSapProvider<TdTbfqFfMacScheduler>;
+  /// allow MemberSchedSapProvider<TdTbfqFfMacScheduler> class friend access
   friend class MemberSchedSapProvider<TdTbfqFfMacScheduler>;
 
   /**

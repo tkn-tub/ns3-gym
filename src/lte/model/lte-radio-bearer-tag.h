@@ -48,11 +48,16 @@ public:
 
   /**
    * Create a LteRadioBearerTag with the given RNTI and LC id
+   * \param rnti the RNTI
+   * \param lcId the LCID
    */
   LteRadioBearerTag (uint16_t  rnti, uint8_t lcId);
   
   /**
   * Create a LteRadioBearerTag with the given RNTI, LC id and layer
+   * \param rnti the RNTI
+   * \param lcId the LCID
+   * \param layer the layer
   */
   LteRadioBearerTag (uint16_t  rnti, uint8_t lcId, uint8_t layer);
 

@@ -56,7 +56,7 @@ public:
   virtual void SetLteHandoverManagementSapUser (LteHandoverManagementSapUser* s);
   virtual LteHandoverManagementSapProvider* GetLteHandoverManagementSapProvider ();
 
-  // let the forwarder class access the protected and private members
+  /// let the forwarder class access the protected and private members
   friend class MemberLteHandoverManagementSapProvider<NoOpHandoverAlgorithm>;
 
 protected:

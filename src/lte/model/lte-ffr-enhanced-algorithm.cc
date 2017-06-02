@@ -88,9 +88,9 @@ static const struct FfrEnhancedUplinkDefaultConfiguration
   { 3, 100, 64, 16, 16}
 }; ///< the enhanced uplink default configuration
 
-/// number of downlink configurations
+/** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS (sizeof (g_ffrEnhancedDownlinkDefaultConfiguration) / sizeof (FfrEnhancedDownlinkDefaultConfiguration));
-/// number of uplink configurations
+/** \returns number of uplink configurations */
 const uint16_t NUM_UPLINK_CONFS (sizeof (g_ffrEnhancedUplinkDefaultConfiguration) / sizeof (FfrEnhancedUplinkDefaultConfiguration));
 
 

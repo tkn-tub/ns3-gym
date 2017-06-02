@@ -210,6 +210,7 @@ public:
 
   /**
     * \brief As per 3GPP TS 29.274 Release 9 V9.3.0, a Delete Bearer Command message shall be sent on the S11 interface by the MME to the SGW
+    * \param msg the DeleteBearerCommandMessage
     */
   virtual void DeleteBearerCommand (DeleteBearerCommandMessage msg) = 0;
 

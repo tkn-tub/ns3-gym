@@ -51,6 +51,7 @@ public:
    * Send a PDCP PDU to the RLC for transmission
    * This method is to be called
    * when upper PDCP entity has a PDCP PDU ready to send
+   * \param params the TransmitPdcpPduParameters
    */
   virtual void TransmitPdcpPdu (TransmitPdcpPduParameters params) = 0;
 };
@@ -89,7 +90,10 @@ public:
    */
   LteRlcSpecificLteRlcSapProvider (C* rlc);
 
-  // Interface implemented from LteRlcSapProvider
+  /**
+   * Interface implemented from LteRlcSapProvider
+   * \param params the TransmitPdcpPduParameters
+   */
   virtual void TransmitPdcpPdu (TransmitPdcpPduParameters params);
 
 private:

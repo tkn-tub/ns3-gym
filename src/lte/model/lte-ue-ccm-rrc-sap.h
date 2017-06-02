@@ -44,6 +44,7 @@ namespace ns3 {
 class LteUeCcmRrcSapProvider
 {
 
+/// allow  LteMacSapUser class friend access
 friend class LteMacSapUser;
  
 public:

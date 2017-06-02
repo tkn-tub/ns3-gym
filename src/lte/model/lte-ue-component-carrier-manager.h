@@ -75,6 +75,7 @@ public:
   /**
    * \brief Returns the MAC sap provider interface that if forwarding calls to the
    * instance of the LteUeComponentCarrierManager.
+   * \return the reference to the "provider" part of the interface
    */
   virtual LteMacSapProvider* GetLteMacSapProvider () = 0;
 
@@ -88,6 +89,7 @@ public:
 
   /**
    * \brief Sets number of component carriers that are supported by this UE.
+   * \param noOfComponentCarriers numbr of compoent carriers
    */
   void SetNumberOfComponentCarriers (uint8_t noOfComponentCarriers);
 

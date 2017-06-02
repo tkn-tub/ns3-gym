@@ -135,7 +135,7 @@ public:
    */
   virtual LteAnrSapProvider* GetLteAnrSapProvider ();
 
-  // let the forwarder class access the protected and private members
+  /// let the forwarder class access the protected and private members
   friend class MemberLteAnrSapProvider<LteAnr>;
 
 protected:
@@ -220,7 +220,11 @@ private:
   /// neighbor relation table
   NeighbourRelationTable_t m_neighbourRelationTable; 
 
-  /// internal methods
+  /**
+   * \internal methods
+   * \param cellId
+   * \returns the neighbor relation
+   */
   const NeighbourRelation_t* Find (uint16_t cellId) const;
 
   /// The expected measurement identity

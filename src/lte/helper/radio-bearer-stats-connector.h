@@ -278,6 +278,10 @@ private:
 
   /**
    * Less than operator for CellIdRnti, because it is used as key in map
+   *
+   * \param a the lhs operand
+   * \param b the rhs operand
+   * \returns true if less than
    */
   friend bool operator < (const CellIdRnti &a, const CellIdRnti &b);
 

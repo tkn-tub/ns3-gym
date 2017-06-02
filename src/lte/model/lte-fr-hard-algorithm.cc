@@ -78,9 +78,9 @@ static const struct FrHardUplinkDefaultConfiguration
   { 3, 100, 64, 36}
 }; ///< the hard uplink default configuration
 
-/// number of downlink configurations
+/** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS (sizeof (g_frHardDownlinkDefaultConfiguration) / sizeof (FrHardDownlinkDefaultConfiguration));
-/// number of uplink configurations
+/** \returns number of uplink configurations */
 const uint16_t NUM_UPLINK_CONFS (sizeof (g_frHardUplinkDefaultConfiguration) / sizeof (FrHardUplinkDefaultConfiguration));
 
 LteFrHardAlgorithm::LteFrHardAlgorithm ()

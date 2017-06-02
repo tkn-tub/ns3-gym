@@ -71,6 +71,7 @@ public:
 
   /**
    * \brief RecvLoadInformation
+   * \param params the EpcX2Sap::LoadInformationParams
    */
   virtual void  RecvLoadInformation (EpcX2Sap::LoadInformationParams params) = 0;
 
@@ -126,6 +127,7 @@ public:
 
   /**
    * \brief SendLoadInformation
+   * \param params the EpcX2Sap::LoadInformationParams
    */
   virtual void  SendLoadInformation (EpcX2Sap::LoadInformationParams params) = 0;
 

@@ -173,7 +173,11 @@ public:
 class TransmissionModesLayers
 {
 public:
-  /// Transmit mode 2 layer number
+  /**
+   * Transmit mode 2 layer number
+   * \param txMode the transmit mode
+   * \returns the layer 2 number
+   */
   static uint8_t TxMode2LayerNum (uint8_t txMode);
 };
 

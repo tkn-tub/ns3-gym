@@ -50,6 +50,9 @@ public:
 
   /**
    * Create a EpsBearerTag with the given RNTI and bearer id
+   *
+   * @param rnti the value of the RNTI to set
+   * @param bid the value of the Bearer Id to set
    */
   EpsBearerTag (uint16_t  rnti, uint8_t bid);
   
@@ -63,7 +66,7 @@ public:
   /**
    * Set the bearer id to the given value.
    *
-   * @param bid the value of the RNTI to set
+   * @param bid the value of the Bearer Id to set
    */
   void SetBid (uint8_t bid);
 
@@ -78,14 +81,14 @@ public:
    */
   uint16_t GetRnti (void) const;
   /**
-   * Get bid function
-   * \returns the bid
+   * Get Bearer Id function
+   * \returns the Bearer Id
    */
   uint8_t GetBid (void) const;
 
 private:
   uint16_t m_rnti; ///< RNTI value
-  uint8_t m_bid; ///< bid value
+  uint8_t m_bid; ///< Bearer Id value
 
 };
 

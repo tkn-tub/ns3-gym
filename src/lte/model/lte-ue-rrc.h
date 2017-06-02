@@ -79,12 +79,19 @@ class LteSignalingRadioBearerInfo;
 class LteUeRrc : public Object
 {
 
+  /// allow UeMemberLteUeCmacSapUser class friend access
   friend class UeMemberLteUeCmacSapUser;
+  /// allow UeRrcMemberLteEnbCmacSapUser class friend access
   friend class UeRrcMemberLteEnbCmacSapUser;
+  /// allow LtePdcpSpecificLtePdcpSapUser<LteUeRrc> class friend access
   friend class LtePdcpSpecificLtePdcpSapUser<LteUeRrc>;
+  /// allow MemberLteAsSapProvider<LteUeRrc> class friend access
   friend class MemberLteAsSapProvider<LteUeRrc>;
+  /// allow MemberLteUeCphySapUser<LteUeRrc> class friend access
   friend class MemberLteUeCphySapUser<LteUeRrc>;
+  /// allow MemberLteUeRrcSapProvider<LteUeRrc> class friend access
   friend class MemberLteUeRrcSapProvider<LteUeRrc>;
+  /// allow MemberLteUeCcmRrcSapUser<LteUeRrc> class friend access
   friend class MemberLteUeCcmRrcSapUser<LteUeRrc>;
 
 public:
@@ -427,13 +434,25 @@ private:
 
   // RRC SAP methods
 
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::CompleteSetup interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::CompleteSetup interface.
+   * \param params the LteUeRrcSapProvider::CompleteSetupParameters
+   */
   void DoCompleteSetup (LteUeRrcSapProvider::CompleteSetupParameters params);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvSystemInformation interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvSystemInformation interface.
+   * \param msg the LteRrcSap::SystemInformation
+   */
   void DoRecvSystemInformation (LteRrcSap::SystemInformation msg);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionSetup interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionSetup interface.
+   * \param msg the LteRrcSap::RrcConnectionSetup
+   */
   void DoRecvRrcConnectionSetup (LteRrcSap::RrcConnectionSetup msg);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReconfiguration interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReconfiguration interface.
+   * \param msg the LteRrcSap::RrcConnectionReconfiguration
+   */
   void DoRecvRrcConnectionReconfiguration (LteRrcSap::RrcConnectionReconfiguration msg);
   /**
    * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReestablishment interface.
@@ -450,7 +469,10 @@ private:
    * \param msg LteRrcSap::RrcConnectionRelease
    */
   void DoRecvRrcConnectionRelease (LteRrcSap::RrcConnectionRelease msg);
-  /// Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReject interface.
+  /**
+   * Part of the RRC protocol. Implement the LteUeRrcSapProvider::RecvRrcConnectionReject interface.
+   * \param msg the LteRrcSap::RrcConnectionReject
+   */
   void DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg);
 
   /**

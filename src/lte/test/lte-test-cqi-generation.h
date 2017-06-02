@@ -43,7 +43,7 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief This is the test suite for testing different configuration of CQI generation.
+ * \brief This is the test case for testing different configuration of CQI generation.
  *  The topology consists of the two UEs and two eNbs. UEs have the same position,
  *  while eNodeBs are at the same distance from both UEs. The checking whether CQI is 
  *  generated properly for two different cases: when PDCCH is used for the CQI 
@@ -54,7 +54,7 @@ class LteCqiGenerationTestCase : public TestCase
 {
 public:
   /**
-   * Constructor
+   * \Constructor
    *
    * \param name reference name
    * \param usePdcchForCqiGeneration use PDCCH for CQI generation
@@ -95,7 +95,7 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief This test is very simillar to LteCqiGenerationTestCase. The difference is that in this 
+ * \brief This test is very similar to LteCqiGenerationTestCase. The difference is that in this
  * test is enabled the downlink power control.
  */
 

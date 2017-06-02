@@ -81,9 +81,9 @@ static const struct FrStrictUplinkDefaultConfiguration
   { 3, 100, 28, 48, 24}
 }; ///< the strict uplink default configuration
 
-/// number of downlink configurations
+/** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS (sizeof (g_frStrictDownlinkDefaultConfiguration) / sizeof (FrStrictDownlinkDefaultConfiguration));
-/// number of uplink configurations
+/** \returns number of uplink configurations */
 const uint16_t NUM_UPLINK_CONFS (sizeof (g_frStrictUplinkDefaultConfiguration) / sizeof (FrStrictUplinkDefaultConfiguration));
 
 

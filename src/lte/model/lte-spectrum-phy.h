@@ -441,6 +441,7 @@ public:
    */
   Ptr<SpectrumChannel> GetChannel ();
 
+  /// allow LteUePhy class friend access
   friend class LteUePhy;
   
  /**

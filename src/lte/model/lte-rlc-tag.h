@@ -48,7 +48,8 @@ public:
    */
   RlcTag ();
   /**
-   * Create an RLC tag with the given senderTimestamp
+   * Create an RLC tag with the given senderTimestamp 
+   * \param senderTimestamp the time
    */
   RlcTag (Time senderTimestamp);
 

@@ -42,9 +42,13 @@ class LteCcmRrcSapProvider;
 
 class NoOpComponentCarrierManager : public LteEnbComponentCarrierManager
 {
+  /// allow EnbMacMemberLteMacSapProvider<NoOpComponentCarrierManager> class friend access
   friend class EnbMacMemberLteMacSapProvider<NoOpComponentCarrierManager>;
+  /// allow MemberLteCcmRrcSapProvider<NoOpComponentCarrierManager> class friend access
   friend class MemberLteCcmRrcSapProvider<NoOpComponentCarrierManager>;
+  /// allow MemberLteCcmRrcSapUser<NoOpComponentCarrierManager> class friend access
   friend class MemberLteCcmRrcSapUser<NoOpComponentCarrierManager>;
+  /// allow MemberLteCcmMacSapUser<NoOpComponentCarrierManager> class friend access
   friend class MemberLteCcmMacSapUser<NoOpComponentCarrierManager>;
 
 public:

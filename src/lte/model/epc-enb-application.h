@@ -49,7 +49,9 @@ class EpcEnbS1SapProvider;
 class EpcEnbApplication : public Application
 {
 
+  /// allow MemberEpcEnbS1SapProvider<EpcEnbApplication> class friend access
   friend class MemberEpcEnbS1SapProvider<EpcEnbApplication>;
+  /// allow MemberEpcS1apSapEnb<EpcEnbApplication> class friend access
   friend class MemberEpcS1apSapEnb<EpcEnbApplication>;
 
 

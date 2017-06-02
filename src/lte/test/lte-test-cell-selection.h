@@ -114,6 +114,9 @@ private:
   /**
    * \brief Verifies if the given UE is attached to either of the given two
    *        cells and in a CONNECTED_NORMALLY state.
+   * \param ueDev the UE device
+   * \param expectedCellId1 the first cell ID
+   * \param expectedCellId2 the second cell ID
    */
   void CheckPoint (Ptr<LteUeNetDevice> ueDev, uint16_t expectedCellId1,
                    uint16_t expectedCellId2);

@@ -137,7 +137,9 @@ public:
    */
   virtual LteFfrSapUser* GetLteFfrSapUser ();
 
+  /// allow MemberCschedSapProvider<FdTbfqFfMacScheduler> class friend access
   friend class MemberCschedSapProvider<FdTbfqFfMacScheduler>;
+  /// allow MemberSchedSapProvider<FdTbfqFfMacScheduler> claass friend access
   friend class MemberSchedSapProvider<FdTbfqFfMacScheduler>;
 
   /**

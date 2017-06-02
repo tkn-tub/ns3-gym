@@ -40,7 +40,9 @@ class NetDevice;
 class EpcMme : public Object
 {
 
+  /// allow MemberEpcS1apSapMme<EpcMme> class friend access
   friend class MemberEpcS1apSapMme<EpcMme>;
+  /// allow MemberEpcS11SapMme<EpcMme> class friend access
   friend class MemberEpcS11SapMme<EpcMme>;
   
 public:

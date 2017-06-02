@@ -70,7 +70,7 @@ public:
 
   /**
    * Set the LteEnbMac
-   * \ param s a pointer to the LteEnbMac
+   * \param s a pointer to the LteEnbMac
    */ 
   void SetMac (Ptr<LteUeMac> s);
   

@@ -54,11 +54,17 @@ typedef std::vector <std::vector < Ptr<PacketBurst> > > DlHarqProcessesBuffer_t;
  */
 class LteEnbMac :   public Object
 {
+  /// allow EnbMacMemberLteEnbCmacSapProvider class friend access
   friend class EnbMacMemberLteEnbCmacSapProvider;
+  /// allow EnbMacMemberLteMacSapProvider<LteEnbMac> class friend access
   friend class EnbMacMemberLteMacSapProvider<LteEnbMac>;
+  /// allow EnbMacMemberFfMacSchedSapUser class friend access
   friend class EnbMacMemberFfMacSchedSapUser;
+  /// allow EnbMacMemberFfMacCschedSapUser class friend access
   friend class EnbMacMemberFfMacCschedSapUser;
+  /// allow EnbMacMemberLteEnbPhySapUser class friend access
   friend class EnbMacMemberLteEnbPhySapUser;
+  /// allow MemberLteCcmMacSapProvider<LteEnbMac> class friend ccess
   friend class MemberLteCcmMacSapProvider<LteEnbMac>;
 
 public:

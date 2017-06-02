@@ -41,6 +41,7 @@ namespace ns3 {
  */
 class LteTestRrc : public Object
 {
+    /// allow LtePdcpSpecificLtePdcpSapUser<LteTestRrc> class friend access
     friend class LtePdcpSpecificLtePdcpSapUser<LteTestRrc>;
 //   friend class EnbMacMemberLteEnbCmacSapProvider;
 //   friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
@@ -139,7 +140,10 @@ class LteTestRrc : public Object
     void SetDevice (Ptr<NetDevice> device);
 
   private:
-    // Interface forwarded by LtePdcpSapUser
+    /**
+     * Interface forwarded by LtePdcpSapUser
+     * \param params the LtePdcpSapUser::ReceivePdcpSduParameters
+     */
     virtual void DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters params);
 
     LtePdcpSapUser* m_pdcpSapUser; ///< PDCP SAP user
@@ -171,6 +175,7 @@ class LteTestRrc : public Object
  */
 class LteTestPdcp : public Object
 {
+  /// allow LteRlcSpecificLteRlcSapUser<LteTestPdcp> class friend access
   friend class LteRlcSpecificLteRlcSapUser<LteTestPdcp>;
   
   public:
@@ -212,8 +217,11 @@ class LteTestPdcp : public Object
     std::string GetDataReceived (void);
 
   private:
-    // Interface forwarded by LteRlcSapUser
-  virtual void DoReceivePdcpPdu (Ptr<Packet> p);
+    /**
+     * Interface forwarded by LteRlcSapUser
+     * \param p the PDCP PDU packet received
+     */
+    virtual void DoReceivePdcpPdu (Ptr<Packet> p);
 
     LteRlcSapUser* m_rlcSapUser; ///< RLC SAP user
     LteRlcSapProvider* m_rlcSapProvider; ///< RLC SAP provider
@@ -232,6 +240,7 @@ class LteTestPdcp : public Object
 class LteTestMac : public Object
 {
 //   friend class EnbMacMemberLteEnbCmacSapProvider;
+    /// allow EnbMacMemberLteMacSapProvider<LteTestMac> class friend access
     friend class EnbMacMemberLteMacSapProvider<LteTestMac>;
 //   friend class EnbMacMemberFfMacSchedSapUser;
 //   friend class EnbMacMemberFfMacCschedSapUser;
@@ -406,6 +415,7 @@ class LteTestMac : public Object
  */
 class EpcTestRrc : public Object
 {
+  /// allow MemberEpcEnbS1SapUser<EpcTestRrc> class friend access
   friend class MemberEpcEnbS1SapUser<EpcTestRrc>;
 
 public:

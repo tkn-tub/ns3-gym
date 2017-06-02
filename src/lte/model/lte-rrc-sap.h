@@ -94,7 +94,8 @@ public:
   /// RlcConfig structure
   struct RlcConfig
   {
-    enum
+    /// the direction choice
+    enum direction
     {
       AM,
       UM_BI_DIRECTIONAL,
@@ -115,7 +116,8 @@ public:
   /// SoundingRsUlConfigCommon structure
   struct SoundingRsUlConfigCommon
   {
-    enum
+    /// the config action
+    enum action
     {
       SETUP, RESET
     } type; ///< action type
@@ -126,7 +128,8 @@ public:
   /// SoundingRsUlConfigDedicated structure
   struct SoundingRsUlConfigDedicated
   {
-    enum
+    /// the config action
+    enum action
     {
       SETUP, RESET
     } type; ///< action type
@@ -150,11 +153,11 @@ public:
   /// PdschConfigDedicated structure
   struct PdschConfigDedicated
   {
-    /*
+    /**
      * P_A values, TS 36.331 6.3.2 PDSCH-Config
      * ENUMERATED { dB-6, dB-4dot77, dB-3, dB-1dot77, dB0, dB1, dB2, dB3 }
      */
-    enum
+    enum db
     {
       dB_6,
       dB_4dot77,
@@ -383,7 +386,8 @@ public:
     /// Time during which specific criteria for the event needs to be met in order to trigger a measurement report.
     uint16_t timeToTrigger;
 
-    enum
+    /// the report purpose
+    enum report
     {
       REPORT_STRONGEST_CELLS,
       REPORT_CGI
@@ -460,11 +464,13 @@ public:
   /// MeasGapConfig structure
   struct MeasGapConfig
   {
-    enum
+    /// the action type
+    enum action
     {
       SETUP, RESET
     } type; ///< action type
-    enum
+    /// the gap offest
+    enum gap
     {
       GP0, GP1
     } gapOffsetChoice; ///< gap offset
@@ -491,7 +497,8 @@ public:
   /// SpeedStatePars structure
   struct SpeedStatePars
   {
-    enum
+    /// the action type
+    enum action
     {
       SETUP,
       RESET

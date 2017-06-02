@@ -47,6 +47,7 @@ class LteUeRrc;
  */
 class LteUeRrcProtocolIdeal : public Object
 {
+  /// allow MemberLteUeRrcSapUser<LteUeRrcProtocolIdeal> class friend access
   friend class MemberLteUeRrcSapUser<LteUeRrcProtocolIdeal>;
 
 public:
@@ -149,6 +150,7 @@ private:
  */
 class LteEnbRrcProtocolIdeal : public Object
 {
+  /// allow MemberLteEnbRrcSapUser<LteEnbRrcProtocolIdeal> class friend access
   friend class MemberLteEnbRrcSapUser<LteEnbRrcProtocolIdeal>;
 
 public:

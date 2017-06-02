@@ -62,8 +62,9 @@ public:
   virtual void SetLteFfrRrcSapUser (LteFfrRrcSapUser* s);
   virtual LteFfrRrcSapProvider* GetLteFfrRrcSapProvider ();
 
-  // let the forwarder class access the protected and private members
+  /// let the forwarder class access the protected and private members
   friend class MemberLteFfrSapProvider<LteFrNoOpAlgorithm>;
+  /// let the forwarder class access the protected and private members
   friend class MemberLteFfrRrcSapProvider<LteFrNoOpAlgorithm>;
 
 protected:

@@ -97,26 +97,32 @@ public:
 
   /**
    * \brief ReportDlCqiInfo
+   * \param params the struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters
    */
   virtual void ReportDlCqiInfo (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params) = 0;
 
   /**
    * \brief ReportUlCqiInfo
+   * \param params the struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters
    */
   virtual void ReportUlCqiInfo (const struct FfMacSchedSapProvider::SchedUlCqiInfoReqParameters& params) = 0;
 
   /**
    * \brief ReportUlCqiInfo
+   * \param ulCqiMap the UL CQI map
    */
   virtual void ReportUlCqiInfo ( std::map <uint16_t, std::vector <double> > ulCqiMap ) = 0;
 
   /**
    * \brief GetTpc
+   * \param rnti the RNTI
+   * \returns the TCP
    */
   virtual uint8_t GetTpc (uint16_t rnti) = 0;
 
   /**
-   * \brief GetMinContinuousUlBandwidth
+   * \brief Get the minimum continuous Ul bandwidth
+   * \returns the minimum continuous UL bandwidth
    */
   virtual uint8_t GetMinContinuousUlBandwidth () = 0;
 }; // end of class LteFfrSapProvider

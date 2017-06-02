@@ -79,9 +79,9 @@ static const struct FrSoftUplinkDefaultConfiguration
   { 3, 100, 64, 36}
 }; ///< soft uplink default configuration
 
-/// number of downlink configurations
+/** \returns number of downlink configurations */
 const uint16_t NUM_DOWNLINK_CONFS (sizeof (g_frSoftDownlinkDefaultConfiguration) / sizeof (FrSoftDownlinkDefaultConfiguration));
-/// number of uplink configurations
+/** \returns number of uplink configurations */
 const uint16_t NUM_UPLINK_CONFS (sizeof (g_frSoftUplinkDefaultConfiguration) / sizeof (FrSoftUplinkDefaultConfiguration));
 
 

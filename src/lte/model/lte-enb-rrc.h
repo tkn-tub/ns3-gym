@@ -71,6 +71,7 @@ class Packet;
  */
 class UeManager : public Object
 {
+  /// allow LtePdcpSpecificLtePdcpSapUser<UeManager> class friend access
   friend class LtePdcpSpecificLtePdcpSapUser<UeManager>;
 
 public:
@@ -565,14 +566,23 @@ private:
 class LteEnbRrc : public Object
 {
 
+  /// allow EnbRrcMemberLteEnbCmacSapUser class friend access
   friend class EnbRrcMemberLteEnbCmacSapUser;
+  /// allow MemberLteHandoverManagementSapUser<LteEnbRrc> class friend access
   friend class MemberLteHandoverManagementSapUser<LteEnbRrc>;
+  /// allow MemberLteAnrSapUser<LteEnbRrc> class friend access
   friend class MemberLteAnrSapUser<LteEnbRrc>;
+  /// allow MemberLteFfrRrcSapUser<LteEnbRrc> class friend access
   friend class MemberLteFfrRrcSapUser<LteEnbRrc>;
+  /// allow MemberLteEnbRrcSapProvider<LteEnbRrc> class friend access
   friend class MemberLteEnbRrcSapProvider<LteEnbRrc>;
+  /// allow MemberLteEnbRrcSapProvider<LteEnbRrc> class friend access
   friend class MemberEpcEnbS1SapUser<LteEnbRrc>;
+  /// allow MemberEpcEnbS1SapUser<LteEnbRrc> class friend access
   friend class EpcX2SpecificEpcX2SapUser<LteEnbRrc>;
+  /// allow UeManager class friend access
   friend class UeManager;
+  /// allow  MemberLteCcmRrcSapUser<LteEnbRrc> class friend access
   friend class MemberLteCcmRrcSapUser<LteEnbRrc>;
 
 public:
@@ -996,19 +1006,53 @@ private:
 
   // RRC SAP methods
 
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::CompleteSetupUe interface to UeManager::CompleteSetupUe
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::CompleteSetupUe interface to UeManager::CompleteSetupUe
+   * \param rnti the RNTI
+   * \param params the LteEnbRrcSapProvider::CompleteSetupUeParameters
+   */
   void DoCompleteSetupUe (uint16_t rnti, LteEnbRrcSapProvider::CompleteSetupUeParameters params);
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionRequest interface to UeManager::RecvRrcConnectionRequest
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionRequest interface to UeManager::RecvRrcConnectionRequest
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::RrcConnectionRequest
+   */
   void DoRecvRrcConnectionRequest (uint16_t rnti, LteRrcSap::RrcConnectionRequest msg);
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted interface to UeManager::RecvRrcConnectionSetupCompleted
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionSetupCompleted interface to UeManager::RecvRrcConnectionSetupCompleted
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::RrcConnectionSetupCompleted
+   */
   void DoRecvRrcConnectionSetupCompleted (uint16_t rnti, LteRrcSap::RrcConnectionSetupCompleted msg);
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted interface to UeManager::RecvRrcConnectionReconfigurationCompleted
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReconfigurationCompleted interface to UeManager::RecvRrcConnectionReconfigurationCompleted
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::RrcConnectionReconfigurationCompleted
+   */
   void DoRecvRrcConnectionReconfigurationCompleted (uint16_t rnti, LteRrcSap::RrcConnectionReconfigurationCompleted msg);
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest interface to UeManager::RecvRrcConnectionReestablishmentRequest
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentRequest interface to UeManager::RecvRrcConnectionReestablishmentRequest
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::RrcConnectionReestablishmentRequest
+   */
   void DoRecvRrcConnectionReestablishmentRequest (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentRequest msg);
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete interface to UeManager::RecvRrcConnectionReestablishmentComplete
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvRrcConnectionReestablishmentComplete interface to UeManager::RecvRrcConnectionReestablishmentComplete
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::RrcConnectionReestablishmentComplete
+   */
   void DoRecvRrcConnectionReestablishmentComplete (uint16_t rnti, LteRrcSap::RrcConnectionReestablishmentComplete msg);
-  /// Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvMeasurementReport interface to UeManager::RecvMeasurementReport
+  /**
+   * Part of the RRC protocol. Forwarding LteEnbRrcSapProvider::RecvMeasurementReport interface to UeManager::RecvMeasurementReport
+   *
+   * \param rnti the RNTI
+   * \param msg the LteRrcSap::MeasurementReport
+   */
   void DoRecvMeasurementReport (uint16_t rnti, LteRrcSap::MeasurementReport msg);
 
   // S1 SAP methods
