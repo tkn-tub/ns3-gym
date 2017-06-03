@@ -3382,6 +3382,14 @@ TcpSocketBase::TimeWait ()
   NS_LOG_DEBUG (TcpStateName[m_state] << " -> TIME_WAIT");
   m_state = TIME_WAIT;
   CancelAllTimers ();
+  if (!m_closeNotified)
+    {
+      // Technically the connection is not fully closed, but we notify now 
+      // because an implementation (real socket) would behave as if closed.
+      // Notify normal close when entering TIME_WAIT or leaving LAST_ACK.
+      NotifyNormalClose ();
+      m_closeNotified = true;
+    }
   // Move from TIME_WAIT to CLOSED after 2*MSL. Max segment lifetime is 2 min
   // according to RFC793, p.28
   m_timewaitEvent = Simulator::Schedule (Seconds (2 * m_msl),
