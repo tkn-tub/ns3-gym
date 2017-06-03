@@ -170,7 +170,7 @@ CsmaChannel::Detach (Ptr<CsmaNetDevice> device)
 }
 
 bool
-CsmaChannel::TransmitStart (Ptr<Packet> p, uint32_t srcId)
+CsmaChannel::TransmitStart (Ptr<const Packet> p, uint32_t srcId)
 {
   NS_LOG_FUNCTION (this << p << srcId);
   NS_LOG_INFO ("UID is " << p->GetUid () << ")");
@@ -188,7 +188,7 @@ CsmaChannel::TransmitStart (Ptr<Packet> p, uint32_t srcId)
     }
 
   NS_LOG_LOGIC ("switch to TRANSMITTING");
-  m_currentPkt = p;
+  m_currentPkt = p->Copy ();
   m_currentSrc = srcId;
   m_state = TRANSMITTING;
   return true;

@@ -184,7 +184,7 @@ public:
    * \return True if the channel is not busy and the transmitting net
    * device is currently active.
    */
-  bool TransmitStart (Ptr<Packet> p, uint32_t srcId);
+  bool TransmitStart (Ptr<const Packet> p, uint32_t srcId);
 
   /**
    * \brief Indicates that the net device has finished transmitting
