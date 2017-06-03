@@ -922,7 +922,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               // intended for base station, ignore
               break;
             case ManagementMessageType::MESSAGE_TYPE_RNG_RSP:
-              NS_ASSERT_MSG (SS_STATE_WAITING_RNG_RSP,
+              NS_ASSERT_MSG (GetState () == SS_STATE_WAITING_RNG_RSP,
                              "SS: Error while receiving a ranging response message: SS state should be SS_STATE_WAITING_RNG_RSP");
               packet->RemoveHeader (rngrsp);
               m_linkManager->PerformRanging (cid, rngrsp);
@@ -941,7 +941,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
               // intended for base station, ignore
               break;
             case ManagementMessageType::MESSAGE_TYPE_RNG_RSP:
-              NS_ASSERT_MSG (SS_STATE_WAITING_RNG_RSP,
+              NS_ASSERT_MSG (GetState () == SS_STATE_WAITING_RNG_RSP,
                              "SS: Error while receiving a ranging response message: SS state should be SS_STATE_WAITING_RNG_RSP");
               packet->RemoveHeader (rngrsp);
               m_linkManager->PerformRanging (cid, rngrsp);
