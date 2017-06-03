@@ -110,7 +110,7 @@ TcpHybla::SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
       double increment = std::pow (2, m_rho) - 1.0;
       NS_LOG_INFO ("Slow start: inc=" << increment);
 
-      tcb->m_cWnd = std::min (tcb->m_cWnd + (increment * tcb->m_segmentSize),
+      tcb->m_cWnd = std::min (tcb->m_cWnd + (uint32_t)(increment * tcb->m_segmentSize),
                               tcb->m_ssThresh);
 
       NS_LOG_INFO ("In SlowStart, updated to cwnd " << tcb->m_cWnd <<
