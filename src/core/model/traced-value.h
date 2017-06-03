@@ -150,7 +150,7 @@ public:
    */
   template <typename U>
   TracedValue (const TracedValue<U> &other)
-    : m_v (other.m_v)
+    : m_v (other.Get ())
   {}
   /**
    * Copy from a variable type compatible with this underlying type.
@@ -441,192 +441,192 @@ bool operator > (const U &lhs, const TracedValue<T> &rhs)
  *     the underlying values.
  */
 template <typename T, typename U>
-TracedValue<T> operator + (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator + (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() + rhs.Get())> {
   TRACED_VALUE_DEBUG ("x+x");
-  return TracedValue<T> (lhs.Get () + rhs.Get ());
+  return TracedValue<decltype(lhs.Get() + rhs.Get())>(lhs.Get () + rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator + (const TracedValue<T> &lhs, const U &rhs) {
+auto operator + (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() + rhs)> {
   TRACED_VALUE_DEBUG ("x+");
-  return TracedValue<T> (lhs.Get () + rhs);
+  return TracedValue<decltype(lhs.Get() + rhs)>(lhs.Get () + rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator + (const U &lhs, const TracedValue<T> &rhs) {
+auto operator + (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs + rhs.Get())> {
   TRACED_VALUE_DEBUG ("+x");
-  return TracedValue<T> (lhs + rhs.Get ());
+  return TracedValue<decltype(lhs + rhs.Get())>(lhs + rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator - (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator - (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() - rhs.Get())> {
   TRACED_VALUE_DEBUG ("x-x");
-  return TracedValue<T> (lhs.Get () - rhs.Get ());
+  return TracedValue<decltype(lhs.Get() - rhs.Get())>(lhs.Get () - rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator - (const TracedValue<T> &lhs, const U &rhs) {
+auto operator - (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() - rhs)> {
   TRACED_VALUE_DEBUG ("x-");
-  return TracedValue<T> (lhs.Get () - rhs);
+  return TracedValue<decltype(lhs.Get() - rhs)>(lhs.Get () - rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator - (const U &lhs, const TracedValue<T> &rhs) {
+auto operator - (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs - rhs.Get())> {
   TRACED_VALUE_DEBUG ("-x");
-  return TracedValue<T> (lhs - rhs.Get ());
+  return TracedValue<decltype(lhs - rhs.Get())>(lhs - rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator * (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator * (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() * rhs.Get())> {
   TRACED_VALUE_DEBUG ("x*x");
-  return TracedValue<T> (lhs.Get () * rhs.Get ());
+  return TracedValue<decltype(lhs.Get() * rhs.Get())>(lhs.Get () * rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator * (const TracedValue<T> &lhs, const U &rhs) {
+auto operator * (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() * rhs)> {
   TRACED_VALUE_DEBUG ("x*");
-  return TracedValue<T> (lhs.Get () * rhs);
+  return TracedValue<decltype(lhs.Get() * rhs)>(lhs.Get () * rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator * (const U &lhs, const TracedValue<T> &rhs) {
+auto operator * (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs + rhs.Get())> {
   TRACED_VALUE_DEBUG ("*x");
-  return TracedValue<T> (lhs * rhs.Get ());
+  return TracedValue<decltype(lhs + rhs.Get())>(lhs * rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator / (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator / (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() / rhs.Get())> {
   TRACED_VALUE_DEBUG ("x/x");
-  return TracedValue<T> (lhs.Get () / rhs.Get ());
+  return TracedValue<decltype(lhs.Get() / rhs.Get())>(lhs.Get () / rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator / (const TracedValue<T> &lhs, const U &rhs) {
+auto operator / (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() / rhs)> {
   TRACED_VALUE_DEBUG ("x/");
-  return TracedValue<T> (lhs.Get () / rhs);
+  return TracedValue<decltype(lhs.Get() / rhs)>(lhs.Get () / rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator / (const U &lhs, const TracedValue<T> &rhs) {
+auto operator / (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs / rhs.Get())> {
   TRACED_VALUE_DEBUG ("/x");
-  return TracedValue<T> (lhs / rhs.Get ());
+  return TracedValue<decltype(lhs / rhs.Get())>(lhs / rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator % (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator % (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() % rhs.Get())> {
   TRACED_VALUE_DEBUG ("x%x");
-  return TracedValue<T> (lhs.Get () % rhs.Get ());
+  return TracedValue<decltype(lhs.Get() % rhs.Get())>(lhs.Get () % rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator % (const TracedValue<T> &lhs, const U &rhs) {
+auto operator % (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() % rhs)> {
   TRACED_VALUE_DEBUG ("x%");
-  return TracedValue<T> (lhs.Get () % rhs);
+  return TracedValue<decltype(lhs.Get() % rhs)>(lhs.Get () % rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator % (const U &lhs, const TracedValue<T> &rhs) {
+auto operator % (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs % rhs.Get())> {
   TRACED_VALUE_DEBUG ("%x");
-  return TracedValue<T> (lhs % rhs.Get ());
+  return TracedValue<decltype(lhs % rhs.Get())>(lhs % rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator ^ (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator ^ (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() ^ rhs.Get())> {
   TRACED_VALUE_DEBUG ("x^x");
-  return TracedValue<T> (lhs.Get () ^ rhs.Get ());
+  return TracedValue<decltype(lhs.Get() ^ rhs.Get())>(lhs.Get () ^ rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator ^ (const TracedValue<T> &lhs, const U &rhs) {
+auto operator ^ (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() ^ rhs)> {
   TRACED_VALUE_DEBUG ("x^");
-  return TracedValue<T> (lhs.Get () ^ rhs);
+  return TracedValue<decltype(lhs.Get() ^ rhs)>(lhs.Get () ^ rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator ^ (const U &lhs, const TracedValue<T> &rhs) {
+auto operator ^ (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs ^ rhs.Get())> {
   TRACED_VALUE_DEBUG ("^x");
-  return TracedValue<T> (lhs ^ rhs.Get ());
+  return TracedValue<decltype(lhs ^ rhs.Get())>(lhs ^ rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator | (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator | (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() | rhs.Get())> {
   TRACED_VALUE_DEBUG ("x|x");
-  return TracedValue<T> (lhs.Get () | rhs.Get ());
+  return TracedValue<decltype(lhs.Get() | rhs.Get())>(lhs.Get () | rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator | (const TracedValue<T> &lhs, const U &rhs) {
+auto operator | (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() | rhs)> {
   TRACED_VALUE_DEBUG ("x|");
-  return TracedValue<T> (lhs.Get () | rhs);
+  return TracedValue<decltype(lhs.Get() | rhs)>(lhs.Get () | rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator | (const U &lhs, const TracedValue<T> &rhs) {
+auto operator | (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs | rhs.Get())> {
   TRACED_VALUE_DEBUG ("|x");
-  return TracedValue<T> (lhs | rhs.Get ());
+  return TracedValue<decltype(lhs | rhs.Get())>(lhs | rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator & (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator & (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() & rhs.Get())> {
   TRACED_VALUE_DEBUG ("x&x");
-  return TracedValue<T> (lhs.Get () & rhs.Get ());
+  return TracedValue<decltype(lhs.Get() & rhs.Get())>(lhs.Get () & rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator & (const TracedValue<T> &lhs, const U &rhs) {
+auto operator & (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() & rhs)> {
   TRACED_VALUE_DEBUG ("x&");
-  return TracedValue<T> (lhs.Get () & rhs);
+  return TracedValue<decltype(lhs.Get() & rhs)>(lhs.Get () & rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator & (const U &lhs, const TracedValue<T> &rhs) {
+auto operator & (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs & rhs.Get())> {
   TRACED_VALUE_DEBUG ("&x");
-  return TracedValue<T> (lhs & rhs.Get ());
+  return TracedValue<decltype(lhs & rhs.Get())>(lhs & rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator << (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator << (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() << rhs.Get())> {
   TRACED_VALUE_DEBUG ("x<<x");
-  return TracedValue<T> (lhs.Get () << rhs.Get ());
+  return TracedValue<decltype(lhs.Get() << rhs.Get())>(lhs.Get () << rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator << (const TracedValue<T> &lhs, const U &rhs) {
+auto operator << (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() << rhs)> {
   TRACED_VALUE_DEBUG ("x<<");
-  return TracedValue<T> (lhs.Get () << rhs);
+  return TracedValue<decltype(lhs.Get() << rhs)>(lhs.Get () << rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator << (const U &lhs, const TracedValue<T> &rhs) {
+auto operator << (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs << rhs.Get())> {
   TRACED_VALUE_DEBUG ("<<x");
-  return TracedValue<T> (lhs << rhs.Get ());
+  return TracedValue<decltype(lhs << rhs.Get())>(lhs << rhs.Get ());
 }
 
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator >> (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
+auto operator >> (const TracedValue<T> &lhs, const TracedValue<U> &rhs) -> TracedValue<decltype(lhs.Get() >> rhs.Get())> {
   TRACED_VALUE_DEBUG ("x>>x");
-  return TracedValue<T> (lhs.Get () >> rhs.Get ());
+  return TracedValue<decltype(lhs.Get() >> rhs.Get())>(lhs.Get () >> rhs.Get ());
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator >> (const TracedValue<T> &lhs, const U &rhs) {
+auto operator >> (const TracedValue<T> &lhs, const U &rhs) -> TracedValue<decltype(lhs.Get() >> rhs)> {
   TRACED_VALUE_DEBUG ("x>>");
-  return TracedValue<T> (lhs.Get () >> rhs);
+  return TracedValue<decltype(lhs.Get() >> rhs)>(lhs.Get () >> rhs);
 }
 /** \copydoc operator+(const TracedValue<T>&lhs,const TracedValue<U>&rhs) */
 template <typename T, typename U>
-TracedValue<T> operator >> (const U &lhs, const TracedValue<T> &rhs) {
+auto operator >> (const U &lhs, const TracedValue<T> &rhs) -> TracedValue<decltype(lhs >> rhs.Get())> {
   TRACED_VALUE_DEBUG (">>x");
-  return TracedValue<T> (lhs >> rhs.Get ());
+  return TracedValue<decltype(lhs >> rhs.Get())>(lhs >> rhs.Get ());
 }
 
 /**
