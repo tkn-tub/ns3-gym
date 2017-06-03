@@ -66,7 +66,7 @@ public:
    * \param txTime Transmit time to apply
    * \returns true if successful (currently always true)
    */
-  virtual bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src,
+  virtual bool TransmitStart (Ptr<const Packet> p, Ptr<PointToPointNetDevice> src,
                               Time txTime);
 };
 
