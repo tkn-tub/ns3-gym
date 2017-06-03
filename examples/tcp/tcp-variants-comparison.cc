@@ -244,6 +244,8 @@ int main (int argc, char *argv[])
   cmd.AddValue ("sack", "Enable or disable SACK option", sack);
   cmd.Parse (argc, argv);
 
+  transport_prot = std::string ("ns3::") + transport_prot;
+
   SeedManager::SetSeed (1);
   SeedManager::SetRun (run);
 
@@ -274,65 +276,18 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
 
   // Select TCP variant
-  if (transport_prot.compare ("TcpNewReno") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpNewReno::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpHybla") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpHybla::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpHighSpeed") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpHighSpeed::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpVegas") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpVegas::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpScalable") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpScalable::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpHtcp") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpHtcp::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpVeno") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpVeno::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpBic") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpBic::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpYeah") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpYeah::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpIllinois") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpIllinois::GetTypeId ()));
-    }
-  else if (transport_prot.compare ("TcpWestwood") == 0)
-    { // the default protocol type in ns3::TcpWestwood is WESTWOOD
+  if (transport_prot.compare ("ns3::TcpWestwoodPlus") == 0)
+    { 
+      // TcpWestwoodPlus is not an actual TypeId name; we need TcpWestwood here
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpWestwood::GetTypeId ()));
-      Config::SetDefault ("ns3::TcpWestwood::FilterType", EnumValue (TcpWestwood::TUSTIN));
-    }
-  else if (transport_prot.compare ("TcpWestwoodPlus") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpWestwood::GetTypeId ()));
+      // the default protocol type in ns3::TcpWestwood is WESTWOOD
       Config::SetDefault ("ns3::TcpWestwood::ProtocolType", EnumValue (TcpWestwood::WESTWOODPLUS));
-      Config::SetDefault ("ns3::TcpWestwood::FilterType", EnumValue (TcpWestwood::TUSTIN));
-    }
-  else if (transport_prot.compare ("TcpLedbat") == 0)
-    {
-      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TcpLedbat::GetTypeId ()));
     }
   else
     {
-      NS_LOG_DEBUG ("Invalid TCP version");
-      exit (1);
+      TypeId tcpTid;
+      NS_ABORT_MSG_UNLESS (TypeId::LookupByNameFailSafe (transport_prot, &tcpTid), "TypeId " << transport_prot << " not found");
+      Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TypeId::LookupByName (transport_prot)));
     }
 
   // Create gateways, sources, and sinks
@@ -427,41 +382,20 @@ int main (int argc, char *argv[])
   for (uint16_t i = 0; i < sources.GetN (); i++)
     {
       AddressValue remoteAddress (InetSocketAddress (sink_interfaces.GetAddress (i, 0), port));
+      Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
+      BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
+      ftp.SetAttribute ("Remote", remoteAddress);
+      ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
+      ftp.SetAttribute ("MaxBytes", UintegerValue (int(data_mbytes * 1000000)));
 
-      if (transport_prot.compare ("TcpNewReno") == 0
-          || transport_prot.compare ("TcpWestwood") == 0
-          || transport_prot.compare ("TcpWestwoodPlus") == 0
-          || transport_prot.compare ("TcpHybla") == 0
-          || transport_prot.compare ("TcpHighSpeed") == 0
-          || transport_prot.compare ("TcpHtcp") == 0
-          || transport_prot.compare ("TcpVegas") == 0
-          || transport_prot.compare ("TcpVeno") == 0
-          || transport_prot.compare ("TcpBic") == 0
-          || transport_prot.compare ("TcpScalable") == 0
-          || transport_prot.compare ("TcpYeah") == 0
-          || transport_prot.compare ("TcpIllinois") == 0
-          || transport_prot.compare ("TcpLedbat") == 0)
-        {
-          Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
-          BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
-          ftp.SetAttribute ("Remote", remoteAddress);
-          ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
-          ftp.SetAttribute ("MaxBytes", UintegerValue (int(data_mbytes * 1000000)));
+      ApplicationContainer sourceApp = ftp.Install (sources.Get (i));
+      sourceApp.Start (Seconds (start_time * i));
+      sourceApp.Stop (Seconds (stop_time - 3));
 
-          ApplicationContainer sourceApp = ftp.Install (sources.Get (i));
-          sourceApp.Start (Seconds (start_time * i));
-          sourceApp.Stop (Seconds (stop_time - 3));
-
-          sinkHelper.SetAttribute ("Protocol", TypeIdValue (TcpSocketFactory::GetTypeId ()));
-          ApplicationContainer sinkApp = sinkHelper.Install (sinks);
-          sinkApp.Start (Seconds (start_time * i));
-          sinkApp.Stop (Seconds (stop_time));
-        }
-      else
-        {
-          NS_LOG_DEBUG ("Invalid transport protocol " << transport_prot << " specified");
-          exit (1);
-        }
+      sinkHelper.SetAttribute ("Protocol", TypeIdValue (TcpSocketFactory::GetTypeId ()));
+      ApplicationContainer sinkApp = sinkHelper.Install (sinks);
+      sinkApp.Start (Seconds (start_time * i));
+      sinkApp.Stop (Seconds (stop_time));
     }
 
   // Set up tracing if enabled
