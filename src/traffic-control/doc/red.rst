@@ -182,7 +182,7 @@ as shown below:
 
 .. sourcecode:: cpp
 
-Config::SetDefault ("ns3::RedQueueDisc::NLRED", BooleanValue (true));
+  Config::SetDefault ("ns3::RedQueueDisc::NLRED", BooleanValue (true));
 
 Examples
 ========
