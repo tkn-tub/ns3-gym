@@ -163,15 +163,18 @@ WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
 
   NS_ASSERT_MSG (GetMode () == QueueBase::QUEUE_MODE_PACKETS, "WifiMacQueues must be in packet mode");
 
-  // if the queue is full, check if the time-to-live of the oldest packet has
-  // expired. If so, it can be removed so as to make room for the new packet.
-  if (GetNPackets () == GetMaxPackets ())
+  // if the queue is full, remove the first stale packet (if any) encountered
+  // starting from the head of the queue, in order to make room for the new packet.
+  if (QueueBase::GetNPackets () == GetMaxPackets ())
     {
       auto it = Head ();
-      TtlExceeded (it);
+      while (it != Tail () && !TtlExceeded (it))
+        {
+          it++;
+        }
     }
 
-  if (GetNPackets () == GetMaxPackets () && m_dropPolicy == DROP_OLDEST)
+  if (QueueBase::GetNPackets () == GetMaxPackets () && m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
       DoRemove (Head ());
@@ -188,15 +191,18 @@ WifiMacQueue::PushFront (Ptr<WifiMacQueueItem> item)
 
   NS_ASSERT_MSG (GetMode () == QueueBase::QUEUE_MODE_PACKETS, "WifiMacQueues must be in packet mode");
 
-  // if the queue is full, check if the time-to-live of the oldest packet has
-  // expired. If so, it can be removed so as to make room for the new packet.
-  if (GetNPackets () == GetMaxPackets ())
+  // if the queue is full, remove the first stale packet (if any) encountered
+  // starting from the head of the queue, in order to make room for the new packet.
+  if (QueueBase::GetNPackets () == GetMaxPackets ())
     {
       auto it = Head ();
-      TtlExceeded (it);
+      while (it != Tail () && !TtlExceeded (it))
+        {
+          it++;
+        }
     }
 
-  if (GetNPackets () == GetMaxPackets () && m_dropPolicy == DROP_OLDEST)
+  if (QueueBase::GetNPackets () == GetMaxPackets () && m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
       DoRemove (Head ());

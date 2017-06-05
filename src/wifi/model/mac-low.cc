@@ -674,7 +674,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
       //queue when previous RTS request has failed.
       m_ampdu = false;
     }
-  else if (m_currentHdr.IsQosData () && m_aggregateQueue[GetTid (packet, *hdr)]->GetNPackets () > 0)
+  else if (m_currentHdr.IsQosData () && !m_aggregateQueue[GetTid (packet, *hdr)]->IsEmpty ())
     {
       //m_aggregateQueue > 0 occurs when a RTS/CTS exchange failed before an A-MPDU transmission.
       //In that case, we transmit the same A-MPDU as previously.
@@ -2026,7 +2026,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
   if (m_currentHdr.IsQosData ())
     {
       uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
-      if (m_aggregateQueue[GetTid (m_currentPacket, m_currentHdr)]->GetNPackets () != 0)
+      if (!m_aggregateQueue[GetTid (m_currentPacket, m_currentHdr)]->IsEmpty ())
         {
           for (std::vector<Item>::size_type i = 0; i != m_txPackets[tid].size (); i++)
             {
@@ -3006,7 +3006,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 void
 MacLow::FlushAggregateQueue (uint8_t tid)
 {
-  if (m_aggregateQueue[tid]->GetNPackets () > 0)
+  if (!m_aggregateQueue[tid]->IsEmpty ())
     {
       NS_LOG_DEBUG ("Flush aggregate queue");
       m_aggregateQueue[tid]->Flush ();
