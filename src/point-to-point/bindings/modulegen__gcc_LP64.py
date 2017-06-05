@@ -5647,10 +5647,10 @@ def register_Ns3PointToPointChannel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## point-to-point-channel.h (module 'point-to-point'): bool ns3::PointToPointChannel::TransmitStart(ns3::Ptr<ns3::Packet> p, ns3::Ptr<ns3::PointToPointNetDevice> src, ns3::Time txTime) [member function]
+    ## point-to-point-channel.h (module 'point-to-point'): bool ns3::PointToPointChannel::TransmitStart(ns3::Ptr<ns3::Packet const> p, ns3::Ptr<ns3::PointToPointNetDevice> src, ns3::Time txTime) [member function]
     cls.add_method('TransmitStart', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')], 
                    is_virtual=True)
     ## point-to-point-channel.h (module 'point-to-point'): ns3::Time ns3::PointToPointChannel::GetDelay() const [member function]
     cls.add_method('GetDelay', 
@@ -5863,10 +5863,10 @@ def register_Ns3PointToPointRemoteChannel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## point-to-point-remote-channel.h (module 'point-to-point'): bool ns3::PointToPointRemoteChannel::TransmitStart(ns3::Ptr<ns3::Packet> p, ns3::Ptr<ns3::PointToPointNetDevice> src, ns3::Time txTime) [member function]
+    ## point-to-point-remote-channel.h (module 'point-to-point'): bool ns3::PointToPointRemoteChannel::TransmitStart(ns3::Ptr<ns3::Packet const> p, ns3::Ptr<ns3::PointToPointNetDevice> src, ns3::Time txTime) [member function]
     cls.add_method('TransmitStart', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')], 
+                   [param('ns3::Ptr< ns3::Packet const >', 'p'), param('ns3::Ptr< ns3::PointToPointNetDevice >', 'src'), param('ns3::Time', 'txTime')], 
                    is_virtual=True)
     return
 
