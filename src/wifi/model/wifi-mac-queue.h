@@ -284,13 +284,27 @@ public:
   uint32_t GetNPacketsByTidAndAddress (uint8_t tid,
                                        WifiMacHeader::AddressType type,
                                        Mac48Address addr);
+
   /**
-   * This method must be used (instead of the IsEmpty method of the base class)
-   * to check whether there are packets with unexpired time to live in the queue
+   * \return true if the queue is empty; false otherwise
    *
-   * \return true if there are packets with unexpired time to live
+   * Overrides the IsEmpty method provided by QueueBase
    */
-  bool HasPackets (void);
+  bool IsEmpty (void);
+
+  /**
+   * \return The number of packets currently stored in the Queue
+   *
+   * Overrides the GetNPackets method provided by QueueBase
+   */
+  uint32_t GetNPackets (void);
+
+  /**
+   * \return The number of bytes currently occupied by the packets in the Queue
+   *
+   * Overrides the GetNBytes method provided by QueueBase
+   */
+  uint32_t GetNBytes (void);
 
 private:
   /**
@@ -306,6 +320,11 @@ private:
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
 };
+
+/// Forward declare overridden methods to avoid specializing after instantiation
+template<> bool WifiQueue<WifiMacQueueItem>::IsEmpty (void);
+template<> uint32_t WifiQueue<WifiMacQueueItem>::GetNPackets (void);
+template<> uint32_t WifiQueue<WifiMacQueueItem>::GetNBytes (void);
 
 /// Declare WifiMacQueue as a specialization of template class WifiQueue
 typedef WifiQueue<WifiMacQueueItem> WifiMacQueue;

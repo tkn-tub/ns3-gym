@@ -153,7 +153,7 @@ bool
 EdcaTxopN::NeedsAccess (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_queue->HasPackets () || m_currentPacket != 0 || m_baManager->HasPackets ();
+  return !m_queue->IsEmpty () || m_currentPacket != 0 || m_baManager->HasPackets ();
 }
 
 uint16_t EdcaTxopN::GetNextSequenceNumberFor (WifiMacHeader *hdr)
@@ -186,7 +186,7 @@ EdcaTxopN::NotifyAccessGranted (void)
   m_startTxop = Simulator::Now ();
   if (m_currentPacket == 0)
     {
-      if (!m_queue->HasPackets () && !m_baManager->HasPackets ())
+      if (m_queue->IsEmpty () && !m_baManager->HasPackets ())
         {
           NS_LOG_DEBUG ("queue is empty");
           return;
@@ -724,7 +724,7 @@ EdcaTxopN::RestartAccessIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0
-       || m_queue->HasPackets () || m_baManager->HasPackets ())
+       || !m_queue->IsEmpty () || m_baManager->HasPackets ())
       && !m_dcf->IsAccessRequested ())
     {
       Ptr<const Packet> packet;
@@ -765,7 +765,7 @@ EdcaTxopN::StartAccessIfNeeded (void)
 {
   //NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
-      && (m_queue->HasPackets () || m_baManager->HasPackets ())
+      && (!m_queue->IsEmpty () || m_baManager->HasPackets ())
       && !m_dcf->IsAccessRequested ())
     {
       Ptr<const Packet> packet;

@@ -403,7 +403,7 @@ WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressTyp
 
 template<>
 bool
-WifiMacQueue::HasPackets (void)
+WifiMacQueue::IsEmpty (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -411,12 +411,46 @@ WifiMacQueue::HasPackets (void)
     {
       if (!TtlExceeded (it))
         {
-          NS_LOG_DEBUG ("returns true");
-          return true;
+          NS_LOG_DEBUG ("returns false");
+          return false;
         }
     }
-  NS_LOG_DEBUG ("returns false");
-  return false;
+  NS_LOG_DEBUG ("returns true");
+  return true;
+}
+
+template<>
+uint32_t
+WifiMacQueue::GetNPackets (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  // remove packets that stayed in the queue for too long
+  for (auto it = Head (); it != Tail (); )
+    {
+      if (!TtlExceeded (it))
+        {
+          it++;
+        }
+    }
+  return QueueBase::GetNPackets ();
+}
+
+template<>
+uint32_t
+WifiMacQueue::GetNBytes (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  // remove packets that stayed in the queue for too long
+  for (auto it = Head (); it != Tail (); )
+    {
+      if (!TtlExceeded (it))
+        {
+          it++;
+        }
+    }
+  return QueueBase::GetNBytes ();
 }
 
 NS_OBJECT_TEMPLATE_CLASS_DEFINE (WifiQueue,WifiMacQueueItem);
