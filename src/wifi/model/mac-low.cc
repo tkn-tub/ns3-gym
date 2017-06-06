@@ -1546,13 +1546,14 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
 
           if (delay.IsZero ())
             {
-              NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
               if (!singleMpdu)
                 {
+                  NS_LOG_DEBUG ("Sending MPDU as part of A-MPDU");
                   mpdutype = MPDU_IN_AGGREGATE;
                 }
               else
                 {
+                  NS_LOG_DEBUG ("Sending S-MPDU");
                   mpdutype = NORMAL_MPDU;
                 }
             }
@@ -2757,7 +2758,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
                   if (aggregated)
                     {
-                      NS_LOG_DEBUG ("Adding packet with Sequence number " << currentSequenceNumber << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
+                      NS_LOG_DEBUG ("Adding packet with sequence number " << currentSequenceNumber << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (aggPacket, peekedHdr));
                     }
@@ -2842,7 +2843,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                               InsertInTxQueue (packet, hdr, tstamp, tid);
                             }
                         }
-                      NS_LOG_DEBUG ("Adding packet with Sequence number " << peekedHdr.GetSequenceNumber () << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
+                      NS_LOG_DEBUG ("Adding packet with sequence number " << peekedHdr.GetSequenceNumber () << " to A-MPDU, packet size = " << newPacket->GetSize () << ", A-MPDU size = " << currentAggregatedPacket->GetSize ());
                       i++;
                       isAmpdu = true;
                       if (!m_txParams.MustSendRts ())
@@ -2981,7 +2982,10 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               currentAggregatedPacket = Create<Packet> ();
               edcaIt->second->GetMpduAggregator ()->AggregateSingleMpdu (packet, currentAggregatedPacket);
               m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (packet, peekedHdr));
-
+              if (m_txParams.MustSendRts ())
+                {
+                  InsertInTxQueue (packet, peekedHdr, tstamp, tid);
+                }
               if (edcaIt->second->GetBaAgreementExists (hdr.GetAddr1 (), tid))
                 {
                   edcaIt->second->CompleteAmpduTransfer (peekedHdr.GetAddr1 (), tid);
