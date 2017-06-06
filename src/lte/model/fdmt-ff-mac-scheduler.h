@@ -196,13 +196,13 @@ private:
 
   /**
    * Sched UL noise interference request function
-   * \param params teh Sched UL noise interference request parameters
+   * \param params the Sched UL noise interference request parameters
    */ 
   void DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params);
 
   /**
    * Sched UL SR infor request function
-   * \param params teh Sched UL SR info request parameters
+   * \param params the Sched UL SR info request parameters
    */
   void DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params);
 

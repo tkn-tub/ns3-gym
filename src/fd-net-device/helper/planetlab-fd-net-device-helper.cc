@@ -175,7 +175,7 @@ PlanetLabFdNetDeviceHelper::CreateFileDescriptor (void) const
       //
       // -i<IP-address> The IP address to assign to the new tap device;
       // -n<network-prefix> The network prefix to assign to the new tap device;
-      // -t Set teh IFF_TAP flag
+      // -t Set the IFF_TAP flag
       // -p<path> the path to the unix socket described above.
       //
       // Example tap-creator -i1.2.3.1 -n24 -t -pblah

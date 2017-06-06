@@ -223,7 +223,7 @@ private:
 
   /**
    * Sched DL CQI info request function
-   * \param params teh Sched DL CQI info request parameters
+   * \param params the Sched DL CQI info request parameters
    */
   void DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::SchedDlCqiInfoReqParameters& params);
 
@@ -247,7 +247,7 @@ private:
 
   /**
    * Sched UL MAC control info request function
-   * \param params teh Sched UL MAC control info request parameters
+   * \param params the Sched UL MAC control info request parameters
    */
   void DoSchedUlMacCtrlInfoReq (const struct FfMacSchedSapProvider::SchedUlMacCtrlInfoReqParameters& params);
 

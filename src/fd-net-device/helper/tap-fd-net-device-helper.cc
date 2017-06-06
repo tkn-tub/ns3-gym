@@ -204,7 +204,7 @@ TapFdNetDeviceHelper::CreateFileDescriptor (void) const
       // -I<IPv6-address> The IP v6 address to assign to the new tap device;
       // -n<network-IPv4-mask> The network IPv4 mask to assign to the new tap device;
       // -N<network-IPv6-mask> The network IPv6 mask to assign to the new tap device;
-      // -t Set teh IFF_TAP flag
+      // -t Set the IFF_TAP flag
       // -h Set the IFF_NO_PI flag
       // -p<path> the path to the unix socket described above.
       //
