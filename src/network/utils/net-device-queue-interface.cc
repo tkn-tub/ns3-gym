@@ -145,12 +145,6 @@ NetDeviceQueue::GetQueueLimits ()
   return m_queueLimits;
 }
 
-void
-NetDeviceQueue::DoNsLog (const enum LogLevel level, std::string str)
-{
-    NS_LOG (level, str);
-}
-
 
 NS_OBJECT_ENSURE_REGISTERED (NetDeviceQueueInterface);
 

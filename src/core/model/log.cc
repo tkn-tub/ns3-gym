@@ -23,6 +23,7 @@
 #include <utility>
 #include <iostream>
 #include "assert.h"
+#include <stdexcept>
 #include "ns3/core-config.h"
 #include "fatal-error.h"
 
@@ -128,6 +129,23 @@ LogComponent::LogComponent (const std::string & name,
         }
     }
   components->insert (std::make_pair (name, this));
+}
+
+LogComponent &
+GetLogComponent (const std::string name)
+{
+  LogComponent::ComponentList *components = LogComponent::GetComponentList ();
+  LogComponent* ret;
+
+  try
+    {
+      ret = components->at (name);
+    }
+  catch (std::out_of_range&)
+    {
+      NS_FATAL_ERROR ("Log component \"" << name << "\" does not exist.");
+    }
+  return *ret;
 }
 
 void

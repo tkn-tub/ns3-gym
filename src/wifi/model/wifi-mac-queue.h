@@ -319,6 +319,8 @@ private:
 
   Time m_maxDelay;                          //!< Time to live for packets in the queue
   DropPolicy m_dropPolicy;                  //!< Drop behavior of queue
+
+  NS_LOG_TEMPLATE_DECLARE;                  //!< redefinition of the log component
 };
 
 /// Forward declare overridden methods to avoid specializing after instantiation

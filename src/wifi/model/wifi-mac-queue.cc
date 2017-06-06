@@ -111,6 +111,7 @@ WifiMacQueue::GetTypeId (void)
 
 template<>
 WifiMacQueue::WifiQueue ()
+  : NS_LOG_TEMPLATE_DEFINE ("WifiMacQueue")
 {
 }
 
