@@ -516,6 +516,21 @@ public:
                         Ptr<NetDevice> sourceEnbDev, Ptr<NetDevice> targetEnbDev);
 
 
+  /**
+   * Manually trigger an X2-based handover.
+   *
+   * \param hoTime when the handover shall be initiated
+   * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
+   * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
+   *                     (originally the UE is attached to this eNB)
+   * \param targetCellId target CellId (the UE primary component carrier will
+   *                     be connected to this cell after the handover)
+   *
+   * \warning Requires the use of EPC mode. See SetEpcHelper() method
+   */
+  void HandoverRequest (Time hoTime, Ptr<NetDevice> ueDev,
+                        Ptr<NetDevice> sourceEnbDev, uint16_t targetCellId);
+
   /** 
    * Activate a Data Radio Bearer on a given UE devices (for LTE-only simulation).
    * 
@@ -697,16 +712,15 @@ private:
    * \param ueDev the UE that hands off, must be of the type LteUeNetDevice
    * \param sourceEnbDev source eNB, must be of the type LteEnbNetDevice
    *                     (originally the UE is attached to this eNB)
-   * \param targetEnbDev target eNB, must be of the type LteEnbNetDevice
-   *                     (the UE would be connected to this eNB after the
-   *                     handover)
+   * \param targetCellId target CellId (the UE primary component carrier will
+   *                     be connected to this cell after the handover)
    *
    * This method is normally scheduled by HandoverRequest() to run at a specific
    * time where a manual handover is desired by the simulation user.
    */
   void DoHandoverRequest (Ptr<NetDevice> ueDev,
                           Ptr<NetDevice> sourceEnbDev,
-                          Ptr<NetDevice> targetEnbDev);
+                          uint16_t targetCellId);
 
 
   /**
