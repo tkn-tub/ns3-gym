@@ -536,6 +536,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       cc->SetDlEarfcn(it->second.GetDlEarfcn());
       cc->SetUlEarfcn(it->second.GetUlEarfcn());
       cc->SetAsPrimary(it->second.IsPrimary());
+      cc->SetCellId (cellId);
       ccMap [it->first] =  cc;
     }
   NS_ABORT_MSG_IF (m_useCa && ccMap.size()<2, "You have to either specify carriers or disable carrier aggregation");
