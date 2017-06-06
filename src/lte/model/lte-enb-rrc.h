@@ -488,6 +488,10 @@ private:
    * unique UE identifier.
    */
   uint64_t m_imsi;
+  /**
+   * ID of the primary CC for this UE
+   */
+  uint8_t m_componentCarrierId;
   
   uint8_t m_lastRrcTransactionIdentifier; ///< last RRC transaction identifier
 

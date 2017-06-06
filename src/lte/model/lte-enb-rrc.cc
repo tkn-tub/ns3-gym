@@ -143,6 +143,7 @@ UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
   : m_lastAllocatedDrbid (0),
     m_rnti (rnti),
     m_imsi (0),
+    m_componentCarrierId (0),
     m_lastRrcTransactionIdentifier (0),
     m_rrc (rrc),
     m_state (s),
