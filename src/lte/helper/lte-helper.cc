@@ -141,9 +141,9 @@ TypeId LteHelper::GetTypeId (void)
                    "The type of pathloss model to be used. "
                    "The allowed values for this attributes are the type names "
                    "of any class inheriting from ns3::PropagationLossModel.",
-                   StringValue ("ns3::FriisPropagationLossModel"),
-                   MakeStringAccessor (&LteHelper::SetPathlossModelType),
-                   MakeStringChecker ())
+                   TypeIdValue (FriisPropagationLossModel::GetTypeId ()),
+                   MakeTypeIdAccessor (&LteHelper::SetPathlossModelType),
+                   MakeTypeIdChecker ())
     .AddAttribute ("FadingModel",
                    "The type of fading model to be used."
                    "The allowed values for this attributes are the type names "
@@ -385,7 +385,7 @@ LteHelper::SetUeComponentCarrierManagerAttribute (std::string n, const Attribute
 }
 
 void
-LteHelper::SetPathlossModelType (std::string type)
+LteHelper::SetPathlossModelType (TypeId type)
 {
   NS_LOG_FUNCTION (this << type);
   m_pathlossModelFactory = ObjectFactory ();

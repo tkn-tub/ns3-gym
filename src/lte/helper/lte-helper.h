@@ -134,7 +134,7 @@ public:
    *             inheriting from ns3::PropagationLossModel, for example:
    *             "ns3::FriisPropagationLossModel"
    */
-  void SetPathlossModelType (std::string type);
+  void SetPathlossModelType (TypeId type);
 
   /**
    * Set an attribute for the path loss models to be created.
