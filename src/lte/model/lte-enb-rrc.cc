@@ -135,7 +135,7 @@ NS_OBJECT_ENSURE_REGISTERED (UeManager);
 
 UeManager::UeManager ()
 {
-  NS_FATAL_ERROR ("this constructor is not espected to be used");
+  NS_FATAL_ERROR ("this constructor is not expected to be used");
 }
 
 
