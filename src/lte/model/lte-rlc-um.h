@@ -57,7 +57,7 @@ public:
    * \param bytes the number of bytes
    * \param layer the layer
    * \param harqId the HARQ ID
-   * \param componentCarrierId componentn carrier ID
+   * \param componentCarrierId component carrier ID
    * \param rnti the RNTI
    * \param lcid the LCID
    */
