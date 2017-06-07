@@ -1399,14 +1399,18 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
   std::list<LteRrcSap::SCellToAddMod> SccCon;
 
   // sCellToReleaseList is always empty since no Scc is released
-  auto it = m_rrc->m_componentCarrierPhyConf.begin();
 
-  it++;
-  for (;it!=m_rrc->m_componentCarrierPhyConf.end(); it++)
+  for (auto &it: m_rrc->m_componentCarrierPhyConf)
     {
+      uint8_t ccId = it.first;
 
-      uint8_t ccId = it->first;
-      Ptr<ComponentCarrierEnb> eNbCcm = it->second;
+      // Skip primary CC.
+      if (ccId == m_componentCarrierId)
+        {
+          continue;
+        }
+
+      Ptr<ComponentCarrierEnb> eNbCcm = it.second;
       LteRrcSap::SCellToAddMod component;
       component.sCellIndex = ccId;
       component.cellIdentification.physCellId = eNbCcm->GetCellId ();
