@@ -1496,33 +1496,24 @@ LteEnbRrc::LteEnbRrc ()
   m_ffrRrcSapProvider.push_back (0);
 }
 
-void LteEnbRrc::ConfigureCarriers(std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf, uint16_t numberOfComponentCarriers)
+void
+LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
 {
   NS_ASSERT_MSG (!m_carriersConfigured, "Secondary carriers can be configured only once.");
   m_componentCarrierPhyConf = ccPhyConf;
-  m_numberOfComponentCarriers = numberOfComponentCarriers;
+  m_numberOfComponentCarriers = ccPhyConf.size ();
 
-  if (m_numberOfComponentCarriers < MIN_NO_CC || m_numberOfComponentCarriers > MAX_NO_CC)
+  NS_ASSERT (m_numberOfComponentCarriers >= MIN_NO_CC && m_numberOfComponentCarriers <= MAX_NO_CC);
+
+  for (uint8_t i = 1; i < m_numberOfComponentCarriers; i++)
     {
-      // this check is neede in order to maintain backward compatibility with scripts and tests
-      // if case lte-helper is not used (like in several tests) the m_numberOfComponentCarriers
-      // is not set and then an error is rised
-      // In this case m_numberOfComponentCarriers is set to 1
-      m_numberOfComponentCarriers = MIN_NO_CC;
+      m_cphySapUser.push_back (new MemberLteEnbCphySapUser<LteEnbRrc> (this));
+      m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this));
+      m_ffrRrcSapUser.push_back (new MemberLteFfrRrcSapUser<LteEnbRrc> (this));
+      m_cphySapProvider.push_back (0);
+      m_cmacSapProvider.push_back (0);
+      m_ffrRrcSapProvider.push_back (0);
     }
-    
-    if (m_numberOfComponentCarriers > MIN_NO_CC)
-      {
-         for ( uint8_t i = 1; i < m_numberOfComponentCarriers ; i++)
-           {
-             m_cphySapUser.push_back (new MemberLteEnbCphySapUser<LteEnbRrc> (this));
-             m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this));
-             m_ffrRrcSapUser.push_back (new MemberLteFfrRrcSapUser<LteEnbRrc> (this));
-             m_cphySapProvider.push_back (0);
-             m_cmacSapProvider.push_back (0);
-             m_ffrRrcSapProvider.push_back (0);
-           } 
-      }
   m_carriersConfigured = true;
   Object::DoInitialize ();
 }

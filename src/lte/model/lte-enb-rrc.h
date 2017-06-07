@@ -855,9 +855,8 @@ public:
   /**
    * \brief Configure carriers.
    * \param ccPhyConf the component carrier configuration
-   * \param numberOfCarriers the number of carriers
    */
-  void ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf, uint16_t numberOfCarriers);
+  void ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf);
 
   /** 
    * set the cell id of this eNB
