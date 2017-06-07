@@ -78,7 +78,7 @@ NS_OBJECT_ENSURE_REGISTERED (LteHelper);
 LteHelper::LteHelper (void)
   : m_fadingStreamsAssigned (false),
     m_imsiCounter (0),
-    m_cellIdCounter (0)
+    m_cellIdCounter {1}
 {
   NS_LOG_FUNCTION (this);
   m_enbNetDeviceFactory.SetTypeId (LteEnbNetDevice::GetTypeId ());
@@ -513,9 +513,7 @@ LteHelper::InstallUeDevice (NodeContainer c)
 Ptr<NetDevice>
 LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 {
-
-  NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num eNBs exceeded");
-  uint16_t cellId = ++m_cellIdCounter;
+  uint16_t cellId = m_cellIdCounter; // \todo Remove, eNB has no cell ID
 
   Ptr<LteEnbNetDevice> dev = m_enbNetDeviceFactory.Create<LteEnbNetDevice> ();
   Ptr<LteHandoverAlgorithm> handoverAlgorithm = m_handoverAlgorithmFactory.Create<LteHandoverAlgorithm> ();
@@ -536,7 +534,8 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       cc->SetDlEarfcn(it->second.GetDlEarfcn());
       cc->SetUlEarfcn(it->second.GetUlEarfcn());
       cc->SetAsPrimary(it->second.IsPrimary());
-      cc->SetCellId (cellId);
+      NS_ABORT_MSG_IF (m_cellIdCounter == 65535, "max num cells exceeded");
+      cc->SetCellId (m_cellIdCounter++);
       ccMap [it->first] =  cc;
     }
   NS_ABORT_MSG_IF (m_useCa && ccMap.size()<2, "You have to either specify carriers or disable carrier aggregation");
