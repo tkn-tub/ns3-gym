@@ -540,6 +540,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       ccMap [it->first] =  cc;
     }
   NS_ABORT_MSG_IF (m_useCa && ccMap.size()<2, "You have to either specify carriers or disable carrier aggregation");
+  NS_ASSERT (ccMap.size () == m_noOfCcs);
 
   for (std::map<uint8_t,Ptr<ComponentCarrierEnb> >::iterator it = ccMap.begin (); it != ccMap.end (); ++it)
     {
