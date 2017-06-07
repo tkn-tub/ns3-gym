@@ -1660,7 +1660,7 @@ LteEnbRrc::GetTypeId (void)
                    "Number of Component Carriers ",
                    UintegerValue (1),
                    MakeIntegerAccessor (&LteEnbRrc::m_numberOfComponentCarriers),
-                   MakeIntegerChecker<int16_t> (MIN_NO_CC, 2)) // to change, currently the CC number is liited to 2
+                   MakeIntegerChecker<int16_t> (MIN_NO_CC, MAX_NO_CC))
 
     // Handover related attributes
     .AddAttribute ("AdmitHandoverRequest",
