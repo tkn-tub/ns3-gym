@@ -106,7 +106,7 @@ public:
    *             where the report originates from
    * \param lcid the Logical Channel id
    * \param lcGroup the Logical Channel group
-   * \param msu a pointer to the LteMacSapUSer, the LteEnbComponentCarrierManager
+   * \param msu a pointer to the LteMacSapUser, the LteEnbComponentCarrierManager
    *             has to store a LteMacSapUser for each Rlc istance, in order to 
    *             properly redirect the packet
    * \return vector of LcsConfig contains the lc configuration for each Mac
