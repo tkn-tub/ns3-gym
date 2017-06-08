@@ -2099,6 +2099,20 @@ LteEnbRrc::SetCellId (uint16_t cellId, uint8_t ccIndex)
   m_cphySapProvider[ccIndex]->SetSystemInformationBlockType1 (m_sib1);
 }
 
+uint8_t
+LteEnbRrc::CellToComponentCarrierId (uint16_t cellId)
+{
+  NS_LOG_FUNCTION (this << cellId);
+  for (auto &it: m_componentCarrierPhyConf)
+    {
+      if (it.second->GetCellId () == cellId)
+        {
+          return it.first;
+        }
+    }
+  NS_FATAL_ERROR ("Cell " << cellId << " not found in CC map");
+}
+
 bool
 LteEnbRrc::SendData (Ptr<Packet> packet)
 {
