@@ -65,7 +65,7 @@ public:
    *
    * \param rrc ENB RRC
    */
-  EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc);
+  EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc, uint8_t componentCarrierId);
 
   virtual uint16_t AllocateTemporaryCellRnti ();
   virtual void NotifyLcConfigResult (uint16_t rnti, uint8_t lcid, bool success);
@@ -73,17 +73,19 @@ public:
 
 private:
   LteEnbRrc* m_rrc; ///< the RRC
+  uint8_t m_componentCarrierId; ///< Component carrier ID
 };
 
-EnbRrcMemberLteEnbCmacSapUser::EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc)
+EnbRrcMemberLteEnbCmacSapUser::EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc, uint8_t componentCarrierId)
   : m_rrc (rrc)
+  , m_componentCarrierId {componentCarrierId}
 {
 }
 
 uint16_t
 EnbRrcMemberLteEnbCmacSapUser::AllocateTemporaryCellRnti ()
 {
-  return m_rrc->DoAllocateTemporaryCellRnti ();
+  return m_rrc->DoAllocateTemporaryCellRnti (m_componentCarrierId);
 }
 
 void
@@ -139,11 +141,11 @@ UeManager::UeManager ()
 }
 
 
-UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s)
+UeManager::UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId)
   : m_lastAllocatedDrbid (0),
     m_rnti (rnti),
     m_imsi (0),
-    m_componentCarrierId (0),
+    m_componentCarrierId (componentCarrierId),
     m_lastRrcTransactionIdentifier (0),
     m_rrc (rrc),
     m_state (s),
@@ -1486,7 +1488,7 @@ LteEnbRrc::LteEnbRrc ()
     m_carriersConfigured (false)
 {
   NS_LOG_FUNCTION (this);
-  m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this));
+  m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this, 0));
   m_handoverManagementSapUser = new MemberLteHandoverManagementSapUser<LteEnbRrc> (this);
   m_anrSapUser = new MemberLteAnrSapUser<LteEnbRrc> (this);
   m_ffrRrcSapUser.push_back (new MemberLteFfrRrcSapUser<LteEnbRrc> (this));
@@ -1512,7 +1514,7 @@ LteEnbRrc::ConfigureCarriers (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyC
   for (uint8_t i = 1; i < m_numberOfComponentCarriers; i++)
     {
       m_cphySapUser.push_back (new MemberLteEnbCphySapUser<LteEnbRrc> (this));
-      m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this));
+      m_cmacSapUser.push_back (new EnbRrcMemberLteEnbCmacSapUser (this, i));
       m_ffrRrcSapUser.push_back (new MemberLteFfrRrcSapUser<LteEnbRrc> (this));
       m_cphySapProvider.push_back (0);
       m_cmacSapProvider.push_back (0);
@@ -2280,7 +2282,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
       return;
     }
 
-  uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING);
+  uint16_t rnti = AddUe (UeManager::HANDOVER_JOINING, CellToComponentCarrierId (req.targetCellId));
   LteEnbCmacSapProvider::AllocateNcRaPreambleReturnValue anrcrv = m_cmacSapProvider.at (0)->AllocateNcRaPreamble (rnti);
   if (anrcrv.valid == false)
     {
@@ -2460,10 +2462,10 @@ LteEnbRrc::DoRecvUeData (EpcX2SapUser::UeDataParams params)
 
 
 uint16_t 
-LteEnbRrc::DoAllocateTemporaryCellRnti ()
+LteEnbRrc::DoAllocateTemporaryCellRnti (uint8_t componentCarrierId)
 {
-  NS_LOG_FUNCTION (this);
-  return AddUe (UeManager::INITIAL_RANDOM_ACCESS);
+  NS_LOG_FUNCTION (this << +componentCarrierId);
+  return AddUe (UeManager::INITIAL_RANDOM_ACCESS, componentCarrierId);
 }
 
 void
@@ -2576,7 +2578,7 @@ LteEnbRrc::DoSendLoadInformation (EpcX2Sap::LoadInformationParams params)
 }
 
 uint16_t
-LteEnbRrc::AddUe (UeManager::State state)
+LteEnbRrc::AddUe (UeManager::State state, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this);
   bool found = false;
@@ -2594,7 +2596,7 @@ LteEnbRrc::AddUe (UeManager::State state)
 
   NS_ASSERT_MSG (found, "no more RNTIs available (do you have more than 65535 UEs in a cell?)");
   m_lastAllocatedRnti = rnti;
-  Ptr<UeManager> ueManager = CreateObject<UeManager> (this, rnti, state);
+  Ptr<UeManager> ueManager = CreateObject<UeManager> (this, rnti, state, componentCarrierId);
   m_ccmRrcSapProvider-> AddUe (rnti, (uint8_t)state);
   m_ueMap.insert (std::pair<uint16_t, Ptr<UeManager> > (rnti, ueManager));
   ueManager->Initialize ();

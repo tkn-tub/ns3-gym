@@ -104,10 +104,11 @@ public:
    * \param rrc pointer to the LteEnbRrc holding this UeManager
    * \param rnti RNTI of the UE
    * \param s initial state of the UeManager
+   * \param componentCarrierId primary component carrier ID
    * 
    * \return 
    */
-  UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s);
+  UeManager (Ptr<LteEnbRrc> rrc, uint16_t rnti, State s, uint8_t componentCarrierId);
 
   virtual ~UeManager (void);
 
@@ -1140,9 +1141,10 @@ private:
   /**
    * Allocate temporary cell RNTI function
    *
+   * \param componentCarrierId ID of the primary component carrier
    * \return temporary RNTI
    */
-  uint16_t DoAllocateTemporaryCellRnti ();
+  uint16_t DoAllocateTemporaryCellRnti (uint8_t componentCarrierId);
   /**
    * Notify LC config result function
    *
@@ -1223,10 +1225,11 @@ private:
    *   * target cell RNTI allocation upon handover
    *
    * \param state the initial state of the UeManager
+   * \param componentCarrierId primary component carrier ID of the UeManager
    *
    * \return the newly allocated RNTI
    */
-  uint16_t AddUe (UeManager::State state);
+  uint16_t AddUe (UeManager::State state, uint8_t componentCarrierId);
 
   /**
    * remove a UE from the cell
