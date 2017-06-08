@@ -68,8 +68,8 @@ int main (int argc, char *argv[])
 
 void Print ( ComponentCarrier cc)
 {
-  std::cout << " UlBandwitdh " << uint16_t (cc.GetUlBandwidth ())
-            << " DlBandwitdh " << uint16_t (cc.GetDlBandwidth ())
+  std::cout << " UlBandwidth " << uint16_t (cc.GetUlBandwidth ())
+            << " DlBandwidth " << uint16_t (cc.GetDlBandwidth ())
             << " Dl Earfcn " << cc.GetDlEarfcn ()
             << " Ul Earfcn " << cc.GetUlEarfcn ()
             << " - Is this the Primary Channel? " << cc.IsPrimary () 
