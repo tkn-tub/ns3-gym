@@ -1413,7 +1413,7 @@ private:
   uint16_t m_lastAllocatedRnti;
 
   /// The System Information Block Type 1 that is currently broadcasted over BCH.
-  LteRrcSap::SystemInformationBlockType1 m_sib1;
+  std::vector<LteRrcSap::SystemInformationBlockType1> m_sib1;
 
   /**
    * The `UeMap` attribute. List of UeManager by C-RNTI.

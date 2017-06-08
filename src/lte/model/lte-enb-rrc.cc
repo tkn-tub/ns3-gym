@@ -603,10 +603,10 @@ UeManager::PrepareHandover (uint16_t cellId)
         hpi.asConfig.sourceRadioResourceConfig = GetRadioResourceConfigForHandoverPreparationInfo ();
         hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
         hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = m_rrc->m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->m_cellId;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = m_rrc->m_sib1.cellAccessRelatedInfo.csgIndication;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = m_rrc->m_sib1.cellAccessRelatedInfo.csgIdentity;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIndication;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIdentity;
         LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->GetRachConfig ();
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
         hpi.asConfig.sourceSystemInformationBlockType2.radioResourceConfigCommon.rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
@@ -2052,22 +2052,26 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
   m_ueMeasConfig.haveSmeasure = false;
   m_ueMeasConfig.haveSpeedStatePars = false;
 
-  // Enabling MIB transmission
-  LteRrcSap::MasterInformationBlock mib;
-  mib.dlBandwidth = m_dlBandwidth;
-  mib.systemFrameNumber = 0;
-  // Enabling SIB1 transmission with default values
-  m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
-  m_sib1.cellAccessRelatedInfo.csgIndication = false;
-  m_sib1.cellAccessRelatedInfo.csgIdentity = 0;
-  m_sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0; // not used
-  m_sib1.cellSelectionInfo.qQualMin = -34; // not used, set as minimum value
-  m_sib1.cellSelectionInfo.qRxLevMin = m_qRxLevMin; // set as minimum value
-
+  m_sib1.clear ();
+  m_sib1.reserve (ccPhyConf.size ());
   for (const auto &it: ccPhyConf)
     {
+      // Enabling MIB transmission
+      LteRrcSap::MasterInformationBlock mib;
+      mib.dlBandwidth = it.second->GetDlBandwidth ();
+      mib.systemFrameNumber = 0;
       m_cphySapProvider.at (it.first)->SetMasterInformationBlock (mib);
-      m_cphySapProvider.at (it.first)->SetSystemInformationBlockType1 (m_sib1);
+
+      // Enabling SIB1 transmission with default values
+      LteRrcSap::SystemInformationBlockType1 sib1;
+      sib1.cellAccessRelatedInfo.cellIdentity = it.second->GetCellId ();
+      sib1.cellAccessRelatedInfo.csgIndication = false;
+      sib1.cellAccessRelatedInfo.csgIdentity = 0;
+      sib1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = 0; // not used
+      sib1.cellSelectionInfo.qQualMin = -34; // not used, set as minimum value
+      sib1.cellSelectionInfo.qRxLevMin = m_qRxLevMin; // set as minimum value
+      m_sib1.push_back (sib1);
+      m_cphySapProvider.at (it.first)->SetSystemInformationBlockType1 (sib1);
     }
   /*
    * Enabling transmission of other SIB. The first time System Information is
@@ -2088,8 +2092,8 @@ LteEnbRrc::SetCellId (uint16_t cellId)
   m_cellId = cellId;
 
   // update SIB1 too
-  m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
-  m_cphySapProvider.at (0)->SetSystemInformationBlockType1 (m_sib1);
+  m_sib1.at (0).cellAccessRelatedInfo.cellIdentity = cellId;
+  m_cphySapProvider.at (0)->SetSystemInformationBlockType1 (m_sib1.at (0));
 }
 
 void
@@ -2097,8 +2101,8 @@ LteEnbRrc::SetCellId (uint16_t cellId, uint8_t ccIndex)
 {
   m_cellId = cellId;
   // update SIB1 too
-  m_sib1.cellAccessRelatedInfo.cellIdentity = cellId;
-  m_cphySapProvider[ccIndex]->SetSystemInformationBlockType1 (m_sib1);
+  m_sib1.at (ccIndex).cellAccessRelatedInfo.cellIdentity = cellId;
+  m_cphySapProvider.at (ccIndex)->SetSystemInformationBlockType1 (m_sib1.at (ccIndex));
 }
 
 uint8_t
@@ -2677,9 +2681,12 @@ void
 LteEnbRrc::SetCsgId (uint32_t csgId, bool csgIndication)
 {
   NS_LOG_FUNCTION (this << csgId << csgIndication);
-  m_sib1.cellAccessRelatedInfo.csgIdentity = csgId;
-  m_sib1.cellAccessRelatedInfo.csgIndication = csgIndication;
-  m_cphySapProvider.at (0)->SetSystemInformationBlockType1 (m_sib1);
+  for (uint8_t componentCarrierId = 0; componentCarrierId < m_sib1.size (); componentCarrierId++)
+    {
+      m_sib1.at (componentCarrierId).cellAccessRelatedInfo.csgIdentity = csgId;
+      m_sib1.at (componentCarrierId).cellAccessRelatedInfo.csgIndication = csgIndication;
+      m_cphySapProvider.at (componentCarrierId)->SetSystemInformationBlockType1 (m_sib1.at (componentCarrierId));
+    }
 }
 
 void
