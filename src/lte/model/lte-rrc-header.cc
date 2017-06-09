@@ -1740,7 +1740,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
             cellIdentification_r10.set(0,1); // dl-CarrierFreq-r10
             SerializeSequence (cellIdentification_r10, false);
 
-            SerializeInteger (it->cellIdentification.physCellId,1,MAX_EARFCN);
+            SerializeInteger (it->cellIdentification.physCellId,1,65536);
             SerializeInteger (it->cellIdentification.dlCarrierFreq,1,MAX_EARFCN);
             
             //Serialize RadioResourceConfigCommonSCell
@@ -2634,7 +2634,7 @@ RrcAsn1Header::Print (std::ostream &os) const
     bIterator = DeserializeInteger (&n1,1,65536,bIterator);
     ci->physCellId = n1;
     int n2;
-    bIterator = DeserializeInteger (&n2,1,65536,bIterator);
+    bIterator = DeserializeInteger (&n2,1,MAX_EARFCN,bIterator);
     ci->dlCarrierFreq = n2;
 
     return bIterator;
