@@ -369,7 +369,6 @@ void
 NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (componentCarrierId == 0, "Received BSR from a ComponentCarrier not allowed, ComponentCarrierId = " << componentCarrierId);
   NS_ASSERT_MSG (bsr.m_macCeType == MacCeListElement_s::BSR, "Received a Control Message not allowed " << bsr.m_macCeType);
   if ( bsr.m_macCeType == MacCeListElement_s::BSR)
     {
@@ -393,7 +392,7 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
           // to the primary carrier component
           newBsr.m_macCeValue.m_bufferStatus.at (i) = BufferSizeLevelBsr::BufferSize2BsrId (buffer);
         }
-      std::map< uint8_t,LteCcmMacSapProvider*>::iterator sapIt = m_ccmMacSapProviderMap.find (0);
+      auto sapIt = m_ccmMacSapProviderMap.find (componentCarrierId);
       if (sapIt == m_ccmMacSapProviderMap.end ())
         {
           NS_FATAL_ERROR ("Sap not found in the CcmMacSapProviderMap");
