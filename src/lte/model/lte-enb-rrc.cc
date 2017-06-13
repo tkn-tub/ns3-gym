@@ -1406,10 +1406,15 @@ UeManager::BuildNonCriticalExtentionConfigurationCa ()
     {
       uint8_t ccId = it.first;
 
-      // Skip primary CC.
       if (ccId == m_componentCarrierId)
         {
+          // Skip primary CC.
           continue;
+        }
+      else if (ccId < m_componentCarrierId)
+        {
+          // Shift all IDs below PCC forward so PCC can use CC ID 1.
+          ccId++;
         }
 
       Ptr<ComponentCarrierEnb> eNbCcm = it.second;
