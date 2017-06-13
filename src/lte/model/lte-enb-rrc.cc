@@ -211,7 +211,7 @@ UeManager::DoInitialize ()
     // MacSapUserForRlc in the ComponentCarrierManager MacSapUser
     LteMacSapUser* lteMacSapUser = m_rrc->m_ccmRrcSapProvider->ConfigureSignalBearer(lcinfo, rlc->GetLteMacSapUser ()); 
     // Signal Channel are only on Primary Carrier
-    m_rrc->m_cmacSapProvider.at (0)->AddLc (lcinfo, lteMacSapUser);
+    m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->AddLc (lcinfo, lteMacSapUser);
     m_rrc->m_ccmRrcSapProvider->AddLc (lcinfo, lteMacSapUser);
   }
 
