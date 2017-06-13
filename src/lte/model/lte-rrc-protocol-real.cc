@@ -549,14 +549,7 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcCo
   transmitPdcpPduParameters.rnti = rnti;
   transmitPdcpPduParameters.lcid = 0;
 
-  if (m_setupUeParametersMap.find (rnti) == m_setupUeParametersMap.end () )
-    {
-      std::cout << "RNTI not found in Enb setup parameters Map!" << std::endl;
-    }
-  else
-    {
-      m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
-    }
+  m_setupUeParametersMap.at (rnti).srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
 
 void 
