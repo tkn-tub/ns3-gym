@@ -225,6 +225,19 @@ LteEnbNetDevice::GetCellId () const
   return m_cellId;
 }
 
+bool
+LteEnbNetDevice::HasCellId (uint16_t cellId) const
+{
+  for (auto &it: m_ccMap)
+    {
+      if (it.second->GetCellId () == cellId)
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
 uint8_t 
 LteEnbNetDevice::GetUlBandwidth () const
 {
