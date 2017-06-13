@@ -220,9 +220,10 @@ private:
   /**
    * Send system information function
    *
+   * \param cellId cell ID
    * \param msg LteRrcSap::SystemInformation
    */
-  void DoSendSystemInformation (LteRrcSap::SystemInformation msg);
+  void DoSendSystemInformation (uint16_t cellId, LteRrcSap::SystemInformation msg);
   /**
    * Send system information function
    *

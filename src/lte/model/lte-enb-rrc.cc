@@ -2833,25 +2833,31 @@ LteEnbRrc::SendSystemInformation ()
 {
   // NS_LOG_FUNCTION (this);
 
+  for (auto &it: m_componentCarrierPhyConf)
+    {
+      uint8_t ccId = it.first;
+
+      LteRrcSap::SystemInformation si;
+      si.haveSib2 = true;
+      si.sib2.freqInfo.ulCarrierFreq = it.second->GetUlEarfcn ();
+      si.sib2.freqInfo.ulBandwidth = it.second->GetUlBandwidth ();
+      si.sib2.radioResourceConfigCommon.pdschConfigCommon.referenceSignalPower = m_cphySapProvider.at (ccId)->GetReferenceSignalPower ();
+      si.sib2.radioResourceConfigCommon.pdschConfigCommon.pb = 0;
+
+      LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider.at (ccId)->GetRachConfig ();
+      LteRrcSap::RachConfigCommon rachConfigCommon;
+      rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
+      rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
+      rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
+      si.sib2.radioResourceConfigCommon.rachConfigCommon = rachConfigCommon;
+
+      m_rrcSapUser->SendSystemInformation (it.second->GetCellId (), si);
+    }
+
   /*
    * For simplicity, we use the same periodicity for all SIBs. Note that in real
    * systems the periodicy of each SIBs could be different.
    */
-  LteRrcSap::SystemInformation si;
-  si.haveSib2 = true;
-  si.sib2.freqInfo.ulCarrierFreq = m_ulEarfcn;
-  si.sib2.freqInfo.ulBandwidth = m_ulBandwidth;
-  si.sib2.radioResourceConfigCommon.pdschConfigCommon.referenceSignalPower = m_cphySapProvider.at (0)->GetReferenceSignalPower ();
-  si.sib2.radioResourceConfigCommon.pdschConfigCommon.pb = 0;
-
-  LteEnbCmacSapProvider::RachConfig rc = m_cmacSapProvider.at (0)->GetRachConfig ();
-  LteRrcSap::RachConfigCommon rachConfigCommon;
-  rachConfigCommon.preambleInfo.numberOfRaPreambles = rc.numberOfRaPreambles;
-  rachConfigCommon.raSupervisionInfo.preambleTransMax = rc.preambleTransMax;
-  rachConfigCommon.raSupervisionInfo.raResponseWindowSize = rc.raResponseWindowSize;
-  si.sib2.radioResourceConfigCommon.rachConfigCommon = rachConfigCommon;
-
-  m_rrcSapUser->SendSystemInformation (si);
   Simulator::Schedule (m_systemInformationPeriodicity, &LteEnbRrc::SendSystemInformation, this);
 }
 

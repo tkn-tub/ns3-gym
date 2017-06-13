@@ -1086,9 +1086,10 @@ public:
    * \brief Send a _SystemInformation_ message to all attached UEs
    *        during a system information acquisition procedure
    *        (Section 5.2.2 of TS 36.331).
+   * \param cellId cell ID
    * \param msg the message
    */
-  virtual void SendSystemInformation (SystemInformation msg) = 0;
+  virtual void SendSystemInformation (uint16_t cellId, SystemInformation msg) = 0;
 
   /**
    * \brief Send an _RRCConnectionSetup_ message to a UE
@@ -1475,7 +1476,7 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params);
   virtual void RemoveUe (uint16_t rnti);
-  virtual void SendSystemInformation (SystemInformation msg);
+  virtual void SendSystemInformation (uint16_t cellId, SystemInformation msg);
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg);
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg);
   virtual void SendRrcConnectionReestablishment (uint16_t rnti, RrcConnectionReestablishment msg);
@@ -1519,9 +1520,9 @@ MemberLteEnbRrcSapUser<C>::RemoveUe (uint16_t rnti)
 
 template <class C>
 void
-MemberLteEnbRrcSapUser<C>::SendSystemInformation (SystemInformation msg)
+MemberLteEnbRrcSapUser<C>::SendSystemInformation (uint16_t cellId, SystemInformation msg)
 {
-  m_owner->DoSendSystemInformation (msg);
+  m_owner->DoSendSystemInformation (cellId, msg);
 }
 
 template <class C>
