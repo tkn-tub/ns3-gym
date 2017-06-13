@@ -1151,6 +1151,12 @@ UeManager::GetImsi (void) const
   return m_imsi;
 }
 
+uint8_t
+UeManager::GetComponentCarrierId () const
+{
+  return m_componentCarrierId;
+}
+
 uint16_t
 UeManager::GetSrsConfigurationIndex (void) const
 {

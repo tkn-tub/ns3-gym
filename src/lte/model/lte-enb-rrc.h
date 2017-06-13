@@ -322,6 +322,12 @@ public:
    */
   uint64_t GetImsi (void) const;
 
+  /**
+   *
+   * \return the primary component carrier ID
+   */
+  uint8_t GetComponentCarrierId () const;
+
   /** 
    * 
    * \return the SRS Configuration Index
