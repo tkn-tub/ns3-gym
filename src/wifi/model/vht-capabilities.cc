@@ -49,6 +49,11 @@ VhtCapabilities::VhtCapabilities ()
 {
   m_rxMcsMap.resize (8,0);
   m_txMcsMap.resize (8,0);
+  for (uint8_t i = 0; i < 8; i++) //set to 3 by default, i.e. #spatial streams not supported. 0 means supported up to MCS 7, not what we want to imply at this stage.
+    {
+      m_rxMcsMap[i] = 3;
+      m_txMcsMap[i] = 3;
+    }
 }
 
 WifiInformationElementId

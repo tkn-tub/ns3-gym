@@ -268,6 +268,12 @@ public:
    * \return the maximum AMPDU length
    */
   uint8_t GetMaxAmpduLength (void) const;
+  /**
+   * Return the minimum MPDU start space.
+   *
+   * \return the minimum MPDU start space
+   */
+  uint8_t GetMinMpduStartSpace (void) const;
 
   /**
    * Return the receive MCS bitmask.

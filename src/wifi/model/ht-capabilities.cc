@@ -179,7 +179,7 @@ HtCapabilities::SetTxRxMcsSetUnequal (uint8_t txrxmcssetunequal)
 void
 HtCapabilities::SetTxMaxNSpatialStreams (uint8_t maxtxspatialstreams)
 {
-  m_txMaxNSpatialStreams = maxtxspatialstreams;
+  m_txMaxNSpatialStreams = maxtxspatialstreams - 1; //0 for 1 SS, 1 for 2 SSs, etc
 }
 
 void
@@ -234,6 +234,12 @@ uint8_t
 HtCapabilities::GetMaxAmpduLength (void) const
 {
   return m_maxAmpduLength;
+}
+
+uint8_t
+HtCapabilities::GetMinMpduStartSpace (void) const
+{
+  return m_minMpduStartSpace;
 }
 
 uint8_t*
@@ -292,7 +298,7 @@ HtCapabilities::GetTxRxMcsSetUnequal (void) const
 uint8_t
 HtCapabilities::GetTxMaxNSpatialStreams (void) const
 {
-  return m_txMaxNSpatialStreams;
+  return m_txMaxNSpatialStreams; //0 for 1 SS, 1 for 2 SSs, etc
 }
 
 uint8_t
