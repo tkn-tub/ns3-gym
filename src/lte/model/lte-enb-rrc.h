@@ -889,6 +889,15 @@ public:
    */
   uint8_t CellToComponentCarrierId (uint16_t cellId);
 
+  /**
+   * convert the component carrier id to cell id
+   *
+   * \param componentCarrierId component carrier ID
+   *
+   * \return corresponding cell ID
+   */
+  uint16_t ComponentCarrierToCellId (uint8_t componentCarrierId);
+
   /** 
    * Enqueue an IP data packet on the proper bearer for downlink
    * transmission. Normally expected to be called by the NetDevice

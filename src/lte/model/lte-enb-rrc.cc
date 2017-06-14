@@ -2130,6 +2130,13 @@ LteEnbRrc::CellToComponentCarrierId (uint16_t cellId)
   NS_FATAL_ERROR ("Cell " << cellId << " not found in CC map");
 }
 
+uint16_t
+LteEnbRrc::ComponentCarrierToCellId (uint8_t componentCarrierId)
+{
+  NS_LOG_FUNCTION (this << componentCarrierId);
+  return m_componentCarrierPhyConf.at (componentCarrierId)->GetCellId ();
+}
+
 bool
 LteEnbRrc::SendData (Ptr<Packet> packet)
 {
