@@ -209,7 +209,7 @@ Ipv4AddressGeneratorImpl::Reset (void)
       mask |= MOST_SIGNIFICANT_BIT;
       m_netTable[i].network = 1;
       m_netTable[i].addr = 1;
-      m_netTable[i].addrMax = ~mask;
+      m_netTable[i].addrMax = ~m_netTable[i].mask;
       m_netTable[i].shift = N_BITS - i;
     }
   m_entries.clear ();
@@ -250,6 +250,7 @@ Ipv4AddressGeneratorImpl::Init (
   uint32_t index = MaskToIndex (mask);
 
   m_netTable[index].network = netBits >> m_netTable[index].shift;
+
   NS_ABORT_MSG_UNLESS (addrBits <= m_netTable[index].addrMax, "Ipv4AddressGeneratorImpl::Init(): Address overflow");
   m_netTable[index].addr = addrBits;
   return;
