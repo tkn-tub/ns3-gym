@@ -1061,7 +1061,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           else if (hdr->IsDisassociation ())
             {
               m_stationManager->RecordDisassociated (from);
-              for (std::list<Mac48Address>::iterator i = m_staList.begin (); i != m_staList.end (); i++)
+              for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
                 {
                   if ((*i) == from)
                     {
@@ -1069,7 +1069,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       break;
                     }
                 }
-              for (std::list<Mac48Address>::iterator j = m_nonErpStations.begin (); j != m_nonErpStations.end (); j++)
+              for (std::list<Mac48Address>::const_iterator j = m_nonErpStations.begin (); j != m_nonErpStations.end (); j++)
                 {
                   if ((*j) == from)
                     {
@@ -1077,7 +1077,7 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       break;
                     }
                 }
-              for (std::list<Mac48Address>::iterator j = m_nonHtStations.begin (); j != m_nonHtStations.end (); j++)
+              for (std::list<Mac48Address>::const_iterator j = m_nonHtStations.begin (); j != m_nonHtStations.end (); j++)
                 {
                   if ((*j) == from)
                     {

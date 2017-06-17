@@ -627,7 +627,7 @@ DcfManager::NotifySwitchingStartNow (Time duration)
     }
 
   //Reset backoffs
-  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+  for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
@@ -659,7 +659,7 @@ DcfManager::NotifySleepNow (void)
     }
 
   //Reset backoffs
-  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+  for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
       state->NotifySleep ();
@@ -671,7 +671,7 @@ DcfManager::NotifyWakeupNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = false;
-  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+  for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();

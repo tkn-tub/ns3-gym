@@ -81,7 +81,7 @@ RegularWifiMac::DoInitialize ()
   NS_LOG_FUNCTION (this);
   m_dca->Initialize ();
 
-  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       i->second->Initialize ();
     }
@@ -128,7 +128,7 @@ RegularWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stati
 
   m_dca->SetWifiRemoteStationManager (stationManager);
 
-  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       i->second->SetWifiRemoteStationManager (stationManager);
     }
@@ -457,7 +457,7 @@ void
 RegularWifiMac::SetTypeOfStation (TypeOfStation type)
 {
   NS_LOG_FUNCTION (this << type);
-  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       i->second->SetTypeOfStation (type);
     }
@@ -1300,7 +1300,7 @@ RegularWifiMac::ConfigureContentionWindow (uint32_t cwMin, uint32_t cwMax)
   ConfigureDcf (m_dca, cwMin, cwMax, isDsssOnly, AC_BE_NQOS);
 
   //Now we configure the EDCA functions
-  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       ConfigureDcf (i->second, cwMin, cwMax, isDsssOnly, i->first);
     }
@@ -1362,7 +1362,7 @@ void
 RegularWifiMac::EnableAggregation (void)
 {
   NS_LOG_FUNCTION (this);
-  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       if (i->second->GetMsduAggregator () == 0)
         {
@@ -1382,7 +1382,7 @@ void
 RegularWifiMac::DisableAggregation (void)
 {
   NS_LOG_FUNCTION (this);
-  for (EdcaQueues::iterator i = m_edca.begin (); i != m_edca.end (); ++i)
+  for (EdcaQueues::const_iterator i = m_edca.begin (); i != m_edca.end (); ++i)
     {
       i->second->SetMsduAggregator (0);
       i->second->SetMpduAggregator (0);
