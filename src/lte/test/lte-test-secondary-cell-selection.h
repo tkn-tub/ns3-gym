@@ -60,8 +60,9 @@ public:
    * \param isIdealRrc if true, simulation uses Ideal RRC protocol, otherwise
    *                   simulation uses Real RRC protocol
    * \param rngRun the number of run to be used by the random number generator
+   * \param numberOfComponentCarriers number of component carriers
    */
-  LteSecondaryCellSelectionTestCase (std::string name, bool isIdealRrc, int64_t rngRun);
+  LteSecondaryCellSelectionTestCase (std::string name, bool isIdealRrc, int64_t rngRun, uint8_t numberOfComponentCarriers);
 
   virtual ~LteSecondaryCellSelectionTestCase ();
 
@@ -104,6 +105,7 @@ private:
 
   bool m_isIdealRrc; ///< whether the LTE is configured to use ideal RRC
   int64_t m_rngRun; ///< rng run
+  uint8_t m_numberOfComponentCarriers; ///< number of component carriers
 
   /// The current UE RRC state.
   std::map<uint64_t, LteUeRrc::State> m_lastState;

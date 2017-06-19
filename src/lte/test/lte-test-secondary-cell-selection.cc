@@ -55,11 +55,13 @@ LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite ()
 {
   // REAL RRC PROTOCOL
 
-  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1, 2), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1, 4), TestCase::QUICK);
 
   // IDEAL RRC PROTOCOL
 
-  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1, 2), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1, 4), TestCase::QUICK);
 
 } // end of LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite ()
 
@@ -70,10 +72,11 @@ static LteSecondaryCellSelectionTestSuite g_lteSecondaryCellSelectionTestSuite;
  */
 
 LteSecondaryCellSelectionTestCase::LteSecondaryCellSelectionTestCase (
-  std::string name, bool isIdealRrc, int64_t rngRun)
+  std::string name, bool isIdealRrc, int64_t rngRun, uint8_t numberOfComponentCarriers)
   : TestCase (name),
     m_isIdealRrc (isIdealRrc),
-    m_rngRun (rngRun)
+    m_rngRun (rngRun),
+    m_numberOfComponentCarriers (numberOfComponentCarriers)
 {
   NS_LOG_FUNCTION (this << GetName ());
 }
@@ -95,7 +98,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
   auto lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel", TypeIdValue (ns3::FriisSpectrumPropagationLossModel::GetTypeId ()));
   lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_isIdealRrc));
-  lteHelper->SetAttribute ("NumberOfComponentCarriers", UintegerValue (2));
+  lteHelper->SetAttribute ("NumberOfComponentCarriers", UintegerValue (m_numberOfComponentCarriers));
 
   auto epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
@@ -105,7 +108,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
   cch->SetDlEarfcn (100);
   cch->SetUlBandwidth (25);
   cch->SetDlBandwidth (25);
-  cch->SetNumberOfComponentCarriers (2);
+  cch->SetNumberOfComponentCarriers (m_numberOfComponentCarriers);
 
   const auto ccm = cch->EquallySpacedCcs ();
   lteHelper->SetCcPhyParams (ccm);
@@ -113,7 +116,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
   // Create nodes.
   auto enbNode = CreateObject<Node> ();
   NodeContainer ueNodes;
-  ueNodes.Create (2);
+  ueNodes.Create (m_numberOfComponentCarriers);
 
   MobilityHelper mobility;
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
