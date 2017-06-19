@@ -1414,8 +1414,6 @@ private:
 
   /// True if ConfigureCell() has been completed.
   bool m_configured;
-  /// Cell identifier. Must be unique across the simulation.
-  uint16_t m_cellId;
   /// Downlink E-UTRA Absolute Radio Frequency Channel Number.
   uint32_t m_dlEarfcn;
   /// Uplink E-UTRA Absolute Radio Frequency Channel Number.

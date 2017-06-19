@@ -589,7 +589,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         EpcX2SapProvider::HandoverRequestParams params;
         params.oldEnbUeX2apId = m_rnti;
         params.cause          = EpcX2SapProvider::HandoverDesirableForRadioReason;
-        params.sourceCellId   = m_rrc->m_cellId;
+        params.sourceCellId   = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
         params.targetCellId   = cellId;
         params.mmeUeS1apId    = m_imsi;
         params.ueAggregateMaxBitRateDownlink = 200 * 1000;
@@ -604,7 +604,7 @@ UeManager::PrepareHandover (uint16_t cellId)
         hpi.asConfig.sourceMasterInformationBlock.dlBandwidth = m_rrc->m_dlBandwidth;
         hpi.asConfig.sourceMasterInformationBlock.systemFrameNumber = 0;
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.plmnIdentityInfo.plmnIdentity;
-        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->m_cellId;
+        hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.cellIdentity = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIndication;
         hpi.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIdentity = m_rrc->m_sib1.at (m_componentCarrierId).cellAccessRelatedInfo.csgIdentity;
         LteEnbCmacSapProvider::RachConfig rc = m_rrc->m_cmacSapProvider.at (m_componentCarrierId)->GetRachConfig ();
@@ -655,7 +655,7 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
                                                   &LteEnbRrc::HandoverLeavingTimeout, 
                                                   m_rrc, m_rnti);
   NS_ASSERT (handoverCommand.haveMobilityControlInfo);
-  m_rrc->m_handoverStartTrace (m_imsi, m_rrc->m_cellId, m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
+  m_rrc->m_handoverStartTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, handoverCommand.mobilityControlInfo.targetPhysCellId);
 
   EpcX2SapProvider::SnStatusTransferParams sst;
   sst.oldEnbUeX2apId = params.oldEnbUeX2apId;
@@ -738,7 +738,7 @@ UeManager::SendData (uint8_t bid, Ptr<Packet> p)
         NS_LOG_LOGIC ("forwarding data to target eNB over X2-U");
         uint8_t drbid = Bid2Drbid (bid);
         EpcX2Sap::UeDataParams params;
-        params.sourceCellId = m_rrc->m_cellId;
+        params.sourceCellId = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
         params.targetCellId = m_targetCellId;
         params.gtpTeid = GetDataRadioBearerInfo (drbid)->m_gtpTeid;
         params.ueData = p;
@@ -787,7 +787,7 @@ UeManager::SendUeContextRelease ()
       ueCtxReleaseParams.targetCellId = m_targetCellId;
       m_rrc->m_x2SapProvider->SendUeContextRelease (ueCtxReleaseParams);
       SwitchToState (CONNECTED_NORMALLY);
-      m_rrc->m_handoverEndOkTrace (m_imsi, m_rrc->m_cellId, m_rnti);
+      m_rrc->m_handoverEndOkTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti);
       break;
 
     default:
@@ -924,7 +924,7 @@ UeManager::RecvRrcConnectionSetupCompleted (LteRrcSap::RrcConnectionSetupComplet
           StartDataRadioBearers ();
         }
       SwitchToState (CONNECTED_NORMALLY);
-      m_rrc->m_connectionEstablishedTrace (m_imsi, m_rrc->m_cellId, m_rnti);
+      m_rrc->m_connectionEstablishedTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti);
       break;
 
     default:
@@ -960,7 +960,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
           m_needPhyMacConfiguration = false;
         }
       SwitchToState (CONNECTED_NORMALLY);
-      m_rrc->m_connectionReconfigurationTrace (m_imsi, m_rrc->m_cellId, m_rnti);
+      m_rrc->m_connectionReconfigurationTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti);
       break;
 
     // This case is added to NS-3 in order to handle bearer de-activation scenario for CONNECTED state UE
@@ -978,7 +978,7 @@ UeManager::RecvRrcConnectionReconfigurationCompleted (LteRrcSap::RrcConnectionRe
         NS_LOG_INFO ("Send PATH SWITCH REQUEST to the MME");
         EpcEnbS1SapProvider::PathSwitchRequestParameters params;
         params.rnti = m_rnti;
-        params.cellId = m_rrc->m_cellId;
+        params.cellId = m_rrc->ComponentCarrierToCellId (m_componentCarrierId);
         params.mmeUeS1Id = m_imsi;
         SwitchToState (HANDOVER_PATH_SWITCH);
         for (std::map <uint8_t, Ptr<LteDataRadioBearerInfo> >::iterator it =  m_drbMap.begin ();
@@ -1042,7 +1042,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
                           << " measResultListEutra " << msg.measResults.measResultListEutra.size ()
                           << " haveScellsMeas " << msg.measResults.haveScellsMeas
                           << " measScellResultList " << msg.measResults.measScellResultList.measResultScell.size ());
-  NS_LOG_LOGIC ("serving cellId " << m_rrc->m_cellId
+  NS_LOG_LOGIC ("serving cellId " << m_rrc->ComponentCarrierToCellId (m_componentCarrierId)
                                   << " RSRP " << (uint16_t) msg.measResults.rsrpResult
                                   << " RSRQ " << (uint16_t) msg.measResults.rsrqResult);
 
@@ -1099,7 +1099,7 @@ UeManager::RecvMeasurementReport (LteRrcSap::MeasurementReport msg)
   ///Report any measurements to ComponentCarrierManager, so it can react to any change or activate the SCC
   m_rrc->m_ccmRrcSapProvider->ReportUeMeas (m_rnti, msg.measResults);
   // fire a trace source
-  m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->m_cellId, m_rnti, msg);
+  m_rrc->m_recvMeasurementReportTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, msg);
 
 } // end of UeManager::RecvMeasurementReport
 
@@ -1358,7 +1358,7 @@ UeManager::SwitchToState (State newState)
   m_state = newState;
   NS_LOG_INFO (this << " IMSI " << m_imsi << " RNTI " << m_rnti << " UeManager "
                     << ToString (oldState) << " --> " << ToString (newState));
-  m_stateTransitionTrace (m_imsi, m_rrc->m_cellId, m_rnti, oldState, newState);
+  m_stateTransitionTrace (m_imsi, m_rrc->ComponentCarrierToCellId (m_componentCarrierId), m_rnti, oldState, newState);
 
   switch (newState)
     {
@@ -1918,7 +1918,7 @@ LteEnbRrc::GetUeManager (uint16_t rnti)
   NS_LOG_FUNCTION (this << (uint32_t) rnti);
   NS_ASSERT (0 != rnti);
   std::map<uint16_t, Ptr<UeManager> >::iterator it = m_ueMap.find (rnti);
-  NS_ASSERT_MSG (it != m_ueMap.end (), "RNTI " << rnti << " not found in eNB with cellId " << m_cellId);
+  NS_ASSERT_MSG (it != m_ueMap.end (), "UE manager for RNTI " << rnti << " not found");
   return it->second;
 }
 
@@ -2019,7 +2019,6 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
   uint8_t dlBandwidth = it->second->GetDlBandwidth ();
   uint32_t ulEarfcn = it->second->GetUlEarfcn ();
   uint32_t dlEarfcn = it->second->GetDlEarfcn ();
-  uint16_t cellId = it->second->GetCellId ();
   NS_LOG_FUNCTION (this << (uint16_t) ulBandwidth << (uint16_t) dlBandwidth
                         << ulEarfcn << dlEarfcn);
   NS_ASSERT (!m_configured);
@@ -2038,7 +2037,6 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
   m_ulEarfcn = ulEarfcn;
   m_dlBandwidth = dlBandwidth;
   m_ulBandwidth = ulBandwidth;
-  m_cellId = cellId;
 
   /*
    * Initializing the list of UE measurement configuration (m_ueMeasConfig).
@@ -2100,9 +2098,7 @@ LteEnbRrc::ConfigureCell (std::map<uint8_t, Ptr<ComponentCarrierEnb>> ccPhyConf)
 void
 LteEnbRrc::SetCellId (uint16_t cellId)
 {
-  m_cellId = cellId;
-
-  // update SIB1 too
+  // update SIB1
   m_sib1.at (0).cellAccessRelatedInfo.cellIdentity = cellId;
   m_cphySapProvider.at (0)->SetSystemInformationBlockType1 (m_sib1.at (0));
 }
@@ -2110,8 +2106,7 @@ LteEnbRrc::SetCellId (uint16_t cellId)
 void
 LteEnbRrc::SetCellId (uint16_t cellId, uint8_t ccIndex)
 {
-  m_cellId = cellId;
-  // update SIB1 too
+  // update SIB1
   m_sib1.at (ccIndex).cellAccessRelatedInfo.cellIdentity = cellId;
   m_cphySapProvider.at (ccIndex)->SetSystemInformationBlockType1 (m_sib1.at (ccIndex));
 }
@@ -2289,8 +2284,6 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
   NS_LOG_LOGIC ("targetCellId = " << req.targetCellId);
   NS_LOG_LOGIC ("mmeUeS1apId = " << req.mmeUeS1apId);
 
-  NS_ASSERT (req.targetCellId == m_cellId);
-
   if (m_admitHandoverRequest == false)
     {
       NS_LOG_INFO ("rejecting handover request from cellId " << req.sourceCellId);
@@ -2336,7 +2329,7 @@ LteEnbRrc::DoRecvHandoverRequest (EpcX2SapUser::HandoverRequestParams req)
 
   LteRrcSap::RrcConnectionReconfiguration handoverCommand = ueManager->GetRrcConnectionReconfigurationForHandover ();
   handoverCommand.haveMobilityControlInfo = true;
-  handoverCommand.mobilityControlInfo.targetPhysCellId = m_cellId;
+  handoverCommand.mobilityControlInfo.targetPhysCellId = req.targetCellId;
   handoverCommand.mobilityControlInfo.haveCarrierFreq = true;
   handoverCommand.mobilityControlInfo.carrierFreq.dlCarrierFreq = m_dlEarfcn;
   handoverCommand.mobilityControlInfo.carrierFreq.ulCarrierFreq = m_ulEarfcn;
@@ -2530,12 +2523,15 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
 
   bool isHandoverAllowed = true;
 
+  Ptr<UeManager> ueManager = GetUeManager (rnti);
+  NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
+
   if (m_anrSapProvider != 0)
     {
       // ensure that proper neighbour relationship exists between source and target cells
       bool noHo = m_anrSapProvider->GetNoHo (targetCellId);
       bool noX2 = m_anrSapProvider->GetNoX2 (targetCellId);
-      NS_LOG_DEBUG (this << " cellId=" << m_cellId
+      NS_LOG_DEBUG (this << " cellId=" << ComponentCarrierToCellId (ueManager->GetComponentCarrierId ())
                          << " targetCellId=" << targetCellId
                          << " NRT.NoHo=" << noHo << " NRT.NoX2=" << noX2);
 
@@ -2546,9 +2542,6 @@ LteEnbRrc::DoTriggerHandover (uint16_t rnti, uint16_t targetCellId)
                              << " is not allowed by ANR");
         }
     }
-
-  Ptr<UeManager> ueManager = GetUeManager (rnti);
-  NS_ASSERT_MSG (ueManager != 0, "Cannot find UE context with RNTI " << rnti);
 
   if (ueManager->GetState () != UeManager::CONNECTED_NORMALLY)
     {
@@ -2622,8 +2615,9 @@ LteEnbRrc::AddUe (UeManager::State state, uint8_t componentCarrierId)
   m_ccmRrcSapProvider-> AddUe (rnti, (uint8_t)state);
   m_ueMap.insert (std::pair<uint16_t, Ptr<UeManager> > (rnti, ueManager));
   ueManager->Initialize ();
-  NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << m_cellId << " srs CI " << ueManager->GetSrsConfigurationIndex ());
-  m_newUeContextTrace (m_cellId, rnti);
+  const uint16_t cellId = ComponentCarrierToCellId (componentCarrierId);
+  NS_LOG_DEBUG (this << " New UE RNTI " << rnti << " cellId " << cellId << " srs CI " << ueManager->GetSrsConfigurationIndex ());
+  m_newUeContextTrace (cellId, rnti);
   return rnti;
 }
 
