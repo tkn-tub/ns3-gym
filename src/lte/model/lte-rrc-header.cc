@@ -1717,7 +1717,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
   {
     // 3 optional fields. Extension marker not present.
     std::bitset<3> noncriticalExtension_v1020;
-    noncriticalExtension_v1020.set (1,0); // No sCellToRealeaseList-r10
+    noncriticalExtension_v1020.set (2,0); // No sCellToRealeaseList-r10
     noncriticalExtension_v1020.set (1,1); // sCellToAddModList-r10
     noncriticalExtension_v1020.set (0,0); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
     SerializeSequence (noncriticalExtension_v1020,false);
@@ -2591,6 +2591,10 @@ RrcAsn1Header::Print (std::ostream &os) const
             // Continue to deserialize futere Release optional fields
             std::bitset<3> nonCriticalExtension_v1020;
             bIterator = DeserializeSequence (&nonCriticalExtension_v1020, false, bIterator);
+            NS_ASSERT (!nonCriticalExtension_v1020[2]); // No sCellToRealeaseList-r10
+            NS_ASSERT (nonCriticalExtension_v1020[1]); // sCellToAddModList-r10
+            NS_ASSERT (!nonCriticalExtension_v1020[0]); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
+
             int numElems;
             bIterator = DeserializeSequenceOf (&numElems,MAX_OBJECT_ID,1,bIterator);
             nonCriticalExtension->sCellsToAddModList.clear ();
