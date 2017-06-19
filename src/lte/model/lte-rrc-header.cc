@@ -2705,7 +2705,7 @@ RrcAsn1Header::Print (std::ostream &os) const
     NS_LOG_FUNCTION (this);
     std::bitset<1> RadioResourceConfigDedicatedSCell_r10;
     bIterator = DeserializeSequence (&RadioResourceConfigDedicatedSCell_r10,false,bIterator);
-    DeserializePhysicalConfigDedicatedSCell (&rrcdsc->physicalConfigDedicatedSCell, bIterator);
+    bIterator = DeserializePhysicalConfigDedicatedSCell (&rrcdsc->physicalConfigDedicatedSCell, bIterator);
 
     return bIterator;
   }
