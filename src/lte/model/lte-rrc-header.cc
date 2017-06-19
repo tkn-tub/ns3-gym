@@ -1769,7 +1769,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
     radioResourceConfigCommonSCell_r10.set (0,rrccsc.haveUlConfiguration); // UlConfiguration
     SerializeSequence (radioResourceConfigCommonSCell_r10,false);
      
-    if (radioResourceConfigCommonSCell_r10[1])
+    if (rrccsc.haveNonUlConfiguration)
       {
         // 5 optional fields. Extension marker not present.
         std::bitset<5> nonUlConfiguration_r10;
@@ -1796,7 +1796,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
         SerializeInteger (rrccsc.nonUlConfiguration.pdschConfigCommon.pb,0,3); 
         
       }
-    if (radioResourceConfigCommonSCell_r10[0])
+    if (rrccsc.haveUlConfiguration)
       {
         //Serialize Ul Configuration
         // 7 optional fields. Extension marker present.
@@ -1860,7 +1860,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
     pcdscOpt.set (0,pcdsc.haveUlConfiguration);
     SerializeSequence (pcdscOpt, true);
 
-    if (pcdscOpt[1])
+    if (pcdsc.haveNonUlConfiguration)
       {
         //Serialize NonUl configuration
         std::bitset<4> nulOpt;
@@ -1906,7 +1906,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
 
 
       }
-    if (pcdscOpt[0])
+    if (pcdsc.haveUlConfiguration)
       {
         //Serialize Ul Configuration
         std::bitset<7> ulOpt;
