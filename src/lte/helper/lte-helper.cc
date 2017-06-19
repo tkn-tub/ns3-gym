@@ -196,7 +196,7 @@ TypeId LteHelper::GetTypeId (void)
                    "If it is more than one and m_useCa is false, it will raise an error ",
                    UintegerValue (1),
                    MakeUintegerAccessor (&LteHelper::m_noOfCcs),
-                   MakeUintegerChecker<uint16_t> (1, 3))
+                   MakeUintegerChecker<uint16_t> (MIN_NO_CC, MAX_NO_CC))
   ;
   return tid;
 }
