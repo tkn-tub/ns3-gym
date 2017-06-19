@@ -2687,7 +2687,7 @@ RrcAsn1Header::Print (std::ostream &os) const
 
         std::bitset<2> UlPowerControlCommonSCell_r10;
         bIterator = DeserializeSequence (&UlPowerControlCommonSCell_r10,false,bIterator);
-        bIterator = DeserializeInteger (&n,0,MAX_EARFCN,bIterator);
+        bIterator = DeserializeInteger (&n,0,65536,bIterator);
         rrccsc->ulConfiguration.ulPowerControlCommonSCell.alpha = n;
          
         std::bitset<1> prachConfigSCell_r10;
