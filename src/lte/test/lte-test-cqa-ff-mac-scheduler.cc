@@ -386,7 +386,7 @@ LenaCqaFfMacSchedulerTestCase1::DoRun (void)
       lteHelper->ActivateDedicatedEpsBearer (ueDevice, bearer, EpcTft::Default ());  
     }
 
-  // Install downlind and uplink applications
+  // Install downlink and uplink applications
   uint16_t dlPort = 1234;
   uint16_t ulPort = 2000;
   PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
@@ -624,7 +624,7 @@ LenaCqaFfMacSchedulerTestCase2::DoRun (void)
     }
 
 
-  // Install downlind and uplink applications
+  // Install downlink and uplink applications
   uint16_t dlPort = 1234;
   uint16_t ulPort = 2000;
   PacketSinkHelper dlPacketSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), dlPort));
