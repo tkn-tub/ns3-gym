@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Budiarto Herman <budiarto.herman@magister.fi>
+ *         Alexander Krotov <krotov@iitp.ru>
  */
 
 #include <ns3/test.h>
@@ -67,9 +68,10 @@ public:
    * \param delayThreshold the delay threshold
    * \param simulationDuration duration of the simulation
    */
-  LteHandoverDelayTestCase (bool useIdealRrc, Time handoverTime,
+  LteHandoverDelayTestCase (uint8_t numberOfComponentCarriers, bool useIdealRrc, Time handoverTime,
       Time delayThreshold, Time simulationDuration)
       : TestCase ("Verifying that the time needed for handover is under a specified threshold"),
+        m_numberOfComponentCarriers (numberOfComponentCarriers),
         m_useIdealRrc (useIdealRrc),
         m_handoverTime (handoverTime),
         m_delayThreshold (delayThreshold),
@@ -120,6 +122,7 @@ private:
   void EnbHandoverEndOkCallback (std::string context, uint64_t imsi,
       uint16_t cellid, uint16_t rnti);
 
+  uint8_t m_numberOfComponentCarriers;
   bool m_useIdealRrc; ///< use ideal RRC?
   Time m_handoverTime; ///< handover time
   Time m_delayThreshold; ///< the delay threshold
@@ -136,59 +139,38 @@ LteHandoverDelayTestCase::DoRun ()
   NS_LOG_INFO ("-----test case: ideal RRC = " << m_useIdealRrc
       << " handover time = " << m_handoverTime.GetSeconds () << "-----");
 
-  Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  Ptr<PointToPointEpcHelper> epcHelper = CreateObject<PointToPointEpcHelper> ();
+  /*
+   * Helpers.
+   */
+  auto epcHelper = CreateObject<PointToPointEpcHelper> ();
+
+  auto lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
-  lteHelper->SetAttribute ("UseIdealRrc", BooleanValue(m_useIdealRrc));
+  lteHelper->SetAttribute ("UseIdealRrc", BooleanValue (m_useIdealRrc));
+  lteHelper->SetAttribute ("NumberOfComponentCarriers", UintegerValue (m_numberOfComponentCarriers));
 
-  // SETUP A REMOTE HOST
+  auto ccHelper = CreateObject<CcHelper> ();
+  ccHelper->SetUlEarfcn (100 + 18000);
+  ccHelper->SetDlEarfcn (100);
+  ccHelper->SetUlBandwidth (25);
+  ccHelper->SetDlBandwidth (25);
+  ccHelper->SetNumberOfComponentCarriers (m_numberOfComponentCarriers);
 
-  NodeContainer remoteHosts;
-  remoteHosts.Create (1);
-  InternetStackHelper inetStackHelper;
-  inetStackHelper.Install (remoteHosts);
-
-  // SETUP POINT-TO-POINT CONNECTION BETWEEN REMOTE HOST AND EPC
-
-  PointToPointHelper p2pHelper;
-  p2pHelper.SetDeviceAttribute ("DataRate",
-      DataRateValue (DataRate ("100Gb/s")));
-  p2pHelper.SetDeviceAttribute ("Mtu", UintegerValue (1500));
-  p2pHelper.SetChannelAttribute ("Delay", TimeValue (Seconds (0.010)));
-
-  NetDeviceContainer inetDevs = p2pHelper.Install (epcHelper->GetPgwNode (),
-      remoteHosts.Get (0));
-
-  Ipv4AddressHelper addrHelper;
-  addrHelper.SetBase ("10.1.1.0", "255.255.255.0");
-  Ipv4InterfaceContainer inetIfs;
-  inetIfs = addrHelper.Assign (inetDevs);
-
-  // SETUP ROUTING
-
-  Ipv4StaticRoutingHelper ipRoutingHelper;
-  Ptr<Ipv4StaticRouting> remoteHostRouting =
-      ipRoutingHelper.GetStaticRouting (remoteHosts.Get (0)->GetObject<Ipv4> ());
-  remoteHostRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"),
-      Ipv4Mask ("255.0.0.0"), 1);
-
-  // CREATE NODES
-
-  NodeContainer enbNodes;
-  NodeContainer ueNodes;
-  enbNodes.Create (2);
-  ueNodes.Create (1);
-
-  /**
+  /*
+   * Physical layer.
+   *
    * eNodeB 0                    UE                      eNodeB 1
    *
    *    x ----------------------- x ----------------------- x
    *              500 m                      500 m
    */
+  // Create nodes.
+  NodeContainer enbNodes;
+  enbNodes.Create (2);
+  auto ueNode = CreateObject<Node> ();
 
-  // SETUP MOBILITY
-
-  Ptr<ListPositionAllocator> posAlloc = CreateObject<ListPositionAllocator> ();
+  // Setup mobility
+  auto posAlloc = CreateObject<ListPositionAllocator> ();
   posAlloc->Add (Vector (0, 0, 0));
   posAlloc->Add (Vector (1000, 0, 0));
   posAlloc->Add (Vector (500, 0, 0));
@@ -197,30 +179,23 @@ LteHandoverDelayTestCase::DoRun ()
   mobilityHelper.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobilityHelper.SetPositionAllocator (posAlloc);
   mobilityHelper.Install (enbNodes);
-  mobilityHelper.Install (ueNodes);
+  mobilityHelper.Install (ueNode);
 
-  // SETUP LTE DEVICES
+  /*
+   * Link layer.
+   */
+  auto enbDevs = lteHelper->InstallEnbDevice (enbNodes);
+  auto ueDev = lteHelper->InstallUeDevice (ueNode).Get (0);
 
-  NetDeviceContainer enbDevs;
-  NetDeviceContainer ueDevs;
-  enbDevs = lteHelper->InstallEnbDevice (enbNodes);
-  ueDevs = lteHelper->InstallUeDevice (ueNodes);
-
-  // SETUP INTERNET IN UE
-
-  inetStackHelper.Install(ueNodes);
+  /*
+   * Network layer.
+   */
+  InternetStackHelper inetStackHelper;
+  inetStackHelper.Install (ueNode);
   Ipv4InterfaceContainer ueIfs;
-  ueIfs = epcHelper->AssignUeIpv4Address (ueDevs);
+  ueIfs = epcHelper->AssignUeIpv4Address (ueDev);
 
-  // SETUP DEFAULT GATEWAY FOR UE
-
-  Ptr<Ipv4StaticRouting> ueStaticRouting =
-      ipRoutingHelper.GetStaticRouting (ueNodes.Get (0)->GetObject<Ipv4> ());
-  ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (),
-      1);
-
-  // INSTALLING TRACES
-
+  // Setup traces.
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverStart",
       MakeCallback (&LteHandoverDelayTestCase::UeHandoverStartCallback, this));
   Config::Connect ("/NodeList/*/DeviceList/*/LteUeRrc/HandoverEndOk",
@@ -231,15 +206,12 @@ LteHandoverDelayTestCase::DoRun ()
   Config::Connect ("/NodeList/*/DeviceList/*/LteEnbRrc/HandoverEndOk",
       MakeCallback (&LteHandoverDelayTestCase::EnbHandoverEndOkCallback, this));
 
-  // SIMULATION
-
+  // Prepare handover.
   lteHelper->AddX2Interface (enbNodes);
-  lteHelper->Attach (ueDevs.Get(0), enbDevs.Get(0));
-  lteHelper->HandoverRequest (m_handoverTime, ueDevs.Get (0), enbDevs.Get (0),
-      enbDevs.Get (1));
-  // disable error model in dl ctrl channel
-  //Config::Set ("/NodeList/*/DeviceList/*/LteUePhy/DlSpectrumPhy/CtrlErrorModelEnabled",
-  //    BooleanValue (false));
+  lteHelper->Attach (ueDev, enbDevs.Get(0));
+  lteHelper->HandoverRequest (m_handoverTime, ueDev, enbDevs.Get (0), enbDevs.Get (1));
+
+  // Run simulation.
   Simulator::Stop (m_simulationDuration);
   Simulator::Run ();
   Simulator::Destroy ();
@@ -318,7 +290,7 @@ public:
       {
         // arguments: useIdealRrc, handoverTime, delayThreshold, simulationDuration
         AddTestCase (
-            new LteHandoverDelayTestCase (true, handoverTime, Seconds (0.005),
+            new LteHandoverDelayTestCase (1, true, handoverTime, Seconds (0.005),
                 Seconds (0.200)), TestCase::QUICK);
       }
 
@@ -329,7 +301,7 @@ public:
       {
         // arguments: useIdealRrc, handoverTime, delayThreshold, simulationDuration
         AddTestCase (
-            new LteHandoverDelayTestCase (false, handoverTime, Seconds (0.020),
+            new LteHandoverDelayTestCase (1, false, handoverTime, Seconds (0.020),
                 Seconds (0.200)), TestCase::QUICK);
       }
   }
