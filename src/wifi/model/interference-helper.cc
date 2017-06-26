@@ -176,7 +176,7 @@ InterferenceHelper::GetNoiseFigure (void) const
 }
 
 void
-InterferenceHelper::SetErrorRateModel (Ptr<ErrorRateModel> rate)
+InterferenceHelper::SetErrorRateModel (const Ptr<ErrorRateModel> rate)
 {
   m_errorRateModel = rate;
 }

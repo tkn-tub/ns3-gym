@@ -152,7 +152,7 @@ ApWifiMac::GetBeaconInterval (void) const
 }
 
 void
-ApWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
+ApWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_beaconDca->SetWifiRemoteStationManager (stationManager);

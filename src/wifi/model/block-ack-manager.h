@@ -87,7 +87,7 @@ public:
    *
    * \param manager WifiRemoteStationManager associated with this BlockAckManager
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID.
@@ -256,7 +256,7 @@ public:
   /**
    * \param queue The WifiMacQueue object.
    */
-  void SetQueue (Ptr<WifiMacQueue> queue);
+  void SetQueue (const Ptr<WifiMacQueue> queue);
   /**
    * Set the MacTxMiddle
    * \param txMiddle the MacTxMiddle

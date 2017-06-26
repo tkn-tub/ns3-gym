@@ -220,8 +220,8 @@ public:
   int64_t AssignStreams (int64_t stream);
 
   // Inherited from WifiRemoteStationManager
-  void SetupPhy (Ptr<WifiPhy> phy);
-  void SetupMac (Ptr<WifiMac> mac);
+  void SetupPhy (const Ptr<WifiPhy> phy);
+  void SetupMac (const Ptr<WifiMac> mac);
   void SetHeSupported (bool enable); //HE rates not yet supported
 
   /**

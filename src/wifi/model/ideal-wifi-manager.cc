@@ -72,7 +72,7 @@ IdealWifiManager::~IdealWifiManager ()
 }
 
 void
-IdealWifiManager::SetupPhy (Ptr<WifiPhy> phy)
+IdealWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   WifiRemoteStationManager::SetupPhy (phy);

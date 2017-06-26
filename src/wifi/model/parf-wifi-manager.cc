@@ -93,7 +93,7 @@ ParfWifiManager::~ParfWifiManager ()
 }
 
 void
-ParfWifiManager::SetupPhy (Ptr<WifiPhy> phy)
+ParfWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   m_minPower = phy->GetTxPowerStart ();
   m_maxPower = phy->GetTxPowerEnd ();

@@ -667,7 +667,7 @@ WifiPhy::GetShortPlcpPreambleSupported (void) const
 }
 
 void
-WifiPhy::SetDevice (Ptr<NetDevice> device)
+WifiPhy::SetDevice (const Ptr<NetDevice> device)
 {
   m_device = device;
 }
@@ -679,7 +679,7 @@ WifiPhy::GetDevice (void) const
 }
 
 void
-WifiPhy::SetMobility (Ptr<MobilityModel> mobility)
+WifiPhy::SetMobility (const Ptr<MobilityModel> mobility)
 {
   m_mobility = mobility;
 }
@@ -698,7 +698,7 @@ WifiPhy::GetMobility (void) const
 }
 
 void
-WifiPhy::SetErrorRateModel (Ptr<ErrorRateModel> rate)
+WifiPhy::SetErrorRateModel (const Ptr<ErrorRateModel> rate)
 {
   m_interference.SetErrorRateModel (rate);
   m_interference.SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
@@ -711,7 +711,7 @@ WifiPhy::GetErrorRateModel (void) const
 }
 
 void
-WifiPhy::SetFrameCaptureModel (Ptr<FrameCaptureModel> model)
+WifiPhy::SetFrameCaptureModel (const Ptr<FrameCaptureModel> model)
 {
   m_frameCaptureModel = model;
 }

@@ -126,7 +126,7 @@ private:
    *
    * \param rate Error rate model
    */
-  void SetErrorRateModel (Ptr<ErrorRateModel> rate);
+  void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
 
   /**
    * Return the noise figure.

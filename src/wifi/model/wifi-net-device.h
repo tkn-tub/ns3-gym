@@ -61,15 +61,15 @@ public:
   /**
    * \param mac the mac layer to use.
    */
-  void SetMac (Ptr<WifiMac> mac);
+  void SetMac (const Ptr<WifiMac> mac);
   /**
    * \param phy the phy layer to use.
    */
-  void SetPhy (Ptr<WifiPhy> phy);
+  void SetPhy (const Ptr<WifiPhy> phy);
   /**
    * \param manager the manager to use.
    */
-  void SetRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  void SetRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
    * \returns the mac we are currently using.
    */
@@ -102,7 +102,7 @@ public:
   bool IsBridge (void) const;
   bool Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   Ptr<Node> GetNode (void) const;
-  void SetNode (Ptr<Node> node);
+  void SetNode (const Ptr<Node> node);
   bool NeedsArp (void) const;
   void SetReceiveCallback (NetDevice::ReceiveCallback cb);
   Address GetMulticast (Ipv6Address addr) const;

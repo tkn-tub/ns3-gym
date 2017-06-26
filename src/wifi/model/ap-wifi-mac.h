@@ -56,7 +56,7 @@ public:
   /**
    * \param stationManager the station manager attached to this MAC.
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
 
   /**
    * \param linkUp the callback to invoke when the link becomes up.

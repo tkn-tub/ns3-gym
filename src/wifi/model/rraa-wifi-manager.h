@@ -68,8 +68,8 @@ public:
   virtual ~RraaWifiManager ();
 
   // Inherited from WifiRemoteStationManager
-  virtual void SetupPhy (Ptr<WifiPhy> phy);
-  virtual void SetupMac (Ptr<WifiMac> mac);
+  virtual void SetupPhy (const Ptr<WifiPhy> phy);
+  virtual void SetupMac (const Ptr<WifiMac> mac);
   void SetHtSupported (bool enable);
   void SetVhtSupported (bool enable);
   void SetHeSupported (bool enable);

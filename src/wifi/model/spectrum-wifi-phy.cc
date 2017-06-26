@@ -120,7 +120,7 @@ SpectrumWifiPhy::GetChannel (void) const
 }
 
 void
-SpectrumWifiPhy::SetChannel (Ptr<SpectrumChannel> channel)
+SpectrumWifiPhy::SetChannel (const Ptr<SpectrumChannel> channel)
 {
   m_channel = channel;
 }
@@ -212,7 +212,7 @@ SpectrumWifiPhy::GetRxAntenna (void) const
 }
 
 void
-SpectrumWifiPhy::SetAntenna (Ptr<AntennaModel> a)
+SpectrumWifiPhy::SetAntenna (const Ptr<AntennaModel> a)
 {
   NS_LOG_FUNCTION (this << a);
   m_antenna = a;

@@ -432,7 +432,7 @@ WifiRemoteStationManager::DoDispose (void)
 }
 
 void
-WifiRemoteStationManager::SetupPhy (Ptr<WifiPhy> phy)
+WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   //We need to track our PHY because it is the object that knows the
   //full set of transmit rates that are supported. We need to know
@@ -449,7 +449,7 @@ WifiRemoteStationManager::SetupPhy (Ptr<WifiPhy> phy)
 }
 
 void
-WifiRemoteStationManager::SetupMac (Ptr<WifiMac> mac)
+WifiRemoteStationManager::SetupMac (const Ptr<WifiMac> mac)
 {
   //We need to track our MAC because it is the object that knows the
   //full set of interframe spaces.

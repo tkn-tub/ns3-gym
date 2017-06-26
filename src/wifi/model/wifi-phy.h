@@ -1456,7 +1456,7 @@ public:
    *
    * \param device the device this PHY is associated with
    */
-  void SetDevice (Ptr<NetDevice> device);
+  void SetDevice (const Ptr<NetDevice> device);
   /**
    * Return the device this PHY is associated with
    *
@@ -1473,7 +1473,7 @@ public:
    *
    * \param mobility the mobility model this PHY is associated with
    */
-  void SetMobility (Ptr<MobilityModel> mobility);
+  void SetMobility (const Ptr<MobilityModel> mobility);
   /**
    * Return the mobility model this PHY is associated with.
    * This method will return either the mobility model that has been
@@ -1600,7 +1600,7 @@ public:
    *
    * \param rate the error rate model
    */
-  void SetErrorRateModel (Ptr<ErrorRateModel> rate);
+  void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
   /**
    * Return the error rate model this PHY is using.
    *
@@ -1613,7 +1613,7 @@ public:
    *
    * \param rate the frame capture model
    */
-  void SetFrameCaptureModel (Ptr<FrameCaptureModel> rate);
+  void SetFrameCaptureModel (const Ptr<FrameCaptureModel> rate);
   /**
    * Return the frame capture model this PHY is using.
    *

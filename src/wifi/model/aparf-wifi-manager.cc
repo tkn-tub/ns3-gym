@@ -125,7 +125,7 @@ AparfWifiManager::~AparfWifiManager ()
 }
 
 void
-AparfWifiManager::SetupPhy (Ptr<WifiPhy> phy)
+AparfWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   m_minPower = phy->GetTxPowerStart ();
   m_maxPower = phy->GetTxPowerEnd ();

@@ -63,7 +63,7 @@ public:
    *
    * \param channel the SpectrumChannel this SpectrumWifiPhy is to be connected to
    */
-  void SetChannel (Ptr<SpectrumChannel> channel);
+  void SetChannel (const Ptr<SpectrumChannel> channel);
   /**
    * Add a channel number to the list of operational channels.  This method
    * is used to support scanning for strongest base station.
@@ -124,7 +124,7 @@ public:
    * Note:  this method may be split into separate SetTx and SetRx
    * methods in the future if the modelling need for this arises
    */
-  void SetAntenna (Ptr<AntennaModel> antenna);
+  void SetAntenna (const Ptr<AntennaModel> antenna);
   /**
    * Get the antenna model used for reception
    *

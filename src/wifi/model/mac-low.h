@@ -266,7 +266,7 @@ public:
    *
    * \param phy WifiPhy associated with this MacLow
    */
-  void SetPhy (Ptr<WifiPhy> phy);
+  void SetPhy (const Ptr<WifiPhy> phy);
   /**
    * \return current attached PHY device
    */
@@ -280,7 +280,7 @@ public:
    *
    * \param manager WifiRemoteStationManager associated with this MacLow
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager);
   /**
    * Set MAC address of this MacLow.
    *
@@ -1049,7 +1049,7 @@ private:
    *
    * \param phy the WifiPhy this MacLow is connected to
    */
-  void SetupPhyMacLowListener (Ptr<WifiPhy> phy);
+  void SetupPhyMacLowListener (const Ptr<WifiPhy> phy);
   /**
    * Remove current WifiPhy listener for this MacLow.
    *

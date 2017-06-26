@@ -304,7 +304,7 @@ MacLow::GetTypeId (void)
 }
 
 void
-MacLow::SetupPhyMacLowListener (Ptr<WifiPhy> phy)
+MacLow::SetupPhyMacLowListener (const Ptr<WifiPhy> phy)
 {
   m_phyMacLowListener = new PhyMacLowListener (this);
   phy->RegisterListener (m_phyMacLowListener);
@@ -418,7 +418,7 @@ MacLow::CancelAllEvents (void)
 }
 
 void
-MacLow::SetPhy (Ptr<WifiPhy> phy)
+MacLow::SetPhy (const Ptr<WifiPhy> phy)
 {
   m_phy = phy;
   m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::DeaggregateAmpduAndReceive, this));
@@ -442,7 +442,7 @@ MacLow::ResetPhy (void)
 }
 
 void
-MacLow::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
+MacLow::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
 {
   m_stationManager = manager;
 }

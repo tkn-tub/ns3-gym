@@ -52,7 +52,7 @@ public:
   IdealWifiManager ();
   virtual ~IdealWifiManager ();
 
-  void SetupPhy (Ptr<WifiPhy> phy);
+  void SetupPhy (const Ptr<WifiPhy> phy);
 
 
 private:

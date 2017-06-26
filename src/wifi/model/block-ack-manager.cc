@@ -551,7 +551,7 @@ BlockAckManager::SetBlockAckThreshold (uint8_t nPackets)
 }
 
 void
-BlockAckManager::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager)
+BlockAckManager::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> manager)
 {
   NS_LOG_FUNCTION (this << manager);
   m_stationManager = manager;
@@ -797,7 +797,7 @@ BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, ui
 }
 
 void
-BlockAckManager::SetQueue (Ptr<WifiMacQueue> queue)
+BlockAckManager::SetQueue (const Ptr<WifiMacQueue> queue)
 {
   NS_LOG_FUNCTION (this << queue);
   m_queue = queue;

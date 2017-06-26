@@ -117,7 +117,7 @@ RegularWifiMac::DoDispose ()
 }
 
 void
-RegularWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
+RegularWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
 {
   NS_LOG_FUNCTION (this << stationManager);
   m_stationManager = stationManager;
@@ -494,7 +494,7 @@ RegularWifiMac::GetBKQueue () const
 }
 
 void
-RegularWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
+RegularWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   m_phy = phy;

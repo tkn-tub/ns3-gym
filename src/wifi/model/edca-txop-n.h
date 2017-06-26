@@ -94,7 +94,7 @@ public:
    *
    * \param remoteManager WifiRemoteStationManager.
    */
-  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
   /**
    * Set type of station with the given type.
    *
@@ -276,13 +276,13 @@ public:
    *
    * \param aggr pointer to the MSDU aggregator.
    */
-  void SetMsduAggregator (Ptr<MsduAggregator> aggr);
+  void SetMsduAggregator (const Ptr<MsduAggregator> aggr);
   /**
    * Set the aggregator used to construct A-MPDU subframes.
    *
    * \param aggr pointer to the MPDU aggregator.
    */
-  void SetMpduAggregator (Ptr<MpduAggregator> aggr);
+  void SetMpduAggregator (const Ptr<MpduAggregator> aggr);
 
   /**
    * \param packet packet to send.

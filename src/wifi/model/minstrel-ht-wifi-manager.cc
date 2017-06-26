@@ -178,7 +178,7 @@ MinstrelHtWifiManager::AssignStreams (int64_t stream)
 }
 
 void
-MinstrelHtWifiManager::SetupPhy (Ptr<WifiPhy> phy)
+MinstrelHtWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   // Setup phy for legacy manager.
@@ -305,7 +305,7 @@ MinstrelHtWifiManager::DoInitialize ()
 }
 
 void
-MinstrelHtWifiManager::SetupMac (Ptr<WifiMac> mac)
+MinstrelHtWifiManager::SetupMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   m_legacyManager->SetupMac (mac);

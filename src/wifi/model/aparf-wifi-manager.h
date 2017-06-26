@@ -54,7 +54,7 @@ public:
   virtual ~AparfWifiManager ();
 
   // Inherited from WifiRemoteStationManager
-  void SetupPhy (Ptr<WifiPhy> phy);
+  void SetupPhy (const Ptr<WifiPhy> phy);
   void SetHtSupported (bool enable);
   void SetVhtSupported (bool enable);
   void SetHeSupported (bool enable);

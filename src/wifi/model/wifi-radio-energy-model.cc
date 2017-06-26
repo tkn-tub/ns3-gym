@@ -109,7 +109,7 @@ WifiRadioEnergyModel::~WifiRadioEnergyModel ()
 }
 
 void
-WifiRadioEnergyModel::SetEnergySource (Ptr<EnergySource> source)
+WifiRadioEnergyModel::SetEnergySource (const Ptr<EnergySource> source)
 {
   NS_LOG_FUNCTION (this << source);
   NS_ASSERT (source != NULL);
@@ -239,7 +239,7 @@ WifiRadioEnergyModel::SetEnergyRechargedCallback (
 }
 
 void
-WifiRadioEnergyModel::SetTxCurrentModel (Ptr<WifiTxCurrentModel> model)
+WifiRadioEnergyModel::SetTxCurrentModel (const Ptr<WifiTxCurrentModel> model)
 {
   m_txCurrentModel = model;
 }

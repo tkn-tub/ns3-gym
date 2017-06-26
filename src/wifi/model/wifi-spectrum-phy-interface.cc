@@ -52,7 +52,7 @@ WifiSpectrumPhyInterface::DoDispose (void)
   m_channel = 0;
 }
 
-void WifiSpectrumPhyInterface::SetSpectrumWifiPhy (Ptr<SpectrumWifiPhy> spectrumWifiPhy)
+void WifiSpectrumPhyInterface::SetSpectrumWifiPhy (const Ptr<SpectrumWifiPhy> spectrumWifiPhy)
 {
   m_spectrumWifiPhy = spectrumWifiPhy;
 }
@@ -70,19 +70,19 @@ WifiSpectrumPhyInterface::GetMobility ()
 }
 
 void
-WifiSpectrumPhyInterface::SetDevice (Ptr<NetDevice> d)
+WifiSpectrumPhyInterface::SetDevice (const Ptr<NetDevice> d)
 {
   m_netDevice = d;
 }
 
 void
-WifiSpectrumPhyInterface::SetMobility (Ptr<MobilityModel> m)
+WifiSpectrumPhyInterface::SetMobility (const Ptr<MobilityModel> m)
 {
   m_spectrumWifiPhy->SetMobility (m);
 }
 
 void
-WifiSpectrumPhyInterface::SetChannel (Ptr<SpectrumChannel> c)
+WifiSpectrumPhyInterface::SetChannel (const Ptr<SpectrumChannel> c)
 {
   NS_LOG_FUNCTION (this << c);
   m_channel = c;

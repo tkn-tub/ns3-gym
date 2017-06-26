@@ -105,7 +105,7 @@ MinstrelWifiManager::~MinstrelWifiManager ()
 }
 
 void
-MinstrelWifiManager::SetupPhy (Ptr<WifiPhy> phy)
+MinstrelWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   uint32_t nModes = phy->GetNModes ();
@@ -121,7 +121,7 @@ MinstrelWifiManager::SetupPhy (Ptr<WifiPhy> phy)
 }
 
 void
-MinstrelWifiManager::SetupMac (Ptr<WifiMac> mac)
+MinstrelWifiManager::SetupMac (const Ptr<WifiMac> mac)
 {
   NS_LOG_FUNCTION (this << mac);
   WifiRemoteStationManager::SetupMac (mac);

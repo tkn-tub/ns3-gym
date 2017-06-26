@@ -115,14 +115,14 @@ void DcaTxop::SetTxMiddle (MacTxMiddle *txMiddle)
 }
 
 void
-DcaTxop::SetLow (Ptr<MacLow> low)
+DcaTxop::SetLow (const Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
   m_low = low;
 }
 
 void
-DcaTxop::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
+DcaTxop::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
 {
   NS_LOG_FUNCTION (this << remoteManager);
   m_stationManager = remoteManager;

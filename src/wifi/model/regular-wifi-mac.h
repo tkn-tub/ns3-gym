@@ -216,7 +216,7 @@ public:
   /**
    * \param phy the physical layer attached to this MAC.
    */
-  void SetWifiPhy (Ptr<WifiPhy> phy);
+  void SetWifiPhy (const Ptr<WifiPhy> phy);
   /**
    * \return the physical layer attached to this MAC.
    */
@@ -228,7 +228,7 @@ public:
   /**
    * \param stationManager the station manager attached to this MAC.
    */
-  virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
+  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
   /**
    * \return the station manager attached to this MAC.
    */

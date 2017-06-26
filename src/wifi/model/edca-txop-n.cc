@@ -128,7 +128,7 @@ EdcaTxopN::CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid)
 }
 
 void
-EdcaTxopN::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
+EdcaTxopN::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager)
 {
   DcaTxop::SetWifiRemoteStationManager (remoteManager);
   NS_LOG_FUNCTION (this << remoteManager);
@@ -1223,14 +1223,14 @@ EdcaTxopN::MapDestAddressForAggregation (const WifiMacHeader &hdr)
 }
 
 void
-EdcaTxopN::SetMsduAggregator (Ptr<MsduAggregator> aggr)
+EdcaTxopN::SetMsduAggregator (const Ptr<MsduAggregator> aggr)
 {
   NS_LOG_FUNCTION (this << aggr);
   m_msduAggregator = aggr;
 }
 
 void
-EdcaTxopN::SetMpduAggregator (Ptr<MpduAggregator> aggr)
+EdcaTxopN::SetMpduAggregator (const Ptr<MpduAggregator> aggr)
 {
   NS_LOG_FUNCTION (this << aggr);
   m_mpduAggregator = aggr;

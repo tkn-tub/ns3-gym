@@ -163,8 +163,8 @@ public:
   virtual ~MinstrelWifiManager ();
 
   // Inherited from WifiRemoteStationManager
-  void SetupPhy (Ptr<WifiPhy> phy);
-  void SetupMac (Ptr<WifiMac> mac);
+  void SetupPhy (const Ptr<WifiPhy> phy);
+  void SetupMac (const Ptr<WifiMac> mac);
   void SetHtSupported (bool enable);
   void SetVhtSupported (bool enable);
   void SetHeSupported (bool enable);

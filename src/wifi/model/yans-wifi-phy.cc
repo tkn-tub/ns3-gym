@@ -66,7 +66,7 @@ YansWifiPhy::GetChannel (void) const
 }
 
 void
-YansWifiPhy::SetChannel (Ptr<YansWifiChannel> channel)
+YansWifiPhy::SetChannel (const Ptr<YansWifiChannel> channel)
 {
   m_channel = channel;
   m_channel->Add (this);

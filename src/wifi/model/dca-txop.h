@@ -98,7 +98,7 @@ public:
    *
    * \param low MacLow.
    */
-  void SetLow (Ptr<MacLow> low);
+  void SetLow (const Ptr<MacLow> low);
   /**
    * Set DcfManager this DcaTxop is associated to.
    *
@@ -110,7 +110,7 @@ public:
    *
    * \param remoteManager WifiRemoteStationManager.
    */
-  virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
+  virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
   /**
    * Set MacTxMiddle this DcaTxop is associated to.
    *
