@@ -764,7 +764,9 @@ private:
   // One socket per interface, each bound to that interface's address
   // (reason: for OLSR Link Sensing we need to know on which interface
   // HELLO messages arrive)
-  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_socketAddresses; //!< Container of sockets and the interfaces they are opened onto.
+  std::map< Ptr<Socket>, Ipv4InterfaceAddress > m_sendSockets; //!< Container of sockets and the interfaces they are opened onto.
+  Ptr<Socket> m_recvSocket; //!< Receiving socket.
+
 
   /// Rx packet trace.
   TracedCallback <const PacketHeader &, const MessageList &> m_rxPacketTrace;
