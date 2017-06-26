@@ -1273,7 +1273,7 @@ WifiPhy::GetFrequency (void) const
 }
 
 bool
-WifiPhy::Is2_4Ghz (double frequency) const
+WifiPhy::Is2_4Ghz (double frequency)
 {
   if (frequency >= 2400 && frequency <= 2500)
     {
@@ -1283,7 +1283,7 @@ WifiPhy::Is2_4Ghz (double frequency) const
 }
 
 bool
-WifiPhy::Is5Ghz (double frequency) const
+WifiPhy::Is5Ghz (double frequency)
 {
   if (frequency >= 5000 && frequency <= 6000)
     {

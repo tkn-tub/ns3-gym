@@ -1521,12 +1521,12 @@ public:
    * \param frequency the frequency to check
    * \return whether frequency is in the 2.4 GHz band
    */
-  bool Is2_4Ghz (double frequency) const;
+  static bool Is2_4Ghz (double frequency);
   /**
    * \param frequency the frequency to check
    * \return whether frequency is in the 5 GHz band
    */
-  bool Is5Ghz (double frequency) const;
+  static bool Is5Ghz (double frequency);
   /**
    * Enable or disable support for HT/VHT short guard interval.
    *
