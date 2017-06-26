@@ -2669,14 +2669,14 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
       return true;
     }
 
-  Time aPPDUMaxTime = MilliSeconds (10);
+  Time aPPDUMaxTime = MicroSeconds (5484);
   uint8_t tid = GetTid (peekedPacket, peekedHdr);
   AcIndex ac = QosUtilsMapTidToAc (tid);
   std::map<AcIndex, Ptr<EdcaTxopN> >::const_iterator edcaIt = m_edca.find (ac);
 
-  if (m_currentTxVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
+  if (m_phy->GetGreenfield ())
     {
-      aPPDUMaxTime = MicroSeconds (5484);
+      aPPDUMaxTime = MicroSeconds (10000);
     }
 
   //A STA shall not transmit a PPDU that has a duration that is greater than aPPDUMaxTime

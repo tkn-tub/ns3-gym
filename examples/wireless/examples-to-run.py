@@ -33,7 +33,7 @@ cpp_examples = [
     ("ofdm-he-validation", "True", "True"),
     ("ht-wifi-network --simulationTime=0.1 --minExpectedThroughput=5 --maxExpectedThroughput=134", "True", "True"),
     ("vht-wifi-network --simulationTime=0.1 --minExpectedThroughput=5 --maxExpectedThroughput=555", "True", "True"),
-    ("he-wifi-network --simulationTime=0.25 --minExpectedThroughput=6.5 --maxExpectedThroughput=754", "True", "True"),
+    ("he-wifi-network --simulationTime=0.25 --minExpectedThroughput=6.35 --maxExpectedThroughput=754", "True", "True"),
     ("simple-ht-hidden-stations --simulationTime=1 --minExpectedThroughput=16.7 --maxExpectedThroughput=16.8", "True", "True"),
     ("mixed-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1 --verifyResults=1", "True", "True"),
