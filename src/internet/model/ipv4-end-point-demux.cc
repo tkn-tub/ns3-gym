@@ -205,7 +205,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   EndPoints retval3; // Matches all but local address
   EndPoints retval4; // Exact match on all 4
 
-  NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
+  NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr << ":" << dport);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       Ipv4EndPoint* endP = *i;
@@ -241,73 +241,84 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
               continue;
             }
         }
-      bool subnetDirected = false;
-      Ipv4Address incomingInterfaceAddr = daddr;  // may be a broadcast
-      for (uint32_t i = 0; i < incomingInterface->GetNAddresses (); i++)
+
+      bool localAddressMatchesExact = false;
+      bool localAddressIsAny = false;
+      bool localAddressIsSubnetAny = false;
+
+      // We have 3 cases:
+      // 1) Exact local / destination address match
+      // 2) Local endpoint bound to Any -> matches anything
+      // 3) Local endpoint bound to x.y.z.0 -> matches Subnet-directed broadcast packet (e.g., x.y.z.255 in a /24 net) and direct destination match.
+
+      if (endP->GetLocalAddress () == daddr)
         {
-          Ipv4InterfaceAddress addr = incomingInterface->GetAddress (i);
-          if (addr.GetLocal ().CombineMask (addr.GetMask ()) == daddr.CombineMask (addr.GetMask ()) &&
-              daddr.IsSubnetDirectedBroadcast (addr.GetMask ()))
+          // Case 1:
+          localAddressMatchesExact = true;
+        }
+      else if (endP->GetLocalAddress () == Ipv4Address::GetAny ())
+        {
+          // Case 2:
+          localAddressIsAny = true;
+        }
+      else
+        {
+          // Case 3:
+          for (uint32_t i = 0; i < incomingInterface->GetNAddresses (); i++)
             {
-              subnetDirected = true;
-              incomingInterfaceAddr = addr.GetLocal ();
+              Ipv4InterfaceAddress addr = incomingInterface->GetAddress (i);
+
+              Ipv4Address addrNetpart = addr.GetLocal ().CombineMask (addr.GetMask ());
+              if (endP->GetLocalAddress () == addrNetpart)
+                {
+                  NS_LOG_LOGIC ("Endpoint is SubnetDirectedAny " << endP->GetLocalAddress () << "/" << addr.GetMask ().GetPrefixLength ());
+
+                  Ipv4Address daddrNetPart = daddr.CombineMask (addr.GetMask ());
+                  if (addrNetpart == daddrNetPart)
+                    {
+                      localAddressIsSubnetAny = true;
+                    }
+                }
             }
-        }
-      bool isBroadcast = (daddr.IsBroadcast () || subnetDirected == true);
-      NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast);
-      bool localAddressMatchesWildCard = 
-        endP->GetLocalAddress () == Ipv4Address::GetAny ();
-      bool localAddressMatchesExact = endP->GetLocalAddress () == daddr;
 
-      if (isBroadcast)
-        {
-          NS_LOG_DEBUG ("Found bcast, localaddr " << endP->GetLocalAddress ());
+          // if no match here, keep looking
+          if (!localAddressIsSubnetAny)
+            continue;
         }
 
-      if (isBroadcast && (endP->GetLocalAddress () != Ipv4Address::GetAny ()))
-        {
-          localAddressMatchesExact = (endP->GetLocalAddress () ==
-                                      incomingInterfaceAddr);
-        }
-      // if no match here, keep looking
-      if (!(localAddressMatchesExact || localAddressMatchesWildCard))
-        continue; 
-      bool remotePeerMatchesExact = endP->GetPeerPort () == sport;
-      bool remotePeerMatchesWildCard = endP->GetPeerPort () == 0;
+      bool remotePortMatchesExact = endP->GetPeerPort () == sport;
+      bool remotePortMatchesWildCard = endP->GetPeerPort () == 0;
       bool remoteAddressMatchesExact = endP->GetPeerAddress () == saddr;
-      bool remoteAddressMatchesWildCard = endP->GetPeerAddress () ==
-        Ipv4Address::GetAny ();
+      bool remoteAddressMatchesWildCard = endP->GetPeerAddress () == Ipv4Address::GetAny ();
+
       // If remote does not match either with exact or wildcard,
       // skip this one
-      if (!(remotePeerMatchesExact || remotePeerMatchesWildCard))
+      if (!(remotePortMatchesExact || remotePortMatchesWildCard))
         continue;
       if (!(remoteAddressMatchesExact || remoteAddressMatchesWildCard))
         continue;
 
-      // Now figure out which return list to add this one to
-      if (localAddressMatchesWildCard &&
-          remotePeerMatchesWildCard &&
-          remoteAddressMatchesWildCard)
-        { // Only local port matches exactly
-          retval1.push_back (endP);
+      bool localAddressMatchesWildCard = localAddressIsAny || localAddressIsSubnetAny;
+
+      if (localAddressMatchesExact && remoteAddressMatchesExact && remotePortMatchesExact)
+        { // All 4 match - this is the case of an open TCP connection, for example.
+          NS_LOG_LOGIC ("Found an endpoint for case 4, adding " << endP->GetLocalAddress () << ":" << endP->GetLocalPort ());
+          retval4.push_back (endP);
         }
-      if ((localAddressMatchesExact || (isBroadcast && localAddressMatchesWildCard))&&
-          remotePeerMatchesWildCard &&
-          remoteAddressMatchesWildCard)
-        { // Only local port and local address matches exactly
-          retval2.push_back (endP);
-        }
-      if (localAddressMatchesWildCard &&
-          remotePeerMatchesExact &&
-          remoteAddressMatchesExact)
-        { // All but local address
+      if (localAddressMatchesWildCard && remoteAddressMatchesExact && remotePortMatchesExact)
+        { // All but local address - no idea what this case could be.
+          NS_LOG_LOGIC ("Found an endpoint for case 3, adding " << endP->GetLocalAddress () << ":" << endP->GetLocalPort ());
           retval3.push_back (endP);
         }
-      if (localAddressMatchesExact &&
-          remotePeerMatchesExact &&
-          remoteAddressMatchesExact)
-        { // All 4 match
-          retval4.push_back (endP);
+      if (localAddressMatchesExact && remoteAddressMatchesWildCard && remotePortMatchesWildCard)
+        { // Only local port and local address matches exactly - Not yet opened connection
+          NS_LOG_LOGIC ("Found an endpoint for case 2, adding " << endP->GetLocalAddress () << ":" << endP->GetLocalPort ());
+          retval2.push_back (endP);
+        }
+      if (localAddressMatchesWildCard && remoteAddressMatchesWildCard && remotePortMatchesWildCard)
+        { // Only local port matches exactly - Endpoint open to "any" connection
+          NS_LOG_LOGIC ("Found an endpoint for case 1, adding " << endP->GetLocalAddress () << ":" << endP->GetLocalPort ());
+          retval1.push_back (endP);
         }
     }
 

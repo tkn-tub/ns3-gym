@@ -105,6 +105,7 @@ Bugs fixed
 - Bug 2722 - 802.11g sends DSSS spectrum signals using CreateOfdmTxPowerSpectralDensity
 - Bug 2741 - IPv4 fragmentation fails when last fragment have to be re-fragmented.
 - Bug 2744 - 802.11n/ac with RTS/CTS is crashing for a large number of nodes
+- Bug 2758 - IPv4 sockets bound to unicast receive also subnet-directed broadcasts
 
 Known issues
 ------------

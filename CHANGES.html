@@ -119,6 +119,17 @@ is now exported by WifiNetDevice.</li>
     and <b>WifiPhy::MaxSupportedRxSpatialStreams</b>. A new attribute <b>WifiPhy::Antennas</b>
     was added to allow users to define the number of physical antennas on the device.
 </li>
+<li>Sockets do not receive anymore broadcast packets, unless they are bound to an "Any" address (0.0.0.0)
+    or to a subnet-directed broadcast packet (e.g., x.y.z.0 for a /24 noterok).
+    As in Linux, the following rules are now enforced:
+    <ul>
+    <li> A socket bound to 0.0.0.0 will receive everything.</li>
+    <li> A socket bound to x.y.z.0/24 will receive subnet-directed broadcast (x.y.z.255) and unicast packets.</li>
+    <li> A socket bound to x.y.z.w will only receive unicast packets.</li>
+    </ul> 
+    <b>Previously, a socket bound to an unicast address received also subnet-directed broadcast packets. 
+    This is not anymore possible</b>.
+</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
