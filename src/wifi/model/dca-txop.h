@@ -104,7 +104,7 @@ public:
    *
    * \param manager DcfManager.
    */
-  void SetManager (DcfManager *manager);
+  void SetManager (const Ptr<DcfManager> manager);
   /**
    * Set WifiRemoteStationsManager this DcaTxop is associated to.
    *
@@ -116,7 +116,7 @@ public:
    *
    * \param txMiddle MacTxMiddle.
    */
-  void SetTxMiddle (MacTxMiddle *txMiddle);
+  void SetTxMiddle (const Ptr<MacTxMiddle> txMiddle);
 
   /**
    * \param callback the callback to invoke when a
@@ -401,16 +401,16 @@ protected:
    */
   void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
 
-  DcfState *m_dcf; //!< the DCF state
-  DcfManager *m_manager; //!< the DCF manager
+  Ptr<DcfState> m_dcf; //!< the DCF state
+  Ptr<DcfManager> m_manager; //!< the DCF manager
   TxOk m_txOkCallback; //!< the transmit OK callback
   TxFailed m_txFailedCallback; //!< the transmit failed callback
   TxDropped m_txDroppedCallback; //!< the packet dropped callback
   Ptr<WifiMacQueue> m_queue; //!< the wifi MAC queue
-  MacTxMiddle *m_txMiddle; //!< the MacTxMiddle
+  Ptr<MacTxMiddle> m_txMiddle; //!< the MacTxMiddle
   Ptr <MacLow> m_low; //!< the MacLow
   Ptr<WifiRemoteStationManager> m_stationManager; //!< the wifi remote station manager
-  RandomStream *m_rng; //!<  the random stream
+  Ptr<RandomStream> m_rng; //!<  the random stream
 
   Ptr<const Packet> m_currentPacket; //!< the current packet
   WifiMacHeader m_currentHdr; //!< the current header

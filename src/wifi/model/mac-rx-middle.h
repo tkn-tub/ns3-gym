@@ -23,6 +23,7 @@
 
 #include <map>
 #include "ns3/packet.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -34,7 +35,7 @@ class OriginatorRxStatus;
  *
  * This class handles duplicate detection and recomposition of fragments.
  */
-class MacRxMiddle
+class MacRxMiddle : public Object
 {
 public:
   /**

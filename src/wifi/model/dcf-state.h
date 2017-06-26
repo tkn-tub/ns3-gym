@@ -38,7 +38,7 @@ class DcaTxop;
  * DcfState::SetAifsn and DcfState::SetCwBounds allow the user to
  * control the relative QoS differentiation.
  */
-class DcfState
+class DcfState : public Object
 {
 public:
   /**

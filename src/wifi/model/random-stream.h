@@ -29,7 +29,7 @@ namespace ns3 {
  * A simple wrapper around RngStream to make testing
  * of the code easier.
  */
-class RandomStream
+class RandomStream : public Object
 {
 public:
   virtual ~RandomStream ();

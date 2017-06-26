@@ -288,10 +288,10 @@ protected:
   virtual void DoInitialize ();
   virtual void DoDispose ();
 
-  MacRxMiddle *m_rxMiddle;  //!< RX middle (de-fragmentation etc.)
-  MacTxMiddle *m_txMiddle;  //!< TX middle (aggregation etc.)
+  Ptr<MacRxMiddle> m_rxMiddle;  //!< RX middle (de-fragmentation etc.)
+  Ptr<MacTxMiddle> m_txMiddle;  //!< TX middle (aggregation etc.)
   Ptr<MacLow> m_low;        //!< MacLow (RTS, CTS, DATA, ACK etc.)
-  DcfManager *m_dcfManager; //!< DCF manager (access to channel)
+  Ptr<DcfManager> m_dcfManager; //!< DCF manager (access to channel)
   Ptr<WifiPhy> m_phy;       //!< Wifi PHY
 
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)

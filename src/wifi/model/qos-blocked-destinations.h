@@ -24,6 +24,7 @@
 
 #include <set>
 #include "ns3/mac48-address.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -31,7 +32,7 @@ namespace ns3 {
  * Keep track of destination address - TID pairs that are waiting
  * for a block ACK response.
  */
-class QosBlockedDestinations
+class QosBlockedDestinations : public Object
 {
 public:
   QosBlockedDestinations ();

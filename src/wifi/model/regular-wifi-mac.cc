@@ -42,15 +42,15 @@ RegularWifiMac::RegularWifiMac ()
     m_heSupported (0)
 {
   NS_LOG_FUNCTION (this);
-  m_rxMiddle = new MacRxMiddle ();
+  m_rxMiddle = CreateObject<MacRxMiddle> ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&RegularWifiMac::Receive, this));
 
-  m_txMiddle = new MacTxMiddle ();
+  m_txMiddle = CreateObject<MacTxMiddle> ();
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
 
-  m_dcfManager = new DcfManager ();
+  m_dcfManager = CreateObject<DcfManager> ();
   m_dcfManager->SetupLow (m_low);
 
   m_dca = CreateObject<DcaTxop> ();
@@ -91,10 +91,8 @@ void
 RegularWifiMac::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_rxMiddle;
-  m_rxMiddle = 0;
 
-  delete m_txMiddle;
+  m_rxMiddle = 0;
   m_txMiddle = 0;
 
   m_low->Dispose ();
@@ -112,7 +110,6 @@ RegularWifiMac::DoDispose ()
       i->second = 0;
     }
 
-  delete m_dcfManager;
   m_dcfManager = 0;
 }
 

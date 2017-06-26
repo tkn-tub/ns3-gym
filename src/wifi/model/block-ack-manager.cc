@@ -953,7 +953,7 @@ BlockAckManager::SetUnblockDestinationCallback (Callback<void, Mac48Address, uin
 }
 
 void
-BlockAckManager::SetTxMiddle (MacTxMiddle* txMiddle)
+BlockAckManager::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 {
   NS_LOG_FUNCTION (this << txMiddle);
   m_txMiddle = txMiddle;

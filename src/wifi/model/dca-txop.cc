@@ -76,9 +76,9 @@ DcaTxop::DcaTxop ()
     m_currentPacket (0)
 {
   NS_LOG_FUNCTION (this);
-  m_dcf = new DcfState (this);
+  m_dcf = CreateObject<DcfState> (this);
   m_queue = CreateObject<WifiMacQueue> ();
-  m_rng = new RealRandomStream ();
+  m_rng = CreateObject<RealRandomStream> ();
 }
 
 DcaTxop::~DcaTxop ()
@@ -93,22 +93,20 @@ DcaTxop::DoDispose (void)
   m_queue = 0;
   m_low = 0;
   m_stationManager = 0;
-  delete m_dcf;
-  delete m_rng;
   m_dcf = 0;
   m_rng = 0;
   m_txMiddle = 0;
 }
 
 void
-DcaTxop::SetManager (DcfManager *manager)
+DcaTxop::SetManager (const Ptr<DcfManager> manager)
 {
   NS_LOG_FUNCTION (this << manager);
   m_manager = manager;
   m_manager->Add (m_dcf);
 }
 
-void DcaTxop::SetTxMiddle (MacTxMiddle *txMiddle)
+void DcaTxop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 {
   NS_LOG_FUNCTION (this);
   m_txMiddle = txMiddle;

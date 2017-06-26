@@ -224,7 +224,7 @@ public:
    *
    * \return packet
    */
-  Ptr<Item> DequeueFirstAvailable (const QosBlockedDestinations *blockedPackets);
+  Ptr<Item> DequeueFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets);
   /**
    * Peek the packet in the front of the queue. The packet is not removed.
    *
@@ -254,7 +254,7 @@ public:
    *
    * \return packet
    */
-  Ptr<const Item> PeekFirstAvailable (const QosBlockedDestinations *blockedPackets);
+  Ptr<const Item> PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets);
   /**
    * Remove the packet in the front of the queue.
    *

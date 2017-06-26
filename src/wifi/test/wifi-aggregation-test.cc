@@ -48,11 +48,11 @@ private:
   Ptr<MacLow> m_low; ///< MacLow
   Ptr<YansWifiPhy> m_phy; ///< Phy
   Ptr<EdcaTxopN> m_edca; ///< EDCA
-  MacTxMiddle *m_txMiddle; ///< MacTxMiddle
+  Ptr<MacTxMiddle> m_txMiddle; ///< MacTxMiddle
   Ptr<WifiRemoteStationManager> m_manager; ///< remote station manager
   ObjectFactory m_factory; ///< factory
   Ptr<MpduAggregator> m_mpduAggregator; ///< A-MPDU aggregrator
-  DcfManager *m_dcfManager; ///< DCF manager
+  Ptr<DcfManager> m_dcfManager; ///< DCF manager
 };
 
 AmpduAggregationTest::AmpduAggregationTest ()
@@ -87,7 +87,7 @@ AmpduAggregationTest::DoRun (void)
   m_low->SetWifiRemoteStationManager (m_manager);
   m_low->SetAddress (Mac48Address ("00:00:00:00:00:01"));
 
-  m_dcfManager = new DcfManager ();
+  m_dcfManager = CreateObject<DcfManager> ();
   m_dcfManager->SetupLow (m_low);
   m_dcfManager->SetupPhyListener (m_phy);
   m_dcfManager->SetSlot (MicroSeconds (9));
@@ -98,7 +98,7 @@ AmpduAggregationTest::DoRun (void)
   m_edca->SetWifiRemoteStationManager (m_manager);
   m_edca->SetManager (m_dcfManager);
 
-  m_txMiddle = new MacTxMiddle ();
+  m_txMiddle = CreateObject<MacTxMiddle> ();
   m_edca->SetTxMiddle (m_txMiddle);
   m_edca->CompleteConfig ();
 
@@ -238,7 +238,7 @@ AmpduAggregationTest::DoRun (void)
 
   Simulator::Destroy ();
 
-  delete m_txMiddle;
+  m_txMiddle = 0;
 
   m_low->Dispose ();
   m_low = 0;
@@ -246,7 +246,7 @@ AmpduAggregationTest::DoRun (void)
   m_edca->Dispose ();
   m_edca = 0;
 
-  delete m_dcfManager;
+  m_dcfManager = 0;
 }
 
 /**

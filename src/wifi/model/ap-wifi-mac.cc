@@ -26,6 +26,7 @@
 #include "ns3/string.h"
 #include "ns3/pointer.h"
 #include "mac-low.h"
+#include "mac-tx-middle.h"
 
 namespace ns3 {
 

@@ -25,6 +25,7 @@
 
 #include <map>
 #include "ns3/mac48-address.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -35,7 +36,7 @@ class WifiMacHeader;
  *
  * Handles sequence numbering of IEEE 802.11 data frames
  */
-class MacTxMiddle
+class MacTxMiddle : public Object
 {
 public:
   MacTxMiddle ();

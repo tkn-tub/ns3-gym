@@ -74,8 +74,8 @@ EdcaTxopN::EdcaTxopN ()
     m_currentIsFragmented (false)
 {
   NS_LOG_FUNCTION (this);
-  m_qosBlockedDestinations = new QosBlockedDestinations ();
-  m_baManager = new BlockAckManager ();
+  m_qosBlockedDestinations = CreateObject<QosBlockedDestinations> ();
+  m_baManager = CreateObject<BlockAckManager> ();
   m_baManager->SetQueue (m_queue);
   m_baManager->SetBlockAckType (m_blockAckType);
   m_baManager->SetBlockDestinationCallback (MakeCallback (&QosBlockedDestinations::Block, m_qosBlockedDestinations));
@@ -94,10 +94,8 @@ void
 EdcaTxopN::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  delete m_qosBlockedDestinations;
-  delete m_baManager;
-  m_qosBlockedDestinations = 0;
   m_baManager = 0;
+  m_qosBlockedDestinations = 0;
   m_msduAggregator = 0;
   m_mpduAggregator = 0;
   DcaTxop::DoDispose ();

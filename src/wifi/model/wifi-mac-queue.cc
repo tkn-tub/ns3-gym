@@ -255,7 +255,7 @@ WifiMacQueue::DequeueByTidAndAddress (uint8_t tid,
 
 template<>
 Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueFirstAvailable (const QosBlockedDestinations *blockedPackets)
+WifiMacQueue::DequeueFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets)
 {
   NS_LOG_FUNCTION (this);
 
@@ -321,7 +321,7 @@ WifiMacQueue::PeekByTidAndAddress (uint8_t tid,
 
 template<>
 Ptr<const WifiMacQueueItem>
-WifiMacQueue::PeekFirstAvailable (const QosBlockedDestinations *blockedPackets)
+WifiMacQueue::PeekFirstAvailable (const Ptr<QosBlockedDestinations> blockedPackets)
 {
   NS_LOG_FUNCTION (this);
 
