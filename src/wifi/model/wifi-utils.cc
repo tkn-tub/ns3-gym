@@ -24,6 +24,13 @@
 namespace ns3 {
 
 double
+Log2 (double val)
+{
+  return std::log (val) / std::log (2.0);
+}
+
+
+double
 DbToRatio (double dB)
 {
   double ratio = std::pow (10.0, dB / 10.0);
