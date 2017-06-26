@@ -342,36 +342,37 @@ UdpSocketImplTest::DoRun (void)
   // Receiver Node
   ipv4 = rxNode->GetObject<Ipv4> ();
   netdev_idx = ipv4->AddInterface (net1.Get (0));
-  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask (0xffff0000U));
+  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.1"), Ipv4Mask ("/24"));
   ipv4->AddAddress (netdev_idx, ipv4Addr);
   ipv4->SetUp (netdev_idx);
 
   netdev_idx = ipv4->AddInterface (net2.Get (0));
-  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.1"), Ipv4Mask (0xffff0000U));
+  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.1"), Ipv4Mask ("/24"));
   ipv4->AddAddress (netdev_idx, ipv4Addr);
   ipv4->SetUp (netdev_idx);
 
   // Sender Node
   ipv4 = txNode->GetObject<Ipv4> ();
   netdev_idx = ipv4->AddInterface (net1.Get (1));
-  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask (0xffff0000U));
+  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.0.2"), Ipv4Mask ("/24"));
   ipv4->AddAddress (netdev_idx, ipv4Addr);
   ipv4->SetUp (netdev_idx);
 
   netdev_idx = ipv4->AddInterface (net2.Get (1));
-  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.2"), Ipv4Mask (0xffff0000U));
+  ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("10.0.1.2"), Ipv4Mask ("/24"));
   ipv4->AddAddress (netdev_idx, ipv4Addr);
   ipv4->SetUp (netdev_idx);
 
   // Create the UDP sockets
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<UdpSocketFactory> ();
+
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0, "trivial");
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt, this));
 
   Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
   NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0, "trivial");
+  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketImplTest::ReceivePkt2, this));
 
   Ptr<SocketFactory> txSocketFactory = txNode->GetObject<UdpSocketFactory> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
@@ -382,7 +383,7 @@ UdpSocketImplTest::DoRun (void)
   // Unicast test
   SendDataTo (txSocket, "10.0.0.1");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should receive it");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second interface should not receive it");
 
   m_receivedPacket->RemoveAllByteTags ();
   m_receivedPacket2->RemoveAllByteTags ();
@@ -390,7 +391,7 @@ UdpSocketImplTest::DoRun (void)
   // Simple broadcast test
 
   SendDataTo (txSocket, "255.255.255.255");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the first interface's address");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 0, "second socket should not receive it (it is bound specifically to the second interface's address");
 
   m_receivedPacket->RemoveAllByteTags ();
@@ -407,7 +408,7 @@ UdpSocketImplTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0, "trivial");
 
   SendDataTo (txSocket, "255.255.255.255");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 123, "trivial");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the first interface's address");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "trivial");
 
   m_receivedPacket = 0;
@@ -417,7 +418,7 @@ UdpSocketImplTest::DoRun (void)
 
   txSocket->BindToNetDevice (net1.Get (1));
   SendDataTo (txSocket, "224.0.0.9");
-  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the second interface's address");
+  NS_TEST_EXPECT_MSG_EQ (m_receivedPacket->GetSize (), 0, "first socket should not receive it (it is bound specifically to the first interface's address");
   NS_TEST_EXPECT_MSG_EQ (m_receivedPacket2->GetSize (), 123, "recv2: 224.0.0.9");
 
   m_receivedPacket->RemoveAllByteTags ();

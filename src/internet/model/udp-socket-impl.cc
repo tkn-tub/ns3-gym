@@ -572,28 +572,11 @@ UdpSocketImpl::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port, uint8_t
               if (ipv4->GetNetDevice (i) != m_boundnetdevice)
                 continue;
             }
-          Ipv4Mask maski = iaddr.GetMask ();
-          if (maski == Ipv4Mask::GetOnes ())
-            {
-              // if the network mask is 255.255.255.255, do not convert dest
-              NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << dest
-                                                     << " (mask is " << maski << ")");
-              m_udp->Send (p->Copy (), addri, dest,
-                           m_endPoint->GetLocalPort (), port);
-              NotifyDataSent (p->GetSize ());
-              NotifySend (GetTxAvailable ());
-            }
-          else
-            {
-              // Convert to subnet-directed broadcast
-              Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
-              NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
-                                                     << " (mask is " << maski << ")");
-              m_udp->Send (p->Copy (), addri, bcast,
-                           m_endPoint->GetLocalPort (), port);
-              NotifyDataSent (p->GetSize ());
-              NotifySend (GetTxAvailable ());
-            }
+          NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << dest);
+          m_udp->Send (p->Copy (), addri, dest,
+                       m_endPoint->GetLocalPort (), port);
+          NotifyDataSent (p->GetSize ());
+          NotifySend (GetTxAvailable ());
         }
       NS_LOG_LOGIC ("Limited broadcast end.");
       return p->GetSize ();
