@@ -109,6 +109,7 @@ Bugs fixed
 - Bug 2758 - IPv4 sockets bound to unicast receive also subnet-directed broadcasts
 - Bug 2759 - Packets sent to broadcast address are converted to subnet-directed broadcast
 - Bug 2760 - OLSR uses unicast-bound sockets to receive broadcasts
+- Bug 2761 - Packet has no Traffic ID for CTS frames when A-MPDU is used
 
 Known issues
 ------------
