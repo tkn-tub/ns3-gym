@@ -1495,7 +1495,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
                 ", preamble=" << txVector.GetPreambleType () <<
                 ", duration=" << hdr->GetDuration () <<
                 ", seq=0x" << std::hex << m_currentHdr.GetSequenceControl () << std::dec);
-  if (!m_ampdu || hdr->IsAck () || hdr->IsRts () || hdr->IsBlockAck () || hdr->IsMgt ())
+  if (!m_ampdu || hdr->IsAck () || hdr->IsRts () || hdr->IsCts () || hdr->IsBlockAck () || hdr->IsMgt ())
     {
       m_phy->SendPacket (packet, txVector);
     }
