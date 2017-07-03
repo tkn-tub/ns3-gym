@@ -42,10 +42,10 @@ RegularWifiMac::RegularWifiMac ()
     m_heSupported (0)
 {
   NS_LOG_FUNCTION (this);
-  m_rxMiddle = CreateObject<MacRxMiddle> ();
+  m_rxMiddle = Create<MacRxMiddle> ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&RegularWifiMac::Receive, this));
 
-  m_txMiddle = CreateObject<MacTxMiddle> ();
+  m_txMiddle = Create<MacTxMiddle> ();
 
   m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));

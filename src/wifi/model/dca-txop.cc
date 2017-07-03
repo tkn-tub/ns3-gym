@@ -25,7 +25,6 @@
 #include "dcf-state.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
-#include "random-stream.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
@@ -78,7 +77,7 @@ DcaTxop::DcaTxop ()
   NS_LOG_FUNCTION (this);
   m_dcf = CreateObject<DcfState> (this);
   m_queue = CreateObject<WifiMacQueue> ();
-  m_rng = CreateObject<RealRandomStream> ();
+  m_rng = CreateObject<UniformRandomVariable> ();
 }
 
 DcaTxop::~DcaTxop ()
@@ -229,7 +228,7 @@ int64_t
 DcaTxop::AssignStreams (int64_t stream)
 {
   NS_LOG_FUNCTION (this << stream);
-  m_rng->AssignStreams (stream);
+  m_rng->SetStream (stream);
   return 1;
 }
 
@@ -269,7 +268,7 @@ DcaTxop::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
   m_dcf->ResetCw ();
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_dcf->StartBackoffNow (m_rng->GetInteger (0, m_dcf->GetCw ()));
 }
 
 bool
@@ -436,7 +435,7 @@ void
 DcaTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_dcf->StartBackoffNow (m_rng->GetInteger (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
 
@@ -487,7 +486,7 @@ DcaTxop::MissedCts (void)
     {
       m_dcf->UpdateFailedCw ();
     }
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_dcf->StartBackoffNow (m_rng->GetInteger (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
 
@@ -509,7 +508,7 @@ DcaTxop::GotAck (void)
        */
       m_currentPacket = 0;
       m_dcf->ResetCw ();
-      m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+      m_dcf->StartBackoffNow (m_rng->GetInteger (0, m_dcf->GetCw ()));
       RestartAccessIfNeeded ();
     }
   else
@@ -541,7 +540,7 @@ DcaTxop::MissedAck (void)
       m_currentHdr.SetRetry ();
       m_dcf->UpdateFailedCw ();
     }
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_dcf->StartBackoffNow (m_rng->GetInteger (0, m_dcf->GetCw ()));
   RestartAccessIfNeeded ();
 }
 
@@ -582,7 +581,7 @@ DcaTxop::EndTxNoAck (void)
   NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
   m_currentPacket = 0;
   m_dcf->ResetCw ();
-  m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
+  m_dcf->StartBackoffNow (m_rng->GetInteger (0, m_dcf->GetCw ()));
   StartAccessIfNeeded ();
 }
 

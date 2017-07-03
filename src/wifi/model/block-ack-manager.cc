@@ -56,6 +56,19 @@ Bar::Bar (Ptr<const Packet> bar, Mac48Address recipient, uint8_t tid, bool immed
   NS_LOG_FUNCTION (this << bar << recipient << (uint16_t)tid << immediate);
 }
 
+NS_OBJECT_ENSURE_REGISTERED (BlockAckManager);
+
+TypeId
+BlockAckManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::BlockAckManager")
+    .SetParent<Object> ()
+    .SetGroupName ("Wifi")
+    .AddConstructor<BlockAckManager> ()
+  ;
+  return tid;
+}
+
 BlockAckManager::BlockAckManager ()
 {
   NS_LOG_FUNCTION (this);

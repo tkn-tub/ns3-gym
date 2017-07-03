@@ -98,7 +98,7 @@ AmpduAggregationTest::DoRun (void)
   m_edca->SetWifiRemoteStationManager (m_manager);
   m_edca->SetManager (m_dcfManager);
 
-  m_txMiddle = CreateObject<MacTxMiddle> ();
+  m_txMiddle = Create<MacTxMiddle> ();
   m_edca->SetTxMiddle (m_txMiddle);
   m_edca->CompleteConfig ();
 

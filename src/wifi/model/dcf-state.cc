@@ -26,6 +26,18 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DcfState");
 
+NS_OBJECT_ENSURE_REGISTERED (DcfState);
+
+TypeId
+DcfState::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::DcfState")
+    .SetParent<Object> ()
+    .SetGroupName ("Wifi")
+  ;
+  return tid;
+}
+
 DcfState::DcfState (Ptr<DcaTxop> txop)
   : m_backoffSlots (0),
     m_backoffStart (Seconds (0.0)),

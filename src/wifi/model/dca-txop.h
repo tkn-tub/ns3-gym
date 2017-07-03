@@ -30,7 +30,7 @@ namespace ns3 {
 class DcfState;
 class DcfManager;
 class MacTxMiddle;
-class RandomStream;
+class UniformRandomVariable;
 class CtrlBAckResponseHeader;
 
 /**
@@ -410,7 +410,7 @@ protected:
   Ptr<MacTxMiddle> m_txMiddle; //!< the MacTxMiddle
   Ptr <MacLow> m_low; //!< the MacLow
   Ptr<WifiRemoteStationManager> m_stationManager; //!< the wifi remote station manager
-  Ptr<RandomStream> m_rng; //!<  the random stream
+  Ptr<UniformRandomVariable> m_rng; //!<  the random stream
 
   Ptr<const Packet> m_currentPacket; //!< the current packet
   WifiMacHeader m_currentHdr; //!< the current header
