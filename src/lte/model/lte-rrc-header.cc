@@ -1865,7 +1865,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
         //Serialize NonUl configuration
         std::bitset<4> nulOpt;
         nulOpt.set (3,pcdsc.haveAntennaInfoDedicated);
-        nulOpt.set (2,0);  // crossCarrierSchedulingConfig-r10 NOT IMplemented
+        nulOpt.set (2,0);  // crossCarrierSchedulingConfig-r10 Not Implemented
         nulOpt.set (1,0);  // csi-RS-Config-r10 Not Implemented
         nulOpt.set (0, pcdsc.havePdschConfigDedicated); // pdsch-ConfigDedicated-r10
         SerializeSequence (nulOpt,false);
@@ -2728,7 +2728,7 @@ RrcAsn1Header::Print (std::ostream &os) const
          std::bitset<4> nulOpt;
          bIterator = DeserializeSequence (&nulOpt,false,bIterator);
          pcdsc->haveAntennaInfoDedicated = nulOpt[3];  
-         NS_ASSERT(!nulOpt[2]); // crossCarrierSchedulingConfig-r10 NOT IMplemented
+         NS_ASSERT(!nulOpt[2]); // crossCarrierSchedulingConfig-r10 Not Implemented
          NS_ASSERT(!nulOpt[1]); // csi-RS-Config-r10 Not Implemented
          pcdsc->havePdschConfigDedicated = nulOpt[0];  
 
