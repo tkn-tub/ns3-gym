@@ -214,6 +214,7 @@ LtePathlossModelSystemTestCase::DoRun (void)
 
   // set frequency. This is important because it changes the behavior of the path loss model
   lteHelper->SetEnbDeviceAttribute ("DlEarfcn", UintegerValue (200));
+  lteHelper->SetEnbDeviceAttribute ("UlEarfcn", UintegerValue (18200));
   lteHelper->SetUeDeviceAttribute ("DlEarfcn", UintegerValue (200));
 
   // remove shadowing component
