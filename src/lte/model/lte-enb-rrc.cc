@@ -2128,7 +2128,7 @@ LteEnbRrc::CellToComponentCarrierId (uint16_t cellId)
 uint16_t
 LteEnbRrc::ComponentCarrierToCellId (uint8_t componentCarrierId)
 {
-  NS_LOG_FUNCTION (this << componentCarrierId);
+  NS_LOG_FUNCTION (this << +componentCarrierId);
   return m_componentCarrierPhyConf.at (componentCarrierId)->GetCellId ();
 }
 
