@@ -104,6 +104,7 @@ Bugs fixed
 - Bug 2673 - run-time channel switch does not update WiFi spectrum model
 - Bug 2717 - Fix mask generation for Ipv4RoutingTableEntry::CreateDefaultRoute
 - Bug 2722 - 802.11g sends DSSS spectrum signals using CreateOfdmTxPowerSpectralDensity
+- Bug 2733 - Ideal wifi manager cannot handle NSS higher than 1
 - Bug 2741 - IPv4 fragmentation fails when last fragment have to be re-fragmented.
 - Bug 2744 - 802.11n/ac with RTS/CTS is crashing for a large number of nodes
 - Bug 2757 - 802.11n/ac/ax maximum TXOP is not properly enforced

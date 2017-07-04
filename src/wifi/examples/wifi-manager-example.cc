@@ -182,6 +182,18 @@ int main (int argc, char *argv[])
   cmd.AddValue ("infrastructure", "Use infrastructure instead of adhoc", infrastructure);
   cmd.Parse (argc,argv);
 
+  // Print out some explanation of what this program does
+  std::cout << std::endl << "This program demonstrates and plots the operation of different " << std::endl;
+  std::cout << "Wi-Fi rate controls on different station configurations," << std::endl;
+  std::cout << "by stepping down the received signal strength across a wide range" << std::endl;
+  std::cout << "and observing the adjustment of the rate." << std::endl;
+  std::cout << "Run 'wifi-manager-example --PrintHelp' to show program options."<< std::endl << std::endl;
+
+  if (infrastructure == false)
+    {
+      NS_ABORT_MSG_IF (serverNss != clientNss, "In ad hoc mode, we assume sender and receiver are similarly configured");
+    }
+
   if (standard == "802.11b")
     {
       NS_ABORT_MSG_IF (serverChannelWidth != 22 && serverChannelWidth != 22, "Invalid channel width for standard " << standard);
