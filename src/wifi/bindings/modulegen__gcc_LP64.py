@@ -714,7 +714,7 @@ def register_types(module):
     module.add_class('ParfWifiManager', parent=root_module['ns3::WifiRemoteStationManager'])
     ## qos-blocked-destinations.h (module 'wifi'): ns3::QosBlockedDestinations [class]
     module.add_class('QosBlockedDestinations', parent=root_module['ns3::SimpleRefCount< ns3::QosBlockedDestinations, ns3::empty, ns3::DefaultDeleter<ns3::QosBlockedDestinations> >'])
-    ## queue.h (module 'network'): ns3::Queue<ns3::WifiMacQueueItem> [class]
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Queue<ns3::WifiMacQueueItem> [class]
     module.add_class('Queue', template_parameters=['ns3::WifiMacQueueItem'], parent=root_module['ns3::QueueBase'])
     ## queue-item.h (module 'network'): ns3::QueueItem [class]
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
@@ -774,16 +774,16 @@ def register_types(module):
     module.add_class('VhtOperationChecker', parent=root_module['ns3::AttributeChecker'])
     ## vht-operation.h (module 'wifi'): ns3::VhtOperationValue [class]
     module.add_class('VhtOperationValue', parent=root_module['ns3::AttributeValue'])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue [class]
+    module.add_class('WifiMacQueue', parent=root_module['ns3::Queue< ns3::WifiMacQueueItem >'])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue::DropPolicy [enumeration]
+    module.add_enum('DropPolicy', ['DROP_NEWEST', 'DROP_OLDEST'], outer_class=root_module['ns3::WifiMacQueue'])
     ## wifi-mode.h (module 'wifi'): ns3::WifiModeChecker [class]
     module.add_class('WifiModeChecker', parent=root_module['ns3::AttributeChecker'])
     ## wifi-mode.h (module 'wifi'): ns3::WifiModeValue [class]
     module.add_class('WifiModeValue', parent=root_module['ns3::AttributeValue'])
     ## wifi-net-device.h (module 'wifi'): ns3::WifiNetDevice [class]
     module.add_class('WifiNetDevice', parent=root_module['ns3::NetDevice'])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiQueue<ns3::WifiMacQueueItem> [class]
-    module.add_class('WifiMacQueue', parent=root_module['ns3::Queue< ns3::WifiMacQueueItem >'])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiQueue<ns3::WifiMacQueueItem>::DropPolicy [enumeration]
-    module.add_enum('DropPolicy', ['DROP_NEWEST', 'DROP_OLDEST'], outer_class=root_module['ns3::WifiMacQueue'])
     ## wifi-radio-energy-model.h (module 'wifi'): ns3::WifiRadioEnergyModel [class]
     module.add_class('WifiRadioEnergyModel', parent=root_module['ns3::DeviceEnergyModel'])
     ## yans-error-rate-model.h (module 'wifi'): ns3::YansErrorRateModel [class]
@@ -872,9 +872,6 @@ def register_types(module):
     module.add_container('ns3::MpduAggregator::DeaggregatedMpdus', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmpduSubframeHeader >', container_type=u'list')
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader >', container_type=u'list')
     module.add_container('ns3::MsduAggregator::DeaggregatedMsdus', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::AmsduSubframeHeader >', container_type=u'list')
-    typehandlers.add_type_alias(u'ns3::WifiQueue< ns3::WifiMacQueueItem >', u'ns3::WifiMacQueue')
-    typehandlers.add_type_alias(u'ns3::WifiQueue< ns3::WifiMacQueueItem >*', u'ns3::WifiMacQueue*')
-    typehandlers.add_type_alias(u'ns3::WifiQueue< ns3::WifiMacQueueItem >&', u'ns3::WifiMacQueue&')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::LogTimePrinter')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::LogTimePrinter*')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::LogTimePrinter&')
@@ -1375,10 +1372,10 @@ def register_methods(root_module):
     register_Ns3VhtOperation_methods(root_module, root_module['ns3::VhtOperation'])
     register_Ns3VhtOperationChecker_methods(root_module, root_module['ns3::VhtOperationChecker'])
     register_Ns3VhtOperationValue_methods(root_module, root_module['ns3::VhtOperationValue'])
+    register_Ns3WifiMacQueue_methods(root_module, root_module['ns3::WifiMacQueue'])
     register_Ns3WifiModeChecker_methods(root_module, root_module['ns3::WifiModeChecker'])
     register_Ns3WifiModeValue_methods(root_module, root_module['ns3::WifiModeValue'])
     register_Ns3WifiNetDevice_methods(root_module, root_module['ns3::WifiNetDevice'])
-    register_Ns3WifiMacQueue_methods(root_module, root_module['ns3::WifiMacQueue'])
     register_Ns3WifiRadioEnergyModel_methods(root_module, root_module['ns3::WifiRadioEnergyModel'])
     register_Ns3YansErrorRateModel_methods(root_module, root_module['ns3::YansErrorRateModel'])
     register_Ns3YansWifiChannel_methods(root_module, root_module['ns3::YansWifiChannel'])
@@ -11861,10 +11858,10 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('SetMaxPacketDelay', 
                    'void', 
                    [param('ns3::Time', 'maxDelay')])
-    ## block-ack-manager.h (module 'wifi'): void ns3::BlockAckManager::SetQueue(ns3::Ptr<ns3::WifiQueue<ns3::WifiMacQueueItem> > const queue) [member function]
+    ## block-ack-manager.h (module 'wifi'): void ns3::BlockAckManager::SetQueue(ns3::Ptr<ns3::WifiMacQueue> const queue) [member function]
     cls.add_method('SetQueue', 
                    'void', 
-                   [param('ns3::Ptr< ns3::WifiQueue< ns3::WifiMacQueueItem > > const', 'queue')])
+                   [param('ns3::Ptr< ns3::WifiMacQueue > const', 'queue')])
     ## block-ack-manager.h (module 'wifi'): void ns3::BlockAckManager::SetTxFailedCallback(ns3::BlockAckManager::TxFailed callback) [member function]
     cls.add_method('SetTxFailedCallback', 
                    'void', 
@@ -12745,9 +12742,9 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::WifiQueue<ns3::WifiMacQueueItem> > ns3::DcaTxop::GetQueue() const [member function]
+    ## dca-txop.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueue> ns3::DcaTxop::GetQueue() const [member function]
     cls.add_method('GetQueue', 
-                   'ns3::Ptr< ns3::WifiQueue< ns3::WifiMacQueueItem > >', 
+                   'ns3::Ptr< ns3::WifiMacQueue >', 
                    [], 
                    is_const=True)
     ## dca-txop.h (module 'wifi'): ns3::Time ns3::DcaTxop::GetTxopLimit() const [member function]
@@ -17720,7 +17717,7 @@ def register_Ns3Queue__Ns3WifiMacQueueItem_methods(root_module, cls):
     cls.add_method('Flush', 
                    'void', 
                    [])
-    ## queue.h (module 'network'): ns3::Queue<ns3::WifiMacQueueItem>::Queue(ns3::Queue<ns3::WifiMacQueueItem> const & arg0) [constructor]
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Queue<ns3::WifiMacQueueItem>::Queue(ns3::Queue<ns3::WifiMacQueueItem> const & arg0) [constructor]
     cls.add_constructor([param('ns3::Queue< ns3::WifiMacQueueItem > const &', 'arg0')])
     ## queue.h (module 'network'): ns3::Queue<ns3::WifiMacQueueItem>::ConstIterator ns3::Queue<ns3::WifiMacQueueItem>::Head() const [member function]
     cls.add_method('Head', 
@@ -19280,6 +19277,87 @@ def register_Ns3VhtOperationValue_methods(root_module, cls):
                    [param('ns3::VhtOperation const &', 'value')])
     return
 
+def register_Ns3WifiMacQueue_methods(root_module, cls):
+    ## wifi-mac-queue.h (module 'wifi'): static ns3::TypeId ns3::WifiMacQueue::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue::WifiMacQueue() [constructor]
+    cls.add_constructor([])
+    ## wifi-mac-queue.h (module 'wifi'): void ns3::WifiMacQueue::SetMaxDelay(ns3::Time delay) [member function]
+    cls.add_method('SetMaxDelay', 
+                   'void', 
+                   [param('ns3::Time', 'delay')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Time ns3::WifiMacQueue::GetMaxDelay() const [member function]
+    cls.add_method('GetMaxDelay', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiMacQueue::Enqueue(ns3::Ptr<ns3::WifiMacQueueItem> item) [member function]
+    cls.add_method('Enqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'item')], 
+                   is_virtual=True)
+    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiMacQueue::PushFront(ns3::Ptr<ns3::WifiMacQueueItem> item) [member function]
+    cls.add_method('PushFront', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'item')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiMacQueue::Dequeue() [member function]
+    cls.add_method('Dequeue', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
+                   [], 
+                   is_virtual=True)
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiMacQueue::DequeueByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address addr) [member function]
+    cls.add_method('DequeueByTidAndAddress', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
+                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'addr')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiMacQueue::DequeueFirstAvailable(ns3::Ptr<ns3::QosBlockedDestinations> const blockedPackets) [member function]
+    cls.add_method('DequeueFirstAvailable', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
+                   [param('ns3::Ptr< ns3::QosBlockedDestinations > const', 'blockedPackets')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<const ns3::WifiMacQueueItem> ns3::WifiMacQueue::Peek() const [member function]
+    cls.add_method('Peek', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem const >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<const ns3::WifiMacQueueItem> ns3::WifiMacQueue::PeekByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address addr) [member function]
+    cls.add_method('PeekByTidAndAddress', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem const >', 
+                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'addr')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<const ns3::WifiMacQueueItem> ns3::WifiMacQueue::PeekFirstAvailable(ns3::Ptr<ns3::QosBlockedDestinations> const blockedPackets) [member function]
+    cls.add_method('PeekFirstAvailable', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem const >', 
+                   [param('ns3::Ptr< ns3::QosBlockedDestinations > const', 'blockedPackets')])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiMacQueue::Remove() [member function]
+    cls.add_method('Remove', 
+                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
+                   [], 
+                   is_virtual=True)
+    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiMacQueue::Remove(ns3::Ptr<const ns3::Packet> packet) [member function]
+    cls.add_method('Remove', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
+    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNPacketsByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address addr) [member function]
+    cls.add_method('GetNPacketsByTidAndAddress', 
+                   'uint32_t', 
+                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'addr')])
+    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiMacQueue::IsEmpty() [member function]
+    cls.add_method('IsEmpty', 
+                   'bool', 
+                   [])
+    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNPackets() [member function]
+    cls.add_method('GetNPackets', 
+                   'uint32_t', 
+                   [])
+    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNBytes() [member function]
+    cls.add_method('GetNBytes', 
+                   'uint32_t', 
+                   [])
+    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiMacQueue::WifiMacQueue(ns3::WifiMacQueue const & arg0) [constructor]
+    cls.add_constructor([param('ns3::WifiMacQueue const &', 'arg0')])
+    return
+
 def register_Ns3WifiModeChecker_methods(root_module, cls):
     ## wifi-mode.h (module 'wifi'): ns3::WifiModeChecker::WifiModeChecker() [constructor]
     cls.add_constructor([])
@@ -19495,87 +19573,6 @@ def register_Ns3WifiNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Mac48Address', 'from'), param('ns3::Mac48Address', 'to')], 
                    visibility='protected')
-    return
-
-def register_Ns3WifiMacQueue_methods(root_module, cls):
-    ## mac-low.h (module 'wifi'): ns3::WifiQueue<ns3::WifiMacQueueItem>::WifiQueue(ns3::WifiQueue<ns3::WifiMacQueueItem> const & arg0) [constructor]
-    cls.add_constructor([param('ns3::WifiQueue< ns3::WifiMacQueueItem > const &', 'arg0')])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::WifiQueue<ns3::WifiMacQueueItem>::WifiQueue() [constructor]
-    cls.add_constructor([])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::Dequeue() [member function]
-    cls.add_method('Dequeue', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
-                   [], 
-                   is_virtual=True)
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::DequeueByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address addr) [member function]
-    cls.add_method('DequeueByTidAndAddress', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
-                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'addr')])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::DequeueFirstAvailable(ns3::Ptr<ns3::QosBlockedDestinations> const blockedPackets) [member function]
-    cls.add_method('DequeueFirstAvailable', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
-                   [param('ns3::Ptr< ns3::QosBlockedDestinations > const', 'blockedPackets')])
-    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiQueue<ns3::WifiMacQueueItem>::Enqueue(ns3::Ptr<ns3::WifiMacQueueItem> item) [member function]
-    cls.add_method('Enqueue', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'item')], 
-                   is_virtual=True)
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Time ns3::WifiQueue<ns3::WifiMacQueueItem>::GetMaxDelay() const [member function]
-    cls.add_method('GetMaxDelay', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True)
-    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiQueue<ns3::WifiMacQueueItem>::GetNBytes() [member function]
-    cls.add_method('GetNBytes', 
-                   'uint32_t', 
-                   [])
-    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiQueue<ns3::WifiMacQueueItem>::GetNPackets() [member function]
-    cls.add_method('GetNPackets', 
-                   'uint32_t', 
-                   [])
-    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiQueue<ns3::WifiMacQueueItem>::GetNPacketsByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address addr) [member function]
-    cls.add_method('GetNPacketsByTidAndAddress', 
-                   'uint32_t', 
-                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'addr')])
-    ## wifi-mac-queue.h (module 'wifi'): static ns3::TypeId ns3::WifiQueue<ns3::WifiMacQueueItem>::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiQueue<ns3::WifiMacQueueItem>::IsEmpty() [member function]
-    cls.add_method('IsEmpty', 
-                   'bool', 
-                   [])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<const ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::Peek() const [member function]
-    cls.add_method('Peek', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem const >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<const ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::PeekByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address addr) [member function]
-    cls.add_method('PeekByTidAndAddress', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem const >', 
-                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'addr')])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<const ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::PeekFirstAvailable(ns3::Ptr<ns3::QosBlockedDestinations> const blockedPackets) [member function]
-    cls.add_method('PeekFirstAvailable', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem const >', 
-                   [param('ns3::Ptr< ns3::QosBlockedDestinations > const', 'blockedPackets')])
-    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiQueue<ns3::WifiMacQueueItem>::PushFront(ns3::Ptr<ns3::WifiMacQueueItem> item) [member function]
-    cls.add_method('PushFront', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::WifiMacQueueItem >', 'item')])
-    ## wifi-mac-queue.h (module 'wifi'): ns3::Ptr<ns3::WifiMacQueueItem> ns3::WifiQueue<ns3::WifiMacQueueItem>::Remove() [member function]
-    cls.add_method('Remove', 
-                   'ns3::Ptr< ns3::WifiMacQueueItem >', 
-                   [], 
-                   is_virtual=True)
-    ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiQueue<ns3::WifiMacQueueItem>::Remove(ns3::Ptr<const ns3::Packet> packet) [member function]
-    cls.add_method('Remove', 
-                   'bool', 
-                   [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-mac-queue.h (module 'wifi'): void ns3::WifiQueue<ns3::WifiMacQueueItem>::SetMaxDelay(ns3::Time delay) [member function]
-    cls.add_method('SetMaxDelay', 
-                   'void', 
-                   [param('ns3::Time', 'delay')])
     return
 
 def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
