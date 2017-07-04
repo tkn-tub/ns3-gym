@@ -126,6 +126,62 @@ SpectrumWifiPhy::SetChannel (const Ptr<SpectrumChannel> channel)
 }
 
 void
+SpectrumWifiPhy::ResetSpectrumModel (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT_MSG (IsInitialized (), "Executing method before run-time");
+  NS_LOG_DEBUG ("Run-time change of spectrum model from frequency/width pair of (" << GetFrequency () << ", " << (uint16_t)GetChannelWidth () << ")");
+  // Replace existing spectrum model with new one, and must call AddRx ()
+  // on the SpectrumChannel to provide this new spectrum model to it
+  m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth (), GetBandBandwidth (), GetGuardBandwidth ());
+  m_channel->AddRx (m_wifiSpectrumPhyInterface);
+}
+
+void
+SpectrumWifiPhy::SetChannelNumber (uint8_t nch)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) nch);
+  WifiPhy::SetChannelNumber (nch);
+  if (IsInitialized ())
+    {
+      ResetSpectrumModel ();
+    }
+}
+
+void
+SpectrumWifiPhy::SetFrequency (uint16_t freq)
+{
+  NS_LOG_FUNCTION (this << freq);
+  WifiPhy::SetFrequency (freq);
+  if (IsInitialized ())
+    {
+      ResetSpectrumModel ();
+    }
+}
+
+void
+SpectrumWifiPhy::SetChannelWidth (uint8_t channelwidth)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) channelwidth);
+  WifiPhy::SetChannelWidth (channelwidth);
+  if (IsInitialized ())
+    {
+      ResetSpectrumModel ();
+    }
+}
+
+void 
+SpectrumWifiPhy::ConfigureStandard (WifiPhyStandard standard)
+{
+  NS_LOG_FUNCTION (this << standard);
+  WifiPhy::ConfigureStandard (standard);
+  if (IsInitialized ())
+    {
+      ResetSpectrumModel ();
+    }
+}
+
+void
 SpectrumWifiPhy::AddOperationalChannel (uint8_t channelNumber)
 {
   m_operationalChannelList.push_back (channelNumber);

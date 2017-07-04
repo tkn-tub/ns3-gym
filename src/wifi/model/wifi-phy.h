@@ -588,14 +588,14 @@ public:
    *
    * Channel center frequency = Channel starting frequency + 5 MHz * (nch - 1)
    *
-   * where Starting channel frequency is standard-dependent, see SetStandard()
+   * where Starting channel frequency is standard-dependent,
    * as defined in (Section 18.3.8.4.2 "Channel numbering"; IEEE Std 802.11-2012).
    * This method may fail to take action if the Phy model determines that
    * the channel number cannot be switched for some reason (e.g. sleep state)
    *
    * \param id the channel number
    */
-  void SetChannelNumber (uint8_t id);
+  virtual void SetChannelNumber (uint8_t id);
   /**
    * Return current channel number.
    *
@@ -612,7 +612,7 @@ public:
    *
    * \param standard the Wi-Fi standard
    */
-  void ConfigureStandard (WifiPhyStandard standard);
+  virtual void ConfigureStandard (WifiPhyStandard standard);
 
   /**
    * Get the configured Wi-Fi standard
@@ -1488,7 +1488,7 @@ public:
   /**
    * \param freq the operating center frequency (MHz) on this node.
    */
-  void SetFrequency (uint16_t freq);
+  virtual void SetFrequency (uint16_t freq);
   /**
    * \return the operating center frequency (MHz)
    */
@@ -1628,7 +1628,7 @@ public:
   /**
    * \param channelwidth channel width
    */
-  void SetChannelWidth (uint8_t channelwidth);
+  virtual void SetChannelWidth (uint8_t channelwidth);
   /**
    * \param channelwidth channel width (in MHz) to support
    */
@@ -1694,7 +1694,6 @@ protected:
 
   EventId m_endRxEvent;                //!< the end reeive event
   EventId m_endPlcpRxEvent;            //!< the end PLCP receive event
-
 
 private:
   /**
