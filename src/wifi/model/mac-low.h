@@ -41,8 +41,7 @@ class DcaTxop;
 class EdcaTxopN;
 class DcfManager;
 class WifiMacQueueItem;
-template <typename Item> class WifiQueue;
-typedef WifiQueue<WifiMacQueueItem> WifiMacQueue;
+class WifiMacQueue;
 
 /**
  * \brief control how a packet is transmitted.
