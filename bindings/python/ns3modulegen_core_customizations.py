@@ -71,7 +71,7 @@ class SmartPointerTransformation(typehandlers.TypeTransformation):
         args = tuple([correct_ctype] + list(args[1:]))
 
         handler = type_handler(*args, **kwargs)
-        handler.set_tranformation(self, orig_ctype)
+        handler.set_transformation(self, orig_ctype)
         return handler
 
     def untransform(self, type_handler, declarations, code_block, expression):

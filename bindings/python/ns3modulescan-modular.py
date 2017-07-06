@@ -4,20 +4,21 @@ import sys
 import os.path
 
 import pybindgen.settings
-from pybindgen.gccxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning, find_declaration_from_name
+from pybindgen.castxmlparser import ModuleParser, PygenClassifier, PygenSection, WrapperWarning, find_declaration_from_name
 from pybindgen.typehandlers.codesink import FileCodeSink
 from pygccxml.declarations import templates
 from pygccxml.declarations.enumeration import enumeration_t
 from pygccxml.declarations.class_declaration import class_t
-from pygccxml.declarations.calldef import free_function_t, member_function_t, constructor_t, calldef_t
-
+from pygccxml.declarations.free_calldef import free_function_t
+from pygccxml.declarations.calldef_members import constructor_t, member_function_t
+from pygccxml.declarations.calldef import calldef_t
 
 ## we need the smart pointer type transformation to be active even
-## during gccxml scanning.
+## during castxml scanning.
 import ns3modulegen_core_customizations
 
 
-## silence gccxmlparser errors; we only want error handling in the
+## silence castxmlparser errors; we only want error handling in the
 ## generated python script, not while scanning.
 class ErrorHandler(pybindgen.settings.ErrorHandler):
     def handle_error(self, dummy_wrapper, dummy_exception, dummy_traceback_):
@@ -34,6 +35,8 @@ type_annotations = ns3modulescan.type_annotations
 def get_ns3_relative_path(path):
     l = []
     head = path
+    if not path:
+        return
     while head:
         new_head, tail = os.path.split(head)
         if new_head == head:
@@ -58,7 +61,8 @@ class PreScanHook:
             ns3_header = get_ns3_relative_path(pygccxml_definition.location.file_name)
         except ValueError: # the header is not from ns3
             return # ignore the definition, it's not ns-3 def.
-
+        if not ns3_header:
+            return
         definition_module = self.headers_map[ns3_header]
 
         ## Note: we don't include line numbers in the comments because
@@ -78,7 +82,7 @@ class PreScanHook:
         if isinstance(pygccxml_definition, member_function_t) \
                 and pygccxml_definition.parent.name == 'Object' \
                 and pygccxml_definition.name == 'GetObject':
-            template_args = templates.args(pygccxml_definition.demangled_name)
+            template_args = templates.args(str(pygccxml_definition))
             if template_args == ['ns3::Object']:
                 global_annotations['template_instance_names'] = 'ns3::Object=>GetObject'
 
@@ -227,13 +231,13 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
     module_parser.add_pre_scan_hook(PreScanHook(headers_map, module_name))
     #module_parser.add_post_scan_hook(post_scan_hook)
 
-    gccxml_options = dict(
+    castxml_options = dict(
         include_paths=[top_builddir],
          define_symbols={
             #'NS3_ASSERT_ENABLE': None,
             #'NS3_LOG_ENABLE': None,
             },
-        cflags=('--gccxml-cxxflags "%s -DPYTHON_SCAN"' % cflags)
+        cflags=('-std=c++14 %s' % cflags)
         )
 
     try:
@@ -257,7 +261,7 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
                              None, whitelist_paths=[top_builddir],
                              #includes=['"ns3/everything.h"'],
                              pygen_sink=output_sink,
-                             gccxml_options=gccxml_options)
+                             castxml_options=castxml_options)
     module_parser.scan_types()
 
     callback_classes_file = open(os.path.join(os.path.dirname(output_file_name), "callbacks_list.py"), "wt")
