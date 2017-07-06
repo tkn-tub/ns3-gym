@@ -987,21 +987,21 @@ def register_Ns3Address_methods(root_module, cls):
     ## address.h (module 'network'): bool ns3::Address::CheckCompatible(uint8_t type, uint8_t len) const [member function]
     cls.add_method('CheckCompatible', 
                    'bool', 
-                   [param('unsigned char', 'type'), param('unsigned char', 'len')], 
+                   [param('uint8_t', 'type'), param('uint8_t', 'len')], 
                    is_const=True)
     ## address.h (module 'network'): uint32_t ns3::Address::CopyAllFrom(uint8_t const * buffer, uint8_t len) [member function]
     cls.add_method('CopyAllFrom', 
                    'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned char', 'len')])
+                   [param('uint8_t const *', 'buffer'), param('uint8_t', 'len')])
     ## address.h (module 'network'): uint32_t ns3::Address::CopyAllTo(uint8_t * buffer, uint8_t len) const [member function]
     cls.add_method('CopyAllTo', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('unsigned char', 'len')], 
+                   [param('uint8_t *', 'buffer'), param('uint8_t', 'len')], 
                    is_const=True)
     ## address.h (module 'network'): uint32_t ns3::Address::CopyFrom(uint8_t const * buffer, uint8_t len) [member function]
     cls.add_method('CopyFrom', 
                    'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned char', 'len')])
+                   [param('uint8_t const *', 'buffer'), param('uint8_t', 'len')])
     ## address.h (module 'network'): uint32_t ns3::Address::CopyTo(uint8_t * buffer) const [member function]
     cls.add_method('CopyTo', 
                    'uint32_t', 
@@ -1029,7 +1029,7 @@ def register_Ns3Address_methods(root_module, cls):
     ## address.h (module 'network'): bool ns3::Address::IsMatchingType(uint8_t type) const [member function]
     cls.add_method('IsMatchingType', 
                    'bool', 
-                   [param('unsigned char', 'type')], 
+                   [param('uint8_t', 'type')], 
                    is_const=True)
     ## address.h (module 'network'): static uint8_t ns3::Address::Register() [member function]
     cls.add_method('Register', 
@@ -1077,7 +1077,7 @@ def register_Ns3ApplicationContainer_methods(root_module, cls):
     ## application-container.h (module 'network'): ns3::Ptr<ns3::Application> ns3::ApplicationContainer::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'ns3::Ptr< ns3::Application >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## application-container.h (module 'network'): uint32_t ns3::ApplicationContainer::GetN() const [member function]
     cls.add_method('GetN', 
@@ -1110,7 +1110,7 @@ def register_Ns3AsciiFile_methods(root_module, cls):
     ## ascii-file.h (module 'network'): void ns3::AsciiFile::Open(std::string const & filename, std::ios_base::openmode mode) [member function]
     cls.add_method('Open', 
                    'void', 
-                   [param('std::string const &', 'filename'), param('std::_Ios_Openmode', 'mode')])
+                   [param('std::string const &', 'filename'), param('std::_Ios_Openmode', 'mode', default_value='std::ios_base::out')])
     ## ascii-file.h (module 'network'): void ns3::AsciiFile::Close() [member function]
     cls.add_method('Close', 
                    'void', 
@@ -1182,7 +1182,7 @@ def register_Ns3AsciiTraceHelper_methods(root_module, cls):
     ## trace-helper.h (module 'network'): std::string ns3::AsciiTraceHelper::GetFilenameFromInterfacePair(std::string prefix, ns3::Ptr<ns3::Object> object, uint32_t interface, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromInterfacePair', 
                    'std::string', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Object >', 'object'), param('unsigned int', 'interface'), param('bool', 'useObjectNames', default_value='true')])
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Object >', 'object'), param('uint32_t', 'interface'), param('bool', 'useObjectNames', default_value='true')])
     return
 
 def register_Ns3AsciiTraceHelperForDevice_methods(root_module, cls):
@@ -1225,11 +1225,11 @@ def register_Ns3AsciiTraceHelperForDevice_methods(root_module, cls):
     ## trace-helper.h (module 'network'): void ns3::AsciiTraceHelperForDevice::EnableAscii(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool explicitFilename) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('std::string', 'prefix'), param('unsigned int', 'nodeid'), param('unsigned int', 'deviceid'), param('bool', 'explicitFilename')])
+                   [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('bool', 'explicitFilename')])
     ## trace-helper.h (module 'network'): void ns3::AsciiTraceHelperForDevice::EnableAscii(ns3::Ptr<ns3::OutputStreamWrapper> stream, uint32_t nodeid, uint32_t deviceid) [member function]
     cls.add_method('EnableAscii', 
                    'void', 
-                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('unsigned int', 'nodeid'), param('unsigned int', 'deviceid')])
+                   [param('ns3::Ptr< ns3::OutputStreamWrapper >', 'stream'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid')])
     ## trace-helper.h (module 'network'): void ns3::AsciiTraceHelperForDevice::EnableAsciiAll(std::string prefix) [member function]
     cls.add_method('EnableAsciiAll', 
                    'void', 
@@ -1296,7 +1296,7 @@ def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::AddAtEnd(uint32_t end) [member function]
     cls.add_method('AddAtEnd', 
                    'void', 
-                   [param('unsigned int', 'end')])
+                   [param('uint32_t', 'end')])
     ## buffer.h (module 'network'): void ns3::Buffer::AddAtEnd(ns3::Buffer const & o) [member function]
     cls.add_method('AddAtEnd', 
                    'void', 
@@ -1304,7 +1304,7 @@ def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::AddAtStart(uint32_t start) [member function]
     cls.add_method('AddAtStart', 
                    'void', 
-                   [param('unsigned int', 'start')])
+                   [param('uint32_t', 'start')])
     ## buffer.h (module 'network'): ns3::Buffer::Iterator ns3::Buffer::Begin() const [member function]
     cls.add_method('Begin', 
                    'ns3::Buffer::Iterator', 
@@ -1313,22 +1313,22 @@ def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::CopyData(std::ostream * os, uint32_t size) const [member function]
     cls.add_method('CopyData', 
                    'void', 
-                   [param('std::ostream *', 'os'), param('unsigned int', 'size')], 
+                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
                    is_const=True)
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::CopyData(uint8_t * buffer, uint32_t size) const [member function]
     cls.add_method('CopyData', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'size')], 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
                    is_const=True)
     ## buffer.h (module 'network'): ns3::Buffer ns3::Buffer::CreateFragment(uint32_t start, uint32_t length) const [member function]
     cls.add_method('CreateFragment', 
                    'ns3::Buffer', 
-                   [param('unsigned int', 'start'), param('unsigned int', 'length')], 
+                   [param('uint32_t', 'start'), param('uint32_t', 'length')], 
                    is_const=True)
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::Deserialize(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## buffer.h (module 'network'): ns3::Buffer::Iterator ns3::Buffer::End() const [member function]
     cls.add_method('End', 
                    'ns3::Buffer::Iterator', 
@@ -1352,15 +1352,15 @@ def register_Ns3Buffer_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::RemoveAtEnd(uint32_t end) [member function]
     cls.add_method('RemoveAtEnd', 
                    'void', 
-                   [param('unsigned int', 'end')])
+                   [param('uint32_t', 'end')])
     ## buffer.h (module 'network'): void ns3::Buffer::RemoveAtStart(uint32_t start) [member function]
     cls.add_method('RemoveAtStart', 
                    'void', 
-                   [param('unsigned int', 'start')])
+                   [param('uint32_t', 'start')])
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'maxSize')], 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -1372,11 +1372,11 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::CalculateIpChecksum(uint16_t size) [member function]
     cls.add_method('CalculateIpChecksum', 
                    'uint16_t', 
-                   [param('short unsigned int', 'size')])
+                   [param('uint16_t', 'size')])
     ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::CalculateIpChecksum(uint16_t size, uint32_t initialChecksum) [member function]
     cls.add_method('CalculateIpChecksum', 
                    'uint16_t', 
-                   [param('short unsigned int', 'size'), param('unsigned int', 'initialChecksum')])
+                   [param('uint16_t', 'size'), param('uint32_t', 'initialChecksum')])
     ## buffer.h (module 'network'): uint32_t ns3::Buffer::Iterator::GetDistanceFrom(ns3::Buffer::Iterator const & o) const [member function]
     cls.add_method('GetDistanceFrom', 
                    'uint32_t', 
@@ -1409,7 +1409,7 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Next(uint32_t delta) [member function]
     cls.add_method('Next', 
                    'void', 
-                   [param('unsigned int', 'delta')])
+                   [param('uint32_t', 'delta')])
     ## buffer.h (module 'network'): uint8_t ns3::Buffer::Iterator::PeekU8() [member function]
     cls.add_method('PeekU8', 
                    'uint8_t', 
@@ -1421,15 +1421,15 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Prev(uint32_t delta) [member function]
     cls.add_method('Prev', 
                    'void', 
-                   [param('unsigned int', 'delta')])
+                   [param('uint32_t', 'delta')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Read(uint8_t * buffer, uint32_t size) [member function]
     cls.add_method('Read', 
                    'void', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Read(ns3::Buffer::Iterator start, uint32_t size) [member function]
     cls.add_method('Read', 
                    'void', 
-                   [param('ns3::Buffer::Iterator', 'start'), param('unsigned int', 'size')])
+                   [param('ns3::Buffer::Iterator', 'start'), param('uint32_t', 'size')])
     ## buffer.h (module 'network'): uint16_t ns3::Buffer::Iterator::ReadLsbtohU16() [member function]
     cls.add_method('ReadLsbtohU16', 
                    'uint16_t', 
@@ -1473,7 +1473,7 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Write(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('Write', 
                    'void', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::Write(ns3::Buffer::Iterator start, ns3::Buffer::Iterator end) [member function]
     cls.add_method('Write', 
                    'void', 
@@ -1481,47 +1481,47 @@ def register_Ns3BufferIterator_methods(root_module, cls):
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtolsbU16(uint16_t data) [member function]
     cls.add_method('WriteHtolsbU16', 
                    'void', 
-                   [param('short unsigned int', 'data')])
+                   [param('uint16_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtolsbU32(uint32_t data) [member function]
     cls.add_method('WriteHtolsbU32', 
                    'void', 
-                   [param('unsigned int', 'data')])
+                   [param('uint32_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtolsbU64(uint64_t data) [member function]
     cls.add_method('WriteHtolsbU64', 
                    'void', 
-                   [param('long unsigned int', 'data')])
+                   [param('uint64_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtonU16(uint16_t data) [member function]
     cls.add_method('WriteHtonU16', 
                    'void', 
-                   [param('short unsigned int', 'data')])
+                   [param('uint16_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtonU32(uint32_t data) [member function]
     cls.add_method('WriteHtonU32', 
                    'void', 
-                   [param('unsigned int', 'data')])
+                   [param('uint32_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteHtonU64(uint64_t data) [member function]
     cls.add_method('WriteHtonU64', 
                    'void', 
-                   [param('long unsigned int', 'data')])
+                   [param('uint64_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU16(uint16_t data) [member function]
     cls.add_method('WriteU16', 
                    'void', 
-                   [param('short unsigned int', 'data')])
+                   [param('uint16_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU32(uint32_t data) [member function]
     cls.add_method('WriteU32', 
                    'void', 
-                   [param('unsigned int', 'data')])
+                   [param('uint32_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU64(uint64_t data) [member function]
     cls.add_method('WriteU64', 
                    'void', 
-                   [param('long unsigned int', 'data')])
+                   [param('uint64_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU8(uint8_t data) [member function]
     cls.add_method('WriteU8', 
                    'void', 
-                   [param('unsigned char', 'data')])
+                   [param('uint8_t', 'data')])
     ## buffer.h (module 'network'): void ns3::Buffer::Iterator::WriteU8(uint8_t data, uint32_t len) [member function]
     cls.add_method('WriteU8', 
                    'void', 
-                   [param('unsigned char', 'data'), param('unsigned int', 'len')])
+                   [param('uint8_t', 'data'), param('uint32_t', 'len')])
     return
 
 def register_Ns3ByteTagIterator_methods(root_module, cls):
@@ -1571,7 +1571,7 @@ def register_Ns3ByteTagList_methods(root_module, cls):
     ## byte-tag-list.h (module 'network'): ns3::TagBuffer ns3::ByteTagList::Add(ns3::TypeId tid, uint32_t bufferSize, int32_t start, int32_t end) [member function]
     cls.add_method('Add', 
                    'ns3::TagBuffer', 
-                   [param('ns3::TypeId', 'tid'), param('unsigned int', 'bufferSize'), param('int', 'start'), param('int', 'end')])
+                   [param('ns3::TypeId', 'tid'), param('uint32_t', 'bufferSize'), param('int32_t', 'start'), param('int32_t', 'end')])
     ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::Add(ns3::ByteTagList const & o) [member function]
     cls.add_method('Add', 
                    'void', 
@@ -1579,19 +1579,19 @@ def register_Ns3ByteTagList_methods(root_module, cls):
     ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::AddAtEnd(int32_t appendOffset) [member function]
     cls.add_method('AddAtEnd', 
                    'void', 
-                   [param('int', 'appendOffset')])
+                   [param('int32_t', 'appendOffset')])
     ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::AddAtStart(int32_t prependOffset) [member function]
     cls.add_method('AddAtStart', 
                    'void', 
-                   [param('int', 'prependOffset')])
+                   [param('int32_t', 'prependOffset')])
     ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::Adjust(int32_t adjustment) [member function]
     cls.add_method('Adjust', 
                    'void', 
-                   [param('int', 'adjustment')])
+                   [param('int32_t', 'adjustment')])
     ## byte-tag-list.h (module 'network'): ns3::ByteTagList::Iterator ns3::ByteTagList::Begin(int32_t offsetStart, int32_t offsetEnd) const [member function]
     cls.add_method('Begin', 
                    'ns3::ByteTagList::Iterator', 
-                   [param('int', 'offsetStart'), param('int', 'offsetEnd')], 
+                   [param('int32_t', 'offsetStart'), param('int32_t', 'offsetEnd')], 
                    is_const=True)
     ## byte-tag-list.h (module 'network'): void ns3::ByteTagList::RemoveAll() [member function]
     cls.add_method('RemoveAll', 
@@ -1673,7 +1673,7 @@ def register_Ns3ChannelList_methods(root_module, cls):
     ## channel-list.h (module 'network'): static ns3::Ptr<ns3::Channel> ns3::ChannelList::GetChannel(uint32_t n) [member function]
     cls.add_method('GetChannel', 
                    'ns3::Ptr< ns3::Channel >', 
-                   [param('unsigned int', 'n')], 
+                   [param('uint32_t', 'n')], 
                    is_static=True)
     ## channel-list.h (module 'network'): static uint32_t ns3::ChannelList::GetNChannels() [member function]
     cls.add_method('GetNChannels', 
@@ -1695,7 +1695,7 @@ def register_Ns3DataOutputCallback_methods(root_module, cls):
     ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, uint32_t val) [member function]
     cls.add_method('OutputSingleton', 
                    'void', 
-                   [param('std::string', 'key'), param('std::string', 'variable'), param('unsigned int', 'val')], 
+                   [param('std::string', 'key'), param('std::string', 'variable'), param('uint32_t', 'val')], 
                    is_pure_virtual=True, is_virtual=True)
     ## data-output-interface.h (module 'stats'): void ns3::DataOutputCallback::OutputSingleton(std::string key, std::string variable, double val) [member function]
     cls.add_method('OutputSingleton', 
@@ -1738,17 +1738,17 @@ def register_Ns3DataRate_methods(root_module, cls):
     ## data-rate.h (module 'network'): ns3::Time ns3::DataRate::CalculateBitsTxTime(uint32_t bits) const [member function]
     cls.add_method('CalculateBitsTxTime', 
                    'ns3::Time', 
-                   [param('unsigned int', 'bits')], 
+                   [param('uint32_t', 'bits')], 
                    is_const=True)
     ## data-rate.h (module 'network'): ns3::Time ns3::DataRate::CalculateBytesTxTime(uint32_t bytes) const [member function]
     cls.add_method('CalculateBytesTxTime', 
                    'ns3::Time', 
-                   [param('unsigned int', 'bytes')], 
+                   [param('uint32_t', 'bytes')], 
                    is_const=True)
     ## data-rate.h (module 'network'): double ns3::DataRate::CalculateTxTime(uint32_t bytes) const [member function]
     cls.add_method('CalculateTxTime', 
                    'double', 
-                   [param('unsigned int', 'bytes')], 
+                   [param('uint32_t', 'bytes')], 
                    is_const=True)
     ## data-rate.h (module 'network'): uint64_t ns3::DataRate::GetBitRate() const [member function]
     cls.add_method('GetBitRate', 
@@ -2077,7 +2077,7 @@ def register_Ns3Inet6SocketAddress_methods(root_module, cls):
     ## inet6-socket-address.h (module 'network'): void ns3::Inet6SocketAddress::SetPort(uint16_t port) [member function]
     cls.add_method('SetPort', 
                    'void', 
-                   [param('short unsigned int', 'port')])
+                   [param('uint16_t', 'port')])
     return
 
 def register_Ns3InetSocketAddress_methods(root_module, cls):
@@ -2125,11 +2125,11 @@ def register_Ns3InetSocketAddress_methods(root_module, cls):
     ## inet-socket-address.h (module 'network'): void ns3::InetSocketAddress::SetPort(uint16_t port) [member function]
     cls.add_method('SetPort', 
                    'void', 
-                   [param('short unsigned int', 'port')])
+                   [param('uint16_t', 'port')])
     ## inet-socket-address.h (module 'network'): void ns3::InetSocketAddress::SetTos(uint8_t tos) [member function]
     cls.add_method('SetTos', 
                    'void', 
-                   [param('unsigned char', 'tos')])
+                   [param('uint8_t', 'tos')])
     return
 
 def register_Ns3Ipv4Address_methods(root_module, cls):
@@ -2243,7 +2243,7 @@ def register_Ns3Ipv4Address_methods(root_module, cls):
     ## ipv4-address.h (module 'network'): void ns3::Ipv4Address::Set(uint32_t address) [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('unsigned int', 'address')])
+                   [param('uint32_t', 'address')])
     ## ipv4-address.h (module 'network'): void ns3::Ipv4Address::Set(char const * address) [member function]
     cls.add_method('Set', 
                    'void', 
@@ -2310,7 +2310,7 @@ def register_Ns3Ipv4Mask_methods(root_module, cls):
     ## ipv4-address.h (module 'network'): void ns3::Ipv4Mask::Set(uint32_t mask) [member function]
     cls.add_method('Set', 
                    'void', 
-                   [param('unsigned int', 'mask')])
+                   [param('uint32_t', 'mask')])
     return
 
 def register_Ns3Ipv6Address_methods(root_module, cls):
@@ -2801,7 +2801,7 @@ def register_Ns3NetDeviceContainer_methods(root_module, cls):
     ## net-device-container.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::NetDeviceContainer::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## net-device-container.h (module 'network'): uint32_t ns3::NetDeviceContainer::GetN() const [member function]
     cls.add_method('GetN', 
@@ -2847,11 +2847,11 @@ def register_Ns3NodeContainer_methods(root_module, cls):
     ## node-container.h (module 'network'): void ns3::NodeContainer::Create(uint32_t n) [member function]
     cls.add_method('Create', 
                    'void', 
-                   [param('unsigned int', 'n')])
+                   [param('uint32_t', 'n')])
     ## node-container.h (module 'network'): void ns3::NodeContainer::Create(uint32_t n, uint32_t systemId) [member function]
     cls.add_method('Create', 
                    'void', 
-                   [param('unsigned int', 'n'), param('unsigned int', 'systemId')])
+                   [param('uint32_t', 'n'), param('uint32_t', 'systemId')])
     ## node-container.h (module 'network'): ns3::NodeContainer::Iterator ns3::NodeContainer::End() const [member function]
     cls.add_method('End', 
                    'ns3::NodeContainer::Iterator', 
@@ -2860,7 +2860,7 @@ def register_Ns3NodeContainer_methods(root_module, cls):
     ## node-container.h (module 'network'): ns3::Ptr<ns3::Node> ns3::NodeContainer::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'ns3::Ptr< ns3::Node >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## node-container.h (module 'network'): static ns3::NodeContainer ns3::NodeContainer::GetGlobal() [member function]
     cls.add_method('GetGlobal', 
@@ -2902,7 +2902,7 @@ def register_Ns3NodeList_methods(root_module, cls):
     ## node-list.h (module 'network'): static ns3::Ptr<ns3::Node> ns3::NodeList::GetNode(uint32_t n) [member function]
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
-                   [param('unsigned int', 'n')], 
+                   [param('uint32_t', 'n')], 
                    is_static=True)
     return
 
@@ -3033,15 +3033,15 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddHeader(ns3::Header const & header, uint32_t size) [member function]
     cls.add_method('AddHeader', 
                    'void', 
-                   [param('ns3::Header const &', 'header'), param('unsigned int', 'size')])
+                   [param('ns3::Header const &', 'header'), param('uint32_t', 'size')])
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddPaddingAtEnd(uint32_t end) [member function]
     cls.add_method('AddPaddingAtEnd', 
                    'void', 
-                   [param('unsigned int', 'end')])
+                   [param('uint32_t', 'end')])
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::AddTrailer(ns3::Trailer const & trailer, uint32_t size) [member function]
     cls.add_method('AddTrailer', 
                    'void', 
-                   [param('ns3::Trailer const &', 'trailer'), param('unsigned int', 'size')])
+                   [param('ns3::Trailer const &', 'trailer'), param('uint32_t', 'size')])
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata::ItemIterator ns3::PacketMetadata::BeginItem(ns3::Buffer buffer) const [member function]
     cls.add_method('BeginItem', 
                    'ns3::PacketMetadata::ItemIterator', 
@@ -3050,12 +3050,12 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
     ## packet-metadata.h (module 'network'): ns3::PacketMetadata ns3::PacketMetadata::CreateFragment(uint32_t start, uint32_t end) const [member function]
     cls.add_method('CreateFragment', 
                    'ns3::PacketMetadata', 
-                   [param('unsigned int', 'start'), param('unsigned int', 'end')], 
+                   [param('uint32_t', 'start'), param('uint32_t', 'end')], 
                    is_const=True)
     ## packet-metadata.h (module 'network'): uint32_t ns3::PacketMetadata::Deserialize(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## packet-metadata.h (module 'network'): static void ns3::PacketMetadata::Enable() [member function]
     cls.add_method('Enable', 
                    'void', 
@@ -3079,23 +3079,23 @@ def register_Ns3PacketMetadata_methods(root_module, cls):
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveAtEnd(uint32_t end) [member function]
     cls.add_method('RemoveAtEnd', 
                    'void', 
-                   [param('unsigned int', 'end')])
+                   [param('uint32_t', 'end')])
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveAtStart(uint32_t start) [member function]
     cls.add_method('RemoveAtStart', 
                    'void', 
-                   [param('unsigned int', 'start')])
+                   [param('uint32_t', 'start')])
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveHeader(ns3::Header const & header, uint32_t size) [member function]
     cls.add_method('RemoveHeader', 
                    'void', 
-                   [param('ns3::Header const &', 'header'), param('unsigned int', 'size')])
+                   [param('ns3::Header const &', 'header'), param('uint32_t', 'size')])
     ## packet-metadata.h (module 'network'): void ns3::PacketMetadata::RemoveTrailer(ns3::Trailer const & trailer, uint32_t size) [member function]
     cls.add_method('RemoveTrailer', 
                    'void', 
-                   [param('ns3::Trailer const &', 'trailer'), param('unsigned int', 'size')])
+                   [param('ns3::Trailer const &', 'trailer'), param('uint32_t', 'size')])
     ## packet-metadata.h (module 'network'): uint32_t ns3::PacketMetadata::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'maxSize')], 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -3182,11 +3182,11 @@ def register_Ns3PacketSocketAddress_methods(root_module, cls):
     ## packet-socket-address.h (module 'network'): void ns3::PacketSocketAddress::SetProtocol(uint16_t protocol) [member function]
     cls.add_method('SetProtocol', 
                    'void', 
-                   [param('short unsigned int', 'protocol')])
+                   [param('uint16_t', 'protocol')])
     ## packet-socket-address.h (module 'network'): void ns3::PacketSocketAddress::SetSingleDevice(uint32_t device) [member function]
     cls.add_method('SetSingleDevice', 
                    'void', 
-                   [param('unsigned int', 'device')])
+                   [param('uint32_t', 'device')])
     return
 
 def register_Ns3PacketSocketHelper_methods(root_module, cls):
@@ -3518,7 +3518,7 @@ def register_Ns3PcapFile_methods(root_module, cls):
     ## pcap-file.h (module 'network'): static bool ns3::PcapFile::Diff(std::string const & f1, std::string const & f2, uint32_t & sec, uint32_t & usec, uint32_t & packets, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT) [member function]
     cls.add_method('Diff', 
                    'bool', 
-                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t &', 'packets'), param('unsigned int', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
+                   [param('std::string const &', 'f1'), param('std::string const &', 'f2'), param('uint32_t &', 'sec'), param('uint32_t &', 'usec'), param('uint32_t &', 'packets'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT')], 
                    is_static=True)
     ## pcap-file.h (module 'network'): bool ns3::PcapFile::Eof() const [member function]
     cls.add_method('Eof', 
@@ -3565,7 +3565,7 @@ def register_Ns3PcapFile_methods(root_module, cls):
     ## pcap-file.h (module 'network'): void ns3::PcapFile::Init(uint32_t dataLinkType, uint32_t snapLen=ns3::PcapFile::SNAPLEN_DEFAULT, int32_t timeZoneCorrection=ns3::PcapFile::ZONE_DEFAULT, bool swapMode=false, bool nanosecMode=false) [member function]
     cls.add_method('Init', 
                    'void', 
-                   [param('unsigned int', 'dataLinkType'), param('unsigned int', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT'), param('int', 'timeZoneCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT'), param('bool', 'swapMode', default_value='false'), param('bool', 'nanosecMode', default_value='false')])
+                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='ns3::PcapFile::SNAPLEN_DEFAULT'), param('int32_t', 'timeZoneCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT'), param('bool', 'swapMode', default_value='false'), param('bool', 'nanosecMode', default_value='false')])
     ## pcap-file.h (module 'network'): bool ns3::PcapFile::IsNanoSecMode() [member function]
     cls.add_method('IsNanoSecMode', 
                    'bool', 
@@ -3577,19 +3577,19 @@ def register_Ns3PcapFile_methods(root_module, cls):
     ## pcap-file.h (module 'network'): void ns3::PcapFile::Read(uint8_t * const data, uint32_t maxBytes, uint32_t & tsSec, uint32_t & tsUsec, uint32_t & inclLen, uint32_t & origLen, uint32_t & readLen) [member function]
     cls.add_method('Read', 
                    'void', 
-                   [param('uint8_t * const', 'data'), param('unsigned int', 'maxBytes'), param('uint32_t &', 'tsSec'), param('uint32_t &', 'tsUsec'), param('uint32_t &', 'inclLen'), param('uint32_t &', 'origLen'), param('uint32_t &', 'readLen')])
+                   [param('uint8_t * const', 'data'), param('uint32_t', 'maxBytes'), param('uint32_t &', 'tsSec'), param('uint32_t &', 'tsUsec'), param('uint32_t &', 'inclLen'), param('uint32_t &', 'origLen'), param('uint32_t &', 'readLen')])
     ## pcap-file.h (module 'network'): void ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, uint8_t const * const data, uint32_t totalLen) [member function]
     cls.add_method('Write', 
                    'void', 
-                   [param('unsigned int', 'tsSec'), param('unsigned int', 'tsUsec'), param('uint8_t const * const', 'data'), param('unsigned int', 'totalLen')])
+                   [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('uint8_t const * const', 'data'), param('uint32_t', 'totalLen')])
     ## pcap-file.h (module 'network'): void ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, ns3::Ptr<const ns3::Packet> p) [member function]
     cls.add_method('Write', 
                    'void', 
-                   [param('unsigned int', 'tsSec'), param('unsigned int', 'tsUsec'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+                   [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('ns3::Ptr< ns3::Packet const >', 'p')])
     ## pcap-file.h (module 'network'): void ns3::PcapFile::Write(uint32_t tsSec, uint32_t tsUsec, ns3::Header const & header, ns3::Ptr<const ns3::Packet> p) [member function]
     cls.add_method('Write', 
                    'void', 
-                   [param('unsigned int', 'tsSec'), param('unsigned int', 'tsUsec'), param('ns3::Header const &', 'header'), param('ns3::Ptr< ns3::Packet const >', 'p')])
+                   [param('uint32_t', 'tsSec'), param('uint32_t', 'tsUsec'), param('ns3::Header const &', 'header'), param('ns3::Ptr< ns3::Packet const >', 'p')])
     ## pcap-file.h (module 'network'): ns3::PcapFile::SNAPLEN_DEFAULT [variable]
     cls.add_static_attribute('SNAPLEN_DEFAULT', 'uint32_t const', is_const=True)
     ## pcap-file.h (module 'network'): ns3::PcapFile::ZONE_DEFAULT [variable]
@@ -3604,7 +3604,7 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     ## trace-helper.h (module 'network'): ns3::Ptr<ns3::PcapFileWrapper> ns3::PcapHelper::CreateFile(std::string filename, std::ios_base::openmode filemode, ns3::PcapHelper::DataLinkType dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=0) [member function]
     cls.add_method('CreateFile', 
                    'ns3::Ptr< ns3::PcapFileWrapper >', 
-                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('ns3::PcapHelper::DataLinkType', 'dataLinkType'), param('unsigned int', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int', 'tzCorrection', default_value='0')])
+                   [param('std::string', 'filename'), param('std::_Ios_Openmode', 'filemode'), param('ns3::PcapHelper::DataLinkType', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='0')])
     ## trace-helper.h (module 'network'): std::string ns3::PcapHelper::GetFilenameFromDevice(std::string prefix, ns3::Ptr<ns3::NetDevice> device, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromDevice', 
                    'std::string', 
@@ -3612,7 +3612,7 @@ def register_Ns3PcapHelper_methods(root_module, cls):
     ## trace-helper.h (module 'network'): std::string ns3::PcapHelper::GetFilenameFromInterfacePair(std::string prefix, ns3::Ptr<ns3::Object> object, uint32_t interface, bool useObjectNames=true) [member function]
     cls.add_method('GetFilenameFromInterfacePair', 
                    'std::string', 
-                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Object >', 'object'), param('unsigned int', 'interface'), param('bool', 'useObjectNames', default_value='true')])
+                   [param('std::string', 'prefix'), param('ns3::Ptr< ns3::Object >', 'object'), param('uint32_t', 'interface'), param('bool', 'useObjectNames', default_value='true')])
     return
 
 def register_Ns3PcapHelperForDevice_methods(root_module, cls):
@@ -3639,7 +3639,7 @@ def register_Ns3PcapHelperForDevice_methods(root_module, cls):
     ## trace-helper.h (module 'network'): void ns3::PcapHelperForDevice::EnablePcap(std::string prefix, uint32_t nodeid, uint32_t deviceid, bool promiscuous=false) [member function]
     cls.add_method('EnablePcap', 
                    'void', 
-                   [param('std::string', 'prefix'), param('unsigned int', 'nodeid'), param('unsigned int', 'deviceid'), param('bool', 'promiscuous', default_value='false')])
+                   [param('std::string', 'prefix'), param('uint32_t', 'nodeid'), param('uint32_t', 'deviceid'), param('bool', 'promiscuous', default_value='false')])
     ## trace-helper.h (module 'network'): void ns3::PcapHelperForDevice::EnablePcapAll(std::string prefix, bool promiscuous=false) [member function]
     cls.add_method('EnablePcapAll', 
                    'void', 
@@ -3961,7 +3961,7 @@ def register_Ns3TagBuffer_methods(root_module, cls):
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::Read(uint8_t * buffer, uint32_t size) [member function]
     cls.add_method('Read', 
                    'void', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')])
     ## tag-buffer.h (module 'network'): double ns3::TagBuffer::ReadDouble() [member function]
     cls.add_method('ReadDouble', 
                    'double', 
@@ -3985,11 +3985,11 @@ def register_Ns3TagBuffer_methods(root_module, cls):
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::TrimAtEnd(uint32_t trim) [member function]
     cls.add_method('TrimAtEnd', 
                    'void', 
-                   [param('unsigned int', 'trim')])
+                   [param('uint32_t', 'trim')])
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::Write(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('Write', 
                    'void', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteDouble(double v) [member function]
     cls.add_method('WriteDouble', 
                    'void', 
@@ -3997,19 +3997,19 @@ def register_Ns3TagBuffer_methods(root_module, cls):
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU16(uint16_t v) [member function]
     cls.add_method('WriteU16', 
                    'void', 
-                   [param('short unsigned int', 'v')])
+                   [param('uint16_t', 'v')])
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU32(uint32_t v) [member function]
     cls.add_method('WriteU32', 
                    'void', 
-                   [param('unsigned int', 'v')])
+                   [param('uint32_t', 'v')])
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU64(uint64_t v) [member function]
     cls.add_method('WriteU64', 
                    'void', 
-                   [param('long unsigned int', 'v')])
+                   [param('uint64_t', 'v')])
     ## tag-buffer.h (module 'network'): void ns3::TagBuffer::WriteU8(uint8_t v) [member function]
     cls.add_method('WriteU8', 
                    'void', 
-                   [param('unsigned char', 'v')])
+                   [param('uint8_t', 'v')])
     return
 
 def register_Ns3TimeWithUnit_methods(root_module, cls):
@@ -4076,7 +4076,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, uint32_t flags, ns3::AttributeValue const & initialValue, ns3::Ptr<const ns3::AttributeAccessor> accessor, ns3::Ptr<const ns3::AttributeChecker> checker, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('unsigned int', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SupportLevel::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SupportLevel::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -4088,12 +4088,12 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeFullName(uint32_t i) const [member function]
     cls.add_method('GetAttributeFullName', 
                    'std::string', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetAttributeN() const [member function]
     cls.add_method('GetAttributeN', 
@@ -4128,7 +4128,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::GetRegistered(uint32_t i) [member function]
     cls.add_method('GetRegistered', 
                    'ns3::TypeId', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_static=True)
     ## type-id.h (module 'core'): static uint32_t ns3::TypeId::GetRegisteredN() [member function]
     cls.add_method('GetRegisteredN', 
@@ -4143,7 +4143,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation ns3::TypeId::GetTraceSource(uint32_t i) const [member function]
     cls.add_method('GetTraceSource', 
                    'ns3::TypeId::TraceSourceInformation', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetTraceSourceN() const [member function]
     cls.add_method('GetTraceSourceN', 
@@ -4212,7 +4212,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::SetAttributeInitialValue(uint32_t i, ns3::Ptr<const ns3::AttributeValue> initialValue) [member function]
     cls.add_method('SetAttributeInitialValue', 
                    'bool', 
-                   [param('unsigned int', 'i'), param('ns3::Ptr< ns3::AttributeValue const >', 'initialValue')])
+                   [param('uint32_t', 'i'), param('ns3::Ptr< ns3::AttributeValue const >', 'initialValue')])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetGroupName(std::string groupName) [member function]
     cls.add_method('SetGroupName', 
                    'ns3::TypeId', 
@@ -4234,11 +4234,11 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetSize(std::size_t size) [member function]
     cls.add_method('SetSize', 
                    'ns3::TypeId', 
-                   [param('long unsigned int', 'size')])
+                   [param('std::size_t', 'size')])
     ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t uid) [member function]
     cls.add_method('SetUid', 
                    'void', 
-                   [param('short unsigned int', 'uid')])
+                   [param('uint16_t', 'uid')])
     return
 
 def register_Ns3TypeIdAttributeInformation_methods(root_module, cls):
@@ -4476,7 +4476,7 @@ def register_Ns3FlowIdTag_methods(root_module, cls):
     ## flow-id-tag.h (module 'network'): void ns3::FlowIdTag::SetFlowId(uint32_t flowId) [member function]
     cls.add_method('SetFlowId', 
                    'void', 
-                   [param('unsigned int', 'flowId')])
+                   [param('uint32_t', 'flowId')])
     return
 
 def register_Ns3Header_methods(root_module, cls):
@@ -4554,7 +4554,7 @@ def register_Ns3LlcSnapHeader_methods(root_module, cls):
     ## llc-snap-header.h (module 'network'): void ns3::LlcSnapHeader::SetType(uint16_t type) [member function]
     cls.add_method('SetType', 
                    'void', 
-                   [param('short unsigned int', 'type')])
+                   [param('uint16_t', 'type')])
     return
 
 def register_Ns3Object_methods(root_module, cls):
@@ -4772,7 +4772,7 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
     ## pcap-file-wrapper.h (module 'network'): void ns3::PcapFileWrapper::Init(uint32_t dataLinkType, uint32_t snapLen=std::numeric_limits<unsigned int>::max(), int32_t tzCorrection=ns3::PcapFile::ZONE_DEFAULT) [member function]
     cls.add_method('Init', 
                    'void', 
-                   [param('unsigned int', 'dataLinkType'), param('unsigned int', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
+                   [param('uint32_t', 'dataLinkType'), param('uint32_t', 'snapLen', default_value='std::numeric_limits<unsigned int>::max()'), param('int32_t', 'tzCorrection', default_value='ns3::PcapFile::ZONE_DEFAULT')])
     ## pcap-file-wrapper.h (module 'network'): void ns3::PcapFileWrapper::Write(ns3::Time t, ns3::Ptr<const ns3::Packet> p) [member function]
     cls.add_method('Write', 
                    'void', 
@@ -4784,7 +4784,7 @@ def register_Ns3PcapFileWrapper_methods(root_module, cls):
     ## pcap-file-wrapper.h (module 'network'): void ns3::PcapFileWrapper::Write(ns3::Time t, uint8_t const * buffer, uint32_t length) [member function]
     cls.add_method('Write', 
                    'void', 
-                   [param('ns3::Time', 't'), param('uint8_t const *', 'buffer'), param('unsigned int', 'length')])
+                   [param('ns3::Time', 't'), param('uint8_t const *', 'buffer'), param('uint32_t', 'length')])
     ## pcap-file-wrapper.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::PcapFileWrapper::Read(ns3::Time & t) [member function]
     cls.add_method('Read', 
                    'ns3::Ptr< ns3::Packet >', 
@@ -4911,11 +4911,11 @@ def register_Ns3QueueBase_methods(root_module, cls):
     ## queue.h (module 'network'): void ns3::QueueBase::SetMaxBytes(uint32_t maxBytes) [member function]
     cls.add_method('SetMaxBytes', 
                    'void', 
-                   [param('unsigned int', 'maxBytes')])
+                   [param('uint32_t', 'maxBytes')])
     ## queue.h (module 'network'): void ns3::QueueBase::SetMaxPackets(uint32_t maxPackets) [member function]
     cls.add_method('SetMaxPackets', 
                    'void', 
-                   [param('unsigned int', 'maxPackets')])
+                   [param('uint32_t', 'maxPackets')])
     ## queue.h (module 'network'): void ns3::QueueBase::SetMode(ns3::QueueBase::QueueMode mode) [member function]
     cls.add_method('SetMode', 
                    'void', 
@@ -4935,7 +4935,7 @@ def register_Ns3QueueLimits_methods(root_module, cls):
     ## queue-limits.h (module 'network'): void ns3::QueueLimits::Completed(uint32_t count) [member function]
     cls.add_method('Completed', 
                    'void', 
-                   [param('unsigned int', 'count')], 
+                   [param('uint32_t', 'count')], 
                    is_pure_virtual=True, is_virtual=True)
     ## queue-limits.h (module 'network'): static ns3::TypeId ns3::QueueLimits::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -4945,7 +4945,7 @@ def register_Ns3QueueLimits_methods(root_module, cls):
     ## queue-limits.h (module 'network'): void ns3::QueueLimits::Queued(uint32_t count) [member function]
     cls.add_method('Queued', 
                    'void', 
-                   [param('unsigned int', 'count')], 
+                   [param('uint32_t', 'count')], 
                    is_pure_virtual=True, is_virtual=True)
     ## queue-limits.h (module 'network'): void ns3::QueueLimits::Reset() [member function]
     cls.add_method('Reset', 
@@ -5102,7 +5102,7 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetAmpduStatus(uint32_t referenceNumber, uint16_t flags, uint8_t crc) [member function]
     cls.add_method('SetAmpduStatus', 
                    'void', 
-                   [param('unsigned int', 'referenceNumber'), param('short unsigned int', 'flags'), param('unsigned char', 'crc')])
+                   [param('uint32_t', 'referenceNumber'), param('uint16_t', 'flags'), param('uint8_t', 'crc')])
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetAntennaNoisePower(double noise) [member function]
     cls.add_method('SetAntennaNoisePower', 
                    'void', 
@@ -5114,27 +5114,27 @@ def register_Ns3RadiotapHeader_methods(root_module, cls):
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetChannelFrequencyAndFlags(uint16_t frequency, uint16_t flags) [member function]
     cls.add_method('SetChannelFrequencyAndFlags', 
                    'void', 
-                   [param('short unsigned int', 'frequency'), param('short unsigned int', 'flags')])
+                   [param('uint16_t', 'frequency'), param('uint16_t', 'flags')])
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetFrameFlags(uint8_t flags) [member function]
     cls.add_method('SetFrameFlags', 
                    'void', 
-                   [param('unsigned char', 'flags')])
+                   [param('uint8_t', 'flags')])
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetMcsFields(uint8_t known, uint8_t flags, uint8_t mcs) [member function]
     cls.add_method('SetMcsFields', 
                    'void', 
-                   [param('unsigned char', 'known'), param('unsigned char', 'flags'), param('unsigned char', 'mcs')])
+                   [param('uint8_t', 'known'), param('uint8_t', 'flags'), param('uint8_t', 'mcs')])
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetRate(uint8_t rate) [member function]
     cls.add_method('SetRate', 
                    'void', 
-                   [param('unsigned char', 'rate')])
+                   [param('uint8_t', 'rate')])
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetTsft(uint64_t tsft) [member function]
     cls.add_method('SetTsft', 
                    'void', 
-                   [param('long unsigned int', 'tsft')])
+                   [param('uint64_t', 'tsft')])
     ## radiotap-header.h (module 'network'): void ns3::RadiotapHeader::SetVhtFields(uint16_t known, uint8_t flags, uint8_t bandwidth, uint8_t * mcs_nss, uint8_t coding, uint8_t group_id, uint16_t partial_aid) [member function]
     cls.add_method('SetVhtFields', 
                    'void', 
-                   [param('short unsigned int', 'known'), param('unsigned char', 'flags'), param('unsigned char', 'bandwidth'), param('uint8_t *', 'mcs_nss'), param('unsigned char', 'coding'), param('unsigned char', 'group_id'), param('short unsigned int', 'partial_aid')])
+                   [param('uint16_t', 'known'), param('uint8_t', 'flags'), param('uint8_t', 'bandwidth'), param('uint8_t *', 'mcs_nss'), param('uint8_t', 'coding'), param('uint8_t', 'group_id'), param('uint16_t', 'partial_aid')])
     return
 
 def register_Ns3RandomVariableStream_methods(root_module, cls):
@@ -5148,7 +5148,7 @@ def register_Ns3RandomVariableStream_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): void ns3::RandomVariableStream::SetStream(int64_t stream) [member function]
     cls.add_method('SetStream', 
                    'void', 
-                   [param('long int', 'stream')])
+                   [param('int64_t', 'stream')])
     ## random-variable-stream.h (module 'core'): int64_t ns3::RandomVariableStream::GetStream() const [member function]
     cls.add_method('GetStream', 
                    'int64_t', 
@@ -5460,7 +5460,7 @@ def register_Ns3SllHeader_methods(root_module, cls):
     ## sll-header.h (module 'network'): void ns3::SllHeader::SetArpType(uint16_t arphdType) [member function]
     cls.add_method('SetArpType', 
                    'void', 
-                   [param('short unsigned int', 'arphdType')])
+                   [param('uint16_t', 'arphdType')])
     ## sll-header.h (module 'network'): void ns3::SllHeader::SetPacketType(ns3::SllHeader::PacketType type) [member function]
     cls.add_method('SetPacketType', 
                    'void', 
@@ -5584,7 +5584,7 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): static uint8_t ns3::Socket::IpTos2Priority(uint8_t ipTos) [member function]
     cls.add_method('IpTos2Priority', 
                    'uint8_t', 
-                   [param('unsigned char', 'ipTos')], 
+                   [param('uint8_t', 'ipTos')], 
                    is_static=True)
     ## socket.h (module 'network'): void ns3::Socket::Ipv6JoinGroup(ns3::Ipv6Address address, ns3::Socket::Ipv6MulticastFilterMode filterMode, std::vector<ns3::Ipv6Address, std::allocator<ns3::Ipv6Address> > sourceAddresses) [member function]
     cls.add_method('Ipv6JoinGroup', 
@@ -5634,7 +5634,7 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::Recv(uint32_t maxSize, uint32_t flags) [member function]
     cls.add_method('Recv', 
                    'ns3::Ptr< ns3::Packet >', 
-                   [param('unsigned int', 'maxSize'), param('unsigned int', 'flags')], 
+                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], 
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::Recv() [member function]
     cls.add_method('Recv', 
@@ -5643,11 +5643,11 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): int ns3::Socket::Recv(uint8_t * buf, uint32_t size, uint32_t flags) [member function]
     cls.add_method('Recv', 
                    'int', 
-                   [param('uint8_t *', 'buf'), param('unsigned int', 'size'), param('unsigned int', 'flags')])
+                   [param('uint8_t *', 'buf'), param('uint32_t', 'size'), param('uint32_t', 'flags')])
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::RecvFrom(uint32_t maxSize, uint32_t flags, ns3::Address & fromAddress) [member function]
     cls.add_method('RecvFrom', 
                    'ns3::Ptr< ns3::Packet >', 
-                   [param('unsigned int', 'maxSize'), param('unsigned int', 'flags'), param('ns3::Address &', 'fromAddress')], 
+                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')], 
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Socket::RecvFrom(ns3::Address & fromAddress) [member function]
     cls.add_method('RecvFrom', 
@@ -5656,11 +5656,11 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): int ns3::Socket::RecvFrom(uint8_t * buf, uint32_t size, uint32_t flags, ns3::Address & fromAddress) [member function]
     cls.add_method('RecvFrom', 
                    'int', 
-                   [param('uint8_t *', 'buf'), param('unsigned int', 'size'), param('unsigned int', 'flags'), param('ns3::Address &', 'fromAddress')])
+                   [param('uint8_t *', 'buf'), param('uint32_t', 'size'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')])
     ## socket.h (module 'network'): int ns3::Socket::Send(ns3::Ptr<ns3::Packet> p, uint32_t flags) [member function]
     cls.add_method('Send', 
                    'int', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('unsigned int', 'flags')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], 
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::Send(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('Send', 
@@ -5669,16 +5669,16 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): int ns3::Socket::Send(uint8_t const * buf, uint32_t size, uint32_t flags) [member function]
     cls.add_method('Send', 
                    'int', 
-                   [param('uint8_t const *', 'buf'), param('unsigned int', 'size'), param('unsigned int', 'flags')])
+                   [param('uint8_t const *', 'buf'), param('uint32_t', 'size'), param('uint32_t', 'flags')])
     ## socket.h (module 'network'): int ns3::Socket::SendTo(ns3::Ptr<ns3::Packet> p, uint32_t flags, ns3::Address const & toAddress) [member function]
     cls.add_method('SendTo', 
                    'int', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('unsigned int', 'flags'), param('ns3::Address const &', 'toAddress')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address const &', 'toAddress')], 
                    is_pure_virtual=True, is_virtual=True)
     ## socket.h (module 'network'): int ns3::Socket::SendTo(uint8_t const * buf, uint32_t size, uint32_t flags, ns3::Address const & address) [member function]
     cls.add_method('SendTo', 
                    'int', 
-                   [param('uint8_t const *', 'buf'), param('unsigned int', 'size'), param('unsigned int', 'flags'), param('ns3::Address const &', 'address')])
+                   [param('uint8_t const *', 'buf'), param('uint32_t', 'size'), param('uint32_t', 'flags'), param('ns3::Address const &', 'address')])
     ## socket.h (module 'network'): void ns3::Socket::SetAcceptCallback(ns3::Callback<bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> connectionRequest, ns3::Callback<void, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> newConnectionCreated) [member function]
     cls.add_method('SetAcceptCallback', 
                    'void', 
@@ -5711,16 +5711,16 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::Socket::SetIpTos(uint8_t ipTos) [member function]
     cls.add_method('SetIpTos', 
                    'void', 
-                   [param('unsigned char', 'ipTos')])
+                   [param('uint8_t', 'ipTos')])
     ## socket.h (module 'network'): void ns3::Socket::SetIpTtl(uint8_t ipTtl) [member function]
     cls.add_method('SetIpTtl', 
                    'void', 
-                   [param('unsigned char', 'ipTtl')], 
+                   [param('uint8_t', 'ipTtl')], 
                    is_virtual=True)
     ## socket.h (module 'network'): void ns3::Socket::SetIpv6HopLimit(uint8_t ipHopLimit) [member function]
     cls.add_method('SetIpv6HopLimit', 
                    'void', 
-                   [param('unsigned char', 'ipHopLimit')], 
+                   [param('uint8_t', 'ipHopLimit')], 
                    is_virtual=True)
     ## socket.h (module 'network'): void ns3::Socket::SetIpv6RecvHopLimit(bool ipv6RecvHopLimit) [member function]
     cls.add_method('SetIpv6RecvHopLimit', 
@@ -5737,7 +5737,7 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::Socket::SetPriority(uint8_t priority) [member function]
     cls.add_method('SetPriority', 
                    'void', 
-                   [param('unsigned char', 'priority')])
+                   [param('uint8_t', 'priority')])
     ## socket.h (module 'network'): void ns3::Socket::SetRecvCallback(ns3::Callback<void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> arg0) [member function]
     cls.add_method('SetRecvCallback', 
                    'void', 
@@ -5803,7 +5803,7 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::Socket::NotifyDataSent(uint32_t size) [member function]
     cls.add_method('NotifyDataSent', 
                    'void', 
-                   [param('unsigned int', 'size')], 
+                   [param('uint32_t', 'size')], 
                    visibility='protected')
     ## socket.h (module 'network'): void ns3::Socket::NotifyErrorClose() [member function]
     cls.add_method('NotifyErrorClose', 
@@ -5823,7 +5823,7 @@ def register_Ns3Socket_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::Socket::NotifySend(uint32_t spaceAvailable) [member function]
     cls.add_method('NotifySend', 
                    'void', 
-                   [param('unsigned int', 'spaceAvailable')], 
+                   [param('uint32_t', 'spaceAvailable')], 
                    visibility='protected')
     return
 
@@ -5887,7 +5887,7 @@ def register_Ns3SocketIpTosTag_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::SocketIpTosTag::SetTos(uint8_t tos) [member function]
     cls.add_method('SetTos', 
                    'void', 
-                   [param('unsigned char', 'tos')])
+                   [param('uint8_t', 'tos')])
     return
 
 def register_Ns3SocketIpTtlTag_methods(root_module, cls):
@@ -5933,7 +5933,7 @@ def register_Ns3SocketIpTtlTag_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::SocketIpTtlTag::SetTtl(uint8_t ttl) [member function]
     cls.add_method('SetTtl', 
                    'void', 
-                   [param('unsigned char', 'ttl')])
+                   [param('uint8_t', 'ttl')])
     return
 
 def register_Ns3SocketIpv6HopLimitTag_methods(root_module, cls):
@@ -5979,7 +5979,7 @@ def register_Ns3SocketIpv6HopLimitTag_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::SocketIpv6HopLimitTag::SetHopLimit(uint8_t hopLimit) [member function]
     cls.add_method('SetHopLimit', 
                    'void', 
-                   [param('unsigned char', 'hopLimit')])
+                   [param('uint8_t', 'hopLimit')])
     return
 
 def register_Ns3SocketIpv6TclassTag_methods(root_module, cls):
@@ -6025,7 +6025,7 @@ def register_Ns3SocketIpv6TclassTag_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::SocketIpv6TclassTag::SetTclass(uint8_t tclass) [member function]
     cls.add_method('SetTclass', 
                    'void', 
-                   [param('unsigned char', 'tclass')])
+                   [param('uint8_t', 'tclass')])
     return
 
 def register_Ns3SocketPriorityTag_methods(root_module, cls):
@@ -6071,7 +6071,7 @@ def register_Ns3SocketPriorityTag_methods(root_module, cls):
     ## socket.h (module 'network'): void ns3::SocketPriorityTag::SetPriority(uint8_t priority) [member function]
     cls.add_method('SetPriority', 
                    'void', 
-                   [param('unsigned char', 'priority')])
+                   [param('uint8_t', 'priority')])
     return
 
 def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
@@ -6188,7 +6188,7 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromInteger', 
                    'ns3::Time', 
-                   [param('long unsigned int', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
     cls.add_method('GetDays', 
@@ -6412,7 +6412,7 @@ def register_Ns3TriangularRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::TriangularRandomVariable::GetInteger(uint32_t mean, uint32_t min, uint32_t max) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mean'), param('unsigned int', 'min'), param('unsigned int', 'max')])
+                   [param('uint32_t', 'mean'), param('uint32_t', 'min'), param('uint32_t', 'max')])
     ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -6450,7 +6450,7 @@ def register_Ns3UniformRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::UniformRandomVariable::GetInteger(uint32_t min, uint32_t max) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'min'), param('unsigned int', 'max')])
+                   [param('uint32_t', 'min'), param('uint32_t', 'max')])
     ## random-variable-stream.h (module 'core'): double ns3::UniformRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -6493,7 +6493,7 @@ def register_Ns3WeibullRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::WeibullRandomVariable::GetInteger(uint32_t scale, uint32_t shape, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'scale'), param('unsigned int', 'shape'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'scale'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -6526,7 +6526,7 @@ def register_Ns3ZetaRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ZetaRandomVariable::GetInteger(uint32_t alpha) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'alpha')])
+                   [param('uint32_t', 'alpha')])
     ## random-variable-stream.h (module 'core'): double ns3::ZetaRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -6560,11 +6560,11 @@ def register_Ns3ZipfRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetValue(uint32_t n, double alpha) [member function]
     cls.add_method('GetValue', 
                    'double', 
-                   [param('unsigned int', 'n'), param('double', 'alpha')])
+                   [param('uint32_t', 'n'), param('double', 'alpha')])
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ZipfRandomVariable::GetInteger(uint32_t n, uint32_t alpha) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'n'), param('unsigned int', 'alpha')])
+                   [param('uint32_t', 'n'), param('uint32_t', 'alpha')])
     ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -6888,7 +6888,7 @@ def register_Ns3Channel_methods(root_module, cls):
     ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
@@ -6927,7 +6927,7 @@ def register_Ns3ConstantRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ConstantRandomVariable::GetInteger(uint32_t constant) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'constant')])
+                   [param('uint32_t', 'constant')])
     ## random-variable-stream.h (module 'core'): double ns3::ConstantRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -7119,7 +7119,7 @@ def register_Ns3DeterministicRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): void ns3::DeterministicRandomVariable::SetValueArray(double * values, uint64_t length) [member function]
     cls.add_method('SetValueArray', 
                    'void', 
-                   [param('double *', 'values'), param('long unsigned int', 'length')])
+                   [param('double *', 'values'), param('uint64_t', 'length')])
     ## random-variable-stream.h (module 'core'): double ns3::DeterministicRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -7178,7 +7178,7 @@ def register_Ns3DynamicQueueLimits_methods(root_module, cls):
     ## dynamic-queue-limits.h (module 'network'): void ns3::DynamicQueueLimits::Completed(uint32_t count) [member function]
     cls.add_method('Completed', 
                    'void', 
-                   [param('unsigned int', 'count')], 
+                   [param('uint32_t', 'count')], 
                    is_virtual=True)
     ## dynamic-queue-limits.h (module 'network'): static ns3::TypeId ns3::DynamicQueueLimits::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -7188,7 +7188,7 @@ def register_Ns3DynamicQueueLimits_methods(root_module, cls):
     ## dynamic-queue-limits.h (module 'network'): void ns3::DynamicQueueLimits::Queued(uint32_t count) [member function]
     cls.add_method('Queued', 
                    'void', 
-                   [param('unsigned int', 'count')], 
+                   [param('uint32_t', 'count')], 
                    is_virtual=True)
     ## dynamic-queue-limits.h (module 'network'): void ns3::DynamicQueueLimits::Reset() [member function]
     cls.add_method('Reset', 
@@ -7416,11 +7416,11 @@ def register_Ns3ErlangRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetValue(uint32_t k, double lambda) [member function]
     cls.add_method('GetValue', 
                    'double', 
-                   [param('unsigned int', 'k'), param('double', 'lambda')])
+                   [param('uint32_t', 'k'), param('double', 'lambda')])
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ErlangRandomVariable::GetInteger(uint32_t k, uint32_t lambda) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'k'), param('unsigned int', 'lambda')])
+                   [param('uint32_t', 'k'), param('uint32_t', 'lambda')])
     ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -7550,11 +7550,11 @@ def register_Ns3EthernetHeader_methods(root_module, cls):
     ## ethernet-header.h (module 'network'): void ns3::EthernetHeader::SetLengthType(uint16_t size) [member function]
     cls.add_method('SetLengthType', 
                    'void', 
-                   [param('short unsigned int', 'size')])
+                   [param('uint16_t', 'size')])
     ## ethernet-header.h (module 'network'): void ns3::EthernetHeader::SetPreambleSfd(uint64_t preambleSfd) [member function]
     cls.add_method('SetPreambleSfd', 
                    'void', 
-                   [param('long unsigned int', 'preambleSfd')])
+                   [param('uint64_t', 'preambleSfd')])
     ## ethernet-header.h (module 'network'): void ns3::EthernetHeader::SetSource(ns3::Mac48Address source) [member function]
     cls.add_method('SetSource', 
                    'void', 
@@ -7622,7 +7622,7 @@ def register_Ns3EthernetTrailer_methods(root_module, cls):
     ## ethernet-trailer.h (module 'network'): void ns3::EthernetTrailer::SetFcs(uint32_t fcs) [member function]
     cls.add_method('SetFcs', 
                    'void', 
-                   [param('unsigned int', 'fcs')])
+                   [param('uint32_t', 'fcs')])
     return
 
 def register_Ns3EventImpl_methods(root_module, cls):
@@ -7674,7 +7674,7 @@ def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ExponentialRandomVariable::GetInteger(uint32_t mean, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mean'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'mean'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::ExponentialRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -7712,7 +7712,7 @@ def register_Ns3GammaRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::GammaRandomVariable::GetInteger(uint32_t alpha, uint32_t beta) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'alpha'), param('unsigned int', 'beta')])
+                   [param('uint32_t', 'alpha'), param('uint32_t', 'beta')])
     ## random-variable-stream.h (module 'core'): double ns3::GammaRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -7974,7 +7974,7 @@ def register_Ns3LogNormalRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::LogNormalRandomVariable::GetInteger(uint32_t mu, uint32_t sigma) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mu'), param('unsigned int', 'sigma')])
+                   [param('uint32_t', 'mu'), param('uint32_t', 'sigma')])
     ## random-variable-stream.h (module 'core'): double ns3::LogNormalRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -8265,12 +8265,12 @@ def register_Ns3NetDevice_methods(root_module, cls):
     ## net-device.h (module 'network'): bool ns3::NetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('short unsigned int', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): bool ns3::NetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('SendFrom', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('short unsigned int', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_pure_virtual=True, is_virtual=True)
     ## net-device.h (module 'network'): void ns3::NetDevice::SetAddress(ns3::Address address) [member function]
     cls.add_method('SetAddress', 
@@ -8326,11 +8326,11 @@ def register_Ns3NetDeviceQueue_methods(root_module, cls):
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueue::NotifyQueuedBytes(uint32_t bytes) [member function]
     cls.add_method('NotifyQueuedBytes', 
                    'void', 
-                   [param('unsigned int', 'bytes')])
+                   [param('uint32_t', 'bytes')])
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueue::NotifyTransmittedBytes(uint32_t bytes) [member function]
     cls.add_method('NotifyTransmittedBytes', 
                    'void', 
-                   [param('unsigned int', 'bytes')])
+                   [param('uint32_t', 'bytes')])
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueue::ResetQueueLimits() [member function]
     cls.add_method('ResetQueueLimits', 
                    'void', 
@@ -8388,7 +8388,7 @@ def register_Ns3NetDeviceQueueInterface_methods(root_module, cls):
     ## net-device-queue-interface.h (module 'network'): ns3::Ptr<ns3::NetDeviceQueue> ns3::NetDeviceQueueInterface::GetTxQueue(uint8_t i) const [member function]
     cls.add_method('GetTxQueue', 
                    'ns3::Ptr< ns3::NetDeviceQueue >', 
-                   [param('unsigned char', 'i')], 
+                   [param('uint8_t', 'i')], 
                    is_const=True)
     ## net-device-queue-interface.h (module 'network'): static ns3::TypeId ns3::NetDeviceQueueInterface::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -8406,7 +8406,7 @@ def register_Ns3NetDeviceQueueInterface_methods(root_module, cls):
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::SetTxQueuesN(uint8_t numTxQueues) [member function]
     cls.add_method('SetTxQueuesN', 
                    'void', 
-                   [param('unsigned char', 'numTxQueues')])
+                   [param('uint8_t', 'numTxQueues')])
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -8423,11 +8423,11 @@ def register_Ns3NixVector_methods(root_module, cls):
     ## nix-vector.h (module 'network'): void ns3::NixVector::AddNeighborIndex(uint32_t newBits, uint32_t numberOfBits) [member function]
     cls.add_method('AddNeighborIndex', 
                    'void', 
-                   [param('unsigned int', 'newBits'), param('unsigned int', 'numberOfBits')])
+                   [param('uint32_t', 'newBits'), param('uint32_t', 'numberOfBits')])
     ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::BitCount(uint32_t numberOfNeighbors) const [member function]
     cls.add_method('BitCount', 
                    'uint32_t', 
-                   [param('unsigned int', 'numberOfNeighbors')], 
+                   [param('uint32_t', 'numberOfNeighbors')], 
                    is_const=True)
     ## nix-vector.h (module 'network'): ns3::Ptr<ns3::NixVector> ns3::NixVector::Copy() const [member function]
     cls.add_method('Copy', 
@@ -8437,11 +8437,11 @@ def register_Ns3NixVector_methods(root_module, cls):
     ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::Deserialize(uint32_t const * buffer, uint32_t size) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
-                   [param('uint32_t const *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint32_t const *', 'buffer'), param('uint32_t', 'size')])
     ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::ExtractNeighborIndex(uint32_t numberOfBits) [member function]
     cls.add_method('ExtractNeighborIndex', 
                    'uint32_t', 
-                   [param('unsigned int', 'numberOfBits')])
+                   [param('uint32_t', 'numberOfBits')])
     ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::GetRemainingBits() [member function]
     cls.add_method('GetRemainingBits', 
                    'uint32_t', 
@@ -8454,7 +8454,7 @@ def register_Ns3NixVector_methods(root_module, cls):
     ## nix-vector.h (module 'network'): uint32_t ns3::NixVector::Serialize(uint32_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
                    'uint32_t', 
-                   [param('uint32_t *', 'buffer'), param('unsigned int', 'maxSize')], 
+                   [param('uint32_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     return
 
@@ -8481,12 +8481,12 @@ def register_Ns3Node_methods(root_module, cls):
     ## node.h (module 'network'): ns3::Ptr<ns3::Application> ns3::Node::GetApplication(uint32_t index) const [member function]
     cls.add_method('GetApplication', 
                    'ns3::Ptr< ns3::Application >', 
-                   [param('unsigned int', 'index')], 
+                   [param('uint32_t', 'index')], 
                    is_const=True)
     ## node.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Node::GetDevice(uint32_t index) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('unsigned int', 'index')], 
+                   [param('uint32_t', 'index')], 
                    is_const=True)
     ## node.h (module 'network'): uint32_t ns3::Node::GetId() const [member function]
     cls.add_method('GetId', 
@@ -8525,7 +8525,7 @@ def register_Ns3Node_methods(root_module, cls):
     ## node.h (module 'network'): void ns3::Node::RegisterProtocolHandler(ns3::Node::ProtocolHandler handler, uint16_t protocolType, ns3::Ptr<ns3::NetDevice> device, bool promiscuous=false) [member function]
     cls.add_method('RegisterProtocolHandler', 
                    'void', 
-                   [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'handler'), param('short unsigned int', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'promiscuous', default_value='false')])
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', 'handler'), param('uint16_t', 'protocolType'), param('ns3::Ptr< ns3::NetDevice >', 'device'), param('bool', 'promiscuous', default_value='false')])
     ## node.h (module 'network'): void ns3::Node::UnregisterDeviceAdditionListener(ns3::Node::DeviceAdditionListener listener) [member function]
     cls.add_method('UnregisterDeviceAdditionListener', 
                    'void', 
@@ -8578,7 +8578,7 @@ def register_Ns3NormalRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::NormalRandomVariable::GetInteger(uint32_t mean, uint32_t variance, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mean'), param('unsigned int', 'variance'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'mean'), param('uint32_t', 'variance'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -8677,7 +8677,7 @@ def register_Ns3Packet_methods(root_module, cls):
     ## packet.h (module 'network'): void ns3::Packet::AddPaddingAtEnd(uint32_t size) [member function]
     cls.add_method('AddPaddingAtEnd', 
                    'void', 
-                   [param('unsigned int', 'size')])
+                   [param('uint32_t', 'size')])
     ## packet.h (module 'network'): void ns3::Packet::AddTrailer(ns3::Trailer const & trailer) [member function]
     cls.add_method('AddTrailer', 
                    'void', 
@@ -8695,17 +8695,17 @@ def register_Ns3Packet_methods(root_module, cls):
     ## packet.h (module 'network'): uint32_t ns3::Packet::CopyData(uint8_t * buffer, uint32_t size) const [member function]
     cls.add_method('CopyData', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'size')], 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'size')], 
                    is_const=True)
     ## packet.h (module 'network'): void ns3::Packet::CopyData(std::ostream * os, uint32_t size) const [member function]
     cls.add_method('CopyData', 
                    'void', 
-                   [param('std::ostream *', 'os'), param('unsigned int', 'size')], 
+                   [param('std::ostream *', 'os'), param('uint32_t', 'size')], 
                    is_const=True)
     ## packet.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::Packet::CreateFragment(uint32_t start, uint32_t length) const [member function]
     cls.add_method('CreateFragment', 
                    'ns3::Ptr< ns3::Packet >', 
-                   [param('unsigned int', 'start'), param('unsigned int', 'length')], 
+                   [param('uint32_t', 'start'), param('uint32_t', 'length')], 
                    is_const=True)
     ## packet.h (module 'network'): static void ns3::Packet::EnableChecking() [member function]
     cls.add_method('EnableChecking', 
@@ -8792,11 +8792,11 @@ def register_Ns3Packet_methods(root_module, cls):
     ## packet.h (module 'network'): void ns3::Packet::RemoveAtEnd(uint32_t size) [member function]
     cls.add_method('RemoveAtEnd', 
                    'void', 
-                   [param('unsigned int', 'size')])
+                   [param('uint32_t', 'size')])
     ## packet.h (module 'network'): void ns3::Packet::RemoveAtStart(uint32_t size) [member function]
     cls.add_method('RemoveAtStart', 
                    'void', 
-                   [param('unsigned int', 'size')])
+                   [param('uint32_t', 'size')])
     ## packet.h (module 'network'): uint32_t ns3::Packet::RemoveHeader(ns3::Header & header) [member function]
     cls.add_method('RemoveHeader', 
                    'uint32_t', 
@@ -8816,7 +8816,7 @@ def register_Ns3Packet_methods(root_module, cls):
     ## packet.h (module 'network'): uint32_t ns3::Packet::Serialize(uint8_t * buffer, uint32_t maxSize) const [member function]
     cls.add_method('Serialize', 
                    'uint32_t', 
-                   [param('uint8_t *', 'buffer'), param('unsigned int', 'maxSize')], 
+                   [param('uint8_t *', 'buffer'), param('uint32_t', 'maxSize')], 
                    is_const=True)
     ## packet.h (module 'network'): void ns3::Packet::SetNixVector(ns3::Ptr<ns3::NixVector> nixVector) [member function]
     cls.add_method('SetNixVector', 
@@ -8937,22 +8937,22 @@ def register_Ns3PacketSocket_methods(root_module, cls):
     ## packet-socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::PacketSocket::Recv(uint32_t maxSize, uint32_t flags) [member function]
     cls.add_method('Recv', 
                    'ns3::Ptr< ns3::Packet >', 
-                   [param('unsigned int', 'maxSize'), param('unsigned int', 'flags')], 
+                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags')], 
                    is_virtual=True)
     ## packet-socket.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::PacketSocket::RecvFrom(uint32_t maxSize, uint32_t flags, ns3::Address & fromAddress) [member function]
     cls.add_method('RecvFrom', 
                    'ns3::Ptr< ns3::Packet >', 
-                   [param('unsigned int', 'maxSize'), param('unsigned int', 'flags'), param('ns3::Address &', 'fromAddress')], 
+                   [param('uint32_t', 'maxSize'), param('uint32_t', 'flags'), param('ns3::Address &', 'fromAddress')], 
                    is_virtual=True)
     ## packet-socket.h (module 'network'): int ns3::PacketSocket::Send(ns3::Ptr<ns3::Packet> p, uint32_t flags) [member function]
     cls.add_method('Send', 
                    'int', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('unsigned int', 'flags')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags')], 
                    is_virtual=True)
     ## packet-socket.h (module 'network'): int ns3::PacketSocket::SendTo(ns3::Ptr<ns3::Packet> p, uint32_t flags, ns3::Address const & toAddress) [member function]
     cls.add_method('SendTo', 
                    'int', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('unsigned int', 'flags'), param('ns3::Address const &', 'toAddress')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint32_t', 'flags'), param('ns3::Address const &', 'toAddress')], 
                    is_virtual=True)
     ## packet-socket.h (module 'network'): bool ns3::PacketSocket::SetAllowBroadcast(bool allowBroadcast) [member function]
     cls.add_method('SetAllowBroadcast', 
@@ -9099,7 +9099,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ParetoRandomVariable::GetInteger(uint32_t scale, uint32_t shape, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'scale'), param('unsigned int', 'shape'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'scale'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -9258,11 +9258,11 @@ def register_Ns3PbbAddressBlock_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbAddressBlock::PrefixPushBack(uint8_t prefix) [member function]
     cls.add_method('PrefixPushBack', 
                    'void', 
-                   [param('unsigned char', 'prefix')])
+                   [param('uint8_t', 'prefix')])
     ## packetbb.h (module 'network'): void ns3::PbbAddressBlock::PrefixPushFront(uint8_t prefix) [member function]
     cls.add_method('PrefixPushFront', 
                    'void', 
-                   [param('unsigned char', 'prefix')])
+                   [param('uint8_t', 'prefix')])
     ## packetbb.h (module 'network'): int ns3::PbbAddressBlock::PrefixSize() const [member function]
     cls.add_method('PrefixSize', 
                    'int', 
@@ -9595,11 +9595,11 @@ def register_Ns3PbbMessage_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbMessage::SetHopCount(uint8_t hopcount) [member function]
     cls.add_method('SetHopCount', 
                    'void', 
-                   [param('unsigned char', 'hopcount')])
+                   [param('uint8_t', 'hopcount')])
     ## packetbb.h (module 'network'): void ns3::PbbMessage::SetHopLimit(uint8_t hoplimit) [member function]
     cls.add_method('SetHopLimit', 
                    'void', 
-                   [param('unsigned char', 'hoplimit')])
+                   [param('uint8_t', 'hoplimit')])
     ## packetbb.h (module 'network'): void ns3::PbbMessage::SetOriginatorAddress(ns3::Address address) [member function]
     cls.add_method('SetOriginatorAddress', 
                    'void', 
@@ -9607,11 +9607,11 @@ def register_Ns3PbbMessage_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbMessage::SetSequenceNumber(uint16_t seqnum) [member function]
     cls.add_method('SetSequenceNumber', 
                    'void', 
-                   [param('short unsigned int', 'seqnum')])
+                   [param('uint16_t', 'seqnum')])
     ## packetbb.h (module 'network'): void ns3::PbbMessage::SetType(uint8_t type) [member function]
     cls.add_method('SetType', 
                    'void', 
-                   [param('unsigned char', 'type')])
+                   [param('uint8_t', 'type')])
     ## packetbb.h (module 'network'): ns3::Ptr<ns3::PbbTlv> ns3::PbbMessage::TlvBack() [member function]
     cls.add_method('TlvBack', 
                    'ns3::Ptr< ns3::PbbTlv >', 
@@ -9914,7 +9914,7 @@ def register_Ns3PbbPacket_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbPacket::SetSequenceNumber(uint16_t number) [member function]
     cls.add_method('SetSequenceNumber', 
                    'void', 
-                   [param('short unsigned int', 'number')])
+                   [param('uint16_t', 'number')])
     ## packetbb.h (module 'network'): ns3::Ptr<ns3::PbbTlv> ns3::PbbPacket::TlvBack() [member function]
     cls.add_method('TlvBack', 
                    'ns3::Ptr< ns3::PbbTlv >', 
@@ -10042,11 +10042,11 @@ def register_Ns3PbbTlv_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetType(uint8_t type) [member function]
     cls.add_method('SetType', 
                    'void', 
-                   [param('unsigned char', 'type')])
+                   [param('uint8_t', 'type')])
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetTypeExt(uint8_t type) [member function]
     cls.add_method('SetTypeExt', 
                    'void', 
-                   [param('unsigned char', 'type')])
+                   [param('uint8_t', 'type')])
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetValue(ns3::Buffer start) [member function]
     cls.add_method('SetValue', 
                    'void', 
@@ -10054,7 +10054,7 @@ def register_Ns3PbbTlv_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetValue(uint8_t const * buffer, uint32_t size) [member function]
     cls.add_method('SetValue', 
                    'void', 
-                   [param('uint8_t const *', 'buffer'), param('unsigned int', 'size')])
+                   [param('uint8_t const *', 'buffer'), param('uint32_t', 'size')])
     ## packetbb.h (module 'network'): uint8_t ns3::PbbTlv::GetIndexStart() const [member function]
     cls.add_method('GetIndexStart', 
                    'uint8_t', 
@@ -10083,12 +10083,12 @@ def register_Ns3PbbTlv_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetIndexStart(uint8_t index) [member function]
     cls.add_method('SetIndexStart', 
                    'void', 
-                   [param('unsigned char', 'index')], 
+                   [param('uint8_t', 'index')], 
                    visibility='protected')
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetIndexStop(uint8_t index) [member function]
     cls.add_method('SetIndexStop', 
                    'void', 
-                   [param('unsigned char', 'index')], 
+                   [param('uint8_t', 'index')], 
                    visibility='protected')
     ## packetbb.h (module 'network'): void ns3::PbbTlv::SetMultivalue(bool isMultivalue) [member function]
     cls.add_method('SetMultivalue', 
@@ -10310,7 +10310,7 @@ def register_Ns3RateErrorModel_methods(root_module, cls):
     ## error-model.h (module 'network'): int64_t ns3::RateErrorModel::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
-                   [param('long int', 'stream')])
+                   [param('int64_t', 'stream')])
     ## error-model.h (module 'network'): double ns3::RateErrorModel::GetRate() const [member function]
     cls.add_method('GetRate', 
                    'double', 
@@ -10414,7 +10414,7 @@ def register_Ns3SimpleChannel_methods(root_module, cls):
     ## simple-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
     ## simple-channel.h (module 'network'): uint32_t ns3::SimpleChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
@@ -10429,7 +10429,7 @@ def register_Ns3SimpleChannel_methods(root_module, cls):
     ## simple-channel.h (module 'network'): void ns3::SimpleChannel::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from, ns3::Ptr<ns3::SimpleNetDevice> sender) [member function]
     cls.add_method('Send', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('short unsigned int', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')], 
                    is_virtual=True)
     ## simple-channel.h (module 'network'): void ns3::SimpleChannel::UnBlackList(ns3::Ptr<ns3::SimpleNetDevice> from, ns3::Ptr<ns3::SimpleNetDevice> to) [member function]
     cls.add_method('UnBlackList', 
@@ -10531,16 +10531,16 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
     ## simple-net-device.h (module 'network'): void ns3::SimpleNetDevice::Receive(ns3::Ptr<ns3::Packet> packet, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from) [member function]
     cls.add_method('Receive', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('short unsigned int', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from')])
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from')])
     ## simple-net-device.h (module 'network'): bool ns3::SimpleNetDevice::Send(ns3::Ptr<ns3::Packet> packet, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('short unsigned int', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## simple-net-device.h (module 'network'): bool ns3::SimpleNetDevice::SendFrom(ns3::Ptr<ns3::Packet> packet, ns3::Address const & source, ns3::Address const & dest, uint16_t protocolNumber) [member function]
     cls.add_method('SendFrom', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('short unsigned int', 'protocolNumber')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'packet'), param('ns3::Address const &', 'source'), param('ns3::Address const &', 'dest'), param('uint16_t', 'protocolNumber')], 
                    is_virtual=True)
     ## simple-net-device.h (module 'network'): void ns3::SimpleNetDevice::SetAddress(ns3::Address address) [member function]
     cls.add_method('SetAddress', 
@@ -10782,7 +10782,7 @@ def register_Ns3BurstErrorModel_methods(root_module, cls):
     ## error-model.h (module 'network'): int64_t ns3::BurstErrorModel::AssignStreams(int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
-                   [param('long int', 'stream')])
+                   [param('int64_t', 'stream')])
     ## error-model.h (module 'network'): double ns3::BurstErrorModel::GetBurstRate() const [member function]
     cls.add_method('GetBurstRate', 
                    'double', 
@@ -11195,7 +11195,7 @@ def register_Ns3ErrorChannel_methods(root_module, cls):
     ## error-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::ErrorChannel::GetDevice(uint32_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True, is_virtual=True)
     ## error-channel.h (module 'network'): uint32_t ns3::ErrorChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
@@ -11210,7 +11210,7 @@ def register_Ns3ErrorChannel_methods(root_module, cls):
     ## error-channel.h (module 'network'): void ns3::ErrorChannel::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocol, ns3::Mac48Address to, ns3::Mac48Address from, ns3::Ptr<ns3::SimpleNetDevice> sender) [member function]
     cls.add_method('Send', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('short unsigned int', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')], 
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocol'), param('ns3::Mac48Address', 'to'), param('ns3::Mac48Address', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'sender')], 
                    is_virtual=True)
     ## error-channel.h (module 'network'): void ns3::ErrorChannel::SetDuplicateMode(bool mode) [member function]
     cls.add_method('SetDuplicateMode', 
@@ -11319,11 +11319,11 @@ def register_Ns3PbbAddressTlv_methods(root_module, cls):
     ## packetbb.h (module 'network'): void ns3::PbbAddressTlv::SetIndexStart(uint8_t index) [member function]
     cls.add_method('SetIndexStart', 
                    'void', 
-                   [param('unsigned char', 'index')])
+                   [param('uint8_t', 'index')])
     ## packetbb.h (module 'network'): void ns3::PbbAddressTlv::SetIndexStop(uint8_t index) [member function]
     cls.add_method('SetIndexStop', 
                    'void', 
-                   [param('unsigned char', 'index')])
+                   [param('uint8_t', 'index')])
     ## packetbb.h (module 'network'): void ns3::PbbAddressTlv::SetMultivalue(bool isMultivalue) [member function]
     cls.add_method('SetMultivalue', 
                    'void', 
@@ -11351,7 +11351,7 @@ def register_Ns3QueueDiscItem_methods(root_module, cls):
     ## queue-item.h (module 'network'): void ns3::QueueDiscItem::SetTxQueueIndex(uint8_t txq) [member function]
     cls.add_method('SetTxQueueIndex', 
                    'void', 
-                   [param('unsigned char', 'txq')])
+                   [param('uint8_t', 'txq')])
     ## queue-item.h (module 'network'): void ns3::QueueDiscItem::AddHeader() [member function]
     cls.add_method('AddHeader', 
                    'void', 

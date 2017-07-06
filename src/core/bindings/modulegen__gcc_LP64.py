@@ -1249,7 +1249,7 @@ def register_Ns3RandomVariableStreamHelper_methods(root_module, cls):
     ## random-variable-stream-helper.h (module 'core'): static int64_t ns3::RandomVariableStreamHelper::AssignStreams(std::string path, int64_t stream) [member function]
     cls.add_method('AssignStreams', 
                    'int64_t', 
-                   [param('std::string', 'path'), param('long int', 'stream')], 
+                   [param('std::string', 'path'), param('int64_t', 'stream')], 
                    is_static=True)
     return
 
@@ -1276,12 +1276,12 @@ def register_Ns3RngSeedManager_methods(root_module, cls):
     ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetRun(uint64_t run) [member function]
     cls.add_method('SetRun', 
                    'void', 
-                   [param('long unsigned int', 'run')], 
+                   [param('uint64_t', 'run')], 
                    is_static=True)
     ## rng-seed-manager.h (module 'core'): static void ns3::RngSeedManager::SetSeed(uint32_t seed) [member function]
     cls.add_method('SetSeed', 
                    'void', 
-                   [param('unsigned int', 'seed')], 
+                   [param('uint32_t', 'seed')], 
                    is_static=True)
     return
 
@@ -1422,7 +1422,7 @@ def register_Ns3SystemCondition_methods(root_module, cls):
     ## system-condition.h (module 'core'): bool ns3::SystemCondition::TimedWait(uint64_t ns) [member function]
     cls.add_method('TimedWait', 
                    'bool', 
-                   [param('long unsigned int', 'ns')])
+                   [param('uint64_t', 'ns')])
     ## system-condition.h (module 'core'): void ns3::SystemCondition::Wait() [member function]
     cls.add_method('Wait', 
                    'void', 
@@ -1584,7 +1584,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddAttribute(std::string name, std::string help, uint32_t flags, ns3::AttributeValue const & initialValue, ns3::Ptr<const ns3::AttributeAccessor> accessor, ns3::Ptr<const ns3::AttributeChecker> checker, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddAttribute', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('unsigned int', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SupportLevel::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('uint32_t', 'flags'), param('ns3::AttributeValue const &', 'initialValue'), param('ns3::Ptr< ns3::AttributeAccessor const >', 'accessor'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker'), param('ns3::TypeId::SupportLevel', 'supportLevel', default_value='::ns3::TypeId::SupportLevel::SUPPORTED'), param('std::string const &', 'supportMsg', default_value='""')])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -1596,12 +1596,12 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId::AttributeInformation ns3::TypeId::GetAttribute(uint32_t i) const [member function]
     cls.add_method('GetAttribute', 
                    'ns3::TypeId::AttributeInformation', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): std::string ns3::TypeId::GetAttributeFullName(uint32_t i) const [member function]
     cls.add_method('GetAttributeFullName', 
                    'std::string', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetAttributeN() const [member function]
     cls.add_method('GetAttributeN', 
@@ -1636,7 +1636,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): static ns3::TypeId ns3::TypeId::GetRegistered(uint32_t i) [member function]
     cls.add_method('GetRegistered', 
                    'ns3::TypeId', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_static=True)
     ## type-id.h (module 'core'): static uint32_t ns3::TypeId::GetRegisteredN() [member function]
     cls.add_method('GetRegisteredN', 
@@ -1651,7 +1651,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation ns3::TypeId::GetTraceSource(uint32_t i) const [member function]
     cls.add_method('GetTraceSource', 
                    'ns3::TypeId::TraceSourceInformation', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## type-id.h (module 'core'): uint32_t ns3::TypeId::GetTraceSourceN() const [member function]
     cls.add_method('GetTraceSourceN', 
@@ -1720,7 +1720,7 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): bool ns3::TypeId::SetAttributeInitialValue(uint32_t i, ns3::Ptr<const ns3::AttributeValue> initialValue) [member function]
     cls.add_method('SetAttributeInitialValue', 
                    'bool', 
-                   [param('unsigned int', 'i'), param('ns3::Ptr< ns3::AttributeValue const >', 'initialValue')])
+                   [param('uint32_t', 'i'), param('ns3::Ptr< ns3::AttributeValue const >', 'initialValue')])
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetGroupName(std::string groupName) [member function]
     cls.add_method('SetGroupName', 
                    'ns3::TypeId', 
@@ -1732,11 +1732,11 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::SetSize(std::size_t size) [member function]
     cls.add_method('SetSize', 
                    'ns3::TypeId', 
-                   [param('long unsigned int', 'size')])
+                   [param('std::size_t', 'size')])
     ## type-id.h (module 'core'): void ns3::TypeId::SetUid(uint16_t uid) [member function]
     cls.add_method('SetUid', 
                    'void', 
-                   [param('short unsigned int', 'uid')])
+                   [param('uint16_t', 'uid')])
     return
 
 def register_Ns3TypeIdAttributeInformation_methods(root_module, cls):
@@ -1925,7 +1925,7 @@ def register_Ns3DesMetrics_methods(root_module, cls):
     ## des-metrics.h (module 'core'): void ns3::DesMetrics::TraceWithContext(uint32_t context, ns3::Time const & now, ns3::Time const & delay) [member function]
     cls.add_method('TraceWithContext', 
                    'void', 
-                   [param('unsigned int', 'context'), param('ns3::Time const &', 'now'), param('ns3::Time const &', 'delay')])
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'now'), param('ns3::Time const &', 'delay')])
     ## des-metrics.h (module 'core'): ns3::DesMetrics::DesMetrics() [constructor]
     cls.add_constructor([])
     return
@@ -2017,7 +2017,7 @@ def register_Ns3RandomVariableStream_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): void ns3::RandomVariableStream::SetStream(int64_t stream) [member function]
     cls.add_method('SetStream', 
                    'void', 
-                   [param('long int', 'stream')])
+                   [param('int64_t', 'stream')])
     ## random-variable-stream.h (module 'core'): int64_t ns3::RandomVariableStream::GetStream() const [member function]
     cls.add_method('GetStream', 
                    'int64_t', 
@@ -2357,7 +2357,7 @@ def register_Ns3SimulatorImpl_methods(root_module, cls):
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
-                   [param('unsigned int', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_pure_virtual=True, is_virtual=True)
     ## simulator-impl.h (module 'core'): void ns3::SimulatorImpl::SetScheduler(ns3::ObjectFactory schedulerFactory) [member function]
     cls.add_method('SetScheduler', 
@@ -2396,7 +2396,7 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     ## synchronizer.h (module 'core'): int64_t ns3::Synchronizer::GetDrift(uint64_t ts) [member function]
     cls.add_method('GetDrift', 
                    'int64_t', 
-                   [param('long unsigned int', 'ts')])
+                   [param('uint64_t', 'ts')])
     ## synchronizer.h (module 'core'): uint64_t ns3::Synchronizer::GetOrigin() [member function]
     cls.add_method('GetOrigin', 
                    'uint64_t', 
@@ -2417,7 +2417,7 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::SetOrigin(uint64_t ts) [member function]
     cls.add_method('SetOrigin', 
                    'void', 
-                   [param('long unsigned int', 'ts')])
+                   [param('uint64_t', 'ts')])
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::Signal() [member function]
     cls.add_method('Signal', 
                    'void', 
@@ -2425,7 +2425,7 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     ## synchronizer.h (module 'core'): bool ns3::Synchronizer::Synchronize(uint64_t tsCurrent, uint64_t tsDelay) [member function]
     cls.add_method('Synchronize', 
                    'bool', 
-                   [param('long unsigned int', 'tsCurrent'), param('long unsigned int', 'tsDelay')])
+                   [param('uint64_t', 'tsCurrent'), param('uint64_t', 'tsDelay')])
     ## synchronizer.h (module 'core'): uint64_t ns3::Synchronizer::DoEventEnd() [member function]
     cls.add_method('DoEventEnd', 
                    'uint64_t', 
@@ -2444,7 +2444,7 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     ## synchronizer.h (module 'core'): int64_t ns3::Synchronizer::DoGetDrift(uint64_t ns) [member function]
     cls.add_method('DoGetDrift', 
                    'int64_t', 
-                   [param('long unsigned int', 'ns')], 
+                   [param('uint64_t', 'ns')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## synchronizer.h (module 'core'): bool ns3::Synchronizer::DoRealtime() [member function]
     cls.add_method('DoRealtime', 
@@ -2459,7 +2459,7 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSetOrigin(uint64_t ns) [member function]
     cls.add_method('DoSetOrigin', 
                    'void', 
-                   [param('long unsigned int', 'ns')], 
+                   [param('uint64_t', 'ns')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## synchronizer.h (module 'core'): void ns3::Synchronizer::DoSignal() [member function]
     cls.add_method('DoSignal', 
@@ -2469,7 +2469,7 @@ def register_Ns3Synchronizer_methods(root_module, cls):
     ## synchronizer.h (module 'core'): bool ns3::Synchronizer::DoSynchronize(uint64_t nsCurrent, uint64_t nsDelay) [member function]
     cls.add_method('DoSynchronize', 
                    'bool', 
-                   [param('long unsigned int', 'nsCurrent'), param('long unsigned int', 'nsDelay')], 
+                   [param('uint64_t', 'nsCurrent'), param('uint64_t', 'nsDelay')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     return
 
@@ -2562,7 +2562,7 @@ def register_Ns3Time_methods(root_module, cls):
     ## nstime.h (module 'core'): static ns3::Time ns3::Time::FromInteger(uint64_t value, ns3::Time::Unit unit) [member function]
     cls.add_method('FromInteger', 
                    'ns3::Time', 
-                   [param('long unsigned int', 'value'), param('ns3::Time::Unit', 'unit')], 
+                   [param('uint64_t', 'value'), param('ns3::Time::Unit', 'unit')], 
                    is_static=True)
     ## nstime.h (module 'core'): double ns3::Time::GetDays() const [member function]
     cls.add_method('GetDays', 
@@ -2753,7 +2753,7 @@ def register_Ns3TriangularRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::TriangularRandomVariable::GetInteger(uint32_t mean, uint32_t min, uint32_t max) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mean'), param('unsigned int', 'min'), param('unsigned int', 'max')])
+                   [param('uint32_t', 'mean'), param('uint32_t', 'min'), param('uint32_t', 'max')])
     ## random-variable-stream.h (module 'core'): double ns3::TriangularRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -2791,7 +2791,7 @@ def register_Ns3UniformRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::UniformRandomVariable::GetInteger(uint32_t min, uint32_t max) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'min'), param('unsigned int', 'max')])
+                   [param('uint32_t', 'min'), param('uint32_t', 'max')])
     ## random-variable-stream.h (module 'core'): double ns3::UniformRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -2838,7 +2838,7 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
     ## wall-clock-synchronizer.h (module 'core'): int64_t ns3::WallClockSynchronizer::DoGetDrift(uint64_t ns) [member function]
     cls.add_method('DoGetDrift', 
                    'int64_t', 
-                   [param('long unsigned int', 'ns')], 
+                   [param('uint64_t', 'ns')], 
                    visibility='protected', is_virtual=True)
     ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::DoRealtime() [member function]
     cls.add_method('DoRealtime', 
@@ -2853,7 +2853,7 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
     ## wall-clock-synchronizer.h (module 'core'): void ns3::WallClockSynchronizer::DoSetOrigin(uint64_t ns) [member function]
     cls.add_method('DoSetOrigin', 
                    'void', 
-                   [param('long unsigned int', 'ns')], 
+                   [param('uint64_t', 'ns')], 
                    visibility='protected', is_virtual=True)
     ## wall-clock-synchronizer.h (module 'core'): void ns3::WallClockSynchronizer::DoSignal() [member function]
     cls.add_method('DoSignal', 
@@ -2863,12 +2863,12 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
     ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::DoSynchronize(uint64_t nsCurrent, uint64_t nsDelay) [member function]
     cls.add_method('DoSynchronize', 
                    'bool', 
-                   [param('long unsigned int', 'nsCurrent'), param('long unsigned int', 'nsDelay')], 
+                   [param('uint64_t', 'nsCurrent'), param('uint64_t', 'nsDelay')], 
                    visibility='protected', is_virtual=True)
     ## wall-clock-synchronizer.h (module 'core'): uint64_t ns3::WallClockSynchronizer::DriftCorrect(uint64_t nsNow, uint64_t nsDelay) [member function]
     cls.add_method('DriftCorrect', 
                    'uint64_t', 
-                   [param('long unsigned int', 'nsNow'), param('long unsigned int', 'nsDelay')], 
+                   [param('uint64_t', 'nsNow'), param('uint64_t', 'nsDelay')], 
                    visibility='protected')
     ## wall-clock-synchronizer.h (module 'core'): uint64_t ns3::WallClockSynchronizer::GetNormalizedRealtime() [member function]
     cls.add_method('GetNormalizedRealtime', 
@@ -2883,17 +2883,17 @@ def register_Ns3WallClockSynchronizer_methods(root_module, cls):
     ## wall-clock-synchronizer.h (module 'core'): void ns3::WallClockSynchronizer::NsToTimeval(int64_t ns, timeval * tv) [member function]
     cls.add_method('NsToTimeval', 
                    'void', 
-                   [param('long int', 'ns'), param('timeval *', 'tv')], 
+                   [param('int64_t', 'ns'), param('timeval *', 'tv')], 
                    visibility='protected')
     ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::SleepWait(uint64_t ns) [member function]
     cls.add_method('SleepWait', 
                    'bool', 
-                   [param('long unsigned int', 'ns')], 
+                   [param('uint64_t', 'ns')], 
                    visibility='protected')
     ## wall-clock-synchronizer.h (module 'core'): bool ns3::WallClockSynchronizer::SpinWait(uint64_t ns) [member function]
     cls.add_method('SpinWait', 
                    'bool', 
-                   [param('long unsigned int', 'ns')], 
+                   [param('uint64_t', 'ns')], 
                    visibility='protected')
     ## wall-clock-synchronizer.h (module 'core'): void ns3::WallClockSynchronizer::TimevalAdd(timeval * tv1, timeval * tv2, timeval * result) [member function]
     cls.add_method('TimevalAdd', 
@@ -2937,7 +2937,7 @@ def register_Ns3WeibullRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::WeibullRandomVariable::GetInteger(uint32_t scale, uint32_t shape, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'scale'), param('unsigned int', 'shape'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'scale'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::WeibullRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -2970,7 +2970,7 @@ def register_Ns3ZetaRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ZetaRandomVariable::GetInteger(uint32_t alpha) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'alpha')])
+                   [param('uint32_t', 'alpha')])
     ## random-variable-stream.h (module 'core'): double ns3::ZetaRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3004,11 +3004,11 @@ def register_Ns3ZipfRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetValue(uint32_t n, double alpha) [member function]
     cls.add_method('GetValue', 
                    'double', 
-                   [param('unsigned int', 'n'), param('double', 'alpha')])
+                   [param('uint32_t', 'n'), param('double', 'alpha')])
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ZipfRandomVariable::GetInteger(uint32_t n, uint32_t alpha) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'n'), param('unsigned int', 'alpha')])
+                   [param('uint32_t', 'n'), param('uint32_t', 'alpha')])
     ## random-variable-stream.h (module 'core'): double ns3::ZipfRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3231,7 +3231,7 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, visibility='protected', template_parameters=[u'std::string'])
+                   is_static=True, visibility='protected', template_parameters=[u'std::__cxx11::basic_string<char', u' std::char_traits<char>', u' std::allocator<char> > '])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -3297,7 +3297,7 @@ def register_Ns3ConstantRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ConstantRandomVariable::GetInteger(uint32_t constant) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'constant')])
+                   [param('uint32_t', 'constant')])
     ## random-variable-stream.h (module 'core'): double ns3::ConstantRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3393,7 +3393,7 @@ def register_Ns3DefaultSimulatorImpl_methods(root_module, cls):
     ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
-                   [param('unsigned int', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
     ## default-simulator-impl.h (module 'core'): void ns3::DefaultSimulatorImpl::SetScheduler(ns3::ObjectFactory schedulerFactory) [member function]
     cls.add_method('SetScheduler', 
@@ -3428,7 +3428,7 @@ def register_Ns3DeterministicRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): void ns3::DeterministicRandomVariable::SetValueArray(double * values, uint64_t length) [member function]
     cls.add_method('SetValueArray', 
                    'void', 
-                   [param('double *', 'values'), param('long unsigned int', 'length')])
+                   [param('double *', 'values'), param('uint64_t', 'length')])
     ## random-variable-stream.h (module 'core'): double ns3::DeterministicRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3693,11 +3693,11 @@ def register_Ns3ErlangRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetValue(uint32_t k, double lambda) [member function]
     cls.add_method('GetValue', 
                    'double', 
-                   [param('unsigned int', 'k'), param('double', 'lambda')])
+                   [param('uint32_t', 'k'), param('double', 'lambda')])
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ErlangRandomVariable::GetInteger(uint32_t k, uint32_t lambda) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'k'), param('unsigned int', 'lambda')])
+                   [param('uint32_t', 'k'), param('uint32_t', 'lambda')])
     ## random-variable-stream.h (module 'core'): double ns3::ErlangRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3759,7 +3759,7 @@ def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ExponentialRandomVariable::GetInteger(uint32_t mean, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mean'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'mean'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::ExponentialRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3817,7 +3817,7 @@ def register_Ns3GammaRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::GammaRandomVariable::GetInteger(uint32_t alpha, uint32_t beta) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'alpha'), param('unsigned int', 'beta')])
+                   [param('uint32_t', 'alpha'), param('uint32_t', 'beta')])
     ## random-variable-stream.h (module 'core'): double ns3::GammaRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -3962,7 +3962,7 @@ def register_Ns3LogNormalRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::LogNormalRandomVariable::GetInteger(uint32_t mu, uint32_t sigma) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mu'), param('unsigned int', 'sigma')])
+                   [param('uint32_t', 'mu'), param('uint32_t', 'sigma')])
     ## random-variable-stream.h (module 'core'): double ns3::LogNormalRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -4044,7 +4044,7 @@ def register_Ns3NormalRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::NormalRandomVariable::GetInteger(uint32_t mean, uint32_t variance, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'mean'), param('unsigned int', 'variance'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'mean'), param('uint32_t', 'variance'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::NormalRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -4125,7 +4125,7 @@ def register_Ns3ObjectPtrContainerAccessor_methods(root_module, cls):
     ## object-ptr-container.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectPtrContainerAccessor::DoGet(ns3::ObjectBase const * object, uint32_t i, uint32_t * index) const [member function]
     cls.add_method('DoGet', 
                    'ns3::Ptr< ns3::Object >', 
-                   [param('ns3::ObjectBase const *', 'object'), param('unsigned int', 'i'), param('uint32_t *', 'index')], 
+                   [param('ns3::ObjectBase const *', 'object'), param('uint32_t', 'i'), param('uint32_t *', 'index')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     ## object-ptr-container.h (module 'core'): bool ns3::ObjectPtrContainerAccessor::DoGetN(ns3::ObjectBase const * object, uint32_t * n) const [member function]
     cls.add_method('DoGetN', 
@@ -4174,7 +4174,7 @@ def register_Ns3ObjectPtrContainerValue_methods(root_module, cls):
     ## object-ptr-container.h (module 'core'): ns3::Ptr<ns3::Object> ns3::ObjectPtrContainerValue::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'ns3::Ptr< ns3::Object >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## object-ptr-container.h (module 'core'): uint32_t ns3::ObjectPtrContainerValue::GetN() const [member function]
     cls.add_method('GetN', 
@@ -4223,7 +4223,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     ## random-variable-stream.h (module 'core'): uint32_t ns3::ParetoRandomVariable::GetInteger(uint32_t scale, uint32_t shape, uint32_t bound) [member function]
     cls.add_method('GetInteger', 
                    'uint32_t', 
-                   [param('unsigned int', 'scale'), param('unsigned int', 'shape'), param('unsigned int', 'bound')])
+                   [param('uint32_t', 'scale'), param('uint32_t', 'shape'), param('uint32_t', 'bound')])
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetValue() [member function]
     cls.add_method('GetValue', 
                    'double', 
@@ -4387,15 +4387,15 @@ def register_Ns3RealtimeSimulatorImpl_methods(root_module, cls):
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtimeNowWithContext(uint32_t context, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleRealtimeNowWithContext', 
                    'void', 
-                   [param('unsigned int', 'context'), param('ns3::EventImpl *', 'event')])
+                   [param('uint32_t', 'context'), param('ns3::EventImpl *', 'event')])
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleRealtimeWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleRealtimeWithContext', 
                    'void', 
-                   [param('unsigned int', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')])
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')])
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::ScheduleWithContext(uint32_t context, ns3::Time const & delay, ns3::EventImpl * event) [member function]
     cls.add_method('ScheduleWithContext', 
                    'void', 
-                   [param('unsigned int', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
+                   [param('uint32_t', 'context'), param('ns3::Time const &', 'delay'), param('ns3::EventImpl *', 'event')], 
                    is_virtual=True)
     ## realtime-simulator-impl.h (module 'core'): void ns3::RealtimeSimulatorImpl::SetHardLimit(ns3::Time limit) [member function]
     cls.add_method('SetHardLimit', 
@@ -4784,12 +4784,12 @@ def register_Ns3ConfigMatchContainer_methods(root_module, cls):
     ## config.h (module 'core'): ns3::Ptr<ns3::Object> ns3::Config::MatchContainer::Get(uint32_t i) const [member function]
     cls.add_method('Get', 
                    'ns3::Ptr< ns3::Object >', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## config.h (module 'core'): std::string ns3::Config::MatchContainer::GetMatchedPath(uint32_t i) const [member function]
     cls.add_method('GetMatchedPath', 
                    'std::string', 
-                   [param('unsigned int', 'i')], 
+                   [param('uint32_t', 'i')], 
                    is_const=True)
     ## config.h (module 'core'): uint32_t ns3::Config::MatchContainer::GetN() const [member function]
     cls.add_method('GetN', 
