@@ -11,6 +11,89 @@
 IPv4
 ----
 
+This chapter describes the |ns3| IPv4 address assignment and basic components tracking.
+
+IPv4 addresses assignment
+*************************
+
+In order to use IPv4 on a network, the first thing to do is assigning IPv4 addresses.
+
+Any IPv4-enabled |ns3| node will have at least one NetDevice: the :cpp:class:`ns3::LoopbackNetDevice`.
+The loopback device address is ``127.0.0.1``.
+All the other NetDevices will have one (or more) IPv4 addresses.
+
+Note that, as today, |ns3| does not have a NAT module, and it does not follows the rules about
+filtering private addresses (:rfc:`1918`): 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16.
+These addresses are routed as any other address. This behaviour could change in the future.
+
+IPv4 global addresses can be:
+
+* manually assigned
+* assigned though DHCP
+
+|ns3| can use both methods, and it's quite important to understand the implications of both.
+
+Manually assigned IPv4 adddresses
++++++++++++++++++++++++++++++++++
+
+This is probably the easiest and most used method. As an example:
+
+::
+
+    Ptr<Node> n0 = CreateObject<Node> ();
+    Ptr<Node> n1 = CreateObject<Node> ();
+    NodeContainer net (n0, n1);
+    CsmaHelper csma;
+    NetDeviceContainer ndc = csma.Install (net); 
+    
+    NS_LOG_INFO ("Assign IPv4 Addresses.");
+    Ipv4AddressHelper ipv4;
+    ipv4.SetBase (Ipv4Address ("192.168.1.0"), NetMask ("/24"));
+    Ipv4InterfaceContainer ic = ipv4.Assign (ndc);
+
+This method will add two global IPv4 addresses to the nodes.
+
+Note that the addesses are assigned in sequence. As a consequence, the first Node / NetDevice 
+will have "192.168.1.1", the second "192.168.1.2" and so on.
+
+It is possible to repeat the above to assign more than one address to a node.
+However, due to the :cpp:class:`Ipv4AddressHelper` singleton nature, one should first assign all the
+adddresses of a network, then change the network base (``SetBase``), then do a new assignment.
+
+Alternatively, it is possible to assign a specific address to a node:
+
+::
+
+    Ptr<Node> n0 = CreateObject<Node> ();
+    NodeContainer net (n0);
+    CsmaHelper csma;
+    NetDeviceContainer ndc = csma.Install (net); 
+
+    NS_LOG_INFO ("Specifically Assign an IPv4 Address.");
+    Ipv4AddressHelper ipv4;
+    Ptr<NetDevice> device = ndc.Get (0);
+    Ptr<Node> node = device->GetNode ();
+    Ptr<Ipv4> ipv4proto = node->GetObject<Ipv4> ();
+    int32_t ifIndex = 0;
+    ifIndex = ipv4proto->GetInterfaceForDevice (device);
+    Ipv4InterfaceAddress ipv4Addr = Ipv4InterfaceAddress (Ipv4Address ("192.168.1.42"), NetMask ("/24"));
+    ipv4proto->AddAddress (ifIndex, ipv4Addr);
+
+
+DHCP assigned IPv4 adddresses
++++++++++++++++++++++++++++++
+
+DHCP is available in the internet-apps module. In order to use DHCP you have to have a 
+:cpp:class:`DhcpServer` application in a node (the DHC server node) and a :cpp:class:`DhcpClient` application in
+each of the nodes. Note that it not necessary that all the nodes in a subnet use DHCP. Some
+nodes can have static addresses.
+
+All the DHCP setup is performed though the :cpp:class:`DhcpHelper`  class. A complete example is in
+``src/internet-apps/examples/dhcp-example.cc``.
+
+Further info about the DHCP functionalities can be found in the ``internet-apps`` model documentation.
+
+
 Tracing in the IPv4 Stack
 *************************
 

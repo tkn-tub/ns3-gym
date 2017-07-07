@@ -161,7 +161,7 @@ Note that the global addesses will be derived from the MAC address. As a consequ
 to have addresses similar to ``2001:db8::200:ff:fe00:1``.
 
 It is possible to repeat the above to assign more than one global address to a node.
-However, due to the ``Ipv6AddressHelper`` singleton nature, one should first assign all the
+However, due to the :cpp:class:`Ipv6AddressHelper` singleton nature, one should first assign all the
 adddresses of a network, then change the network base (``SetBase``), then do a new assignment.
 
 Alternatively, it is possible to assign a specific address to a node:
