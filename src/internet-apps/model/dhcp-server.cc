@@ -38,6 +38,7 @@
 #include "dhcp-header.h"
 #include "ns3/ipv4.h"
 #include <map>
+#include <algorithm>
 
 namespace ns3 {
 
@@ -252,7 +253,6 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
   Address sourceChaddr = header.GetChaddr ();
   uint32_t tran = header.GetTran ();
   Ptr<Packet> packet = 0;
-  bool found = false;
   Ipv4Address offeredAddress;
 
   NS_LOG_INFO ("DHCP DISCOVER from: " << from.GetIpv4 () << " source port: " <<  from.GetPort ());
@@ -276,7 +276,6 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
       if (!m_availableAddresses.empty ())
         {
           // use an address never used before (if there is one)
-          found = true;
           offeredAddress = m_availableAddresses.front ();
           m_availableAddresses.pop_front ();
         }
@@ -289,7 +288,6 @@ void DhcpServer::SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAd
               m_expiredAddresses.pop_back ();
               offeredAddress = m_leasedAddresses[oldestChaddr].first;
               m_leasedAddresses.erase (oldestChaddr);
-              found = true;
             }
         }
     }
