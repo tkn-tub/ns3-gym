@@ -72,13 +72,13 @@ protected:
 private:
   static const int PORT = 67;                       //!< Port number of DHCP server
 
-  /*
+  /**
    * \brief Handles incoming packets from the network
    * \param socket Socket bound to port 67 of the DHCP server
    */
   void NetHandler (Ptr<Socket> socket);
 
-  /*
+  /**
    * \brief Sends DHCP offer after receiving DHCP Discover
    * \param iDev incoming NetDevice
    * \param header DHCP header of the received message
@@ -86,7 +86,7 @@ private:
    */
   void SendOffer (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress from);
 
-  /*
+  /**
    * \brief Sends DHCP ACK (or NACK) after receiving Request
    * \param iDev incoming NetDevice
    * \param header DHCP header of the received message
@@ -94,17 +94,17 @@ private:
    */
   void SendAck (Ptr<NetDevice> iDev, DhcpHeader header, InetSocketAddress from);
 
-  /*
+  /**
    * \brief Modifies the remaining lease time of addresses
    */
   void TimerHandler (void);
 
-  /*
+  /**
    * \brief Starts the DHCP Server application
    */
   virtual void StartApplication (void);
 
-  /*
+  /**
    * \brief Stops the DHCP client application
    */
   virtual void StopApplication (void);

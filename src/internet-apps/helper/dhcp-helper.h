@@ -61,14 +61,14 @@ public:
 
   /**
    * \brief Install DHCP client of a nodes / NetDevice
-   * \param netDevice The NetDevice on which DHCP client application has to be installed
+   * \param netDevice The NetDevice that the DHCP client will use
    * \return The application container with DHCP client installed
    */
   ApplicationContainer InstallDhcpClient (Ptr<NetDevice> netDevice) const;
 
   /**
    * \brief Install DHCP client of a set of nodes / NetDevices
-   * \param netDevices The NetDevices on which DHCP client application has to be installed
+   * \param netDevices The NetDevices that the DHCP client will use
    * \return The application container with DHCP client installed
    */
   ApplicationContainer InstallDhcpClient (NetDeviceContainer netDevices) const;
@@ -95,15 +95,16 @@ public:
   /**
    * \brief Assign a fixed IP addresses to a net device.
    * \param netDevice The NetDevice on which the address has to be installed
-   * \param serverAddr The Ipv4Address
-   * \param poolMask The network mask
+   * \param addr The Ipv4Address
+   * \param mask The network mask
+   * \return the Ipv4 interface container
    */
   Ipv4InterfaceContainer InstallFixedAddress (Ptr<NetDevice> netDevice, Ipv4Address addr, Ipv4Mask mask);
 
 private:
   /**
    * \brief Function to install DHCP client on a node
-   * \param node The node on which DHCP client application has to be installed
+   * \param netDevice The NetDevice on which DHCP client application has to be installed
    * \return The pointer to the installed DHCP client
    */
   Ptr<Application> InstallDhcpClientPriv (Ptr<NetDevice> netDevice) const;

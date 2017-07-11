@@ -96,6 +96,7 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  /// client states
   enum States
   {
     WAIT_OFFER = 1,             //!< State of a client that waits for the offer
@@ -115,39 +116,39 @@ private:
    */
   virtual void StopApplication (void);
 
-  /*
+  /**
    * \brief Handles changes in LinkState
    */
   void LinkStateHandler (void);
 
-  /*
+  /**
    * \brief Handles incoming packets from the network
    * \param socket Socket bound to port 68 of the DHCP client
    */
   void NetHandler (Ptr<Socket> socket);
 
-  /*
+  /**
    * \brief Sends DHCP DISCOVER and changes the client state to WAIT_OFFER
    */
   void Boot (void);
 
-  /*
+  /**
    * \brief Stores DHCP offers in m_offerList
    * \param header DhcpHeader of the DHCP OFFER message
    */
   void OfferHandler (DhcpHeader header);
 
-  /*
+  /**
    * \brief Selects an OFFER from m_offerList
    */
   void Select (void);
 
-  /*
+  /**
    * \brief Sends the DHCP REQUEST message and changes the client state to WAIT_ACK
    */
   void Request (void);
 
-  /*
+  /**
    * \brief Receives the DHCP ACK and configures IP address of the client.
    *        It also triggers the timeout, renew and rebind events.
    * \param header DhcpHeader of the DHCP ACK message
@@ -155,7 +156,7 @@ private:
    */
   void AcceptAck (DhcpHeader header, Address from);
 
-  /*
+  /**
    * \brief Remove the current DHCP information and restart the process
    */
   void RemoveAndStart ();

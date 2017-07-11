@@ -99,6 +99,7 @@ public:
    */
   ~DhcpHeader ();
 
+  /// BOOTP options
   enum Options
   {
     OP_MASK = 1,        //!< BOOTP Option 1: Address Mask
@@ -112,6 +113,7 @@ public:
     OP_END = 255        //!< BOOTP Option 255: END
   };
 
+  /// DHCP messages
   enum Messages
   {
     DHCPDISCOVER = 0,     //!< Code for DHCP Discover

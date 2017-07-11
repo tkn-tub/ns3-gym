@@ -51,6 +51,7 @@ public:
   virtual ~DhcpTestCase ();
   /**
    * Triggered by an address lease on a client.
+   * \param context The test name.
    * \param newAddress The leased address.
    */
   void LeaseObtained (std::string context, const Ipv4Address& newAddress);
