@@ -72,11 +72,12 @@ public:
 
   /**
    * \brief Lookup for address and port.
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param addr address to test
    * \param port port to test
    * \return true if there is a match in EndPoints, false otherwise
    */
-  bool LookupLocal (Ipv4Address addr, uint16_t port);
+  bool LookupLocal (Ptr<NetDevice> boundNetDevice, Ipv4Address addr, uint16_t port);
 
   /**
    * \brief lookup for a match with all the parameters.
@@ -130,31 +131,33 @@ public:
 
   /**
    * \brief Allocate a Ipv4EndPoint.
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param port local port
    * \return an Ipv4EndPoint instance
    */
-  Ipv4EndPoint *Allocate (uint16_t port);
+  Ipv4EndPoint *Allocate (Ptr<NetDevice> boundNetDevice, uint16_t port);
 
   /**
    * \brief Allocate a Ipv4EndPoint.
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param address local address
    * \param port local port
    * \return an Ipv4EndPoint instance
    */
-  Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
+  Ipv4EndPoint *Allocate (Ptr<NetDevice> boundNetDevice, Ipv4Address address, uint16_t port);
 
   /**
    * \brief Allocate a Ipv4EndPoint.
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param localAddress local address
    * \param localPort local port
    * \param peerAddress peer address
    * \param peerPort peer port
    * \return an Ipv4EndPoint instance
    */
-  Ipv4EndPoint *Allocate (Ipv4Address localAddress, 
-                          uint16_t localPort,
-                          Ipv4Address peerAddress, 
-                          uint16_t peerPort);
+  Ipv4EndPoint *Allocate (Ptr<NetDevice> boundNetDevice,
+                          Ipv4Address localAddress, uint16_t localPort,
+                          Ipv4Address peerAddress, uint16_t peerPort);
 
   /**
    * \brief Remove a end point.

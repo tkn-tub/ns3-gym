@@ -665,8 +665,8 @@ Ipv4RipSplitHorizonStrategyTest::DoRun (void)
   // Create the UDP sockets
   Ptr<SocketFactory> rxSocketFactory = listener->GetObject<UdpSocketFactory> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("224.0.0.9"), 520)), 0, "trivial");
   rxSocket->BindToNetDevice (listenerDev);
+  NS_TEST_EXPECT_MSG_EQ (rxSocket->Bind (InetSocketAddress (Ipv4Address ("224.0.0.9"), 520)), 0, "trivial");
   rxSocket->SetRecvCallback (MakeCallback (&Ipv4RipSplitHorizonStrategyTest::ReceivePktProbe, this));
 
   // ------ Now the tests ------------

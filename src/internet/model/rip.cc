@@ -144,9 +144,9 @@ void Rip::DoInitialize ()
               Ptr<Node> theNode = GetObject<Node> ();
               Ptr<Socket> socket = Socket::CreateSocket (theNode, tid);
               InetSocketAddress local = InetSocketAddress (address.GetLocal (), RIP_PORT);
+              socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
               int ret = socket->Bind (local);
               NS_ASSERT_MSG (ret == 0, "Bind unsuccessful");
-              socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
               socket->SetIpRecvTtl (true);
               m_sendSocketList[socket] = i;
             }
@@ -343,8 +343,8 @@ void Rip::NotifyInterfaceUp (uint32_t i)
           Ptr<Node> theNode = GetObject<Node> ();
           Ptr<Socket> socket = Socket::CreateSocket (theNode, tid);
           InetSocketAddress local = InetSocketAddress (address.GetLocal (), RIP_PORT);
-          socket->Bind (local);
           socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
+          socket->Bind (local);
           socket->SetIpRecvTtl (true);
           m_sendSocketList[socket] = i;
         }

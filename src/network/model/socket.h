@@ -616,16 +616,13 @@ public:
    * is also possible to bind to mismatching device and address, even if
    * the socket can not receive any packets as a result.
    *
-   * \warning BindToNetDevice should be used \a after Bind. Otherwise
-   * it will perform a Bind itself.
-   *
-   * \param netdevice Pointer to Netdevice of desired interface
+   * \param netdevice Pointer to NetDevice of desired interface
    * \returns nothing
    */
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice);
 
   /**
-   * \brief Returns socket's bound netdevice, if any.
+   * \brief Returns socket's bound NetDevice, if any.
    *
    * This method corresponds to using getsockopt() SO_BINDTODEVICE
    * of real network or BSD sockets.

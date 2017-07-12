@@ -101,8 +101,8 @@ void BsmApplication::StartApplication () // Called at time specified by Start
   Ptr<Socket> recvSink = Socket::CreateSocket (GetNode (m_nodeId), tid);
   recvSink->SetRecvCallback (MakeCallback (&BsmApplication::ReceiveWavePacket, this));
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), wavePort);
-  recvSink->Bind (local);
   recvSink->BindToNetDevice (GetNetDevice (m_nodeId));
+  recvSink->Bind (local);
   recvSink->SetAllowBroadcast (true);
 
   // dest is broadcast address

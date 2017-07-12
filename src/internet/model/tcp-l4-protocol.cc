@@ -205,7 +205,7 @@ TcpL4Protocol::CreateSocket (void)
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_endPoints->Allocate ();
 }
 
@@ -217,25 +217,27 @@ TcpL4Protocol::Allocate (Ipv4Address address)
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (uint16_t port)
+TcpL4Protocol::Allocate (Ptr<NetDevice> boundNetDevice, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << port);
-  return m_endPoints->Allocate (port);
+  NS_LOG_FUNCTION (this << boundNetDevice << port);
+  return m_endPoints->Allocate (boundNetDevice, port);
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
+TcpL4Protocol::Allocate (Ptr<NetDevice> boundNetDevice, Ipv4Address address, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << address << port);
-  return m_endPoints->Allocate (address, port);
+  NS_LOG_FUNCTION (this << boundNetDevice << address << port);
+  return m_endPoints->Allocate (boundNetDevice, address, port);
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
+TcpL4Protocol::Allocate (Ptr<NetDevice> boundNetDevice,
+                         Ipv4Address localAddress, uint16_t localPort,
                          Ipv4Address peerAddress, uint16_t peerPort)
 {
-  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
-  return m_endPoints->Allocate (localAddress, localPort,
+  NS_LOG_FUNCTION (this << boundNetDevice << localAddress << localPort << peerAddress << peerPort);
+  return m_endPoints->Allocate (boundNetDevice,
+                                localAddress, localPort,
                                 peerAddress, peerPort);
 }
 
@@ -249,7 +251,7 @@ TcpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 Ipv6EndPoint *
 TcpL4Protocol::Allocate6 (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   return m_endPoints6->Allocate ();
 }
 
@@ -261,25 +263,27 @@ TcpL4Protocol::Allocate6 (Ipv6Address address)
 }
 
 Ipv6EndPoint *
-TcpL4Protocol::Allocate6 (uint16_t port)
+TcpL4Protocol::Allocate6 (Ptr<NetDevice> boundNetDevice, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << port);
-  return m_endPoints6->Allocate (port);
+  NS_LOG_FUNCTION (this << boundNetDevice << port);
+  return m_endPoints6->Allocate (boundNetDevice, port);
 }
 
 Ipv6EndPoint *
-TcpL4Protocol::Allocate6 (Ipv6Address address, uint16_t port)
+TcpL4Protocol::Allocate6 (Ptr<NetDevice> boundNetDevice, Ipv6Address address, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << address << port);
-  return m_endPoints6->Allocate (address, port);
+  NS_LOG_FUNCTION (this << boundNetDevice << address << port);
+  return m_endPoints6->Allocate (boundNetDevice, address, port);
 }
 
 Ipv6EndPoint *
-TcpL4Protocol::Allocate6 (Ipv6Address localAddress, uint16_t localPort,
+TcpL4Protocol::Allocate6 (Ptr<NetDevice> boundNetDevice,
+                          Ipv6Address localAddress, uint16_t localPort,
                           Ipv6Address peerAddress, uint16_t peerPort)
 {
-  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
-  return m_endPoints6->Allocate (localAddress, localPort,
+  NS_LOG_FUNCTION (this << boundNetDevice << localAddress << localPort << peerAddress << peerPort);
+  return m_endPoints6->Allocate (boundNetDevice,
+                                 localAddress, localPort,
                                  peerAddress, peerPort);
 }
 

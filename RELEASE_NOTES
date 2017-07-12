@@ -112,6 +112,7 @@ Bugs fixed
 - Bug 2759 - Packets sent to broadcast address are converted to subnet-directed broadcast
 - Bug 2760 - OLSR uses unicast-bound sockets to receive broadcasts
 - Bug 2761 - Packet has no Traffic ID for CTS frames when A-MPDU is used
+- Bug 2762 - BindToNetDevice behaviour is not coherent with Linux
 
 Known issues
 ------------

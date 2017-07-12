@@ -128,26 +128,30 @@ public:
   Ipv4EndPoint *Allocate (Ipv4Address address);
   /**
    * \brief Allocate an IPv4 Endpoint
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param port port to use
    * \return the Endpoint
    */
-  Ipv4EndPoint *Allocate (uint16_t port);
+  Ipv4EndPoint *Allocate (Ptr<NetDevice> boundNetDevice, uint16_t port);
   /**
    * \brief Allocate an IPv4 Endpoint
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param address address to use
    * \param port port to use
    * \return the Endpoint
    */
-  Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
+  Ipv4EndPoint *Allocate (Ptr<NetDevice> boundNetDevice, Ipv4Address address, uint16_t port);
   /**
    * \brief Allocate an IPv4 Endpoint
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param localAddress local address to use
    * \param localPort local port to use
    * \param peerAddress remote address to use
    * \param peerPort remote port to use
    * \return the Endpoint
    */
-  Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
+  Ipv4EndPoint *Allocate (Ptr<NetDevice> boundNetDevice,
+                          Ipv4Address localAddress, uint16_t localPort,
                           Ipv4Address peerAddress, uint16_t peerPort);
   /**
    * \brief Allocate an IPv6 Endpoint
@@ -162,26 +166,30 @@ public:
   Ipv6EndPoint *Allocate6 (Ipv6Address address);
   /**
    * \brief Allocate an IPv6 Endpoint
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param port port to use
    * \return the Endpoint
    */
-  Ipv6EndPoint *Allocate6 (uint16_t port);
+  Ipv6EndPoint *Allocate6 (Ptr<NetDevice> boundNetDevice, uint16_t port);
   /**
    * \brief Allocate an IPv6 Endpoint
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param address address to use
    * \param port port to use
    * \return the Endpoint
    */
-  Ipv6EndPoint *Allocate6 (Ipv6Address address, uint16_t port);
+  Ipv6EndPoint *Allocate6 (Ptr<NetDevice> boundNetDevice, Ipv6Address address, uint16_t port);
   /**
    * \brief Allocate an IPv6 Endpoint
+   * \param boundNetDevice Bound NetDevice (if any)
    * \param localAddress local address to use
    * \param localPort local port to use
    * \param peerAddress remote address to use
    * \param peerPort remote port to use
    * \return the Endpoint
    */
-  Ipv6EndPoint *Allocate6 (Ipv6Address localAddress, uint16_t localPort,
+  Ipv6EndPoint *Allocate6 (Ptr<NetDevice> boundNetDevice,
+                           Ipv6Address localAddress, uint16_t localPort,
                            Ipv6Address peerAddress, uint16_t peerPort);
 
   /**

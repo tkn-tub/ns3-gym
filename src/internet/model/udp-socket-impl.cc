@@ -233,6 +233,10 @@ UdpSocketImpl::Bind (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_endPoint = m_udp->Allocate ();
+  if (m_boundnetdevice)
+    {
+      m_endPoint->BindToNetDevice (m_boundnetdevice);
+    }
   return FinishBind ();
 }
 
@@ -241,6 +245,10 @@ UdpSocketImpl::Bind6 (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_endPoint6 = m_udp->Allocate6 ();
+  if (m_boundnetdevice)
+    {
+      m_endPoint6->BindToNetDevice (m_boundnetdevice);
+    }
   return FinishBind ();
 }
 
@@ -251,7 +259,7 @@ UdpSocketImpl::Bind (const Address &address)
 
   if (InetSocketAddress::IsMatchingType (address))
     {
-      NS_ASSERT_MSG (m_endPoint == 0, "Endpoint already allocated (maybe you used BindToNetDevice before Bind).");
+      NS_ASSERT_MSG (m_endPoint == 0, "Endpoint already allocated.");
 
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
@@ -263,7 +271,7 @@ UdpSocketImpl::Bind (const Address &address)
         }
       else if (ipv4 == Ipv4Address::GetAny () && port != 0)
         {
-          m_endPoint = m_udp->Allocate (port);
+          m_endPoint = m_udp->Allocate (GetBoundNetDevice (), port);
         }
       else if (ipv4 != Ipv4Address::GetAny () && port == 0)
         {
@@ -271,17 +279,22 @@ UdpSocketImpl::Bind (const Address &address)
         }
       else if (ipv4 != Ipv4Address::GetAny () && port != 0)
         {
-          m_endPoint = m_udp->Allocate (ipv4, port);
+          m_endPoint = m_udp->Allocate (GetBoundNetDevice (), ipv4, port);
         }
       if (0 == m_endPoint)
         {
           m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
           return -1;
         }
+      if (m_boundnetdevice)
+        {
+          m_endPoint->BindToNetDevice (m_boundnetdevice);
+        }
+
     }
   else if (Inet6SocketAddress::IsMatchingType (address))
     {
-      NS_ASSERT_MSG (m_endPoint == 0, "Endpoint already allocated (maybe you used BindToNetDevice before Bind).");
+      NS_ASSERT_MSG (m_endPoint == 0, "Endpoint already allocated.");
 
       Inet6SocketAddress transport = Inet6SocketAddress::ConvertFrom (address);
       Ipv6Address ipv6 = transport.GetIpv6 ();
@@ -292,7 +305,7 @@ UdpSocketImpl::Bind (const Address &address)
         }
       else if (ipv6 == Ipv6Address::GetAny () && port != 0)
         {
-          m_endPoint6 = m_udp->Allocate6 (port);
+          m_endPoint6 = m_udp->Allocate6 (GetBoundNetDevice (), port);
         }
       else if (ipv6 != Ipv6Address::GetAny () && port == 0)
         {
@@ -300,19 +313,32 @@ UdpSocketImpl::Bind (const Address &address)
         }
       else if (ipv6 != Ipv6Address::GetAny () && port != 0)
         {
-          m_endPoint6 = m_udp->Allocate6 (ipv6, port);
+          m_endPoint6 = m_udp->Allocate6 (GetBoundNetDevice (), ipv6, port);
         }
       if (0 == m_endPoint6)
         {
           m_errno = port ? ERROR_ADDRINUSE : ERROR_ADDRNOTAVAIL;
           return -1;
         }
+      if (m_boundnetdevice)
+        {
+          m_endPoint6->BindToNetDevice (m_boundnetdevice);
+        }
+
       if (ipv6.IsMulticast ())
         {
           Ptr<Ipv6L3Protocol> ipv6l3 = m_node->GetObject <Ipv6L3Protocol> ();
           if (ipv6l3)
             {
-              ipv6l3->AddMulticastAddress (ipv6);
+              if (m_boundnetdevice == 0)
+                {
+                  ipv6l3->AddMulticastAddress (ipv6);
+                }
+              else
+                {
+                  uint32_t index = ipv6l3->GetInterfaceForDevice (m_boundnetdevice);
+                  ipv6l3->AddMulticastAddress (m_endPoint6->GetLocalAddress (), index);
+                }
             }
         }
     }
@@ -928,37 +954,46 @@ UdpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (netdevice);
 
+  Ptr<NetDevice> oldBoundNetDevice = m_boundnetdevice;
+
   Socket::BindToNetDevice (netdevice); // Includes sanity check
-  if (m_endPoint == 0)
+  if (m_endPoint != 0)
     {
-      if (Bind () == -1)
-        {
-          NS_ASSERT (m_endPoint == 0);
-          return;
-        }
-      NS_ASSERT (m_endPoint != 0);
+      m_endPoint->BindToNetDevice (netdevice);
     }
-  m_endPoint->BindToNetDevice (netdevice);
 
-  if (m_endPoint6 == 0)
+  if (m_endPoint6 != 0)
     {
-      if (Bind6 () == -1)
-        {
-          NS_ASSERT (m_endPoint6 == 0);
-          return;
-        }
-      NS_ASSERT (m_endPoint6 != 0);
-    }
-  m_endPoint6->BindToNetDevice (netdevice);
+      m_endPoint6->BindToNetDevice (netdevice);
 
-  if (m_endPoint6->GetLocalAddress ().IsMulticast ())
-    {
-      Ptr<Ipv6L3Protocol> ipv6l3 = m_node->GetObject <Ipv6L3Protocol> ();
-      if (ipv6l3)
+      // The following is to fix the multicast distribution inside the node
+      // and to upgrade it to the actual bound NetDevice.
+      if (m_endPoint6->GetLocalAddress ().IsMulticast ())
         {
-          uint32_t index = ipv6l3->GetInterfaceForDevice (netdevice);
-          ipv6l3->RemoveMulticastAddress (m_endPoint6->GetLocalAddress ());
-          ipv6l3->AddMulticastAddress (m_endPoint6->GetLocalAddress (), index);
+          Ptr<Ipv6L3Protocol> ipv6l3 = m_node->GetObject <Ipv6L3Protocol> ();
+          if (ipv6l3)
+            {
+              // Cleanup old one
+              if (oldBoundNetDevice)
+                {
+                  uint32_t index = ipv6l3->GetInterfaceForDevice (oldBoundNetDevice);
+                  ipv6l3->RemoveMulticastAddress (m_endPoint6->GetLocalAddress (), index);
+                }
+              else
+                {
+                  ipv6l3->RemoveMulticastAddress (m_endPoint6->GetLocalAddress ());
+                }
+              // add new one
+              if (netdevice)
+                {
+                  uint32_t index = ipv6l3->GetInterfaceForDevice (netdevice);
+                  ipv6l3->AddMulticastAddress (m_endPoint6->GetLocalAddress (), index);
+                }
+              else
+                {
+                  ipv6l3->AddMulticastAddress (m_endPoint6->GetLocalAddress ());
+                }
+            }
         }
     }
 

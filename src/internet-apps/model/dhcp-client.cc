@@ -192,8 +192,8 @@ DhcpClient::StartApplication (void)
       m_socket = Socket::CreateSocket (GetNode (), tid);
       InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 68);
       m_socket->SetAllowBroadcast (true);
-      m_socket->Bind (local);
       m_socket->BindToNetDevice (m_device);
+      m_socket->Bind (local);
     }
   m_socket->SetRecvCallback (MakeCallback (&DhcpClient::NetHandler, this));
 

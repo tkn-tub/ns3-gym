@@ -60,13 +60,14 @@ Ipv4EndPointDemux::LookupPortLocal (uint16_t port)
 }
 
 bool
-Ipv4EndPointDemux::LookupLocal (Ipv4Address addr, uint16_t port)
+Ipv4EndPointDemux::LookupLocal (Ptr<NetDevice> boundNetDevice, Ipv4Address addr, uint16_t port)
 {
   NS_LOG_FUNCTION (this << addr << port);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if ((*i)->GetLocalPort () == port &&
-          (*i)->GetLocalAddress () == addr) 
+          (*i)->GetLocalAddress () == addr &&
+          (*i)->GetBoundNetDevice () == boundNetDevice)
         {
           return true;
         }
@@ -107,20 +108,20 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address)
 }
 
 Ipv4EndPoint *
-Ipv4EndPointDemux::Allocate (uint16_t port)
+Ipv4EndPointDemux::Allocate (Ptr<NetDevice> boundNetDevice, uint16_t port)
 {
-  NS_LOG_FUNCTION (this <<  port);
+  NS_LOG_FUNCTION (this <<  port << boundNetDevice);
 
-  return Allocate (Ipv4Address::GetAny (), port);
+  return Allocate (boundNetDevice, Ipv4Address::GetAny (), port);
 }
 
 Ipv4EndPoint *
-Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
+Ipv4EndPointDemux::Allocate (Ptr<NetDevice> boundNetDevice, Ipv4Address address, uint16_t port)
 {
-  NS_LOG_FUNCTION (this << address << port);
-  if (LookupLocal (address, port)) 
+  NS_LOG_FUNCTION (this << address << port << boundNetDevice);
+  if (LookupLocal (boundNetDevice, address, port) || LookupLocal (0, address, port))
     {
-      NS_LOG_WARN ("Duplicate address/port; failing.");
+      NS_LOG_WARN ("Duplicated endpoint.");
       return 0;
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
@@ -130,19 +131,20 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
 }
 
 Ipv4EndPoint *
-Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
+Ipv4EndPointDemux::Allocate (Ptr<NetDevice> boundNetDevice,
+                             Ipv4Address localAddress, uint16_t localPort,
                              Ipv4Address peerAddress, uint16_t peerPort)
 {
-  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort);
+  NS_LOG_FUNCTION (this << localAddress << localPort << peerAddress << peerPort << boundNetDevice);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if ((*i)->GetLocalPort () == localPort &&
           (*i)->GetLocalAddress () == localAddress &&
           (*i)->GetPeerPort () == peerPort &&
-          (*i)->GetPeerAddress () == peerAddress) 
+          (*i)->GetPeerAddress () == peerAddress &&
+          ((*i)->GetBoundNetDevice () == boundNetDevice || (*i)->GetBoundNetDevice () == 0))
         {
-          NS_LOG_WARN ("No way we can allocate this end-point.");
-          /* no way we can allocate this end-point. */
+          NS_LOG_WARN ("Duplicated endpoint.");
           return 0;
         }
     }
@@ -323,10 +325,14 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
     }
 
   // Here we find the most exact match
-  if (!retval4.empty ()) return retval4;
-  if (!retval3.empty ()) return retval3;
-  if (!retval2.empty ()) return retval2;
-  return retval1;  // might be empty if no matches
+  EndPoints retval;
+  if (!retval4.empty ()) retval = retval4;
+  else if (!retval3.empty ()) retval = retval3;
+  else if (!retval2.empty ()) retval = retval2;
+  else retval = retval1;
+
+  NS_ABORT_MSG_IF (retval.size () > 1, "Too many endpoints - perhaps you created too many sockets without binding them to different NetDevices.");
+  return retval;  // might be empty if no matches
 }
 
 Ipv4EndPoint *

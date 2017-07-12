@@ -155,8 +155,8 @@ void DhcpServer::StartApplication (void)
   m_socket = Socket::CreateSocket (GetNode (), tid);
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), PORT);
   m_socket->SetAllowBroadcast (true);
-  m_socket->Bind (local);
   m_socket->BindToNetDevice (ipv4->GetNetDevice (ifIndex));
+  m_socket->Bind (local);
   m_socket->SetRecvPktInfo (true);
 
   uint32_t range = m_maxAddress.Get () - m_minAddress.Get () + 1;

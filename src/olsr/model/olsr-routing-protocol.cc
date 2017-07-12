@@ -368,11 +368,11 @@ void RoutingProtocol::DoInitialize ()
       socket->SetAllowBroadcast (true);
       InetSocketAddress inetAddr (m_ipv4->GetAddress (i, 0).GetLocal (), OLSR_PORT_NUMBER);
       socket->SetRecvCallback (MakeCallback (&RoutingProtocol::RecvOlsr,  this));
+      socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
       if (socket->Bind (inetAddr))
         {
           NS_FATAL_ERROR ("Failed to bind() OLSR socket");
         }
-      socket->BindToNetDevice (m_ipv4->GetNetDevice (i));
       socket->SetRecvPktInfo (true);
       m_sendSockets[socket] = m_ipv4->GetAddress (i, 0);
 

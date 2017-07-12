@@ -138,9 +138,9 @@ void RipNg::DoInitialize ()
               Ptr<Node> theNode = GetObject<Node> ();
               Ptr<Socket> socket = Socket::CreateSocket (theNode, tid);
               Inet6SocketAddress local = Inet6SocketAddress (address.GetAddress (), RIPNG_PORT);
+              socket->BindToNetDevice (m_ipv6->GetNetDevice (i));
               int ret = socket->Bind (local);
               NS_ASSERT_MSG (ret == 0, "Bind unsuccessful");
-              socket->BindToNetDevice (m_ipv6->GetNetDevice (i));
               socket->ShutdownRecv ();
               socket->SetIpv6RecvHopLimit (true);
               m_sendSocketList[socket] = i;
@@ -314,8 +314,8 @@ void RipNg::NotifyInterfaceUp (uint32_t i)
           Ptr<Node> theNode = GetObject<Node> ();
           Ptr<Socket> socket = Socket::CreateSocket (theNode, tid);
           Inet6SocketAddress local = Inet6SocketAddress (address.GetAddress (), RIPNG_PORT);
-          socket->Bind (local);
           socket->BindToNetDevice (m_ipv6->GetNetDevice (i));
+          socket->Bind (local);
           socket->ShutdownRecv ();
           socket->SetIpv6RecvHopLimit (true);
           m_sendSocketList[socket] = i;
