@@ -153,9 +153,9 @@ public:
    */
   bool operator > (const SequenceNumber10 &other) const
   {
-    SequenceNumber10 v1 ((m_value - m_modulusBase) % 1024);
-    SequenceNumber10 v2 ((other.m_value - other.m_modulusBase) % 1024);
-    return ( v1.GetValue () > v2.GetValue () );
+    uint16_t v1 = (m_value - m_modulusBase) % 1024;
+    uint16_t v2 = (other.m_value - other.m_modulusBase) % 1024;
+    return v1 > v2;
   }
 
   /**
