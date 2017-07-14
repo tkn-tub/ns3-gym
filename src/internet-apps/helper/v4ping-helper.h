@@ -29,7 +29,7 @@ namespace ns3 {
 
 /**
  * \ingroup v4ping
- * \brief Create a IPv5 ping application and associate it to a node
+ * \brief Create a IPv4 ping application and associate it to a node
  *
  * This class creates one or multiple instances of ns3::V4Ping and associates
  * it/them to one/multiple node(s).
