@@ -250,7 +250,7 @@ NscTcpSocketImpl::Bind (const Address &address)
     }
   else if (ipv4 == Ipv4Address::GetAny () && port != 0)
     {
-      m_endPoint = m_tcp->Allocate (port);
+      m_endPoint = m_tcp->Allocate (GetBoundNetDevice (), port);
       NS_LOG_LOGIC ("NscTcpSocketImpl "<<this<<" got an endpoint: "<<m_endPoint);
     }
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
@@ -260,12 +260,25 @@ NscTcpSocketImpl::Bind (const Address &address)
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {
-      m_endPoint = m_tcp->Allocate (ipv4, port);
+      m_endPoint = m_tcp->Allocate (GetBoundNetDevice (), ipv4, port);
       NS_LOG_LOGIC ("NscTcpSocketImpl "<<this<<" got an endpoint: "<<m_endPoint);
     }
 
   m_localPort = port;
   return FinishBind ();
+}
+
+/* Inherit from Socket class: Bind this socket to the specified NetDevice */
+void
+NscTcpSocketImpl::BindToNetDevice (Ptr<NetDevice> netdevice)
+{
+  NS_LOG_FUNCTION (this << netdevice);
+  Socket::BindToNetDevice (netdevice); // Includes sanity check
+  if (m_endPoint != 0)
+    {
+      m_endPoint->BindToNetDevice (netdevice);
+    }
+  return;
 }
 
 int 
