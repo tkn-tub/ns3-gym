@@ -696,8 +696,7 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
         {
           Ptr<Packet> newPacket = (m_txPackets[GetTid (packet, *hdr)].at (i).packet)->Copy ();
           newPacket->AddHeader (m_txPackets[GetTid (packet, *hdr)].at (i).hdr);
-          WifiMacTrailer fcs;
-          newPacket->AddTrailer (fcs);
+          AddWifiMacTrailer (newPacket);
           edcaIt->second->GetMpduAggregator ()->Aggregate (newPacket, aggregatedPacket);
         }
       m_currentPacket = aggregatedPacket;
@@ -1504,7 +1503,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
       Ptr<Packet> newPacket;
       Ptr <WifiMacQueueItem> dequeuedItem;
       WifiMacHeader newHdr;
-      WifiMacTrailer fcs;
       uint8_t queueSize = m_aggregateQueue[GetTid (packet, *hdr)]->GetNPackets ();
       bool singleMpdu = false;
       bool last = false;
