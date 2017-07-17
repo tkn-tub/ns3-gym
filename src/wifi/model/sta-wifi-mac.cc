@@ -164,6 +164,7 @@ StaWifiMac::SendProbeRequest (void)
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
+  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
@@ -171,7 +172,6 @@ StaWifiMac::SendProbeRequest (void)
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
       probe.SetHtCapabilities (GetHtCapabilities ());
-      hdr.SetNoOrder ();
     }
   if (m_vhtSupported || m_heSupported)
     {
@@ -208,6 +208,7 @@ StaWifiMac::SendAssociationRequest (void)
   hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
+  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtAssocRequestHeader assoc;
   assoc.SetSsid (GetSsid ());
@@ -216,7 +217,6 @@ StaWifiMac::SendAssociationRequest (void)
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
-      hdr.SetNoOrder ();
     }
   if (m_vhtSupported || m_heSupported)
     {

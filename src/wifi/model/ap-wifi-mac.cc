@@ -585,6 +585,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
+  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtProbeResponseHeader probe;
   probe.SetSsid (GetSsid ());
@@ -609,7 +610,6 @@ ApWifiMac::SendProbeResp (Mac48Address to)
     {
       probe.SetHtCapabilities (GetHtCapabilities ());
       probe.SetHtOperation (GetHtOperation ());
-      hdr.SetNoOrder ();
     }
   if (m_vhtSupported || m_heSupported)
     {
@@ -640,6 +640,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
+  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtAssocResponseHeader assoc;
   StatusCode code;
@@ -667,7 +668,6 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
     {
       assoc.SetHtCapabilities (GetHtCapabilities ());
       assoc.SetHtOperation (GetHtOperation ());
-      hdr.SetNoOrder ();
     }
   if (m_vhtSupported || m_heSupported)
     {
@@ -698,6 +698,7 @@ ApWifiMac::SendOneBeacon (void)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
+  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtBeaconHeader beacon;
   beacon.SetSsid (GetSsid ());
@@ -722,7 +723,6 @@ ApWifiMac::SendOneBeacon (void)
     {
       beacon.SetHtCapabilities (GetHtCapabilities ());
       beacon.SetHtOperation (GetHtOperation ());
-      hdr.SetNoOrder ();
     }
   if (m_vhtSupported || m_heSupported)
     {

@@ -113,6 +113,7 @@ Bugs fixed
 - Bug 2760 - OLSR uses unicast-bound sockets to receive broadcasts
 - Bug 2761 - Packet has no Traffic ID for CTS frames when A-MPDU is used
 - Bug 2762 - BindToNetDevice behaviour is not coherent with Linux
+- Bug 2763 - wifi management packets in the PCAPs are all marked as wrong by Wireshark
 
 Known issues
 ------------
