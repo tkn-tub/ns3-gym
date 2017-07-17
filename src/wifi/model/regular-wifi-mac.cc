@@ -878,7 +878,7 @@ RegularWifiMac::SupportsSendFrom (void) const
 void
 RegularWifiMac::ForwardUp (Ptr<Packet> packet, Mac48Address from, Mac48Address to)
 {
-  NS_LOG_FUNCTION (this << packet << from);
+  NS_LOG_FUNCTION (this << packet << from << to);
   m_forwardUp (packet, from, to);
 }
 
