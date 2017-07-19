@@ -1106,7 +1106,7 @@ there is some English:
   This class template implements the Functor Design Pattern. It is used to declare the type of a **Callback**:
 
   * the first non-optional template argument represents the return type of the callback.
-  * the reminaining (optional) template arguments represent the type of the subsequent arguments to the callback.
+  * the remaining (optional) template arguments represent the type of the subsequent arguments to the callback.
   * up to nine arguments are supported.
 
 We are trying to figure out what the
@@ -1369,7 +1369,7 @@ didn't exist yet during configuration time?).  As a result, during the
 configuration phase you can't connect a trace source to a trace sink
 if one of them is created dynamically during the simulation.
 
-The two solutions to this connundrum are
+The two solutions to this conundrum are
 
 #. Create a simulator event that is run after the dynamic object is
    created and hook the trace when that event is executed; or
@@ -1456,7 +1456,7 @@ problem described above with ``Socket``.
   // ===========================================================================
   //
 
-This should also be self-explanatory.  
+This should also be self-explanatory.
 
 The next part is the declaration of the ``MyApp`` ``Application`` that
 we put together to allow the ``Socket`` to be created at configuration
@@ -2216,7 +2216,7 @@ creates a PCAP file named "sixth.pcap" with file mode "w".  This means
 that the new file is truncated (contents deleted) if an existing file
 with that name is found.  The final parameter is the "data link type"
 of the new PCAP file.  These are the same as the PCAP library data
-link types defined in ``bpf.h`` if you are familar with PCAP.  In this
+link types defined in ``bpf.h`` if you are familiar with PCAP.  In this
 case, ``DLT_PPP`` indicates that the PCAP file is going to contain
 packets prefixed with point to point headers.  This is true since the
 packets are coming from our point-to-point device driver.  Other

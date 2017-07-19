@@ -797,7 +797,7 @@ in the first example program will schedule an explicit stop at 11 seconds:
      return 0;
    }
 
-The above wil not actually change the behavior of this program, since
+The above will not actually change the behavior of this program, since
 this particular simulation naturally ends after 10 seconds.  But if you 
 were to change the stop time in the above statement from 11 seconds to 1 
 second, you would notice that the simulation stops before any output is 

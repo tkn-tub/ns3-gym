@@ -785,7 +785,7 @@ topology helpers in this section.  The appearance and operation of these
 helpers should look quite familiar to you.
 
 We provide an example script in our ``examples/tutorial`` directory.  This script
-builds on the ``second.cc`` script and adds a Wifi network.  Go ahead and
+builds on the ``second.cc`` script and adds a Wi-Fi network.  Go ahead and
 open ``examples/tutorial/third.cc`` in your favorite editor.  You will have already
 seen enough |ns3| code to understand most of what is going on in 
 this example, but there are a few new things, so we will go over the entire 
@@ -808,7 +808,7 @@ network.  By default there are three "extra" CSMA nodes and three wireless
 
 The code begins by loading module include files just as was done in the
 ``second.cc`` example.  There are a couple of new includes corresponding
-to the Wifi module and the mobility module which we will discuss below.
+to the wifi module and the mobility module which we will discuss below.
 
 ::
 
@@ -925,7 +925,7 @@ selected nodes.
   NetDeviceContainer csmaDevices;
   csmaDevices = csma.Install (csmaNodes);
 
-Next, we are going to create the nodes that will be part of the Wifi network.
+Next, we are going to create the nodes that will be part of the Wi-Fi network.
 We are going to create a number of "station" nodes as specified by the 
 command line argument, and we are going to use the "leftmost" node of the 
 point-to-point link as the node for the access point.
@@ -996,14 +996,14 @@ created by this helper.
 
 Once all the station-specific parameters are fully configured, both at the
 MAC and PHY layers, we can invoke our now-familiar ``Install`` method to 
-create the wifi devices of these stations:
+create the Wi-Fi devices of these stations:
 
 ::
 
   NetDeviceContainer staDevices;
   staDevices = wifi.Install (phy, mac, wifiStaNodes);
 
-We have configured Wifi for all of our STA nodes, and now we need to 
+We have configured Wi-Fi for all of our STA nodes, and now we need to 
 configure the AP (access point) node.  We begin this process by changing
 the default ``Attributes`` of the ``WifiMacHelper`` to reflect the 
 requirements of the AP.
@@ -1076,7 +1076,7 @@ We accomplish this by setting the mobility model for this node to be the
   mobility.Install (wifiApNode);
 
 We now have our nodes, devices and channels created, and mobility models 
-chosen for the Wifi nodes, but we have no protocol stacks present.  Just as 
+chosen for the Wi-Fi nodes, but we have no protocol stacks present.  Just as 
 we have done previously many times, we will use the ``InternetStackHelper``
 to install these stacks.
 
@@ -1166,7 +1166,7 @@ We create just enough tracing to cover all three networks:
 
 These three lines of code will start pcap tracing on both of the point-to-point
 nodes that serves as our backbone, will start a promiscuous (monitor) mode 
-trace on the Wifi network, and will start a promiscuous trace on the CSMA 
+trace on the Wi-Fi network, and will start a promiscuous trace on the CSMA 
 network.  This will let us see all of the traffic with a minimum number of 
 trace files.
 
@@ -1222,11 +1222,11 @@ The file "third-0-0.pcap" corresponds to the point-to-point device on node
 zero -- the left side of the "backbone".  The file "third-1-0.pcap" 
 corresponds to the point-to-point device on node one -- the right side of the
 "backbone".  The file "third-0-1.pcap" will be the promiscuous (monitor
-mode) trace from the Wifi network and the file "third-1-1.pcap" will be the
+mode) trace from the Wi-Fi network and the file "third-1-1.pcap" will be the
 promiscuous trace from the CSMA network.  Can you verify this by inspecting
 the code?
 
-Since the echo client is on the Wifi network, let's start there.  Let's take
+Since the echo client is on the Wi-Fi network, let's start there.  Let's take
 a look at the promiscuous (monitor mode) trace we captured on that network.
 
 .. sourcecode:: bash
@@ -1274,7 +1274,7 @@ Again, you should see some familiar looking contents:
   2.008151 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
   2.026758 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
-This is the echo packet going from left to right (from Wifi to CSMA) and back
+This is the echo packet going from left to right (from Wi-Fi to CSMA) and back
 again across the point-to-point link.
 
 Now, look at the pcap file of the right side of the point-to-point link,
@@ -1291,7 +1291,7 @@ Again, you should see some familiar looking contents:
   2.011837 IP 10.1.3.3.49153 > 10.1.2.4.9: UDP, length 1024
   2.023072 IP 10.1.2.4.9 > 10.1.3.3.49153: UDP, length 1024
 
-This is also the echo packet going from left to right (from Wifi to CSMA) and 
+This is also the echo packet going from left to right (from Wi-Fi to CSMA) and 
 back again across the point-to-point link with slightly different timings
 as you might expect.
 
