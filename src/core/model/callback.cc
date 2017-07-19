@@ -99,7 +99,7 @@ CallbackImplBase::Demangle (const std::string& mangled)
       ret = demangled;
     }
   else if (status == -1) {
-      NS_LOG_UNCOND ("Callback demangling failed: Memory allocation failure occured.");
+      NS_LOG_UNCOND ("Callback demangling failed: Memory allocation failure occurred.");
       ret = mangled;
     }
   else if (status == -2) {

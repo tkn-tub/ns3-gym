@@ -133,7 +133,7 @@ private:
      */
     AggregateIterator (Ptr<const Object> object);
     Ptr<const Object> m_object;                    //!< Parent Object.
-    uint32_t m_current;                            //!< Current position in parent's aggegrates.
+    uint32_t m_current;                            //!< Current position in parent's aggregates.
   };
 
   /** Constructor. */

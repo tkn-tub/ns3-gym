@@ -254,7 +254,7 @@ NamesPriv::Add (std::string name, Ptr<Object> object)
   //
   // If we are given a name that begins with "/Names/" we assume that this is a
   // fully qualified path name to the object we want to create.  We split the name
-  // into a path string and and a final segment (name) and then call the "Real" Add.
+  // into a path string and a final segment (name) and then call the "Real" Add.
   //
   std::string namespaceName = "/Names";
   std::string::size_type offset = name.find (namespaceName);
@@ -363,7 +363,7 @@ NamesPriv::Rename (std::string oldpath, std::string newname)
   //
   // If we are given a name that begins with "/Names/" we assume that this is a
   // fully qualified path to the object we want to change.  We split the path into 
-  // path string (cf directory) and and a final segment (cf filename) and then call
+  // path string (cf directory) and a final segment (cf filename) and then call
   // the "Real" Rename.
   //
   std::string namespaceName = "/Names";
@@ -454,7 +454,7 @@ NamesPriv::Rename (Ptr<Object> context, std::string oldname, std::string newname
 
       //
       // The rename process consists of:
-      // 1.  Geting the pointer to the name node from the map and remembering it;
+      // 1.  Getting the pointer to the name node from the map and remembering it;
       // 2.  Removing the map entry corresponding to oldname from the map;
       // 3.  Changing the name string in the name node;
       // 4.  Adding the name node back in the map under the newname.
@@ -522,7 +522,7 @@ NamesPriv::Find (std::string path)
   //
   // If we are provided a path that doesn't begin with "/Names", we assume 
   // that the caller has simply given us a path starting with a name that
-  // is in the root namespace.  This allows peole to omit the "/Names" prefix.
+  // is in the root namespace.  This allows people to omit the "/Names" prefix.
   // and simply do a Find ("Client/eth0") instead of having to always do a
   // Find ("/Names/Client/eth0");
   //

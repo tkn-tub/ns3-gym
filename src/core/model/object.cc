@@ -298,7 +298,7 @@ Object::AggregateObject (Ptr<Object> o)
     }
 
   // Finally, call NotifyNewAggregate on all the objects aggregates together.
-  // We purposedly use the old aggregate buffers to iterate over the objects
+  // We purposely use the old aggregate buffers to iterate over the objects
   // because this allows us to assume that they will not change from under 
   // our feet, even if our users call AggregateObject from within their
   // NotifyNewAggregate method.

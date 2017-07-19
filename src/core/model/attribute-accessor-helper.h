@@ -361,7 +361,7 @@ inline
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (void (T::*setter)(U))
 {
-  /* AttributeAccessor implemenation with a class set method returning void. */
+  /* AttributeAccessor implementation with a class set method returning void. */
   class MemberMethod : public AccessorHelper<T,V>
   {
 public:
@@ -423,7 +423,7 @@ DoMakeAccessorHelperTwo (void (T::*setter)(U),
                          V (T::*getter)(void) const)
 {
   /*
-   * AttributeAccessor implemenation with class get functor and set method,
+   * AttributeAccessor implementation with class get functor and set method,
    * returning void.
    */
   class MemberMethod : public AccessorHelper<T,W>
@@ -506,7 +506,7 @@ DoMakeAccessorHelperTwo (bool (T::*setter)(U),
                          V (T::*getter)(void) const)
 {
   /*
-   * AttributeAccessor implemenation with class get functor and
+   * AttributeAccessor implementation with class get functor and
    * set method, returning bool.
    */
   class MemberMethod : public AccessorHelper<T,W>

@@ -81,7 +81,7 @@ class RngStream;
  *
  * ns-3 has a rich set of random number generators that allow stream
  * numbers to be set deterministically if desired.  Class
- * RandomVariableStream defines the base class functionalty required
+ * RandomVariableStream defines the base class functionality required
  * for all such random number generators.
  *
  * By default, the underlying generator is seeded all the time with
@@ -166,7 +166,7 @@ private:
    */
   RandomVariableStream (const RandomVariableStream &o);
   /**
-   * Assignment operator.  These objects can't be copied by assignement.
+   * Assignment operator.  These objects can't be copied by assignment.
    *
    * \param [in] o The RandomVariableStream to copy.
    * \return lvalue RandomVariableStream.

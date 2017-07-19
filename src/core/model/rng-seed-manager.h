@@ -78,7 +78,7 @@ public:
    *   UniformVariable x(0,10);
    *   ExponentialVariable y(2902);
    * \endcode
-   * In this example, \c N could successivly be equal to 1,2,3, _etc._
+   * In this example, \c N could successively be equal to 1,2,3, _etc._
    * and the user would continue to get independent runs out of the
    * single simulation.  For this simple example, the following might work:
    * \code

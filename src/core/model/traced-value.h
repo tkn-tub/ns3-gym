@@ -295,7 +295,7 @@ std::ostream& operator << (std::ostream& os, const TracedValue<T>& rhs)
  * \tparam U \deduced The underlying type held by the right-hand argument.
  * \param [in] lhs The left-hand argument.
  * \param [in] rhs The right-hand argument.
- * \returns The boolean result of comparing the underlying values.
+ * \returns The Boolean result of comparing the underlying values.
  */
 template <typename T, typename U>
 bool operator == (const TracedValue<T> &lhs, const TracedValue<U> &rhs)

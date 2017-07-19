@@ -42,7 +42,7 @@ class SystemMutexPrivate;
  * When more than one thread needs to access a shared resource (data structure
  * or device), the system needs to provide a way to serialize access to the
  * resource.  An operating system will typically provide a Mutual Exclusion
- * primitive to provide that capability.  We provide plattorm-independent
+ * primitive to provide that capability.  We provide platform-independent
  * access to the OS-dependent capability with the SystemMutex class.
  *
  * There are two operations:  Lock and Unlock.  Lock allows an executing 

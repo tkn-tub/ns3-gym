@@ -93,7 +93,7 @@
 #ifndef NS_LOG_APPEND_CONTEXT
 /**
  * \ingroup logging
- * Append the node id (or other file-local programatic context, such as
+ * Append the node id (or other file-local programmatic context, such as
  * MPI rank) to a log message.
  *
  * This is implemented locally in `.cc` files because

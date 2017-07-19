@@ -37,7 +37,7 @@ namespace ns3 {
  * \ingroup scheduler
  * \brief a binary heap event scheduler
  *
- * This code started as a c++ translation of a java-based code written in 2005
+ * This code started as a c++ translation of a Java-based code written in 2005
  * to implement a heap sort. So, this binary heap is really a pretty
  * straightforward implementation of the classic data structure. Not much to say
  * about it.

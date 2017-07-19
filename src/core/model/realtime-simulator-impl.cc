@@ -177,7 +177,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
   // cause us to re-evaluate our state.  The way this works is that the synchronizer
   // gets interrupted and returns.  So, there is a possibility that things may change
   // out from under us dynamically.  In this case, we need to re-evaluate how long to 
-  // wait in a for-loop until we have waited sucessfully (until a timeout) for the 
+  // wait in a for-loop until we have waited successfully (until a timeout) for the 
   // event at the head of the event list.
   //
   // m_synchronizer->Synchronize will return true if the wait was completed without 
@@ -196,7 +196,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
       // It is important to understand that m_currentTs is interpreted only as the 
       // timestamp  of the last event we executed.  Current time can a bit of a 
       // slippery concept in realtime mode.  What we have here is a discrete event 
-      // simulator, so the last event is, by defintion, executed entirely at a single
+      // simulator, so the last event is, by definition, executed entirely at a single
       //  discrete time.  This is the definition of m_currentTs.  It really has 
       // nothing to do with the current real time, except that we are trying to arrange
       // that at the instant of the beginning of event execution, the current real time
@@ -517,7 +517,7 @@ RealtimeSimulatorImpl::Schedule (Time const &delay, EventImpl *impl)
   {
     CriticalSection cs (m_mutex);
     //
-    // This is the reason we had to bring the absolute time calcualtion in from the
+    // This is the reason we had to bring the absolute time calculation in from the
     // simulator.h into the implementation.  Since the implementations may be 
     // multi-threaded, we need this calculation to be atomic.  You can see it is
     // here since we are running in a CriticalSection.

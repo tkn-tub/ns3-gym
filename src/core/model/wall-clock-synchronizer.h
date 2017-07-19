@@ -99,7 +99,7 @@ protected:
    *
    * @param [in] ns The target normalized real time we should wait for.
    * @returns @c true if we reached the target time,
-   *          @c false if we retured because the condition was set.
+   *          @c false if we returned because the condition was set.
    */
   bool SpinWait (uint64_t ns);
   /**
@@ -123,7 +123,7 @@ protected:
    *
    * @param [in] ns The target normalized real time we should wait for.
    * @returns @c true if we reached the target time,
-   *          @c false if we retured because the condition was set.
+   *          @c false if we returned because the condition was set.
    */
   bool SleepWait (uint64_t ns);
 

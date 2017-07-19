@@ -245,7 +245,7 @@ public:
   /**
    * Compute the inverse of an integer value.
    *
-   * Ordinary division by an integer would be limited to 64 bits of precsion.
+   * Ordinary division by an integer would be limited to 64 bits of precision.
    * Instead, we multiply by the 128-bit inverse of the divisor.
    * This function computes the inverse to 128-bit precision.
    * MulByInvert() then completes the division.

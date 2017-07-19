@@ -214,7 +214,7 @@
  * numbers (float or double) as it is unlikely to do what you expect.
  * Use NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL_TOL instead.
  *
- * This function returns a boolean value.
+ * This function returns a Boolean value.
  *
  */
 #define NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL(actual, limit, msg) \
@@ -336,7 +336,7 @@
  * because of floating point rounding errors.  We provide a floating
  * point comparison function ns3::TestDoubleIsEqual() but you will
  * probably quickly find that is not what you want either.  It may
- * turn out to be the case that when you measured an snr that printed
+ * turn out to be the case that when you measured an SNR that printed
  * as 1128.93, what was actually measured was something more like
  * 1128.9287653857625442 for example.  Given that the double epsilon
  * is on the order of 0.0000000000000009, you would need to provide
@@ -426,7 +426,7 @@
  * because of floating point rounding errors.  We provide a floating
  * point comparison function ns3::TestDoubleIsEqual() but you will
  * probably quickly find that is not what you want either.  It may
- * turn out to be the case that when you measured an snr that printed
+ * turn out to be the case that when you measured an SNR that printed
  * as 1128.93, what was actually measured was something more like
  * 1128.9287653857625442 for example.  Given that the double epsilon
  * is on the order of 0.0000000000000009, you would need to provide
@@ -460,7 +460,7 @@
  * \param [in] tol Tolerance of the test.
  * \param [in] msg Message that is output if the test does not pass.
  *
- * This function returns a boolean value.
+ * This function returns a Boolean value.
  *
  */
 #define NS_TEST_ASSERT_MSG_EQ_TOL_RETURNS_BOOL(actual, limit, tol, msg)  \
@@ -521,7 +521,7 @@
  * because of floating point rounding errors.  We provide a floating
  * point comparison function ns3::TestDoubleIsEqual() but you will
  * probably quickly find that is not what you want either.  It may
- * turn out to be the case that when you measured an snr that printed
+ * turn out to be the case that when you measured an SNR that printed
  * as 1128.93, what was actually measured was something more like
  * 1128.9287653857625442 for example.  Given that the double epsilon
  * is on the order of 0.0000000000000009, you would need to provide
@@ -669,7 +669,7 @@
  * \warning Do not use this macro if you are comparing floating point
  * numbers (float or double).  Use NS_TEST_ASSERT_MSG_FLNE instead.
  *
- * This function returns a boolean value.
+ * This function returns a Boolean value.
  *
  */
 #define NS_TEST_ASSERT_MSG_NE_RETURNS_BOOL(actual, limit, msg) \

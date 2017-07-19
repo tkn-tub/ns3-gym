@@ -43,7 +43,7 @@ namespace ns3 {
  * This class allows for creation of multiple threads of execution in a
  * process.  The exact implementation of the thread functionality is 
  * operating system dependent, but typically in ns-3 one is using an 
- * environment in which Posix Threads are supported (either navively or
+ * environment in which Posix Threads are supported (either natively or
  * in the case of Windows via Cygwin's implementation of pthreads on the 
  * Win32 API.  In either case we expect that these will be kernel-level
  * threads and therefore a system with multiple CPUs will see truly concurrent 
