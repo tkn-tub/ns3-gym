@@ -61,7 +61,7 @@ public:
    * \param cellId the id of the eNB
    * \param imsi the id of the UE
    * 
-   * \return the pathloss value bewteen the UE and the eNB
+   * \return the pathloss value between the UE and the eNB
    */
   double GetPathloss (uint16_t cellId, uint64_t imsi);
 
