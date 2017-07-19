@@ -135,8 +135,8 @@ IPv6 global addresses might be:
 
 |ns3| can use both methods, and it's quite important to understand the implications of both.
 
-Manually assigned IPv6 adddresses
-+++++++++++++++++++++++++++++++++
+Manually assigned IPv6 addresses
+++++++++++++++++++++++++++++++++
 
 This is probably the easiest and most used method. As an example:
 
@@ -157,12 +157,12 @@ This method will add two global IPv6 addresses to the nodes. Note that, as usual
 all the nodes will also have a link-local address. Typically the first address on an 
 interface will be the link-local one, with the global address(es) being the following ones.
 
-Note that the global addesses will be derived from the MAC address. As a consequence, expect
+Note that the global addresses will be derived from the MAC address. As a consequence, expect
 to have addresses similar to ``2001:db8::200:ff:fe00:1``.
 
 It is possible to repeat the above to assign more than one global address to a node.
 However, due to the :cpp:class:`Ipv6AddressHelper` singleton nature, one should first assign all the
-adddresses of a network, then change the network base (``SetBase``), then do a new assignment.
+addresses of a network, then change the network base (``SetBase``), then do a new assignment.
 
 Alternatively, it is possible to assign a specific address to a node:
 
@@ -184,8 +184,8 @@ Alternatively, it is possible to assign a specific address to a node:
     ipv6proto->AddAddress (ifIndex, ipv6Addr);
 
 
-Auto-generated IPv6 adddresses
-##############################
+Auto-generated IPv6 addresses
+#############################
 
 This is accomplished by relying on the RADVD protocol, implemented by the class
 :cpp:class:`Radvd`. A helper class is available, which can be used to ease the most
@@ -193,7 +193,7 @@ common tasks, e.g., setting up a prefix on an interface, if it is announced peri
 and if the router is the default router for that interface.
 
 A fine grain configuration is possible though the :cpp:class:`RadvdInterface` class, which
-allows to setup every parameter of the announced router advetisement on a given interface.
+allows to setup every parameter of the announced router advertisement on a given interface.
 
 It is worth mentioning that the configurations must be set up before installing the 
 application in the node.
@@ -206,8 +206,8 @@ Examples of RADVD use are shown in ``examples/ipv6/radvd.cc``
 and ``examples/ipv6/radvd-two-prefix.cc``.
 
 
-Random-generated IPv6 adddresses
-################################
+Random-generated IPv6 addresses
+###############################
 
 While IPv6 real nodes will use randomly generated addresses to protect privacy, |ns3|
 does NOT have this capability. This feature haven't been so far considered as interesting
@@ -220,7 +220,7 @@ Nodes will perform DAD (it can be disabled using an :cpp:class:`Icmpv6L4Protocol
 Upon receiving a DAD, however, nodes will not react to it. As is: DAD reaction is 
 incomplete so far. 
 The main reason relies on the missing random-generated address capability. Moreover, 
-since |ns3| nodes will usually be well-behaving, therea should't be any Duplicate Address.
+since |ns3| nodes will usually be well-behaving, there shouldn't be any Duplicate Address.
 This might be changed in the future, so as to avoid issues with real-world 
 integrated simulations.
 
@@ -297,7 +297,7 @@ with the difference that it's not possible to override the behaviour using esote
 forwarding=2).
 
 Consider carefully the implications of packet forwarding. As an example, a node will NOT send
-ICMPv6 PACKET_TOO_BIG messages from an interface with frowarding off. This is completely normal,
+ICMPv6 PACKET_TOO_BIG messages from an interface with forwarding off. This is completely normal,
 as the Routing protocol will drop the packet before attempting to forward it.
 
 
@@ -403,7 +403,7 @@ this MTU. This is the link-MTU.
 In order to support different MTUs in a source-destination path, |ns3| IPv6 model can
 perform fragmentation.
 This can be either triggered by receiving a packet bigger than the link-MTU from the L4
-protocols (UDP, TCP, etc.), or by receving an ICMPv6 PACKET_TOO_BIG message.
+protocols (UDP, TCP, etc.), or by receiving an ICMPv6 PACKET_TOO_BIG message.
 The model mimics RFC 1981, with the following notable exceptions:
 
 * L4 protocols are not informed of the Path MTU change

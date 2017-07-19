@@ -33,8 +33,8 @@ IPv4 global addresses can be:
 
 |ns3| can use both methods, and it's quite important to understand the implications of both.
 
-Manually assigned IPv4 adddresses
-+++++++++++++++++++++++++++++++++
+Manually assigned IPv4 addresses
+++++++++++++++++++++++++++++++++
 
 This is probably the easiest and most used method. As an example:
 
@@ -53,12 +53,12 @@ This is probably the easiest and most used method. As an example:
 
 This method will add two global IPv4 addresses to the nodes.
 
-Note that the addesses are assigned in sequence. As a consequence, the first Node / NetDevice 
+Note that the addresses are assigned in sequence. As a consequence, the first Node / NetDevice 
 will have "192.168.1.1", the second "192.168.1.2" and so on.
 
 It is possible to repeat the above to assign more than one address to a node.
 However, due to the :cpp:class:`Ipv4AddressHelper` singleton nature, one should first assign all the
-adddresses of a network, then change the network base (``SetBase``), then do a new assignment.
+addresses of a network, then change the network base (``SetBase``), then do a new assignment.
 
 Alternatively, it is possible to assign a specific address to a node:
 
@@ -80,8 +80,8 @@ Alternatively, it is possible to assign a specific address to a node:
     ipv4proto->AddAddress (ifIndex, ipv4Addr);
 
 
-DHCP assigned IPv4 adddresses
-+++++++++++++++++++++++++++++
+DHCP assigned IPv4 addresses
+++++++++++++++++++++++++++++
 
 DHCP is available in the internet-apps module. In order to use DHCP you have to have a 
 :cpp:class:`DhcpServer` application in a node (the DHC server node) and a :cpp:class:`DhcpClient` application in
@@ -122,7 +122,7 @@ be called for a  number of reasons.
 
 - If an ARP reply is received for an entry that is not waiting for a reply,
   the ARP reply packet is dropped and this trace is fired;
-- If an ARP reply is received for a non-existant entry, the ARP reply packet
+- If an ARP reply is received for a non-existent entry, the ARP reply packet
   is dropped and this trace is fired;
 - If an ARP cache entry is in the DEAD state (has timed out) and an ARP reply
   packet is received, the reply packet is dropped and this trace is fired.

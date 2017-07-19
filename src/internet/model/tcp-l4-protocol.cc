@@ -492,7 +492,7 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   TcpHeader incomingTcpHeader;
   IpL4Protocol::RxStatus checksumControl;
 
-  // If we are receving a v4-mapped packet, we will re-calculate the TCP checksum
+  // If we are receiving a v4-mapped packet, we will re-calculate the TCP checksum
   // Is it worth checking every received "v6" packet to see if it is v4-mapped in
   // order to avoid re-calculating TCP checksums for v4-mapped packets?
 
