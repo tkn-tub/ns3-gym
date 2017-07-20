@@ -92,7 +92,8 @@ void
 NoOpComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameters params)
 {
   NS_LOG_FUNCTION (this);
-  std::map <uint8_t, LteMacSapProvider*>::iterator it =  m_macSapProvidersMap.find (0);
+  auto ueManager = m_ccmRrcSapUser->GetUeManager (params.rnti);
+  std::map <uint8_t, LteMacSapProvider*>::iterator it = m_macSapProvidersMap.find (ueManager->GetComponentCarrierId ());
   NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier ");
   it->second->ReportBufferStatus (params);
 }
@@ -369,7 +370,6 @@ void
 NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId)
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT_MSG (componentCarrierId == 0, "Received BSR from a ComponentCarrier not allowed, ComponentCarrierId = " << componentCarrierId);
   NS_ASSERT_MSG (bsr.m_macCeType == MacCeListElement_s::BSR, "Received a Control Message not allowed " << bsr.m_macCeType);
   if ( bsr.m_macCeType == MacCeListElement_s::BSR)
     {
@@ -393,7 +393,7 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
           // to the primary carrier component
           newBsr.m_macCeValue.m_bufferStatus.at (i) = BufferSizeLevelBsr::BufferSize2BsrId (buffer);
         }
-      std::map< uint8_t,LteCcmMacSapProvider*>::iterator sapIt = m_ccmMacSapProviderMap.find (0);
+      auto sapIt = m_ccmMacSapProviderMap.find (componentCarrierId);
       if (sapIt == m_ccmMacSapProviderMap.end ())
         {
           NS_FATAL_ERROR ("Sap not found in the CcmMacSapProviderMap");
@@ -446,15 +446,15 @@ RrComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBuffer
 
   NS_ASSERT_MSG( m_enabledComponentCarrier.find(params.rnti)!=m_enabledComponentCarrier.end(), " UE with provided RNTI not found. RNTI:"<<params.rnti);
 
-  if (params.lcid == 0 || params.lcid==1)
+  uint32_t numberOfCarriersForUe = m_enabledComponentCarrier.find (params.rnti)->second;
+  if (params.lcid == 0 || params.lcid == 1 || numberOfCarriersForUe == 1)
     {
-      NS_LOG_INFO("Buffer status for lcId=0 and lcId=1 forwarded to the primary carrier.");
-      m_macSapProvidersMap.find(0)->second->ReportBufferStatus(params);
-
+      NS_LOG_INFO("Buffer status forwarded to the primary carrier.");
+      auto ueManager = m_ccmRrcSapUser->GetUeManager (params.rnti);
+      m_macSapProvidersMap.at (ueManager->GetComponentCarrierId ())->ReportBufferStatus (params);
     }
   else
     {
-      uint32_t numberOfCarriersForUe = m_enabledComponentCarrier.find(params.rnti)->second;
       params.retxQueueSize /= numberOfCarriersForUe;
       params.txQueueSize /= numberOfCarriersForUe;
       for ( uint16_t i = 0;  i < numberOfCarriersForUe ; i++)
@@ -510,8 +510,8 @@ RrComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t com
     }
   else
     {
-      NS_ASSERT_MSG (m_ccmMacSapProviderMap[0], "Mac sap provider does not exist.");
-      m_ccmMacSapProviderMap[0]->ReportMacCeToScheduler(bsr);
+      auto ueManager = m_ccmRrcSapUser->GetUeManager (bsr.m_rnti);
+      m_ccmMacSapProviderMap.at (ueManager->GetComponentCarrierId ())->ReportMacCeToScheduler (bsr);
     }
 }
 

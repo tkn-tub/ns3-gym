@@ -289,6 +289,14 @@ CarrierAggregationTestCase::DoRun (void)
   
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
+  auto cch = CreateObject<CcHelper> ();
+  cch->SetDlEarfcn (100); // Same as default value for LteEnbNetDevice
+  cch->SetUlEarfcn (100 + 18000); // Same as default value for LteEnbNetDevice
+  cch->SetDlBandwidth (m_dlBandwidth);
+  cch->SetUlBandwidth (m_ulBandwidth);
+  cch->SetNumberOfComponentCarriers (m_numberOfComponentCarriers);
+  lteHelper->SetCcPhyParams (cch->EquallySpacedCcs ());
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;

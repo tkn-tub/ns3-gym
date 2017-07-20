@@ -203,6 +203,14 @@ public:
    */
   virtual void ReleaseLcs (uint16_t rnti, uint8_t lcid) = 0;
 
+  /**
+   * Get UE manager by RNTI
+   *
+   * \param rnti RNTI
+   * \return UE manager
+   */
+  virtual Ptr<UeManager> GetUeManager (uint16_t rnti) = 0;
+
 }; // end of class LteCcmRrcSapUser
 
 /// MemberLteCcmRrcSapProvider class
@@ -296,6 +304,7 @@ public:
   virtual void ReleaseLcs (uint16_t rnti, uint8_t lcid);
   virtual uint8_t AddUeMeasReportConfigForComponentCarrier (LteRrcSap::ReportConfigEutra reportConfig);
   virtual void TriggerComponentCarrier (uint16_t rnti, uint16_t targetCellId);
+  virtual Ptr<UeManager> GetUeManager (uint16_t rnti);
 
 private:
   C* m_owner; ///< the owner class
@@ -335,6 +344,13 @@ void
 MemberLteCcmRrcSapUser<C>::TriggerComponentCarrier (uint16_t rnti, uint16_t targetCellId)
 {
   NS_FATAL_ERROR ("Function should not be called because it is not implemented.");
+}
+
+template <class C>
+Ptr<UeManager>
+MemberLteCcmRrcSapUser<C>::GetUeManager (uint16_t rnti)
+{
+  return m_owner->GetUeManager (rnti);
 }
 
 } // end of namespace ns3

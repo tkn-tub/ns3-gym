@@ -178,6 +178,7 @@ def build(bld):
         'test/test-asn1-encoding.cc',
         'test/lte-test-ue-measurements.cc',
         'test/lte-test-cell-selection.cc',
+        'test/lte-test-secondary-cell-selection.cc',
         'test/test-lte-handover-delay.cc',
         'test/test-lte-handover-target.cc',
         'test/lte-test-deactivate-bearer.cc',
@@ -189,6 +190,7 @@ def build(bld):
         'test/lte-test-cqi-generation.cc',
         'test/lte-simple-spectrum-phy.cc',
         'test/lte-test-carrier-aggregation.cc',
+        'test/lte-test-aggregation-throughput-scale.cc',
         ]
 
     headers = bld(features='ns3header')

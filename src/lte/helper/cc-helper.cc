@@ -27,6 +27,7 @@
 #include <ns3/pointer.h>
 #include <iostream>
 #include <ns3/uinteger.h>
+#include <ns3/lte-spectrum-value-helper.h>
 
 #define MIN_CC 1
 #define MAX_CC 2
@@ -61,12 +62,12 @@ TypeId CcHelper::GetTypeId (void)
                    UintegerValue (1),
                    MakeUintegerAccessor (&CcHelper::m_numberOfComponentCarriers),
                    MakeUintegerChecker<uint16_t> (MIN_CC, MAX_CC))
-    .AddAttribute ("UlFreq",
+    .AddAttribute ("UlEarfcn",
                    "Set Ul Channel [EARFCN] for the first carrier component",
                    UintegerValue (0),
                    MakeUintegerAccessor (&CcHelper::m_ulEarfcn),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("DlFreq",
+    .AddAttribute ("DlEarfcn",
                    "Set Dl Channel [EARFCN] for the first carrier component",
                    UintegerValue (0),
                    MakeUintegerAccessor (&CcHelper::m_dlEarfcn),
@@ -172,19 +173,46 @@ CcHelper::EquallySpacedCcs ()
 {
   std::map< uint8_t, ComponentCarrier > ccmap;
 
+  uint32_t ulEarfcn = m_ulEarfcn;
+  uint32_t dlEarfcn = m_dlEarfcn;
+  uint32_t maxBandwidthRb = std::max<uint32_t> (m_ulBandwidth, m_dlBandwidth);
+
+  // Convert bandwidth from RBs to kHz
+  uint32_t maxBandwidthKhz = LteSpectrumValueHelper::GetChannelBandwidth(maxBandwidthRb) / 1e3;
+
   for (uint8_t i = 0; i < m_numberOfComponentCarriers; i++)
     {
+      // Make sure we stay within the same band.
+      if (LteSpectrumValueHelper::GetUplinkCarrierBand (ulEarfcn) !=
+          LteSpectrumValueHelper::GetUplinkCarrierBand (m_ulEarfcn)
+       || LteSpectrumValueHelper::GetDownlinkCarrierBand (dlEarfcn) !=
+          LteSpectrumValueHelper::GetDownlinkCarrierBand (m_dlEarfcn))
+        {
+          NS_FATAL_ERROR ("Band is not wide enough to allocate " << +m_numberOfComponentCarriers << " CCs");
+        }
+
       bool pc =false;
-      uint32_t ul = m_ulEarfcn + i * m_ulBandwidth;
-      uint32_t dl = m_dlEarfcn + i * m_dlBandwidth;
+
       if (i == 0)
         {
           pc = true;
         }
-      ComponentCarrier cc = CreateSingleCc (m_ulBandwidth, m_dlBandwidth, ul, dl, pc);
+      ComponentCarrier cc = CreateSingleCc (m_ulBandwidth, m_dlBandwidth, ulEarfcn, dlEarfcn, pc);
       ccmap.insert (std::pair<uint8_t, ComponentCarrier >(i, cc));
 
-      NS_LOG_INFO(" ulBandwidth:"<<m_ulBandwidth<<" , dlBandwidth: "<<m_dlBandwidth<<" , ul:"<<ul<<" , dl:"<<dl);
+      NS_LOG_INFO("ulBandwidth: " << m_ulBandwidth <<
+                  ", dlBandwidth: " << m_dlBandwidth <<
+                  ", ulEarfcn: " << ulEarfcn <<
+                  ", dlEarfcn: " << dlEarfcn);
+
+      // The spacing between the centre frequencies of two contiguous CCs should be multiple of 300 kHz.
+      // Round spacing up to 300 kHz.
+      uint32_t frequencyShift = 300 * (1 + (maxBandwidthKhz - 1) / 300);
+
+      // Unit of EARFCN corresponds to 100kHz.
+      uint32_t earfcnShift = frequencyShift / 100;
+      ulEarfcn += earfcnShift;
+      dlEarfcn += earfcnShift;
     }
 
   return ccmap;

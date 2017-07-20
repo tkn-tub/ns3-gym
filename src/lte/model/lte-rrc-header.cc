@@ -1717,7 +1717,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
   {
     // 3 optional fields. Extension marker not present.
     std::bitset<3> noncriticalExtension_v1020;
-    noncriticalExtension_v1020.set (1,0); // No sCellToRealeaseList-r10
+    noncriticalExtension_v1020.set (2,0); // No sCellToRealeaseList-r10
     noncriticalExtension_v1020.set (1,1); // sCellToAddModList-r10
     noncriticalExtension_v1020.set (0,0); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
     SerializeSequence (noncriticalExtension_v1020,false);
@@ -1740,7 +1740,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
             cellIdentification_r10.set(0,1); // dl-CarrierFreq-r10
             SerializeSequence (cellIdentification_r10, false);
 
-            SerializeInteger (it->cellIdentification.physCellId,1,MAX_EARFCN);
+            SerializeInteger (it->cellIdentification.physCellId,1,65536);
             SerializeInteger (it->cellIdentification.dlCarrierFreq,1,MAX_EARFCN);
             
             //Serialize RadioResourceConfigCommonSCell
@@ -1769,7 +1769,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
     radioResourceConfigCommonSCell_r10.set (0,rrccsc.haveUlConfiguration); // UlConfiguration
     SerializeSequence (radioResourceConfigCommonSCell_r10,false);
      
-    if (radioResourceConfigCommonSCell_r10[1])
+    if (rrccsc.haveNonUlConfiguration)
       {
         // 5 optional fields. Extension marker not present.
         std::bitset<5> nonUlConfiguration_r10;
@@ -1796,7 +1796,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
         SerializeInteger (rrccsc.nonUlConfiguration.pdschConfigCommon.pb,0,3); 
         
       }
-    if (radioResourceConfigCommonSCell_r10[0])
+    if (rrccsc.haveUlConfiguration)
       {
         //Serialize Ul Configuration
         // 7 optional fields. Extension marker present.
@@ -1860,12 +1860,12 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
     pcdscOpt.set (0,pcdsc.haveUlConfiguration);
     SerializeSequence (pcdscOpt, true);
 
-    if (pcdscOpt[1])
+    if (pcdsc.haveNonUlConfiguration)
       {
         //Serialize NonUl configuration
         std::bitset<4> nulOpt;
         nulOpt.set (3,pcdsc.haveAntennaInfoDedicated);
-        nulOpt.set (2,0);  // crossCarrierSchedulingConfig-r10 NOT IMplemented
+        nulOpt.set (2,0);  // crossCarrierSchedulingConfig-r10 Not Implemented
         nulOpt.set (1,0);  // csi-RS-Config-r10 Not Implemented
         nulOpt.set (0, pcdsc.havePdschConfigDedicated); // pdsch-ConfigDedicated-r10
         SerializeSequence (nulOpt,false);
@@ -1906,7 +1906,7 @@ RrcAsn1Header::SerializeMeasConfig (LteRrcSap::MeasConfig measConfig) const
 
 
       }
-    if (pcdscOpt[0])
+    if (pcdsc.haveUlConfiguration)
       {
         //Serialize Ul Configuration
         std::bitset<7> ulOpt;
@@ -2591,6 +2591,10 @@ RrcAsn1Header::Print (std::ostream &os) const
             // Continue to deserialize futere Release optional fields
             std::bitset<3> nonCriticalExtension_v1020;
             bIterator = DeserializeSequence (&nonCriticalExtension_v1020, false, bIterator);
+            NS_ASSERT (!nonCriticalExtension_v1020[2]); // No sCellToRealeaseList-r10
+            NS_ASSERT (nonCriticalExtension_v1020[1]); // sCellToAddModList-r10
+            NS_ASSERT (!nonCriticalExtension_v1020[0]); // No nonCriticalExtension RRCConnectionReconfiguration-v1130-IEs
+
             int numElems;
             bIterator = DeserializeSequenceOf (&numElems,MAX_OBJECT_ID,1,bIterator);
             nonCriticalExtension->sCellsToAddModList.clear ();
@@ -2602,13 +2606,16 @@ RrcAsn1Header::Print (std::ostream &os) const
                 
                 LteRrcSap::SCellToAddMod sctam;
                 // Deserialize sCellIndex
+                NS_ASSERT (sCellToAddMod_r10[3]); // sCellIndex
                 int n;
                 bIterator = DeserializeInteger (&n,1,MAX_OBJECT_ID,bIterator);
                 sctam.sCellIndex = n;
                 // Deserialize CellIdentification
+                NS_ASSERT (sCellToAddMod_r10[2]); // CellIdentification
                 bIterator = DeserializeCellIdentification (&sctam.cellIdentification, bIterator);
 
                 // Deserialize RadioResourceConfigCommonSCell
+                NS_ASSERT (sCellToAddMod_r10[1]);
                 bIterator = DeserializeRadioResourceConfigCommonSCell (&sctam.radioResourceConfigCommonSCell, bIterator);
                 if (sCellToAddMod_r10[0])
                   {
@@ -2630,11 +2637,13 @@ RrcAsn1Header::Print (std::ostream &os) const
     NS_LOG_FUNCTION (this);
     std::bitset<2> cellIdentification_r10;
     bIterator = DeserializeSequence (&cellIdentification_r10,false,bIterator);
+    NS_ASSERT(cellIdentification_r10[1]); // phyCellId-r10
     int n1;
     bIterator = DeserializeInteger (&n1,1,65536,bIterator);
     ci->physCellId = n1;
     int n2;
-    bIterator = DeserializeInteger (&n2,1,65536,bIterator);
+    NS_ASSERT (cellIdentification_r10[0]); // dl-CarrierFreq-r10
+    bIterator = DeserializeInteger (&n2,1,MAX_EARFCN,bIterator);
     ci->dlCarrierFreq = n2;
 
     return bIterator;
@@ -2683,7 +2692,7 @@ RrcAsn1Header::Print (std::ostream &os) const
 
         std::bitset<2> UlPowerControlCommonSCell_r10;
         bIterator = DeserializeSequence (&UlPowerControlCommonSCell_r10,false,bIterator);
-        bIterator = DeserializeInteger (&n,0,MAX_EARFCN,bIterator);
+        bIterator = DeserializeInteger (&n,0,65536,bIterator);
         rrccsc->ulConfiguration.ulPowerControlCommonSCell.alpha = n;
          
         std::bitset<1> prachConfigSCell_r10;
@@ -2701,7 +2710,7 @@ RrcAsn1Header::Print (std::ostream &os) const
     NS_LOG_FUNCTION (this);
     std::bitset<1> RadioResourceConfigDedicatedSCell_r10;
     bIterator = DeserializeSequence (&RadioResourceConfigDedicatedSCell_r10,false,bIterator);
-    DeserializePhysicalConfigDedicatedSCell (&rrcdsc->physicalConfigDedicatedSCell, bIterator);
+    bIterator = DeserializePhysicalConfigDedicatedSCell (&rrcdsc->physicalConfigDedicatedSCell, bIterator);
 
     return bIterator;
   }
@@ -2719,6 +2728,8 @@ RrcAsn1Header::Print (std::ostream &os) const
          std::bitset<4> nulOpt;
          bIterator = DeserializeSequence (&nulOpt,false,bIterator);
          pcdsc->haveAntennaInfoDedicated = nulOpt[3];  
+         NS_ASSERT(!nulOpt[2]); // crossCarrierSchedulingConfig-r10 Not Implemented
+         NS_ASSERT(!nulOpt[1]); // csi-RS-Config-r10 Not Implemented
          pcdsc->havePdschConfigDedicated = nulOpt[0];  
 
          if (pcdsc->haveAntennaInfoDedicated)
@@ -2742,6 +2753,7 @@ RrcAsn1Header::Print (std::ostream &os) const
                  if (codebookSubsetRestrictionPresent[0])
                    {
                      // Deserialize codebookSubsetRestriction
+                     NS_FATAL_ERROR ("Not implemented yet");
                      // ...
                    }
 
@@ -2755,6 +2767,7 @@ RrcAsn1Header::Print (std::ostream &os) const
                  else if (txantennaselchosen == 1)
                    {
                      // Deserialize ue-TransmitAntennaSelection setup
+                     NS_FATAL_ERROR ("Not implemented yet");
                      // ...
                    }
                }
@@ -2780,7 +2793,12 @@ RrcAsn1Header::Print (std::ostream &os) const
          std::bitset<7> ulOpt;
          bIterator = DeserializeSequence (&ulOpt,false,bIterator);
          pcdsc->haveAntennaInfoUlDedicated = ulOpt[6];
+         NS_ASSERT(!ulOpt[5]); // pusch-ConfigDedicatedSCell-r10 not present
+         NS_ASSERT(!ulOpt[4]); // uplinkPowerControlDedicatedSCell-r10 not present
+         NS_ASSERT(!ulOpt[3]); // cqi-ReportConfigSCell-r10 not present
          pcdsc->haveSoundingRsUlConfigDedicated = ulOpt[2];
+         NS_ASSERT(!ulOpt[1]); // soundingRS-UL-ConfigDedicated-v1020 not present
+         NS_ASSERT(!ulOpt[0]); // soundingRS-UL-ConfigDedicatedAperiodic-r10 not present
          
          if (pcdsc->haveAntennaInfoUlDedicated)
            {
@@ -2803,6 +2821,7 @@ RrcAsn1Header::Print (std::ostream &os) const
                  if (codebookSubsetRestrictionPresent[0])
                    {
                      // Deserialize codebookSubsetRestriction
+                     NS_FATAL_ERROR ("Not implemented yet");
                      // ...
                    }
 
@@ -2816,6 +2835,7 @@ RrcAsn1Header::Print (std::ostream &os) const
                  else if (txantennaselchosen == 1)
                    {
                      // Deserialize ue-TransmitAntennaSelection setup
+                     NS_FATAL_ERROR ("Not implemented yet");
                      // ...
                    }
                }

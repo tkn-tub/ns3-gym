@@ -114,38 +114,62 @@ LteSpectrumValueHelper::GetCarrierFrequency (uint32_t earfcn)
     }
 }
 
-double 
-LteSpectrumValueHelper::GetDownlinkCarrierFrequency (uint32_t nDl)
+uint16_t
+LteSpectrumValueHelper::GetDownlinkCarrierBand (uint32_t nDl)
 {
   NS_LOG_FUNCTION (nDl);
   for (uint16_t i = 0; i < NUM_EUTRA_BANDS; ++i)
     {
-      if ((g_eutraChannelNumbers[i].rangeNdl1 <= nDl)
-          && (g_eutraChannelNumbers[i].rangeNdl2 >= nDl))
+      if (g_eutraChannelNumbers[i].rangeNdl1 <= nDl &&
+          g_eutraChannelNumbers[i].rangeNdl2 >= nDl)
         {
           NS_LOG_LOGIC ("entry " << i << " fDlLow=" << g_eutraChannelNumbers[i].fDlLow);
-          return 1.0e6 * (g_eutraChannelNumbers[i].fDlLow + 0.1 * (nDl - g_eutraChannelNumbers[i].nOffsDl));
+          return i;
         }
     }
   NS_LOG_ERROR ("invalid EARFCN " << nDl);
-  return 0.0;
+  return NUM_EUTRA_BANDS;
 }
 
-double 
-LteSpectrumValueHelper::GetUplinkCarrierFrequency (uint32_t nUl)
+uint16_t
+LteSpectrumValueHelper::GetUplinkCarrierBand (uint32_t nUl)
 {
   NS_LOG_FUNCTION (nUl);
   for (uint16_t i = 0; i < NUM_EUTRA_BANDS; ++i)
     {
-      if ((g_eutraChannelNumbers[i].rangeNul1 <= nUl)
-          && (g_eutraChannelNumbers[i].rangeNul2 >= nUl))
+      if (g_eutraChannelNumbers[i].rangeNul1 <= nUl &&
+          g_eutraChannelNumbers[i].rangeNul2 >= nUl)
         {
           NS_LOG_LOGIC ("entry " << i << " fUlLow=" << g_eutraChannelNumbers[i].fUlLow);
-          return 1.0e6 * (g_eutraChannelNumbers[i].fUlLow + 0.1 * (nUl - g_eutraChannelNumbers[i].nOffsUl));
+          return i;
         }
     }
   NS_LOG_ERROR ("invalid EARFCN " << nUl);
-  return 0.0;
+  return NUM_EUTRA_BANDS;
+}
+
+double
+LteSpectrumValueHelper::GetDownlinkCarrierFrequency (uint32_t nDl)
+{
+  NS_LOG_FUNCTION (nDl);
+  uint16_t i = GetDownlinkCarrierBand (nDl);
+  if (i == NUM_EUTRA_BANDS)
+    {
+      return 0.0;
+    }
+  return 1.0e6 * (g_eutraChannelNumbers[i].fDlLow + 0.1 * (nDl - g_eutraChannelNumbers[i].nOffsDl));
+}
+
+double
+LteSpectrumValueHelper::GetUplinkCarrierFrequency (uint32_t nUl)
+{
+  NS_LOG_FUNCTION (nUl);
+  uint16_t i = GetUplinkCarrierBand (nUl);
+  if (i == NUM_EUTRA_BANDS)
+    {
+      return 0.0;
+    }
+  return 1.0e6 * (g_eutraChannelNumbers[i].fUlLow + 0.1 * (nUl - g_eutraChannelNumbers[i].nOffsUl));
 }
 
 double 

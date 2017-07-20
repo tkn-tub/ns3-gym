@@ -48,13 +48,31 @@ public:
   static double GetCarrierFrequency (uint32_t earfcn);
 
   /**
-   * Calculates the dowlink carrier frequency from the E-UTRA Absolute
+   * Converts downlink EARFCN to corresponding LTE frequency band number.
+   *
+   * \param earfcn the EARFCN
+   *
+   * \return the downlink carrier band
+   */
+  static uint16_t GetDownlinkCarrierBand (uint32_t nDl);
+
+  /**
+   * Converts uplink EARFCN to corresponding LTE frequency band number.
+   *
+   * \param earfcn the EARFCN
+   *
+   * \return the uplink carrier band
+   */
+  static uint16_t GetUplinkCarrierBand (uint32_t nDl);
+
+  /**
+   * Calculates the downlink carrier frequency from the E-UTRA Absolute
    * Radio Frequency Channel Number (EARFCN) using the formula in 3GPP TS
    * 36.101 section 5.7.3 "Carrier frequency and EARFCN".
    *
    * \param earfcn the EARFCN
    *
-   * \return the dowlink carrier frequency in Hz
+   * \return the downlink carrier frequency in Hz
    */
   static double GetDownlinkCarrierFrequency (uint32_t earfcn);
 

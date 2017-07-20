@@ -256,7 +256,7 @@ LteUeRrcProtocolReal::SetEnbRrcSapProvider ()
             }
           else
             {
-              if (enbDev->GetCellId () == cellId)
+              if (enbDev->HasCellId (cellId))
                 {
                   found = true;
                   break;
@@ -504,9 +504,9 @@ LteEnbRrcProtocolReal::DoRemoveUe (uint16_t rnti)
 }
 
 void 
-LteEnbRrcProtocolReal::DoSendSystemInformation (LteRrcSap::SystemInformation msg)
+LteEnbRrcProtocolReal::DoSendSystemInformation (uint16_t cellId, LteRrcSap::SystemInformation msg)
 {
-  NS_LOG_FUNCTION (this << m_cellId);
+  NS_LOG_FUNCTION (this << cellId);
   // walk list of all nodes to get UEs with this cellId
   Ptr<LteUeRrc> ueRrc;
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i)
@@ -520,7 +520,7 @@ LteEnbRrcProtocolReal::DoSendSystemInformation (LteRrcSap::SystemInformation msg
             {
               Ptr<LteUeRrc> ueRrc = ueDev->GetRrc ();
               NS_LOG_LOGIC ("considering UE IMSI " << ueDev->GetImsi () << " that has cellId " << ueRrc->GetCellId ());
-              if (ueRrc->GetCellId () == m_cellId)
+              if (ueRrc->GetCellId () == cellId)
                 {
                   NS_LOG_LOGIC ("sending SI to IMSI " << ueDev->GetImsi ());
                   ueRrc->GetLteUeRrcSapProvider ()->RecvSystemInformation (msg);
@@ -549,14 +549,7 @@ LteEnbRrcProtocolReal::DoSendRrcConnectionSetup (uint16_t rnti, LteRrcSap::RrcCo
   transmitPdcpPduParameters.rnti = rnti;
   transmitPdcpPduParameters.lcid = 0;
 
-  if (m_setupUeParametersMap.find (rnti) == m_setupUeParametersMap.end () )
-    {
-      std::cout << "RNTI not found in Enb setup parameters Map!" << std::endl;
-    }
-  else
-    {
-      m_setupUeParametersMap[rnti].srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
-    }
+  m_setupUeParametersMap.at (rnti).srb0SapProvider->TransmitPdcpPdu (transmitPdcpPduParameters);
 }
 
 void 
