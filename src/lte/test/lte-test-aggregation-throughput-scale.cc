@@ -22,6 +22,7 @@
 #include "lte-test-aggregation-throughput-scale.h"
 
 #include <algorithm>
+#include <numeric>
 
 #include <ns3/application-container.h>
 #include <ns3/friis-spectrum-propagation-loss.h>
