@@ -184,7 +184,11 @@ void
 UdpTraceClient::LoadTrace (std::string filename)
 {
   NS_LOG_FUNCTION (this << filename);
-  uint32_t time, index, oldIndex, size, prevTime = 0;
+  uint32_t time = 0;
+  uint32_t index = 0;
+  uint32_t oldIndex = 0;
+  uint32_t size = 0;
+  uint32_t prevTime = 0;
   char frameType;
   TraceEntry entry;
   std::ifstream ifTraceFile;
