@@ -22,7 +22,9 @@ import matplotlib.pyplot as plt
 import ns.core
 
 # mu, var = 100, 225
-rng = ns.core.NormalVariable(100.0, 225.0)
+rng = ns.core.NormalRandomVariable()
+rng.SetAttribute("Mean", ns.core.DoubleValue(100.0))
+rng.SetAttribute("Variance", ns.core.DoubleValue(225.0))
 x = [rng.GetValue() for t in range(10000)]
 
 # the histogram of the data
