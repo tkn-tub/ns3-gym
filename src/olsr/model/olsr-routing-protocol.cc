@@ -244,6 +244,7 @@ void RoutingProtocol::DoDispose ()
   if (m_recvSocket)
     {
       m_recvSocket->Close ();
+      m_recvSocket = 0;
     }
 
   for (std::map< Ptr<Socket>, Ipv4InterfaceAddress >::iterator iter = m_sendSockets.begin ();
@@ -252,6 +253,7 @@ void RoutingProtocol::DoDispose ()
       iter->first->Close ();
     }
   m_sendSockets.clear ();
+  m_table.clear ();
 
   Ipv4RoutingProtocol::DoDispose ();
 }
