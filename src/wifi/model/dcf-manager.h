@@ -202,6 +202,9 @@ public:
    */
   void NotifyCtsTimeoutResetNow ();
 
+protected:
+  // Inherited from ns3::Object
+  void DoDispose (void);
 
 private:
   /**

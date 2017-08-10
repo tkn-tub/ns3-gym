@@ -146,6 +146,9 @@ public:
 protected:
   friend class DcfManager;
 
+  // Inherited from ns3::Object
+  void DoDispose (void);
+
   /**
    * Return the current number of backoff slots.
    *

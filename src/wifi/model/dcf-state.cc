@@ -56,6 +56,14 @@ DcfState::~DcfState ()
 }
 
 void
+DcfState::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_txop->Dispose ();
+  m_txop = 0;
+}
+
+void
 DcfState::SetAifsn (uint32_t aifsn)
 {
   NS_LOG_FUNCTION (this << aifsn);

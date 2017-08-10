@@ -110,6 +110,7 @@ RegularWifiMac::DoDispose ()
       i->second = 0;
     }
 
+  m_dcfManager->Dispose ();
   m_dcfManager = 0;
 }
 

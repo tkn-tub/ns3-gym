@@ -117,6 +117,17 @@ DcfManager::~DcfManager ()
 }
 
 void
+DcfManager::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+  for (Ptr<DcfState> i : m_states)
+    {
+      i->Dispose ();
+      i = 0;
+    } 
+}
+
+void
 DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
