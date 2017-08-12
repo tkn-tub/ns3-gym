@@ -2817,7 +2817,7 @@ RrcAsn1Header::Print (std::ostream &os) const
 
                  int txmode;
                  bIterator = DeserializeEnum (8,&txmode,bIterator);
-                 pcdsc->antennaInfo.transmissionMode = txmode;
+                 pcdsc->antennaInfoUl.transmissionMode = txmode;
 
                  if (codebookSubsetRestrictionPresent[0])
                    {
