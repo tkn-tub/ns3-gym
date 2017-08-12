@@ -2617,6 +2617,7 @@ RrcAsn1Header::Print (std::ostream &os) const
                 // Deserialize RadioResourceConfigCommonSCell
                 NS_ASSERT (sCellToAddMod_r10[1]);
                 bIterator = DeserializeRadioResourceConfigCommonSCell (&sctam.radioResourceConfigCommonSCell, bIterator);
+                sctam.haveRadioResourceConfigDedicatedSCell = sCellToAddMod_r10[0];
                 if (sCellToAddMod_r10[0])
                   {
                     //Deserialize RadioResourceConfigDedicatedSCell
