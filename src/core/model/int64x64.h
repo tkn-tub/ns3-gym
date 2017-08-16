@@ -151,7 +151,7 @@ inline bool operator >= (const int64x64_t & lhs, const int64x64_t & rhs)
  * Output streamer for int64x64_t.
  *
  * Values are printed with the following format flags
- * (independent of the the stream flags):
+ * (independent of the stream flags):
  *   - `showpos`
  *   - `left`
  *

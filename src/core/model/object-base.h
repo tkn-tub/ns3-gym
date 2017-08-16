@@ -158,7 +158,7 @@ public:
   /**
    * Set a single attribute without raising errors.
    *
-   * If the atttribute could not be set this will return \c false,
+   * If the attribute could not be set this will return \c false,
    * but not raise any errors.
    *
    * \param [in] name The name of the attribute to set.
