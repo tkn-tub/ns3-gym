@@ -52,14 +52,14 @@ XmlConfigSave::SetFilename (std::string filename)
   m_writer = xmlNewTextWriterFilename (filename.c_str (), 0);
   if (m_writer == NULL) 
     {
-      NS_FATAL_ERROR ("Error creating the xml writer");
+      NS_FATAL_ERROR ("Error creating the XML writer");
     }
   rc = xmlTextWriterSetIndent (m_writer, 1);
   if (rc < 0)
     {
       NS_FATAL_ERROR ("Error at xmlTextWriterSetIndent");
     }
-  /* Start the document with the xml default for the version,
+  /* Start the document with the XML default for the version,
    * encoding utf-8 and the default for the standalone
    * declaration. */
   rc = xmlTextWriterStartDocument (m_writer, NULL, "utf-8", NULL);
@@ -68,7 +68,7 @@ XmlConfigSave::SetFilename (std::string filename)
       NS_FATAL_ERROR ("Error at xmlTextWriterStartDocument");
     }
 
-  /* Start an element named "ns3". Since thist is the first
+  /* Start an element named "ns3". Since this is the first
    * element, this will be the root element of the document. */
   rc = xmlTextWriterStartElement (m_writer, BAD_CAST "ns3");
   if (rc < 0) 

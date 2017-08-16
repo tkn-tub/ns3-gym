@@ -119,7 +119,7 @@ load_clicked_default (GtkButton *button, gpointer user_data);
 /**
  *  This functions is called whenever there is a change in the value of an attribute
  *  If the input value is ok, it will be updated in the default value and in the
- *  gui, otherwise, it won't be updated in both.
+ *  GUI, otherwise, it won't be updated in both.
  */
 void
 cell_edited_callback_config_default (GtkCellRendererText *cell, gchar *path_string,

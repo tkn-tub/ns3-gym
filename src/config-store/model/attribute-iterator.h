@@ -39,7 +39,7 @@ public:
   virtual ~AttributeIterator ();
 
   /**
-   * Start the processs of iterating all objects from the root namespace object
+   * Start the process of iterating all objects from the root namespace object
    */
   void Iterate (void);
 protected:
