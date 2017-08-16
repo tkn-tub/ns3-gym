@@ -150,14 +150,17 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
       if (std::abs (pit->GetAmp ()) > maxAmp)
         {
           maxAmp = std::abs (pit->GetAmp ());
-          maxTapDelay = pit->GetDelay ().GetSeconds ();
+          // Modified in order to subtract delay of first tap (maxTapDelay appears to be used later in code 
+          // as delay from first reception, not from TX time)
+          maxTapDelay = pit->GetDelay ().GetSeconds () - pdp.GetTap(0).GetDelay().GetSeconds();
         }
     }
 
 
   double effRxPowerDb = rxPowerDb + KpToDb (csp);
-
-  double isiUpa = rxPowerDb * pdp.SumTapsFromMaxNc (Seconds (ts + clearingTime), Seconds (ts));
+  //It appears to be just the first elements of the sum in Parrish paper, 
+  // "System Design Considerations for Undersea Networks: Link and Multiple Access Protocols", eq. 14
+  double isiUpa = DbToKp(rxPowerDb) * pdp.SumTapsFromMaxNc (Seconds (ts + clearingTime), Seconds (ts)); // added DpToKp()
   UanTransducer::ArrivalList::const_iterator it = arrivalList.begin ();
   double intKp = -DbToKp (effRxPowerDb);
   for (; it != arrivalList.end (); it++)
@@ -178,20 +181,23 @@ UanPhyCalcSinrFhFsk::CalcSinrDb (Ptr<Packet> pkt,
         }
 
       double intPower = 0.0;
-      if (tDelta < ts)
+      if (tDelta < ts) // Case where there is overlap of a symbol due to interferer arriving just after desired signal
         {
+          //Appears to be just the first two elements of the sum in Parrish paper, eq. 14
           intPower += intPdp.SumTapsNc (Seconds (0), Seconds (ts - tDelta));
           intPower += intPdp.SumTapsNc (Seconds (ts - tDelta + clearingTime),
                                         Seconds (2 * ts - tDelta + clearingTime));
         }
-      else
+      else // Account for case where there's overlap of a symbol due to interferer arriving with a tDelta of a symbol + clearing time later
         {
+          // Appears to be just the first two elements of the sum in Parrish paper, eq. 14
           Time start = Seconds (ts + clearingTime - tDelta);
-          Time end = start + Seconds (ts);
+          Time end = /*start +*/ Seconds (ts); // Should only sum over portion of ts that overlaps, not entire ts
           intPower += intPdp.SumTapsNc (start, end);
 
           start = start + Seconds (ts + clearingTime);
-          end = start + Seconds (ts);
+          //Should only sum over portion of ts that overlaps, not entire ts
+          end = end + Seconds (ts + clearingTime); //start + Seconds (ts);
           intPower += intPdp.SumTapsNc (start, end);
         }
       intKp += DbToKp (it->GetRxPowerDb ()) * intPower;

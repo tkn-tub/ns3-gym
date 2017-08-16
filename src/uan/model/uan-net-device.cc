@@ -79,6 +79,17 @@ UanNetDevice::Clear ()
 }
 
 void
+UanNetDevice::DoInitialize (void)
+{
+  m_phy->Initialize ();
+  m_mac->Initialize ();
+  m_channel->Initialize ();
+  m_trans->Initialize ();
+
+  NetDevice::DoInitialize ();
+}
+
+void
 UanNetDevice::DoDispose ()
 {
   Clear ();

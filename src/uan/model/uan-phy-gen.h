@@ -177,6 +177,14 @@ public:
  * clearing time between symbols transmitted on the same frequency.
  * This clearing time combats ISI from channel delay spread and also has
  * a byproduct of possibly reducing interference from other transmitted packets.
+ * 
+ * Thanks to Randall Plate for the latest model revision based on the following 
+ * papers:
+ * <ul> 
+ * <li>Parrish, "System Design Considerations for Undersea Networks: Link and Multiple Access Protocols"
+ * <li>Siderius, "Effects of Ocean Thermocline Variability on Noncoherent Underwater Acoustic Communications"
+ * <li>Rao, "Channel Coding Techniques for Wireless Communications", ch 2
+ * </ul>
  */
 class UanPhyCalcSinrFhFsk : public UanPhyCalcSinr
 {
