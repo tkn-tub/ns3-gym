@@ -309,7 +309,7 @@ LenaTdTbfqFfMacSchedulerTestCase1::DoRun (void)
   //Config::SetDefault ("ns3::LteEnbRrc::EpsBearerToRlcMapping", EnumValue (LteHelper::RLC_UM_ALWAYS));
 
 //   LogComponentDisableAll (LOG_LEVEL_ALL);
-  //LogComponentEnable ("LenaTestTdTbfqFfMacCheduler", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LenaTestTdTbfqFfMacScheduler", LOG_LEVEL_ALL);
    
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
@@ -549,7 +549,7 @@ LenaTdTbfqFfMacSchedulerTestCase2::DoRun (void)
 
 
 //   LogComponentDisableAll (LOG_LEVEL_ALL);
-  //LogComponentEnable ("LenaTestTdTbfqFfMacCheduler", LOG_LEVEL_ALL);
+  //LogComponentEnable ("LenaTestTdTbfqFfMacScheduler", LOG_LEVEL_ALL);
    
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 

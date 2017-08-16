@@ -734,7 +734,7 @@ private:
    */
   void DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice, uint8_t bearerId);
 
-  /// Function that performs a channel model initialization of all componment carriers 
+  /// Function that performs a channel model initialization of all component carriers
   void ChannelModelInitialization (void);
 
   /**
@@ -841,7 +841,7 @@ private:
    * The `UseCa` attribute. If true, Carrier Aggregation is enabled.
    * Hence, the helper will expect a valid component carrier map
    * If it is false, the component carrier will be created within the LteHelper
-   * this is to mantain the backwards compatibility with user script
+   * this is to maintain the backwards compatibility with user script
    */
   bool m_useCa;
 

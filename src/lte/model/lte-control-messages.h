@@ -49,7 +49,7 @@ public:
    *  LteEnbPhy::ReceiveLteControlMessageList in order to remove the ones 
    *  that has been already handoff by the eNB for avoiding propagation of
    *  spurious messages. When new messaged have to been added, consider to
-   *  update the switch statement implementing teh filtering.
+   *  update the switch statement implementing the filtering.
    */
   enum MessageType
   {

@@ -64,7 +64,7 @@ class LteEnbMac :   public Object
   friend class EnbMacMemberFfMacCschedSapUser;
   /// allow EnbMacMemberLteEnbPhySapUser class friend access
   friend class EnbMacMemberLteEnbPhySapUser;
-  /// allow MemberLteCcmMacSapProvider<LteEnbMac> class friend ccess
+  /// allow MemberLteCcmMacSapProvider<LteEnbMac> class friend access
   friend class MemberLteCcmMacSapProvider<LteEnbMac>;
 
 public:
@@ -442,7 +442,7 @@ private:
   };
 
   /**
-   * map storing as key the random acccess preamble IDs allocated for
+   * map storing as key the random access preamble IDs allocated for
    * non-contention based access, and as value the associated info
    * 
    */

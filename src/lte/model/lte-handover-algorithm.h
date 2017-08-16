@@ -36,7 +36,7 @@ class LteHandoverManagementSapProvider;
  * \brief The abstract base class of a handover algorithm that operates using
  *        the Handover Management SAP interface.
  *
- * Handover algorithm receives measurement reports from an eNode RRC instance
+ * Handover algorithm receives measurement reports from an eNodeB RRC instance
  * and tells the eNodeB RRC instance when to do a handover.
  *
  * This class is an abstract class intended to be inherited by subclasses that

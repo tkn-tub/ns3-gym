@@ -73,7 +73,7 @@ public:
   virtual void AddUe (uint16_t rnti) = 0;
 
   /** 
-   * Remove an UE from the the cell
+   * Remove an UE from the cell
    * 
    * \param rnti the UE id relative to this cell
    */

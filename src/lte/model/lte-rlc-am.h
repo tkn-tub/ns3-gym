@@ -197,7 +197,7 @@ private:
   uint16_t m_pollPdu; ///< poll PDU
   uint16_t m_pollByte; ///< poll byte
   
-  bool m_txOpportunityForRetxAlwaysBigEnough; ///< transmit opportinity for retransmit? 
+  bool m_txOpportunityForRetxAlwaysBigEnough; ///< transmit opportunity for retransmit? 
   bool m_pollRetransmitTimerJustExpired; ///< poll retransmit timer just expired?
 
   /**

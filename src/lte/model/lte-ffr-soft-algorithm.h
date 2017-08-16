@@ -121,7 +121,7 @@ private:
   uint8_t m_dlEdgeSubBandOffset; ///< DL edge subband offset
   uint8_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
  
-  uint8_t m_ulCommonSubBandwidth; ///< UL commmon subbandwidth
+  uint8_t m_ulCommonSubBandwidth; ///< UL common subbandwidth
   uint8_t m_ulEdgeSubBandOffset; ///< UL edge subband offset
   uint8_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
 

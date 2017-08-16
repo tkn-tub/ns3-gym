@@ -519,7 +519,7 @@ private:
   /// \todo Can be removed.
   uint8_t m_subframeNo;
 
-  bool m_rsReceivedPowerUpdated; ///< RS reveive power updated?
+  bool m_rsReceivedPowerUpdated; ///< RS receive power updated?
   SpectrumValue m_rsReceivedPower; ///< RS receive power
 
   bool m_rsInterferencePowerUpdated; ///< RS interference power updated?

@@ -50,7 +50,7 @@ typedef std::vector <HarqProcessInfoElement_t> HarqProcessInfoList_t; ///< HarqP
 /**
  * \ingroup lte
  * \brief The LteHarqPhy class implements the HARQ functionalities related to PHY layer
- *(i.e., decodification buffers for incremental redundancy managment)
+ *(i.e., decodification buffers for incremental redundancy management)
  *
 */
 class LteHarqPhy : public SimpleRefCount<LteHarqPhy>
@@ -67,7 +67,7 @@ public:
   void SubframeIndication (uint32_t frameNo, uint32_t subframeNo);
 
   /**
-  * \brief Return the cumulated MI of the HARQ procId in case of retranmissions
+  * \brief Return the cumulated MI of the HARQ procId in case of retransmissions
   * for DL (asynchronous)
   * \param harqProcId the HARQ proc id
   * \param layer layer no. (for MIMO spatial multiplexing)
@@ -76,16 +76,16 @@ public:
   double GetAccumulatedMiDl (uint8_t harqProcId, uint8_t layer);
 
   /**
-  * \brief Return the info of the HARQ procId in case of retranmissions
+  * \brief Return the info of the HARQ procId in case of retransmissions
   * for DL (asynchronous)
   * \param harqProcId the HARQ proc id
-  * \param layer layer no. (for MIMO spatail multiplexing)
+  * \param layer layer no. (for MIMO spatial multiplexing)
   * \return the vector of the info related to HARQ proc Id
   */
   HarqProcessInfoList_t GetHarqProcessInfoDl (uint8_t harqProcId, uint8_t layer);
 
   /**
-  * \brief Return the cumulated MI of the HARQ procId in case of retranmissions
+  * \brief Return the cumulated MI of the HARQ procId in case of retransmissions
   * for UL (synchronous)
   * \param rnti the RNTI of the transmitter
   * \return the MI accumulated
@@ -93,7 +93,7 @@ public:
   double GetAccumulatedMiUl (uint16_t rnti);
 
   /**
-  * \brief Return the info of the HARQ procId in case of retranmissions
+  * \brief Return the info of the HARQ procId in case of retransmissions
   * for UL (asynchronous)
   * \param rnti the RNTI of the transmitter
   * \param harqProcId the HARQ proc id
@@ -105,7 +105,7 @@ public:
   * \brief Update the Info associated to the decodification of an HARQ process
   * for DL (asynchronous)
   * \param id the HARQ proc id
-  * \param layer layer no. (for MIMO spatail multiplexing)
+  * \param layer layer no. (for MIMO spatial multiplexing)
   * \param mi the new MI
   * \param infoBytes the no. of bytes of info
   * \param codeBytes the total no. of bytes txed

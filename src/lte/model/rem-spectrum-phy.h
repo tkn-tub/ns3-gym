@@ -37,7 +37,7 @@ namespace ns3 {
 
 /**
  *
- * This minimal SpectrumPhy implemetation calculates the SINR with
+ * This minimal SpectrumPhy implementation calculates the SINR with
  * respect to the strongest signal for a given point. The original
  * purpose of this class is to be used to generate a
  * Radio Environment Map (REM) by locating several instances in a grid
@@ -45,7 +45,7 @@ namespace ns3 {
  * amount of time. 
  *
  * The assumption on which this class works is that the system
- * being considered is an infrastructured radio access network using
+ * being considered is an infrastructure radio access network using
  * FDD, hence all signals will be transmitted simultaneously. 
  */
 class RemSpectrumPhy : public SpectrumPhy

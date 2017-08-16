@@ -375,12 +375,12 @@ private:
 
   uint16_t m_nextRntiUl; ///< RNTI of the next user to be served next scheduling in UL
 
-  uint32_t m_cqiTimersThreshold; ///< # of TTIs for which a CQI canbe considered valid
+  uint32_t m_cqiTimersThreshold; ///< # of TTIs for which a CQI can be considered valid
 
   std::map <uint16_t,uint8_t> m_uesTxMode; ///< txMode of the UEs
 
   // HARQ attributes
-  bool m_harqOn; ///< m_harqOn when false inhibit te HARQ mechanisms (by default active)
+  bool m_harqOn; ///< m_harqOn when false inhibit the HARQ mechanisms (by default active)
   std::map <uint16_t, uint8_t> m_dlHarqCurrentProcessId; ///< DL HARQ process ID
   //HARQ status
   // 0: process Id available

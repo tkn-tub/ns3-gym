@@ -33,7 +33,7 @@ namespace ns3 {
 struct GbrQosInformation
 {
   /** 
-   * Default constructor, inizializes member variables to zero or equivalent
+   * Default constructor, initializes member variables to zero or equivalent
    */
   GbrQosInformation ();
 
@@ -51,7 +51,7 @@ struct GbrQosInformation
 struct AllocationRetentionPriority
 {
   /** 
-   * Default constructor, inizializes member variables to zero or equivalent
+   * Default constructor, initializes member variables to zero or equivalent
    */
   AllocationRetentionPriority ();
   uint8_t priorityLevel;     ///< 1-15; 1 = highest

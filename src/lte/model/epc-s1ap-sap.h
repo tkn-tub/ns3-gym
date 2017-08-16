@@ -34,7 +34,7 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * Base class that definces EPC S1-AP Service Access Point (SAP) interface.
+ * Base class that defines EPC S1-AP Service Access Point (SAP) interface.
  */
 class EpcS1apSap
 {

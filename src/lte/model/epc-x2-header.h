@@ -184,7 +184,7 @@ public:
   void SetBearers (std::vector <EpcX2Sap::ErabToBeSetupItem> bearers);
 
   /**
-   * Get UE Aggregrate Max Bit Rate Downlink function
+   * Get UE Aggregate Max Bit Rate Downlink function
    * \returns the UE aggregate max bit rate downlink
    */
   uint64_t GetUeAggregateMaxBitRateDownlink () const;
@@ -224,8 +224,8 @@ private:
   uint16_t          m_cause; ///< cause
   uint16_t          m_targetCellId; ///< target cell ID
   uint32_t          m_mmeUeS1apId; ///< MME UE S1 AP ID
-  uint64_t          m_ueAggregateMaxBitRateDownlink; ///< aggregrate max bit rate downlink
-  uint64_t          m_ueAggregateMaxBitRateUplink; ///< aggregrate max bit rate upink
+  uint64_t          m_ueAggregateMaxBitRateDownlink; ///< aggregate max bit rate downlink
+  uint64_t          m_ueAggregateMaxBitRateUplink; ///< aggregate max bit rate uplink
   std::vector <EpcX2Sap::ErabToBeSetupItem> m_erabsToBeSetupList; ///< ERAB to be setup list
 };
 
@@ -361,7 +361,7 @@ public:
 
   /**
    * Get criticality diagnostics function
-   * \returns the criticality diagnsotics
+   * \returns the criticality diagnostics
    */
   uint16_t GetCriticalityDiagnostics () const;
   /**

@@ -504,7 +504,7 @@ public:
       RESET
     } type; ///< action type
     MobilityStateParameters mobilityStateParameters; ///< mobility state parameters
-    SpeedStateScaleFactors timeToTriggerSf; ///< time to triffer scale factors
+    SpeedStateScaleFactors timeToTriggerSf; ///< time to trigger scale factors
   };
 
   /// MeasConfig structure
@@ -522,8 +522,8 @@ public:
     MeasGapConfig measGapConfig; ///< measure gap config
     bool haveSmeasure; ///< have S measure?
     uint8_t sMeasure; ///< S measure
-    bool haveSpeedStatePars; ///< have speed state pars?
-    SpeedStatePars speedStatePars; ///< spped state pars
+    bool haveSpeedStatePars; ///< have speed state parameters?
+    SpeedStatePars speedStatePars; ///< speed state parameters
   };
 
   /// CarrierFreqEutra structure
@@ -787,7 +787,7 @@ public:
     bool haveUlConfiguration; ///< have UL configuration?
     bool haveAntennaInfoUlDedicated; ///< have antenna info UL dedicated?
     AntennaInfoDedicated antennaInfoUl; ///< antenna info UL
-    PuschConfigDedicatedSCell pushConfigDedicatedSCell; ///< PUSCH configu dedicated SCell
+    PuschConfigDedicatedSCell pushConfigDedicatedSCell; ///< PUSCH config dedicated SCell
     UlPowerControlDedicatedSCell  ulPowerControlDedicatedSCell; ///< UL power control dedicated SCell
     bool haveSoundingRsUlConfigDedicated; ///< have sounding RS UL config dedicated?
     SoundingRsUlConfigDedicated soundingRsUlConfigDedicated; ///< sounding RS UL config dedicated
@@ -813,7 +813,7 @@ public:
   {
     uint32_t sCellIndex; ///< SCell index
     CellIdentification cellIdentification; ///< cell identification
-    RadioResourceConfigCommonSCell radioResourceConfigCommonSCell; ///< radio resurce config common SCell
+    RadioResourceConfigCommonSCell radioResourceConfigCommonSCell; ///< radio resource config common SCell
     bool haveRadioResourceConfigDedicatedSCell; ///< have radio resource config dedicated SCell?
     RadioResourceConfigDedicatedSCell radioResourceConfigDedicateSCell; ///< radio resource config dedicated SCell
   };
