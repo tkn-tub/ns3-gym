@@ -182,16 +182,6 @@ UanPhyDual::GetTypeId (void)
                    DoubleValue (190),
                    MakeDoubleAccessor (&UanPhyDual::GetTxPowerDbPhy2, &UanPhyDual::SetTxPowerDbPhy2),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("RxGainPhy1",
-                   "Gain added to incoming signal at receiver of Phy1.",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&UanPhyDual::GetRxGainDbPhy1, &UanPhyDual::SetRxGainDbPhy1),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("RxGainPhy2",
-                   "Gain added to incoming signal at receiver of Phy2.",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&UanPhyDual::GetRxGainDbPhy2, &UanPhyDual::SetRxGainDbPhy2),
-                   MakeDoubleChecker<double> ())
     .AddAttribute ("SupportedModesPhy1",
                    "List of modes supported by Phy1.",
                    UanModesListValue (UanPhyGen::GetDefaultModes ()),
@@ -302,23 +292,6 @@ UanPhyDual::SetReceiveErrorCallback (RxErrCallback cb)
   m_phy2->SetReceiveErrorCallback (cb);
 }
 
-void
-UanPhyDual::SetRxGainDb (double gain)
-{
-  m_phy1->SetRxGainDb (gain);
-  m_phy2->SetRxGainDb (gain);
-}
-void
-UanPhyDual::SetRxGainDbPhy1 (double gain)
-{
-  m_phy1->SetRxGainDb (gain);
-}
-
-void
-UanPhyDual::SetRxGainDbPhy2 (double gain)
-{
-  m_phy2->SetRxGainDb (gain);
-}
 
 void
 UanPhyDual::SetTxPowerDb (double txpwr)
@@ -362,22 +335,6 @@ UanPhyDual::SetCcaThresholdPhy2 (double thresh)
   m_phy2->SetCcaThresholdDb (thresh);
 }
 
-double
-UanPhyDual::GetRxGainDb (void)
-{
-  NS_LOG_WARN ("Warning: UanPhyDual::GetRxGainDb returns RxGain of Phy 1");
-  return m_phy1->GetRxGainDb ();
-}
-double
-UanPhyDual::GetRxGainDbPhy1 (void) const
-{
-  return m_phy1->GetRxGainDb ();
-}
-double
-UanPhyDual::GetRxGainDbPhy2 (void) const
-{
-  return m_phy2->GetRxGainDb ();
-}
 
 double
 UanPhyDual::GetTxPowerDb (void)

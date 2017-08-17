@@ -182,6 +182,24 @@ public:
    */
   virtual const ArrivalList &GetArrivalList (void) const = 0;
   /**
+   * Set the receiver gain.
+   *
+   * \param gainDb Gain added at receiver, in dB.
+   */
+  virtual void SetRxGainDb (double gainDb) = 0;  
+  /**
+   * Get the receiver gain added to signal at receiver in dB.
+   *
+   * \return The gain (in dB).
+   */
+  virtual double GetRxGainDb (void) = 0;
+  /**
+   * Apply receiver gain in dB to the received power.
+   *
+   * \return Updated receive power (in dB) with gain applied.
+   */
+  virtual double ApplyRxGainDb (double rxPowerDb, UanTxMode mode) = 0;
+  /**
    * Notify this object that a new packet has arrived at this nodes location
    *
    * \param packet Packet arriving.

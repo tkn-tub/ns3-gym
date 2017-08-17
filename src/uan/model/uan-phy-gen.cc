@@ -359,7 +359,6 @@ UanPhyGen::UanPhyGen ()
     m_transducer (0),
     m_device (0),
     m_mac (0),
-    m_rxGainDb (0),
     m_txPwrDb (0),
     m_rxThreshDb (0),
     m_ccaThreshDb (0),
@@ -457,11 +456,6 @@ UanPhyGen::GetTypeId (void)
                    "Transmission output power in dB.",
                    DoubleValue (190),
                    MakeDoubleAccessor (&UanPhyGen::m_txPwrDb),
-                   MakeDoubleChecker<double> ())
-    .AddAttribute ("RxGain",
-                   "Gain added to incoming signal at receiver.",
-                   DoubleValue (0),
-                   MakeDoubleAccessor (&UanPhyGen::m_rxGainDb),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("SupportedModes",
                    "List of modes supported by this PHY.",
@@ -617,7 +611,6 @@ UanPhyGen::RegisterListener (UanPhyListener *listener)
 void
 UanPhyGen::StartRxPacket (Ptr<Packet> pkt, double rxPowerDb, UanTxMode txMode, UanPdp pdp)
 {
-  rxPowerDb += GetRxGainDb ();
   NS_LOG_DEBUG ("PHY " << m_mac->GetAddress () << ": rx power after RX gain = " << rxPowerDb << " dB re uPa");
 
   switch (m_state)
@@ -789,12 +782,6 @@ UanPhyGen::IsStateCcaBusy (void)
 
 
 void
-UanPhyGen::SetRxGainDb (double gain)
-{
-  m_rxGainDb = gain;
-
-}
-void
 UanPhyGen::SetTxPowerDb (double txpwr)
 {
   m_txPwrDb = txpwr;
@@ -809,17 +796,14 @@ UanPhyGen::SetCcaThresholdDb (double thresh)
 {
   m_ccaThreshDb = thresh;
 }
-double
-UanPhyGen::GetRxGainDb (void)
-{
-  return m_rxGainDb;
-}
+
 double
 UanPhyGen::GetTxPowerDb (void)
 {
   return m_txPwrDb;
 
 }
+
 double
 UanPhyGen::GetRxThresholdDb (void)
 {

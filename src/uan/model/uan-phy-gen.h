@@ -261,11 +261,9 @@ public:
   virtual bool IsStateRx (void);
   virtual bool IsStateTx (void);
   virtual bool IsStateCcaBusy (void);
-  virtual void SetRxGainDb (double gain);
   virtual void SetTxPowerDb (double txpwr);
   virtual void SetRxThresholdDb (double thresh);
   virtual void SetCcaThresholdDb (double thresh);
-  virtual double GetRxGainDb (void);
   virtual double GetTxPowerDb (void);
   virtual double GetRxThresholdDb (void);
   virtual double GetCcaThresholdDb (void);
@@ -302,7 +300,6 @@ private:
   Ptr<UanPhyPer> m_per;             //!< Error model.
   Ptr<UanPhyCalcSinr> m_sinr;       //!< SINR calculator.
 
-  double m_rxGainDb;                //!< Receive gain.
   double m_txPwrDb;                 //!< Transmit power.
   double m_rxThreshDb;              //!< Receive SINR threshold.
   double m_ccaThreshDb;             //!< CCA busy threshold.
@@ -312,7 +309,7 @@ private:
   double m_minRxSinrDb;             //!< Minimum receive SINR during packet reception.
   double m_rxRecvPwrDb;             //!< Receiver power.
   Time m_pktRxArrTime;              //!< Packet arrival time.
-  UanPdp m_pktRxPdp;                //!< Power delay profile of pakket.
+  UanPdp m_pktRxPdp;                //!< Power delay profile of packet.
   UanTxMode m_pktRxMode;            //!< Packet transmission mode at receiver.
 
   bool m_cleared;                   //!< Flag when we've been cleared.

@@ -25,7 +25,7 @@
 #include "uan-channel.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
-
+#include "ns3/double.h"
 
 namespace ns3 {
 
@@ -37,7 +37,8 @@ UanTransducerHd::UanTransducerHd ()
   : UanTransducer (),
     m_state (RX),
     m_endTxTime (Seconds (0)),
-    m_cleared (false)
+    m_cleared (false),
+    m_rxGainDb (0)
 {
 }
 
@@ -91,6 +92,11 @@ UanTransducerHd::GetTypeId ()
     .SetParent<UanTransducer> ()
     .SetGroupName ("Uan")
     .AddConstructor<UanTransducerHd> ()
+    .AddAttribute ("RxGainDb",
+                   "Gain in Db added to incoming signal at receiver.",
+                   DoubleValue (0),
+                   MakeDoubleAccessor (&UanTransducerHd::m_rxGainDb),
+                   MakeDoubleChecker<double> ())
   ;
   return tid;
 }
@@ -122,11 +128,36 @@ UanTransducerHd::GetArrivalList (void) const
 }
 
 void
+UanTransducerHd::SetRxGainDb (double gainDb)
+{
+  m_rxGainDb = gainDb;
+}
+
+double
+UanTransducerHd::GetRxGainDb (void)
+{
+  return m_rxGainDb;
+}
+
+double
+UanTransducerHd::ApplyRxGainDb (double rxPowerDb, UanTxMode mode)
+{
+  NS_LOG_FUNCTION (this << rxPowerDb << mode);
+  rxPowerDb += GetRxGainDb ();
+  NS_LOG_DEBUG ("Rx power after RX gain = " << rxPowerDb << " db re uPa");
+  return rxPowerDb;
+}
+
+void
 UanTransducerHd::Receive (Ptr<Packet> packet,
                           double rxPowerDb,
                           UanTxMode txMode,
                           UanPdp pdp)
 {
+  NS_LOG_FUNCTION (this << packet << rxPowerDb << txMode << pdp);
+  //Apply receiver gain in dB
+  rxPowerDb = ApplyRxGainDb (rxPowerDb, txMode);
+
   UanPacketArrival arrival (packet,
                             rxPowerDb,
                             txMode,

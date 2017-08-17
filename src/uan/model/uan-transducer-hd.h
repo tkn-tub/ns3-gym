@@ -52,6 +52,9 @@ public:
   virtual bool IsRx (void) const;
   virtual bool IsTx (void) const;
   virtual const ArrivalList &GetArrivalList (void) const;
+  virtual double ApplyRxGainDb (double rxPowerDb, UanTxMode mode);
+  virtual void SetRxGainDb (double gainDb);  
+  virtual double GetRxGainDb (void);
   virtual void Receive (Ptr<Packet> packet, double rxPowerDb, UanTxMode txMode, UanPdp pdp);
   virtual void Transmit (Ptr<UanPhy> src, Ptr<Packet> packet, double txPowerDb, UanTxMode txMode);
   virtual void SetChannel (Ptr<UanChannel> chan);
@@ -68,6 +71,7 @@ private:
   EventId m_endTxEvent;       //!< Event scheduled for end of transmission.
   Time m_endTxTime;           //!< Time at which transmission will be completed.
   bool m_cleared;             //!< Flab when we've been cleared.
+  double m_rxGainDb;          //!< Receive gain in dB.
 
   /**
    * Remove an entry from the arrival list.
