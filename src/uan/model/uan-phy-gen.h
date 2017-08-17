@@ -54,19 +54,18 @@ public:
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   virtual double CalcPer (Ptr<Packet> pkt, double sinrDb, UanTxMode mode);
 private:
-  
   double m_thresh;  //!< SINR threshold.
 
 };  // class UanPhyPerGenDefault
 
-  
+
 /**
  * \ingroup uan
  *
- * Packet error rate calculation assuming WHOI Micromodem-like PHY.
+ * Packet error rate calculation assuming WHOI Micromodem-like PHY (FH-FSK)
  *
  * Calculates PER assuming rate 1/2 convolutional code with
  * constraint length 9 with soft decision viterbi decoding and
@@ -119,6 +118,45 @@ private:
 /**
  * \ingroup uan
  *
+ * Packet error rate calculation for common tx modes based on UanPhyPerUmodem
+ *
+ * Calculates PER for common UanTxMode modulations, by deriving
+ * PER from the BER taken from well known literature's formulas.
+ */
+class UanPhyPerCommonModes : public UanPhyPer
+{
+public:
+  /** Constructor */
+  UanPhyPerCommonModes ();
+  /** Destructor */
+  virtual ~UanPhyPerCommonModes ();
+
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+
+  /**
+   * Calculate the Packet ERror probability based on
+   * SINR at the receiver and a tx mode.
+   *
+   * This implementation calculates PER for common UanTxMode modulations,
+   * by deriving PER from the BER taken from literature's formulas.
+   *
+   * \param pkt Packet which is under consideration.
+   * \param sinrDb SINR at receiver.
+   * \param mode TX mode used to transmit packet.
+   * \return Probability of packet error.
+   */
+  virtual double CalcPer (Ptr<Packet> pkt, double sinrDb, UanTxMode mode);
+
+};  // class UanPhyPerCommonModes
+
+
+/**
+ * \ingroup uan
+ *
  * Default SINR calculator for UanPhyGen.
  *
  * The default ignores mode data and assumes that all rxpower transmitted is
@@ -133,13 +171,13 @@ public:
   UanPhyCalcSinrDefault ();
   /** Destructor */
   virtual ~UanPhyCalcSinrDefault ();
-  
+
   /**
    * Register this type.
    * \return The TypeId.
    */
   static TypeId GetTypeId (void);
-  
+
   /**
    * Calculate the SINR value for a packet.
    *
@@ -194,7 +232,7 @@ public:
   UanPhyCalcSinrFhFsk ();
   /** Destructor */
   virtual ~UanPhyCalcSinrFhFsk ();
-  
+
   /**
    * Register this type.
    * \return The TypeId.
@@ -239,7 +277,6 @@ public:
    */
   static UanModesList GetDefaultModes (void);
 
-  
   /**
    * Register this type.
    * \return The TypeId.
@@ -313,7 +350,7 @@ private:
   UanTxMode m_pktRxMode;            //!< Packet transmission mode at receiver.
 
   bool m_cleared;                   //!< Flag when we've been cleared.
-  
+
   EventId m_txEndEvent;             //!< Tx event
   EventId m_rxEndEvent;             //!< Rx event
 
@@ -390,7 +427,7 @@ private:
 
 
   /** Call UanListener::NotifyRxStart on all listeners. */
-  void NotifyListenersRxStart (void);  
+  void NotifyListenersRxStart (void);
   /** Call UanListener::NotifyRxEndOk on all listeners. */
   void NotifyListenersRxGood (void);
   /** Call UanListener::NotifyRxEndError on all listeners. */
