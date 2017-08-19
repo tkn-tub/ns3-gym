@@ -27,6 +27,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (WifiMacHeader);
 
+/// type enumeration
 enum
 {
   TYPE_MGT = 0,
@@ -34,6 +35,7 @@ enum
   TYPE_DATA = 2
 };
 
+/// subtype enumeration
 enum
 {
   //Reserved: 0 - 6

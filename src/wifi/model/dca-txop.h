@@ -58,7 +58,9 @@ class CtrlBAckResponseHeader;
 class DcaTxop : public Object
 {
 public:
+  /// allow DcfListener class access
   friend class DcfListener;
+  /// allow MacLowTransmissionListener class access
   friend class MacLowTransmissionListener;
 
   DcaTxop ();
@@ -247,6 +249,7 @@ public:
   virtual void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * Event handler when a Block ACK timeout has occurred.
+   * \param nMpdus the number of MPDUs sent in the A-MPDU transmission that results in a Block ACK timeout.
    */
   virtual void MissedBlockAck (uint8_t nMpdus);
 
@@ -290,6 +293,7 @@ public:
 
 
 protected:
+  ///< DcfState associated class
   friend class DcfState;
 
   virtual void DoDispose (void);

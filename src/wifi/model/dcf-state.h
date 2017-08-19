@@ -144,6 +144,7 @@ public:
 
 
 protected:
+  /// DcfManager associated class
   friend class DcfManager;
 
   // Inherited from ns3::Object

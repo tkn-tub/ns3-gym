@@ -53,11 +53,14 @@ public:
 
   /**
    * Create a mac helper in a default working state.
+   * \returns a default HtWifiMacHelper
    */
   static HtWifiMacHelper Default (void);
 
   /**
    * Converts a HT MCS value into a DataRate value
+   * \param mcs the HT MCS
+   * \returns a DataRate value for the HT MCS
    */
   static StringValue DataRateForMcs (int mcs);
 };

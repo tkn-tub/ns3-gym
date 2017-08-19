@@ -46,6 +46,8 @@ struct WifiSpectrumSignalParameters : public SpectrumSignalParameters
 
   /**
    * copy constructor
+   *
+   * \param p the wifi spectrum signal parameters
    */
   WifiSpectrumSignalParameters (const WifiSpectrumSignalParameters& p);
 

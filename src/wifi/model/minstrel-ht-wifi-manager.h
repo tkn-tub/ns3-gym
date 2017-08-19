@@ -46,8 +46,8 @@ typedef std::vector<std::pair<Time, WifiMode> > TxTime;
 struct McsGroup
 {
   uint8_t streams; ///< streams
-  uint8_t sgi; ///< SQI
-  uint8_t chWidth; ///< channel width
+  uint8_t sgi; ///< short guard interval (0 or 1)
+  uint8_t chWidth; ///< channel width (MHz)
   bool isVht; ///< is VHT?
   bool isSupported; ///< is supported?
 
@@ -260,37 +260,105 @@ private:
    */
   void DoDisposeStation (WifiRemoteStation *station);
 
-  /// Check the validity of a combination of number of streams, chWidth and mode.
+  /**
+   * Check the validity of a combination of number of streams, chWidth and mode.
+   *
+   * \param phy pointer to the wifi phy
+   * \param streams the number of streams
+   * \param chWidth the channel width (MHz)
+   * \param mode the wifi mode
+   * \returns true if the combination is valid
+   */
   bool IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint8_t chWidth, WifiMode mode);
 
-  /// Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
+  /**
+   * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
+   *
+   * \param phy pointer to the wifi phy
+   * \param streams the number of streams
+   * \param sgi short guard interval enabled (0 or 1)
+   * \param chWidth the channel width (MHz)
+   * \param mode the wifi mode
+   * \returns the transmit time
+   */
   Time CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode);
 
-  /// Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
+  /**
+   * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
+   *
+   * \param phy pointer to the wifi phy
+   * \param streams the number of streams
+   * \param sgi short guard interval enabled (0 or 1)
+   * \param chWidth the channel width (MHz)
+   * \param mode the wifi mode
+   * \returns the transmit time
+   */
   Time CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode);
 
-  /// Obtain the TXtime saved in the group information.
+  /**
+   * Obtain the TXtime saved in the group information.
+   *
+   * \param groupId the group ID
+   * \param mode the wifi mode
+   * \returns the transmit time
+   */
   Time GetMpduTxTime (uint32_t groupId, WifiMode mode) const;
 
-  /// Save a TxTime to the vector of groups.
+  /**
+   * Save a TxTime to the vector of groups.
+   *
+   * \param groupId the group ID
+   * \param mode the wifi mode
+   * \param t the transmit time
+   */
   void AddMpduTxTime (uint32_t groupId, WifiMode mode, Time t);
 
-  /// Obtain the TXtime saved in the group information.
+  /**
+   * Obtain the TXtime saved in the group information.
+   *
+   * \param groupId the group ID
+   * \param mode the wifi mode
+   * \returns the transmit time
+   */
   Time GetFirstMpduTxTime (uint32_t groupId, WifiMode mode) const;
 
-  /// Save a TxTime to the vector of groups.
+  /**
+   * Save a TxTime to the vector of groups.
+   *
+   * \param groupId the group ID
+   * \param mode the wifi mode
+   * \param t the transmit time
+   */
   void AddFirstMpduTxTime (uint32_t groupId, WifiMode mode, Time t);
 
-  /// Update the number of retries and reset accordingly.
+  /**
+   * Update the number of retries and reset accordingly.
+   * \param station the wifi remote station
+   */
   void UpdateRetry (MinstrelHtWifiRemoteStation *station);
 
-  /// Update the number of sample count variables.
+  /**
+   * Update the number of sample count variables.
+   *
+   * \param station the wifi remote station
+   * \param nSuccessfulMpdus
+   * \param nFailedMpdus
+   */
   void UpdatePacketCounters (MinstrelHtWifiRemoteStation *station, uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus);
 
-  /// Getting the next sample from Sample Table.
+  /**
+   * Getting the next sample from Sample Table.
+   *
+   * \param station the wifi remote station
+   * \returns the next sample
+   */
   uint32_t GetNextSample (MinstrelHtWifiRemoteStation *station);
 
-  /// Set the next sample from Sample Table.
+  /**
+   * Set the next sample from Sample Table.
+   *
+   * \param station the wifi remote station
+   */
   void SetNextSample (MinstrelHtWifiRemoteStation *station);
 
   /**
@@ -456,7 +524,12 @@ private:
    * \returns the rate ID
    */
 
-  /// Return the rateId inside a group, from the global index.
+  /**
+   * Return the rateId inside a group, from the global index.
+   *
+   * \param index the index
+   * \returns the rate ID
+   */
   uint32_t GetRateId (uint32_t index);
 
   /**
@@ -476,22 +549,53 @@ private:
    */
   uint32_t GetIndex (uint32_t groupId, uint32_t rateId);
 
-  /// Returns the groupId of a HT MCS with the given number of streams, if using sgi and the channel width used.
+  /**
+   * Returns the groupId of a HT MCS with the given number of streams, if using sgi and the channel width used.
+   *
+   * \param txstreams the number of streams
+   * \param sgi short guard interval enabled (0 or 1)
+   * \param chWidth the channel width (MHz)
+   * \returns the HT group ID
+   */
   uint32_t GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth);
 
-  /// Returns the groupId of a VHT MCS with the given number of streams, if using sgi and the channel width used.
+  /**
+   * Returns the groupId of a VHT MCS with the given number of streams, if using sgi and the channel width used.
+   *
+   * \param txstreams the number of streams
+   * \param sgi short guard interval enabled (0 or 1)
+   * \param chWidth the channel width (MHz)
+   * \returns the VHT group ID
+   */
   uint32_t GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth);
 
-  /// Returns the lowest global index of the rates supported by the station.
+  /**
+   * Returns the lowest global index of the rates supported by the station.
+   *
+   * \param station the minstrel HT wifi remote station
+   * \returns the lowest global index
+   */
   uint32_t GetLowestIndex (MinstrelHtWifiRemoteStation *station);
 
-  /// Returns the lowest global index of the rates supported by in the group.
+  /**
+   * Returns the lowest global index of the rates supported by in the group.
+   *
+   * \param station the minstrel HT wifi remote station
+   * \param groupId the group ID
+   * \returns the lowest global index
+   */
   uint32_t GetLowestIndex (MinstrelHtWifiRemoteStation *station, uint32_t groupId);
 
-  /// Returns a list of only the VHT MCS supported by the device.
+  /**
+   * Returns a list of only the VHT MCS supported by the device.
+   * \returns the list of the VHT MCS supported
+   */
   WifiModeList GetVhtDeviceMcsList (void) const;
 
-  /// Returns a list of only the HT MCS supported by the device.
+  /**
+   * Returns a list of only the HT MCS supported by the device.
+   * \returns the list of the HT MCS supported
+   */
   WifiModeList GetHtDeviceMcsList (void) const;
 
   Time m_updateStats;         //!< How frequent do we calculate the stats (1/10 seconds).

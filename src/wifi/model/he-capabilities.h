@@ -40,7 +40,10 @@ public:
    * \param hesupported the HE supported indicator
    */
   void SetHeSupported (uint8_t hesupported);
-
+  /**
+   * Get the wifi information element ID
+   * \returns the wifi information element ID
+   */
   WifiInformationElementId ElementId () const;
   /**
    * Get information field size

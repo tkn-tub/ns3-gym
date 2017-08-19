@@ -79,8 +79,8 @@ public:
    * Deserialize information field.
    *
    * \param start the iterator
-   * \param length the field length
-   * \returns the information field
+   * \param length the field length (bytes)
+   * \returns length of the information field deserialized (bytes)
    */
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length);
@@ -133,8 +133,13 @@ public:
 
   /// type conversion operator
   SupportedRates (const SupportedRates &);
-  /// assignment operator
-  SupportedRates& operator= (const SupportedRates&);
+  /**
+   * assignment operator
+   *
+   * \param rates the rates to assign
+   * \returns the assigned value
+   */
+  SupportedRates& operator= (const SupportedRates& rates);
 
 /**
  * This defines the maximum number of supported rates that a STA is
@@ -207,14 +212,35 @@ public:
    * \return the rate
    */
   uint32_t GetRate (uint8_t i) const;
-
+  /**
+   * Get the ElementID.
+   *
+   * \returns the element ID
+   */
   WifiInformationElementId ElementId () const;
+  /**
+   * Get the information field size.
+   *
+   * \returns the information field size
+   */
   uint8_t GetInformationFieldSize () const;
+  /**
+   * Get the information field size.
+   *
+   * \param start the information field iterator
+   */
   void SerializeInformationField (Buffer::Iterator start) const;
+  /**
+   * Get the information field size.
+   *
+   * \param start the information field iterator
+   * \param length the size of the information field (bytes)
+   * \returns the size of the field read (bytes)
+   */
   uint8_t DeserializeInformationField (Buffer::Iterator start,
                                        uint8_t length);
 
-  /*
+  /**
    * We support the Extended Supported Rates Information Element
    * through the ExtendedSupportedRatesIE object which is declared
    * above. We allow this class to be a friend so that it can access

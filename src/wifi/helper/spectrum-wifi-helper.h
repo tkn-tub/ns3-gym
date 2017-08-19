@@ -45,6 +45,7 @@ public:
 
   /**
    * Create a phy helper in a default working state.
+   * \returns a default SpectrumWifPhyHelper
    */
   static SpectrumWifiPhyHelper Default (void);
 

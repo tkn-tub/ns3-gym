@@ -408,8 +408,8 @@ private:
 
   union
   {
-    uint16_t m_bitmap[64];
-    uint64_t m_compressedBitmap;
+    uint16_t m_bitmap[64]; ///< the block ack bitmap
+    uint64_t m_compressedBitmap; ///< the compressed block ack bitmap
   } bitmap; ///< bitmap union type
 };
 

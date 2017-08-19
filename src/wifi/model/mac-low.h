@@ -212,6 +212,7 @@ public:
 private:
   friend std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters &params);
   uint32_t m_nextSize; //!< the next size
+  /// wait ack enumerated type
   enum
   {
     ACK_NONE,
@@ -243,8 +244,9 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
 class MacLow : public Object
 {
 public:
-  // Allow test cases to access private members
+  /// Allow test cases to access private members
   friend class ::TwoLevelAggregationTest;
+  /// Allow test cases to access private members
   friend class ::AmpduAggregationTest;
   /**
    * typedef for a callback for MacLowRx

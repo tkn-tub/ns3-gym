@@ -53,6 +53,7 @@ public:
 
   /**
    * Create a mac helper in a default working state.
+   * \returns a default QosWifiMacHelper
    */
   static QosWifiMacHelper Default (void);
 

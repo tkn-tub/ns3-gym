@@ -68,7 +68,7 @@ enum TypeOfStation
 class EdcaTxopN : public DcaTxop
 {
 public:
-  // Allow test cases to access private members
+  /// Allow test cases to access private members
   friend class ::AmpduAggregationTest;
 
   std::map<Mac48Address, bool> m_aMpduEnabled; //!< list containing flags whether A-MPDU is enabled for a given destination address
@@ -200,6 +200,7 @@ public:
   void GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address recipient, double rxSnr, WifiMode txMode, double dataSnr);
   /**
    * Event handler when a Block ACK timeout has occurred.
+   * \param nMpdus number of MPDUs sent in the A-MPDU transmission that results in a Block ACK timeout.
    */
   void MissedBlockAck (uint8_t nMpdus);
   /**
@@ -424,6 +425,7 @@ public:
 
 
 private:
+  /// allow AggregationCapableTransmissionListener class access
   friend class AggregationCapableTransmissionListener;
 
   /**

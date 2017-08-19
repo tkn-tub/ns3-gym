@@ -52,6 +52,7 @@ public:
 
 
 private:
+  /// allow DcfManagerTest class access
   friend class DcfManagerTest;
 
   typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef

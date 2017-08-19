@@ -68,17 +68,37 @@ public:
    * \return deserialized bytes
    */
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
-  /// Set maximum size to control overflow of the max packet length
+  /**
+   * Set maximum size to control overflow of the max packet length
+   *
+   * \param size the maximum size to set (bytes)
+   */
   void SetMaxSize (uint16_t size);
   /// As soon as this is a vector, we define an Iterator
   typedef std::vector<Ptr<WifiInformationElement> >::iterator Iterator;
-  /// Returns Begin of the vector
+  /**
+   * Returns Begin of the vector
+   * \returns the begin of the vector
+   */
   Iterator Begin ();
-  /// Returns End of the vector
+  /**
+   * Returns End of the vector
+   * \returns the end of the vector
+   */
   Iterator End ();
-  /// add an IE, if maxSize has exceeded, returns false
+  /**
+   * add an IE, if maxSize has exceeded, returns false
+   *
+   * \param element wifi information element to add
+   * \returns true is added
+   */
   bool AddInformationElement (Ptr<WifiInformationElement> element);
-  /// vector of pointers to information elements is the body of IeVector
+  /**
+   * vector of pointers to information elements is the body of IeVector
+   *
+   * \param id the element id to find
+   * \returns the information element
+   */
   Ptr<WifiInformationElement> FindFirst (WifiInformationElementId id) const;
 
   /**
@@ -97,7 +117,10 @@ protected:
    * typedef for a vector of WifiInformationElements.
    */
   typedef std::vector<Ptr<WifiInformationElement> > IE_VECTOR;
-  /// Current number of bytes
+  /**
+   * Current number of bytes
+   * \returns the number of bytes
+   */
   uint32_t GetSize () const;
   IE_VECTOR m_elements; //!< Information element vector
   /// Size in bytes (actually, max packet length)

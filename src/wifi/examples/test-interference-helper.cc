@@ -97,7 +97,10 @@ public:
   void Run (struct InterferenceExperiment::Input input);
 
 private:
-  /// Function triggered when a packet is dropped
+  /**
+   * Function triggered when a packet is dropped
+   * \param packet the packet that was dropped
+   */
   void PacketDropped(Ptr<const Packet> packet);
   /// Send A function
   void SendA (void) const;

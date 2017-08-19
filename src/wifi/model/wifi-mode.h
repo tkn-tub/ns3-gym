@@ -222,7 +222,9 @@ public:
 
 
 private:
+  /// allow WifiModeFactory class access
   friend class WifiModeFactory;
+  /// allow WifiPhyTag class access
   friend class WifiPhyTag; // access the UID-based constructor
   /**
    * Create a WifiMode from a given unique ID.
@@ -299,6 +301,7 @@ public:
 
 
 private:
+  /// allow WifiMode class access
   friend class WifiMode;
   friend std::istream & operator >> (std::istream &is, WifiMode &mode);
 

@@ -48,7 +48,9 @@ public:
    */
   AmpduTag ();
   /**
-   * Set m_ampdu to 1.
+   * \param supported the A-MPDU supported flag
+   *
+   * Set the A-MPDU supported flag.
    */
   void SetAmpdu (bool supported);
   /**

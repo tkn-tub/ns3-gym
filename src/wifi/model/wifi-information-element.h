@@ -269,7 +269,9 @@ public:
   uint16_t GetSerializedSize () const;
 
   // Each subclass must implement these pure virtual functions:
-  /// Own unique Element ID
+  /**
+   * \returns Own unique Element ID
+   */
   virtual WifiInformationElementId ElementId () const = 0;
   /**
    * Length of serialized information (i.e., the length of the body

@@ -275,7 +275,12 @@ private:
 
   bool IsLowLatency (void) const;
 
-  /// for estimating the TxTime of a packet with a given mode
+  /**
+   * for estimating the TxTime of a packet with a given mode
+   *
+   * \param mode Wi-Fi mode
+   * \returns the transmission time
+   */
   Time GetCalcTxTime (WifiMode mode) const;
   /**
    * Add transmission time for the given mode to an internal list.

@@ -327,7 +327,12 @@ private:
   double m_firstPower; ///< first power
   bool m_rxing; ///< flag whether it is in receiving state
 
-  /// Returns a const_iterator to the first nichange, which is later than moment
+  /**
+   * Returns a const iterator to the first nichange, which is later than moment
+   *
+   * \param moment time to check from
+   * \returns an iterator to the list of NiChanges
+   */
   NiChanges::const_iterator GetPosition (Time moment);
   /**
    * Add NiChange to the list at the appropriate position.

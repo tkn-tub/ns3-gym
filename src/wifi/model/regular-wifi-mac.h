@@ -569,8 +569,13 @@ protected:
 private:
   /// type conversion operator
   RegularWifiMac (const RegularWifiMac &);
-  /// assignment operator
-  RegularWifiMac & operator= (const RegularWifiMac &);
+  /**
+   * assignment operator
+   *
+   * \param mac the RegularWifiMac to assign
+   * \returns the assigned value
+   */
+  RegularWifiMac & operator= (const RegularWifiMac & mac);
 
   /**
    * This method is a private utility invoked to configure the channel
