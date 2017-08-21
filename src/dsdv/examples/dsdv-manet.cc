@@ -45,10 +45,31 @@ uint16_t port = 9;
 
 NS_LOG_COMPONENT_DEFINE ("DsdvManetExample");
 
+/**
+ * \ingroup dsdv
+ * \ingroup dsdv-examples
+ * \ingroup examples
+ *
+ * \brief DSDV Manet example
+ */
 class DsdvManetExample
 {
 public:
   DsdvManetExample ();
+  /**
+   * Run function
+   * \param nWifis The total number of nodes
+   * \param nSinks The total number of receivers
+   * \param totalTime The total simulation time
+   * \param rate The network speed
+   * \param phyMode The physical mode
+   * \param nodeSpeed The node speed
+   * \param periodicUpdateInterval The routing update interval
+   * \param settlingTime The routing update settling time
+   * \param dataStart The data transmission start time
+   * \param printRoutes print the routes if true
+   * \param CSVfileName The CSV file name
+   */
   void CaseRun (uint32_t nWifis,
                 uint32_t nSinks,
                 double totalTime,
@@ -62,32 +83,54 @@ public:
                 std::string CSVfileName);
 
 private:
-  uint32_t m_nWifis;
-  uint32_t m_nSinks;
-  double m_totalTime;
-  std::string m_rate;
-  std::string m_phyMode;
-  uint32_t m_nodeSpeed;
-  uint32_t m_periodicUpdateInterval;
-  uint32_t m_settlingTime;
-  double m_dataStart;
-  uint32_t bytesTotal;
-  uint32_t packetsReceived;
-  bool m_printRoutes;
-  std::string m_CSVfileName;
+  uint32_t m_nWifis; ///< total number of nodes
+  uint32_t m_nSinks; ///< number of receiver nodes
+  double m_totalTime; ///< total simulation time (in seconds)
+  std::string m_rate; ///< network bandwidth
+  std::string m_phyMode; ///< remote station manager data mode
+  uint32_t m_nodeSpeed; ///< mobility speed
+  uint32_t m_periodicUpdateInterval; ///< routing update interval
+  uint32_t m_settlingTime; ///< routing setting time
+  double m_dataStart; ///< time to start data transmissions (seconds)
+  uint32_t bytesTotal; ///< total bytes received by all nodes
+  uint32_t packetsReceived; ///< total packets received by all nodes
+  bool m_printRoutes; ///< print routing table
+  std::string m_CSVfileName; ///< CSV file name
 
-  NodeContainer nodes;
-  NetDeviceContainer devices;
-  Ipv4InterfaceContainer interfaces;
+  NodeContainer nodes; ///< the collection of nodes
+  NetDeviceContainer devices; ///< the collection of devices
+  Ipv4InterfaceContainer interfaces; ///< the collection of interfaces
 
 private:
+  /// Create and initialize all nodes
   void CreateNodes ();
+  /**
+   * Create and initialize all devices
+   * \param tr_name The trace file name
+   */
   void CreateDevices (std::string tr_name);
+  /**
+   * Create network
+   * \param tr_name The trace file name
+   */
   void InstallInternetStack (std::string tr_name);
+  /// Create data sinks and sources
   void InstallApplications ();
+  /// Setup mobility model
   void SetupMobility ();
-  void ReceivePacket (Ptr <Socket> );
-  Ptr <Socket> SetupPacketReceive (Ipv4Address, Ptr <Node> );
+  /**
+   * Packet receive function
+   * \param socket The communication socket
+   */
+  void ReceivePacket (Ptr <Socket> socket);
+  /**
+   * Setup packet receivers
+   * \param addr the receiving IPv4 address
+   * \param node the receiving node
+   * \returns the communication socket
+   */
+  Ptr <Socket> SetupPacketReceive (Ipv4Address addr, Ptr <Node> node );
+  /// Check network throughput
   void CheckThroughput ();
 
 };
@@ -252,11 +295,11 @@ DsdvManetExample::SetupMobility ()
 
   std::ostringstream speedConstantRandomVariableStream;
   speedConstantRandomVariableStream << "ns3::ConstantRandomVariable[Constant="
-                                   << m_nodeSpeed
-                                   << "]";
+                                    << m_nodeSpeed
+                                    << "]";
 
   Ptr <PositionAllocator> taPositionAlloc = pos.Create ()->GetObject <PositionAllocator> ();
- mobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel", "Speed", StringValue (speedConstantRandomVariableStream.str ()),
+  mobility.SetMobilityModel ("ns3::RandomWaypointMobilityModel", "Speed", StringValue (speedConstantRandomVariableStream.str ()),
                              "Pause", StringValue ("ns3::ConstantRandomVariable[Constant=2.0]"), "PositionAllocator", PointerValue (taPositionAlloc));
   mobility.SetPositionAllocator (taPositionAlloc);
   mobility.Install (nodes);

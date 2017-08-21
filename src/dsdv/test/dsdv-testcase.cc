@@ -48,6 +48,19 @@
 
 using namespace ns3;
 
+/**
+ * \ingroup dsdv-test
+ * \defgroup dsdv-test DSDV module tests
+ */
+
+
+/**
+ * \ingroup dsdv-test
+ * \ingroup tests
+ *
+ * \brief DSDV test case to verify the DSDV header
+ *
+ */
 class DsdvHeaderTestCase : public TestCase
 {
 public:
@@ -98,6 +111,12 @@ DsdvHeaderTestCase::DoRun ()
   }
 }
 
+/**
+ * \ingroup dsdv-test
+ * \ingroup tests
+ *
+ * \brief DSDV routing table tests (adding and looking up routes)
+ */
 class DsdvTableTestCase : public TestCase
 {
 public:
@@ -184,6 +203,12 @@ DsdvTableTestCase::DoRun ()
   Simulator::Destroy ();
 }
 
+/**
+ * \ingroup dsdv-test
+ * \ingroup tests
+ *
+ * \brief DSDV test suite
+ */
 class DsdvTestSuite : public TestSuite
 {
 public:
@@ -192,4 +217,4 @@ public:
     AddTestCase (new DsdvHeaderTestCase (), TestCase::QUICK);
     AddTestCase (new DsdvTableTestCase (), TestCase::QUICK);
   }
-} g_dsdvTestSuite;
+} g_dsdvTestSuite; ///< the test suite

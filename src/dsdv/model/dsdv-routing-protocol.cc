@@ -43,9 +43,9 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsdvRoutingProtocol");
-  
+
 namespace dsdv {
-  
+
 NS_OBJECT_ENSURE_REGISTERED (RoutingProtocol);
 
 /// UDP Port for DSDV control traffic
@@ -57,12 +57,21 @@ struct DeferredRouteOutputTag : public Tag
   /// Positive if output device is fixed in RouteOutput
   int32_t oif;
 
+  /**
+   * Constructor
+   *
+   * \param o outgoing interface (OIF)
+   */
   DeferredRouteOutputTag (int32_t o = -1)
     : Tag (),
       oif (o)
   {
   }
 
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId
   GetTypeId ()
   {
@@ -70,7 +79,7 @@ struct DeferredRouteOutputTag : public Tag
       .SetParent<Tag> ()
       .SetGroupName ("Dsdv")
       .AddConstructor<DeferredRouteOutputTag> ()
-      ;
+    ;
     return tid;
   }
 
@@ -232,7 +241,7 @@ void
 RoutingProtocol::PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit) const
 {
   *stream->GetStream () << "Node: " << m_ipv4->GetObject<Node> ()->GetId ()
-                        << ", Time: " << Now().As (unit)
+                        << ", Time: " << Now ().As (unit)
                         << ", Local time: " << GetObject<Node> ()->GetLocalTime ().As (unit)
                         << ", DSDV Routing table" << std::endl;
 

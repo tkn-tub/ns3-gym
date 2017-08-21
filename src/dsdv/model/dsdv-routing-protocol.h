@@ -53,8 +53,11 @@ namespace dsdv {
 class RoutingProtocol : public Ipv4RoutingProtocol
 {
 public:
-  static TypeId
-  GetTypeId (void);
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
+  static TypeId GetTypeId (void);
   static const uint32_t DSDV_PORT;
 
   /// c-tor
@@ -66,6 +69,17 @@ public:
 
   // From Ipv4RoutingProtocol
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  /**
+   * Route input packet
+   * \param p The packet
+   * \param header The IPv4 header
+   * \param idev The device
+   * \param ucb The unicast forward callback
+   * \param mcb The multicast forward callback
+   * \param lcb The local deliver callback
+   * \param ecb The error callback
+   * \returns true if successful
+   */
   bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, UnicastForwardCallback ucb,
                    MulticastForwardCallback mcb, LocalDeliverCallback lcb, ErrorCallback ecb);
   virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream, Time::Unit unit = Time::S) const;
@@ -76,25 +90,48 @@ public:
   virtual void SetIpv4 (Ptr<Ipv4> ipv4);
 
   // Methods to handle protocol parameters
+  /**
+   * Set enable buffer flag
+   * \param f The enable buffer flag
+   */
   void SetEnableBufferFlag (bool f);
+  /**
+   * Get enable buffer flag
+   * \returns the enable buffer flag
+   */
   bool GetEnableBufferFlag () const;
+  /**
+   * Set weighted settling time (WST) flag
+   * \param f the weighted settling time (WST) flag
+   */
   void SetWSTFlag (bool f);
+  /**
+   * Get weighted settling time (WST) flag
+   * \returns the weighted settling time (WST) flag
+   */
   bool GetWSTFlag () const;
+  /**
+   * Set enable route aggregation (RA) flag
+   * \param f the enable route aggregation (RA) flag
+   */
   void SetEnableRAFlag (bool f);
+  /**
+   * Get enable route aggregation (RA) flag
+   * \returns the enable route aggregation (RA) flag
+   */
   bool GetEnableRAFlag () const;
 
- /**
-  * Assign a fixed random variable stream number to the random variables
-  * used by this model.  Return the number of streams (possibly zero) that
-  * have been assigned.
-  *
-  * \param stream first stream index to use
-  * \return the number of stream indices assigned by this model
-  */
+  /**
+   * Assign a fixed random variable stream number to the random variables
+   * used by this model.  Return the number of streams (possibly zero) that
+   * have been assigned.
+   *
+   * \param stream first stream index to use
+   * \return the number of stream indices assigned by this model
+   */
   int64_t AssignStreams (int64_t stream);
 
 private:
-  
   // Protocol parameters.
   /// Holdtimes is the multiplicative factor of PeriodicUpdateInterval for which the node waits since the last update
   /// before flushing a route from the routing table. If PeriodicUpdateInterval is 8s and Holdtimes is 3, the node
@@ -143,11 +180,16 @@ private:
   ErrorCallback m_ecb;
 
 private:
-  
   /// Start protocol operation
   void
   Start ();
-  /// Queue packet untill we find a route
+  /**
+   * Queue packet until we find a route
+   * \param p the packet to route
+   * \param header the Ipv4Header
+   * \param ucb the UnicastForwardCallback function
+   * \param ecb the ErrorCallback function
+   */
   void
   DeferredRouteOutput (Ptr<const Packet> p, const Ipv4Header & header, UnicastForwardCallback ucb, ErrorCallback ecb);
   /// Look for any queued packets to send them out
@@ -160,18 +202,31 @@ private:
    */
   void
   SendPacketFromQueue (Ipv4Address dst, Ptr<Ipv4Route> route);
-  /// Find socket with local interface address iface
+  /**
+   * Find socket with local interface address iface
+   * \param iface the interface
+   * \returns the socket
+   */
   Ptr<Socket>
   FindSocketWithInterfaceAddress (Ipv4InterfaceAddress iface) const;
-  
+
   // Receive dsdv control packets
-  /// Receive and process dsdv control packet
+  /**
+   * Receive and process dsdv control packet
+   * \param socket the socket for receiving dsdv control packets
+   */
   void
   RecvDsdv (Ptr<Socket> socket);
-
+  /// Send packet
   void
   Send (Ptr<Ipv4Route>, Ptr<const Packet>, const Ipv4Header &);
-  /// Create loopback route for given header
+  /**
+   * Create loopback route for given header
+   *
+   * \param header the IP header
+   * \param oif the device
+   * \returns the route
+   */
   Ptr<Ipv4Route>
   LoopbackRoute (const Ipv4Header & header, Ptr<NetDevice> oif) const;
   /**
@@ -187,6 +242,7 @@ private:
   /// Broadcasts the entire routing table for every PeriodicUpdateInterval
   void
   SendPeriodicUpdate ();
+  /// Merge periodic updates
   void
   MergeTriggerPeriodicUpdates ();
   /// Notify that packet is dropped for some reason
@@ -198,7 +254,7 @@ private:
   Timer m_triggeredExpireTimer;
 
   /// Provides uniform random variables.
-  Ptr<UniformRandomVariable> m_uniformRandomVariable;  
+  Ptr<UniformRandomVariable> m_uniformRandomVariable;
 };
 
 }

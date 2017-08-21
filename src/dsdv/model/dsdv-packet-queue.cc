@@ -38,7 +38,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsdvPacketQueue");
-  
+
 namespace dsdv {
 uint32_t
 PacketQueue::GetSize ()
@@ -144,8 +144,16 @@ PacketQueue::GetCountForPacketsWithDst (Ipv4Address dst)
   return count;
 }
 
+/**
+ * IsExpired structure
+ */
 struct IsExpired
 {
+  /**
+   * \brief Check for expired entry
+   * \param e QueueEntry to check
+   * \return true if expired
+   */
   bool
   operator() (QueueEntry const & e) const
   {

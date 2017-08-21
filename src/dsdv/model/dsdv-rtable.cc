@@ -36,7 +36,7 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("DsdvRoutingTable");
-  
+
 namespace dsdv {
 RoutingTableEntry::RoutingTableEntry (Ptr<NetDevice> dev,
                                       Ipv4Address dst,

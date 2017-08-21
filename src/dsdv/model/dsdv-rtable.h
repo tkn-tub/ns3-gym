@@ -56,112 +56,208 @@ enum RouteFlags
 class RoutingTableEntry
 {
 public:
-  /// c-tor
-  RoutingTableEntry (Ptr<NetDevice> dev = 0, Ipv4Address dst = Ipv4Address (), uint32_t m_seqNo = 0,
+  /**
+   * c-tor
+   *
+   * \param dev the net device
+   * \param dst the destination IP address
+   * \param seqNo the sequence number
+   * \param iface the interface
+   * \param hops the number of hops
+   * \param nextHop the IP address of the next hop
+   * \param lifetime the lifetime 
+   * \param SettlingTime the settling time
+   * \param changedEntries flag for changed entries
+   */
+  RoutingTableEntry (Ptr<NetDevice> dev = 0, Ipv4Address dst = Ipv4Address (), uint32_t seqNo = 0,
                      Ipv4InterfaceAddress iface = Ipv4InterfaceAddress (), uint32_t hops = 0, Ipv4Address nextHop = Ipv4Address (),
                      Time lifetime = Simulator::Now (), Time SettlingTime = Simulator::Now (), bool changedEntries = false);
 
   ~RoutingTableEntry ();
+  /**
+   * Get destination IP address
+   * \returns the destination IPv4 address
+   */
   Ipv4Address
   GetDestination () const
   {
     return m_ipv4Route->GetDestination ();
   }
+  /**
+   * Get route
+   * \returns the IPv4 route
+   */
   Ptr<Ipv4Route>
   GetRoute () const
   {
     return m_ipv4Route;
   }
+  /**
+   * Set route
+   * \param route the IPv4 route
+   */
   void
   SetRoute (Ptr<Ipv4Route> route)
   {
     m_ipv4Route = route;
   }
+  /**
+   * Set next hop
+   * \param nextHop the IPv4 address of the next hop
+   */
   void
   SetNextHop (Ipv4Address nextHop)
   {
     m_ipv4Route->SetGateway (nextHop);
   }
+  /**
+   * Get next hop
+   * \returns the IPv4 address of the next hop
+   */
   Ipv4Address
   GetNextHop () const
   {
     return m_ipv4Route->GetGateway ();
   }
+  /**
+   * Set output device
+   * \param device the output device
+   */
   void
   SetOutputDevice (Ptr<NetDevice> device)
   {
     m_ipv4Route->SetOutputDevice (device);
   }
+  /**
+   * Get output device
+   * \returns the output device
+   */
   Ptr<NetDevice>
   GetOutputDevice () const
   {
     return m_ipv4Route->GetOutputDevice ();
   }
+  /**
+   * Get interface address
+   * \returns the IPv4 interface address
+   */
   Ipv4InterfaceAddress
   GetInterface () const
   {
     return m_iface;
   }
+  /**
+   * Set interface address
+   * \param iface the IPv4 interface address
+   */
   void
   SetInterface (Ipv4InterfaceAddress iface)
   {
     m_iface = iface;
   }
+  /**
+   * Set sequence number
+   * \param sequenceNumber the sequence number
+   */
   void
   SetSeqNo (uint32_t sequenceNumber)
   {
     m_seqNo = sequenceNumber;
   }
+  /**
+   * Get sequence number
+   * \returns the sequence number
+   */
   uint32_t
   GetSeqNo () const
   {
     return m_seqNo;
   }
+  /**
+   * Set hop
+   * \param hopCount the hop count
+   */
   void
   SetHop (uint32_t hopCount)
   {
     m_hops = hopCount;
   }
+  /**
+   * Get hop
+   * \returns the hop count
+   */
   uint32_t
   GetHop () const
   {
     return m_hops;
   }
+  /**
+   * Set lifetime
+   * \param lifeTime the lifetime value
+   */
   void
   SetLifeTime (Time lifeTime)
   {
     m_lifeTime = lifeTime;
   }
+  /**
+   * Get lifetime
+   * \returns the lifetime value
+   */
   Time
   GetLifeTime () const
   {
     return (Simulator::Now () - m_lifeTime);
   }
+  /**
+   * Set settling time
+   * \param settlingTime the settling time
+   */
   void
   SetSettlingTime (Time settlingTime)
   {
     m_settlingTime = settlingTime;
   }
+  /**
+   * Get settling time
+   * \returns the settling time
+   */
   Time
   GetSettlingTime () const
   {
     return (m_settlingTime);
   }
+  /**
+   * Set route flags
+   * \param flag the route flags
+   */
   void
   SetFlag (RouteFlags flag)
   {
     m_flag = flag;
   }
+  /**
+   * Get route flags
+   * \returns the route flags
+   */
   RouteFlags
   GetFlag () const
   {
     return m_flag;
   }
+  /**
+   * Set entries changed indicator
+   * \param entriesChanged
+   */
   void
   SetEntriesChanged (bool entriesChanged)
   {
     m_entriesChanged = entriesChanged;
   }
+  /**
+   * Get entries changed
+   * \returns the entries changed flag
+   */
   bool
   GetEntriesChanged () const
   {
@@ -169,6 +265,7 @@ public:
   }
   /**
    * \brief Compare destination address
+   * \param destination destination node IP address
    * \return true if equal
    */
   bool
@@ -176,11 +273,14 @@ public:
   {
     return (m_ipv4Route->GetDestination () == destination);
   }
+  /**
+   * Print routing table entry
+   * \param stream the output stream
+   */
   void
   Print (Ptr<OutputStreamWrapper> stream) const;
 
 private:
-  
   // Fields
   /// Destination Sequence Number
   uint32_t m_seqNo;
@@ -243,6 +343,13 @@ public:
    */
   bool
   LookupRoute (Ipv4Address dst, RoutingTableEntry & rt);
+  /**
+   * Lookup routing table entry with destination address dst
+   * \param id destination address
+   * \param rt entry with destination address dst, if exists
+   * \param forRouteInput for routing input
+   * \return true on success
+   */
   bool
   LookupRoute (Ipv4Address id, RoutingTableEntry & rt, bool forRouteInput);
   /**
@@ -265,7 +372,10 @@ public:
    */
   void
   GetListOfAllRoutes (std::map<Ipv4Address, RoutingTableEntry> & allRoutes);
-  /// Delete all route from interface with address iface
+  /**
+   * Delete all route from interface with address iface
+   * \param iface the interface
+   */
   void
   DeleteAllRoutesFromInterface (Ipv4InterfaceAddress iface);
   /// Delete all entries from routing table
@@ -274,13 +384,22 @@ public:
   {
     m_ipv4AddressEntry.clear ();
   }
-  /// Delete all outdated entries if Lifetime is expired
+  /**
+   * Delete all outdated entries if Lifetime is expired
+   * \param removedAddresses is the list of addresses to purge
+   */
   void
   Purge (std::map<Ipv4Address, RoutingTableEntry> & removedAddresses);
-  /// Print routing table
+  /**
+   * Print routing table
+   * \param stream the output stream
+   */
   void
   Print (Ptr<OutputStreamWrapper> stream) const;
-  /// Provides the number of routes present in that nodes routing table.
+  /**
+   * Provides the number of routes present in that nodes routing table.
+   * \returns the number of routes
+   */
   uint32_t
   RoutingTableSize ();
   /**
@@ -288,6 +407,7 @@ public:
   * after the event is completed.
   * \param address destination address for which this event is running.
   * \param id unique eventid that was generated.
+  * \return true on success
   */
   bool
   AddIpv4Event (Ipv4Address address, EventId id);
@@ -321,25 +441,31 @@ public:
     */
   EventId
   GetEventId (Ipv4Address address);
-  
-  // Handle life time of invalid route
+
+  /**
+   * Get hold down time (time until an invalid route may be deleted)
+   * \returns the hold down time
+   */
   Time Getholddowntime () const
   {
     return m_holddownTime;
   }
+  /**
+   * Set hold down time (time until an invalid route may be deleted)
+   * \param t the hold down time
+   */
   void Setholddowntime (Time t)
   {
     m_holddownTime = t;
   }
 
 private:
-  
   // Fields
   /// an entry in the routing table.
   std::map<Ipv4Address, RoutingTableEntry> m_ipv4AddressEntry;
   /// an entry in the event table.
   std::map<Ipv4Address, EventId> m_ipv4Events;
-  ///
+  /// hold down time of an expired route
   Time m_holddownTime;
 
 };

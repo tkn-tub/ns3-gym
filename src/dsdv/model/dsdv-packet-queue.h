@@ -45,9 +45,18 @@ namespace dsdv {
 class QueueEntry
 {
 public:
+  /// Unicast forward call back function typedef
   typedef Ipv4RoutingProtocol::UnicastForwardCallback UnicastForwardCallback;
+  /// Error callback function typedef
   typedef Ipv4RoutingProtocol::ErrorCallback ErrorCallback;
-  /// c-tor
+  /**
+   * c-tor
+   *
+   * \param pa the packet to create the entry
+   * \param h the Ipv4Header
+   * \param ucb the UnicastForwardCallback function
+   * \param ecb the ErrorCallback function
+   */
   QueueEntry (Ptr<const Packet> pa = 0, Ipv4Header const & h = Ipv4Header (),
               UnicastForwardCallback ucb = UnicastForwardCallback (),
               ErrorCallback ecb = ErrorCallback ())
@@ -61,50 +70,91 @@ public:
 
   /**
    * Compare queue entries
+   * \param o QueueEntry to compare
    * \return true if equal
    */
   bool operator== (QueueEntry const & o) const
   {
     return ((m_packet == o.m_packet) && (m_header.GetDestination () == o.m_header.GetDestination ()) && (m_expire == o.m_expire));
   }
-  
+
   // Fields
+  /**
+   * Get unicast forward callback function
+   * \returns the unicast forward callback
+   */
   UnicastForwardCallback GetUnicastForwardCallback () const
   {
     return m_ucb;
   }
+  /**
+   * Set unicast forward callback function
+   * \param ucb the unicast forward callback
+   */
   void SetUnicastForwardCallback (UnicastForwardCallback ucb)
   {
     m_ucb = ucb;
   }
+  /**
+   * Get error callback function
+   * \returns the error callback
+   */
   ErrorCallback GetErrorCallback () const
   {
     return m_ecb;
   }
+  /**
+   * Set error callback function
+   * \param ecb the error callback
+   */
   void SetErrorCallback (ErrorCallback ecb)
   {
     m_ecb = ecb;
   }
+  /**
+   * Get packet
+   * \returns the current packet
+   */
   Ptr<const Packet> GetPacket () const
   {
     return m_packet;
   }
+  /**
+   * Set packet
+   * \param p The current packet
+   */
   void SetPacket (Ptr<const Packet> p)
   {
     m_packet = p;
   }
+  /**
+   * Get IP header
+   * \returns the IPv4 header
+   */
   Ipv4Header GetIpv4Header () const
   {
     return m_header;
   }
+  /**
+   * Set IP header
+   * \param h The IPv4 header
+   */
   void SetIpv4Header (Ipv4Header h)
   {
     m_header = h;
   }
+  /**
+   * Set expire time
+   * \param exp
+   */
   void SetExpireTime (Time exp)
   {
     m_expire = exp + Simulator::Now ();
   }
+  /**
+   * Get expire time
+   * \returns the expire time
+   */
   Time GetExpireTime () const
   {
     return m_expire - Simulator::Now ();
@@ -137,51 +187,103 @@ public:
   PacketQueue ()
   {
   }
-  /// Push entry in queue, if there is no entry with the same packet and destination address in queue.
+  /**
+   * Push entry in queue, if there is no entry with the same packet and destination address in queue.
+   * \param entry QueueEntry to compare
+   * \return true if successful
+   */
   bool Enqueue (QueueEntry & entry);
-  /// Return first found (the earliest) entry for given destination
+  /**
+   * Return first found (the earliest) entry for given destination
+   * 
+   * \param dst the destination IP address
+   * \param entry the queue entry
+   * \returns true if successful
+   */
   bool Dequeue (Ipv4Address dst, QueueEntry & entry);
-  /// Remove all packets with destination IP address dst
+  /**
+   * Remove all packets with destination IP address dst
+   * \param dst the destination IP address
+   */
   void DropPacketWithDst (Ipv4Address dst);
-  /// Finds whether a packet with destination dst exists in the queue
+  /**
+   * Finds whether a packet with destination dst exists in the queue
+   * \param dst the destination IP address
+   * \returns true if a packet found
+   */
   bool Find (Ipv4Address dst);
-  /// Get count of packets with destination dst in the queue
+  /**
+   * Get count of packets with destination dst in the queue
+   * \param dst the destination IP address
+   * \returns the count
+   */
   uint32_t
   GetCountForPacketsWithDst (Ipv4Address dst);
-  /// Number of entries
+  /**
+   * Get the number of entries
+   * \returns the number of entries
+   */
   uint32_t GetSize ();
-  
+
   // Fields
+  /**
+   * Get maximum queue length
+   * \returns the maximum queue length
+   */
   uint32_t GetMaxQueueLen () const
   {
     return m_maxLen;
   }
+  /**
+   * Set maximum queue length
+   * \param len the maximum queue length
+   */
   void SetMaxQueueLen (uint32_t len)
   {
     m_maxLen = len;
   }
+  /**
+   * Get maximum packets per destination
+   * \returns the maximum packets per destination
+   */
   uint32_t GetMaxPacketsPerDst () const
   {
     return m_maxLenPerDst;
   }
+  /**
+   * Set maximum packets per destination
+   * \param len The maximum packets per destination
+   */
   void SetMaxPacketsPerDst (uint32_t len)
   {
     m_maxLenPerDst = len;
   }
+  /**
+   * Get queue timeout
+   * \returns the queue timeout
+   */
   Time GetQueueTimeout () const
   {
     return m_queueTimeout;
   }
+  /**
+   * Set queue timeout
+   * \param t The queue timeout
+   */
   void SetQueueTimeout (Time t)
   {
     m_queueTimeout = t;
   }
 
 private:
-  std::vector<QueueEntry> m_queue;
+  std::vector<QueueEntry> m_queue; ///< the queue
   /// Remove all expired entries
   void Purge ();
-  /// Notify that packet is dropped from queue by timeout
+  /**
+   * Notify that the packet is dropped from queue due to timeout
+   * \param en the queue entry
+   * \param reason the reason for the packet drop
+   */
   void Drop (QueueEntry en, std::string reason);
   /// The maximum number of packets that we allow a routing protocol to buffer.
   uint32_t m_maxLen;
@@ -189,6 +291,12 @@ private:
   uint32_t m_maxLenPerDst;
   /// The maximum period of time that a routing protocol is allowed to buffer a packet for, seconds.
   Time m_queueTimeout;
+  /**
+   * Determine if queue entries are equal
+   * \param en the queue entry
+   * \param dst the IPv4 destination address
+   * \returns true if the entry is for the destination address
+   */
   static bool IsEqual (QueueEntry en, const Ipv4Address dst)
   {
     return (en.GetIpv4Header ().GetDestination () == dst);
