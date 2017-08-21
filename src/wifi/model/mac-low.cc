@@ -650,8 +650,8 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
   SocketPriorityTag priorityTag;
   m_currentPacket->RemovePacketTag (priorityTag);
   m_currentHdr = *hdr;
-  m_currentDca = dca;
   CancelAllEvents ();
+  m_currentDca = dca;
   m_txParams = params;
   m_currentTxVector = GetDataTxVector (m_currentPacket, &m_currentHdr);
 
