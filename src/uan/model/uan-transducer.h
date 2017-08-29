@@ -195,6 +195,8 @@ public:
   virtual double GetRxGainDb (void) = 0;
   /**
    * Apply receiver gain in dB to the received power.
+   * \param rxPowerDb Signal power in dB of arriving packet.
+   * \param mode Mode arriving packet is using.
    *
    * \return Updated receive power (in dB) with gain applied.
    */
