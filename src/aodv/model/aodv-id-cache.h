@@ -43,22 +43,38 @@ namespace aodv {
 class IdCache
 {
 public:
-  /// c-tor
+  /**
+   * constructor
+   * \param lifetime the lifetime for added entries
+   */
   IdCache (Time lifetime) : m_lifetime (lifetime)
   {
   }
-  /// Check that entry (addr, id) exists in cache. Add entry, if it doesn't exist.
+  /**
+   * Check that entry (addr, id) exists in cache. Add entry, if it doesn't exist.
+   * \param addr the IP address
+   * \param id the cache entry ID
+   * \returns true if the pair exists
+   */ 
   bool IsDuplicate (Ipv4Address addr, uint32_t id);
   /// Remove all expired entries
   void Purge ();
-  /// Return number of entries in cache
+  /**
+   * \returns number of entries in cache
+   */
   uint32_t GetSize ();
-  /// Set lifetime for future added entries.
+  /**
+   * Set lifetime for future added entries.
+   * \param lifetime the lifetime for entries
+   */
   void SetLifetime (Time lifetime)
   {
     m_lifetime = lifetime;
   }
-  /// Return lifetime for existing entries in cache
+  /**
+   * Return lifetime for existing entries in cache
+   * \returns thhe lifetime
+   */
   Time GetLifeTime () const
   {
     return m_lifetime;

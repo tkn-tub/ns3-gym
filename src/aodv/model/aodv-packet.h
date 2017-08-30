@@ -57,7 +57,10 @@ enum MessageType
 class TypeHeader : public Header
 {
 public:
-  /// c-tor
+  /**
+   * constructor
+   * \param t the AODV RREQ type
+   */
   TypeHeader (MessageType t = AODVTYPE_RREQ);
 
   /**
@@ -71,12 +74,17 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
   void Print (std::ostream &os) const;
 
-  /// Return type
+  /**
+   * \returns the type
+   */
   MessageType Get () const
   {
     return m_type;
   }
-  /// Check that type if valid
+  /**
+   * Check that type if valid
+   * \returns true if the type is valid
+   */
   bool IsValid () const
   {
     return m_valid;
@@ -123,8 +131,19 @@ std::ostream & operator<< (std::ostream & os, TypeHeader const & h);
 class RreqHeader : public Header
 {
 public:
-  /// c-tor
-  RreqHeader (uint8_t flags = 0, uint8_t reserved = 0, uint8_t hopCount = 0,
+  /**
+   * constructor
+   *
+   * \param flags the message flags (0)
+   * \param reserved the reserved bits (0)
+   * \param hopCount the hop count
+   * \param requestID the request ID
+   * \param dst the destination IP address
+   * \param dstSeqNo the destination sequence number
+   * \param origin the origin IP address
+   * \param originSeqNo the origin sequence number
+   */
+   RreqHeader (uint8_t flags = 0, uint8_t reserved = 0, uint8_t hopCount = 0,
               uint32_t requestID = 0, Ipv4Address dst = Ipv4Address (),
               uint32_t dstSeqNo = 0, Ipv4Address origin = Ipv4Address (),
               uint32_t originSeqNo = 0);
@@ -316,7 +335,16 @@ std::ostream & operator<< (std::ostream & os, RreqHeader const &);
 class RrepHeader : public Header
 {
 public:
-  /// c-tor
+  /**
+   * constructor
+   *
+   * \param prefixSize the prefix size (0)
+   * \param hopCount the hop count (0)
+   * \param dst the destination IP address
+   * \param dstSeqNo the destination sequence number
+   * \param origin the origin IP address
+   * \param lifetime the lifetime
+   */
   RrepHeader (uint8_t prefixSize = 0, uint8_t hopCount = 0, Ipv4Address dst =
                 Ipv4Address (), uint32_t dstSeqNo = 0, Ipv4Address origin =
                 Ipv4Address (), Time lifetime = MilliSeconds (0));
@@ -429,7 +457,13 @@ public:
    */
   uint8_t GetPrefixSize () const;
 
-  /// Configure RREP to be a Hello message
+  /**
+   * Configure RREP to be a Hello message
+   *
+   * \param src the source IP address
+   * \param srcSeqNo the source sequence number
+   * \param lifetime the lifetime of the message
+   */
   void SetHello (Ipv4Address src, uint32_t srcSeqNo, Time lifetime);
 
   /**
@@ -469,7 +503,7 @@ std::ostream & operator<< (std::ostream & os, RrepHeader const &);
 class RrepAckHeader : public Header
 {
 public:
-  /// c-tor
+  /// constructor
   RrepAckHeader ();
 
   /**
@@ -523,7 +557,7 @@ std::ostream & operator<< (std::ostream & os, RrepAckHeader const &);
 class RerrHeader : public Header
 {
 public:
-  /// c-tor
+  /// constructor
   RerrHeader ();
 
   /**
@@ -564,7 +598,9 @@ public:
   bool RemoveUnDestination (std::pair<Ipv4Address, uint32_t> & un);
   /// Clear header
   void Clear ();
-  /// Return number of unreachable destinations in RERR message
+  /**
+   * \returns number of unreachable destinations in RERR message
+   */
   uint8_t GetDestCount () const
   {
     return (uint8_t)m_unreachableDstSeqNo.size ();
