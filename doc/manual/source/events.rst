@@ -168,7 +168,7 @@ network-level events.
 Notes:
 
 * Users need to be careful to propagate DoInitialize methods across objects
-  by calling Initialize explicitely on their member objects
+  by calling Initialize explicitly on their member objects
 * The context id associated with each ScheduleWithContext method has
   other uses beyond logging: it is used by an experimental branch of ns-3
   to perform parallel simulation on multicore systems using

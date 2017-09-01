@@ -7,7 +7,7 @@ Helpers
 The above chapters introduced you to various |ns3| programming concepts such as
 smart pointers for reference-counted memory management, attributes, namespaces,
 callbacks, etc. Users who work at this low-level API can interconnect |ns3|
-objects with fine granulariy. However, a simulation program written entirely
+objects with fine granularity. However, a simulation program written entirely
 using the low-level API would be quite long and tedious to code. For this
 reason, a separate so-called "helper API" has been overlaid on the core |ns3|
 API. If you have read the |ns3| tutorial, you will already be familiar with the

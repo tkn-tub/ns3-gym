@@ -316,7 +316,7 @@ are the number of vertices (routers) and edges (links) respectively.
 It should be stressed that the convergence time is the number of steps in
 the algorithm, and each step is triggered by a message.
 Since Triggered Updates (i.e., when a route is changed) have a 1-5 seconds 
-cooldown, the toplogy can require some time to be stabilized.
+cooldown, the topology can require some time to be stabilized.
 
 Users should be aware that, during routing tables construction, the routers 
 might drop packets. Data traffic should be sent only after a time long
@@ -351,7 +351,7 @@ Poison Reverse will advertise the route on the interface from which it
 was learned, but with a metric of 16 (infinity).
 For a full analysis of the three techniques, see :rfc:`1058`, section 2.2.
 
-The examples are based on the network toplogy
+The examples are based on the network topology
 described in the RFC, but it does not show the effect described there.
 
 The reason are the Triggered Updates, together with the fact that when a 

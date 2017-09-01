@@ -166,7 +166,7 @@ Callback based tracing is not yet properly supported for Python, as new |ns3| AP
 
 Pcap file writing is supported via the normal API.
 
-Ascii tracing is supported since |ns3|.4 via the normal C++ API translated to Python.  However, ascii tracing requires the creation of an ostream object to pass into the ascii tracing methods.  In Python, the C++ std::ofstream has been minimally wrapped to allow this.  For example:
+ASCII tracing is supported since |ns3|.4 via the normal C++ API translated to Python.  However, ASCII tracing requires the creation of an ostream object to pass into the ASCII tracing methods.  In Python, the C++ std::ofstream has been minimally wrapped to allow this.  For example:
 
 ::
 

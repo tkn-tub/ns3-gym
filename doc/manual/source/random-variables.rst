@@ -355,7 +355,7 @@ Publishing your results
 
 When you publish simulation results, a key piece of configuration 
 information that you should always state is how you used the
-the random number generator.
+random number generator.
 
 * what seeds you used,
 * what RNG you used if not the default,

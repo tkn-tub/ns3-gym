@@ -80,7 +80,7 @@ Acoustic Ray Tracing software (http://oalib.hlsresearch.com/).
 
 The create-dat utility requires a Bellhop installation to run.  Bellhop takes
 environment information about the channel, such as sound speed profile, surface height
-bottom type, water depth, and uses a gaussian ray tracing algorithm to determine
+bottom type, water depth, and uses a Gaussian ray tracing algorithm to determine
 propagation information.  Arrivals from Bellhop are grouped together into equal length
 taps (the arrivals in a tap duration are coherently summed).  The maximum taps are then
 aligned to take the same position in the PDP.  The create-dat utility averages together
@@ -229,7 +229,7 @@ The user will be able to:
 * use a specific power profile for the acoustic modem
 * use a specific energy model for the AUV
 * trace the power consumption of AUV navigation, through AUV's energy model
-* trace the power consumprion underwater acoustic communications, through acoustic modem power profile
+* trace the power consumption underwater acoustic communications, through acoustic modem power profile
 
 We have integrated the Energy Model with the UAN module, to implement energy handling. We have implemented a specific energy model for the two AUV classes and, an energy source for Lithium batteries. This will be really useful for researchers to keep trace of the AUV operational life.
 We have implemented also an acoustic modem power profile, to keep trace of its power consumption. This can be used to compare protocols specific power performance. In order to use such power profile, the acoustic transducer physical layer has been modified to use the modem power profile. We have decoupled the physical layer from the transducer specific energy model, to let the users change the different energy models without changing the physical layer.
@@ -259,7 +259,7 @@ AUV energy sources
 Acoustic modem energy model
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Basing on the Device Energy Model interface, has been implemented a generic energy model for acoustic modem. The model allows to trace four modem's power-states: Sleep, Idle, Receiving, Transmitting. The default parameters for the energy model are set to fit those of the WHOI μmodem. The class follows pretty closely the RadioEnergyModel class as the transducer behaviour is pretty close to that of a wifi radio.
+Basing on the Device Energy Model interface, has been implemented a generic energy model for acoustic modem. The model allows to trace four modem's power-states: Sleep, Idle, Receiving, Transmitting. The default parameters for the energy model are set to fit those of the WHOI μmodem. The class follows pretty closely the RadioEnergyModel class as the transducer behaviour is pretty close to that of a Wi-Fi radio.
 
 The default power consumption values implemented into the model are as follows [6]:
 
@@ -281,7 +281,7 @@ UAN module energy modifications
 
 The UAN module has been modified in order to utilize the implemented energy classes. Specifically, it has been modified the physical layer of the UAN module. It Has been implemented an UpdatePowerConsumption method that takes the modem's state as parameter. It checks if an energy source is installed into the node and, in case, it then use the AcousticModemEnergyModel to update the power consumption with the current modem's state. The modem power consumption's update takes place whenever the modem changes its state.
 
-A user should take into account that, if the the power consumption handling is enabled (if the node has an energy source installed), all the communications processes will terminate whether the node depletes all the energy source.
+A user should take into account that, if the power consumption handling is enabled (if the node has an energy source installed), all the communications processes will terminate whether the node depletes all the energy source.
 
 
 Li-Ion batteries model
@@ -315,7 +315,7 @@ Some ideas could be :
 * insert a data logging capability
 * modify the framework to use sockets (enabling the possibility to use applications)
 * introduce some more MAC protocols
-* modify the physical layer to let it consider the doppler spread (problematic in underwater environments)
+* modify the physical layer to let it consider the Doppler spread (problematic in underwater environments)
 * introduce OFDM modulations
 
 References
@@ -355,7 +355,7 @@ further examples can be found into the Unit tests in ``src/uan/test/...cc``
 Examples
 ========
 
-Examples of the Framework's usage can be found into the examples folder. There are mobility related examples and uan related ones.
+Examples of the Framework's usage can be found into the examples folder. There are mobility related examples and UAN related ones.
 
 Mobility Model Examples
 #######################
@@ -517,7 +517,7 @@ The unit test can be found in ``src/uan/test/auv-energy-model-test.cc``.
 The single packet energy consumption test do the following:
 
 * creates a two node network, one surface gateway and one fixed node at -500 m of depth
-* install the acoustic communication stack with energy consuption support into the nodes
+* install the acoustic communication stack with energy consumption support into the nodes
 * a packet is sent from the underwater node to the gateway
 * it is verified that both, the gateway and the fixed node, have consumed the expected amount of energy from their sources
 

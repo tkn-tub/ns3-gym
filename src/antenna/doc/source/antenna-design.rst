@@ -21,10 +21,10 @@ AntennaModel
 
 The AntennaModel uses the coordinate system adopted in [Balanis]_ and
 depicted in Figure :ref:`fig-antenna-coordinate-system`. This system
-is obtained by traslating the cartesian coordinate system used by the
+is obtained by translating the Cartesian coordinate system used by the
 ns-3 MobilityModel into the new origin :math:`o` which is the location
 of the antenna, and then transforming the coordinates of every generic
-point :math:`p` of the space from cartesian coordinates
+point :math:`p` of the space from Cartesian coordinates
 :math:`(x,y,z)` into spherical coordinates 
 :math:`(r, \theta,\phi)`. 
 The antenna model neglects the radial component :math:`r`, and

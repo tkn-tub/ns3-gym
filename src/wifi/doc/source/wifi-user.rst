@@ -36,7 +36,7 @@ To create a WifiNetDevice, users need to follow these steps:
 * Decide on which physical layer framework, the ``SpectrumWifiPhy`` or 
   ``YansWifiPhy``, to use.  This will affect which Channel and Phy type to use. 
 * Configure the Channel: Channel takes care of getting signal
-  from one device to other devices on the same wifi channel.
+  from one device to other devices on the same Wi-Fi channel.
   The main configurations of WifiChannel are propagation loss model and propagation delay model.
 * Configure the WifiPhy: WifiPhy takes care of actually sending and receiving wireless
   signal from Channel.  Here, WifiPhy decides whether each frame will be successfully

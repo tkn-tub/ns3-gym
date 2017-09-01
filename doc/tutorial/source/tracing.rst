@@ -1272,7 +1272,7 @@ the list of TraceSources you will find
 
   **TraceSources**
 
-  * **CongestionWindow**: The TCP connnection's congestion window
+  * **CongestionWindow**: The TCP connection's congestion window
 
     Callback signature:  **ns3::TracedValueCallback::Uint32**
 

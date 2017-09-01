@@ -883,7 +883,7 @@ For example, to run your |ns3| program ``hello-simulator`` with the arguments
 
 Notice that the |ns3| program name goes with the ``--run`` argument,
 and the control utility (here ``gdb``) is the first token
-in the ``--commmand-template`` argument.  The ``--args`` tells ``gdb``
+in the ``--command-template`` argument.  The ``--args`` tells ``gdb``
 that the remainder of the command line belongs to the "inferior" program.
 (Some ``gdb``'s don't understand the ``--args`` feature.  In this case,
 omit the program arguments from the ``--command-template``,

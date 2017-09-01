@@ -6,7 +6,7 @@ Enabling Subsets of |ns3| Modules
 
 As with most software projects, |ns3| is ever growing larger in terms of number of modules, lines of code, and memory footprint.  Users, however, may only use a few of those modules at a time.  For this reason, users may want to explicitly enable only the subset of the possible |ns3| modules that they actually need for their research.  
 
-This chapter discusses how to enable only the |ns3| modules that you are intersted in using.
+This chapter discusses how to enable only the |ns3| modules that you are interested in using.
 
 How to enable a subset of |ns3|'s modules
 *****************************************

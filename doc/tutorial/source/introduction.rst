@@ -41,7 +41,7 @@ models of how packet data networks work and perform, and provides a
 simulation engine for users to conduct simulation experiments.  Some of the
 reasons to use |ns3| include to perform studies that are more difficult
 or not possible to perform with real systems, to study system behavior in
-a highly controllled, reproducible environment, and to learn about how
+a highly controlled, reproducible environment, and to learn about how
 networks work.  Users will note that the available model set in |ns3| 
 focuses on modeling how Internet protocols and networks work, but
 |ns3| is not limited to Internet systems; several users are using

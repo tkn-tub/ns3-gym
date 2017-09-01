@@ -521,32 +521,32 @@ tells the helper to interpret the ``prefix`` parameter as a complete filename.
 Ascii Tracing Device Helpers
 ++++++++++++++++++++++++++++
 
-The behavior of the ascii trace helper ``mixin`` is substantially similar to 
+The behavior of the ASCII trace helper ``mixin`` is substantially similar to 
 the pcap version. Take a look at ``src/network/helper/trace-helper.h`` if you want to 
 follow the discussion while looking at real code.
 
 The class ``AsciiTraceHelperForDevice`` adds the high level functionality for
-using ascii tracing to a device helper class. As in the pcap case, every device
-must implement a single virtual method inherited from the ascii trace
+using ASCII tracing to a device helper class. As in the pcap case, every device
+must implement a single virtual method inherited from the ASCII trace
 ``mixin``.::
 
   virtual void EnableAsciiInternal (Ptr<OutputStreamWrapper> stream, std::string prefix, Ptr<NetDevice> nd) = 0;
 
 The signature of this method reflects the device-centric view of the situation
 at this level; and also the fact that the helper may be writing to a shared
-output stream. All of the public ascii-trace-related methods inherited from
+output stream. All of the public ASCII-trace-related methods inherited from
 class ``AsciiTraceHelperForDevice`` reduce to calling this single device-
-dependent implementation method. For example, the lowest level ascii trace
+dependent implementation method. For example, the lowest level ASCII trace
 methods,::
 
   void EnableAscii (std::string prefix, Ptr<NetDevice> nd);
   void EnableAscii (Ptr<OutputStreamWrapper> stream, Ptr<NetDevice> nd);
 
 will call the device implementation of ``EnableAsciiInternal`` directly,
-providing either a valid prefix or stream.  All other public ascii tracing 
+providing either a valid prefix or stream.  All other public ASCII tracing 
 methods will build on these low-level functions to provide additional user-level
 functionality. What this means to the user is that all device helpers in the 
-system will have all of the ascii trace methods available; and these methods
+system will have all of the ASCII trace methods available; and these methods
 will all work in the same way across devices if the devices implement 
 ``EnablAsciiInternal`` correctly.
 
@@ -576,7 +576,7 @@ Ascii Tracing Device Helper Methods
 You are encouraged to peruse the Doxygen for class ``TraceHelperForDevice`` to
 find the details of these methods; but to summarize ...
 
-There are twice as many methods available for ascii tracing as there were for
+There are twice as many methods available for ASCII tracing as there were for
 pcap tracing. This is because, in addition to the pcap-style model where traces
 from each unique node/device pair are written to a unique file, we support a
 model in which trace information for many node/device pairs is written to a
@@ -584,7 +584,7 @@ common file.  This means that the <prefix>-<node>-<device> file name generation
 mechanism is replaced by a mechanism to refer to a common file; and the number
 of API methods is doubled to allow all combinations.
 
-Just as in pcap tracing, you can enable ascii tracing on a particular
+Just as in pcap tracing, you can enable ASCII tracing on a particular
 node/net-device pair by providing a ``Ptr<NetDevice>`` to an ``EnableAscii``
 method. The ``Ptr<Node>`` is implicit since the net device must belong to
 exactly one ``Node``. For example,::
@@ -593,12 +593,12 @@ exactly one ``Node``. For example,::
   ...
   helper.EnableAscii ("prefix", nd);
 
-In this case, no trace contexts are written to the ascii trace file since they
+In this case, no trace contexts are written to the ASCII trace file since they
 would be redundant. The system will pick the file name to be created using the
 same rules as described in the pcap section, except that the file will have the
 suffix ".tr" instead of ".pcap".
 
-If you want to enable ascii tracing on more than one net device and have all
+If you want to enable ASCII tracing on more than one net device and have all
 traces sent to a single file, you can do that as well by using an object to
 refer to a single file::
 
@@ -610,12 +610,12 @@ refer to a single file::
   helper.EnableAscii (stream, nd1);
   helper.EnableAscii (stream, nd2);
 
-In this case, trace contexts are written to the ascii trace file since they
+In this case, trace contexts are written to the ASCII trace file since they
 are required to disambiguate traces from the two devices.  Note that since the
 user is completely specifying the file name, the string should include the ".tr"
 for consistency.
 
-You can enable ascii tracing on a particular node/net-device pair by providing a
+You can enable ASCII tracing on a particular node/net-device pair by providing a
 ``std::string`` representing an object name service string to an 
 ``EnablePcap`` method.  The ``Ptr<NetDevice>`` is looked up from the name
 string.  Again, the ``<Node>`` is implicit since the named net device must 
@@ -648,7 +648,7 @@ This would result in a single trace file called ``trace-file-name.tr`` that
 contains all of the trace events for both devices. The events would be
 disambiguated by trace context strings.
 
-You can enable ascii tracing on a collection of node/net-device pairs by
+You can enable ASCII tracing on a collection of node/net-device pairs by
 providing a ``NetDeviceContainer``. For each ``NetDevice`` in the container the
 type is checked. For each device of the proper type (the same type as is managed
 by the device helper), tracing is enabled. Again, the ``<Node>`` is implicit
@@ -658,7 +658,7 @@ since the found net device must belong to exactly one ``Node``.  For example,::
   ...
   helper.EnableAscii ("prefix", d);
 
-This would result in a number of ascii trace files being created, each of which
+This would result in a number of ASCII trace files being created, each of which
 follows the <prefix>-<node id>-<device id>.tr convention. Combining all of the
 traces into a single file is accomplished similarly to the examples above::
 
@@ -679,7 +679,7 @@ enabled.::
   ...
   helper.EnableAscii ("prefix", n);
 
-This would result in a number of ascii trace files being created, each of which
+This would result in a number of ASCII trace files being created, each of which
 follows the <prefix>-<node id>-<device id>.tr convention. Combining all of the
 traces into a single file is accomplished similarly to the examples above:
 
@@ -696,7 +696,7 @@ same type as that managed by the device helper.::
 
   helper.EnableAsciiAll ("prefix");
 
-This would result in a number of ascii trace files being created, one for
+This would result in a number of ASCII trace files being created, one for
 every device in the system of the type managed by the helper. All of these
 files will follow the <prefix>-<node id>-<device id>.tr convention. Combining
 all of the traces into a single file is accomplished similarly to the examples
@@ -706,20 +706,20 @@ Ascii Tracing Device Helper Filename Selection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Implicit in the prefix-style method descriptions above is the construction of
-the complete filenames by the implementation method. By convention, ascii traces
+the complete filenames by the implementation method. By convention, ASCII traces
 in the |ns3| system are of the form ``<prefix>-<node id>-<device id>.tr``.
 
 As previously mentioned, every node in the system will have a system-assigned
 node id; and every device will have an interface index (also called a device id)
-relative to its node.  By default, then, an ascii trace file created as a result
+relative to its node.  By default, then, an ASCII trace file created as a result
 of enabling tracing on the first device of node 21, using the prefix "prefix",
 would be ``prefix-21-1.tr``.
 
 You can always use the |ns3| object name service to make this more clear.  For
 example, if you use the object name service to assign the name "server" to node
-21, the resulting ascii trace file name will automatically become,
+21, the resulting ASCII trace file name will automatically become,
 ``prefix-server-1.tr`` and if you also assign the name "eth0" to the device,
-your ascii trace file name will automatically pick this up and be called
+your ASCII trace file name will automatically pick this up and be called
 ``prefix-server-eth0.tr``.
 
 Pcap Tracing Protocol Helpers
@@ -864,7 +864,7 @@ automatically become, "prefix-nserverIpv4-i1.pcap".
 Ascii Tracing Protocol Helpers
 ++++++++++++++++++++++++++++++
 
-The behavior of the ascii trace helpers is substantially similar to the pcap
+The behavior of the ASCII trace helpers is substantially similar to the pcap
 case.  Take a look at ``src/network/helper/trace-helper.h`` if you want to follow the
 discussion while looking at real code.
 
@@ -874,7 +874,7 @@ appropriate type. For example, use a ``Ptr<Ipv6>`` instead of a ``Ptr<Ipv4>``
 and call ``EnableAsciiIpv6`` instead of ``EnableAsciiIpv4``.
 
 The class ``AsciiTraceHelperForIpv4`` adds the high level functionality for
-using ascii tracing to a protocol helper. Each protocol that enables these
+using ASCII tracing to a protocol helper. Each protocol that enables these
 methods must implement a single virtual method inherited from this class.::
 
   virtual void EnableAsciiIpv4Internal (Ptr<OutputStreamWrapper> stream, std::string prefix, 
@@ -924,7 +924,7 @@ Ascii Tracing Device Helper Methods
 You are encouraged to peruse the Doxygen for class ``PcapAndAsciiHelperForIpv4``
 to find the details of these methods; but to summarize ...
 
-There are twice as many methods available for ascii tracing as there were for
+There are twice as many methods available for ASCII tracing as there were for
 pcap tracing. This is because, in addition to the pcap-style model where traces
 from each unique protocol/interface pair are written to a unique file, we
 support a model in which trace information for many protocol/interface pairs is
@@ -932,7 +932,7 @@ written to a common file. This means that the <prefix>-n<node id>-<interface>
 file name generation mechanism is replaced by a mechanism to refer to a common 
 file; and the number of API methods is doubled to allow all combinations.
 
-Just as in pcap tracing, you can enable ascii tracing on a particular
+Just as in pcap tracing, you can enable ASCII tracing on a particular
 protocol/interface pair by providing a ``Ptr<Ipv4>`` and an ``interface`` to an
 ``EnableAscii`` method.  For example,::
 
@@ -940,12 +940,12 @@ protocol/interface pair by providing a ``Ptr<Ipv4>`` and an ``interface`` to an
   ...
   helper.EnableAsciiIpv4 ("prefix", ipv4, 1);
 
-In this case, no trace contexts are written to the ascii trace file since they
+In this case, no trace contexts are written to the ASCII trace file since they
 would be redundant. The system will pick the file name to be created using the
 same rules as described in the pcap section, except that the file will have the
 suffix ".tr" instead of ".pcap".
 
-If you want to enable ascii tracing on more than one interface and have all
+If you want to enable ASCII tracing on more than one interface and have all
 traces sent to a single file, you can do that as well by using an object to
 refer to a single file. We have already something similar to this in the "cwnd"
 example above::
@@ -958,12 +958,12 @@ example above::
   helper.EnableAsciiIpv4 (stream, protocol1, 1);
   helper.EnableAsciiIpv4 (stream, protocol2, 1);
 
-In this case, trace contexts are written to the ascii trace file since they are
+In this case, trace contexts are written to the ASCII trace file since they are
 required to disambiguate traces from the two interfaces. Note that since the
 user is completely specifying the file name, the string should include the ".tr"
 for consistency.
 
-You can enable ascii tracing on a particular protocol by providing a
+You can enable ASCII tracing on a particular protocol by providing a
 ``std::string`` representing an object name service string to an ``EnablePcap``
 method.  The ``Ptr<Ipv4>`` is looked up from the name string.  The ``<Node>`` in
 the resulting filenames is implicit since there is a one-to-one correspondence
@@ -992,7 +992,7 @@ This would result in a single trace file called "trace-file-name.tr" that
 contains all of the trace events for both interfaces. The events would be
 disambiguated by trace context strings.
 
-You can enable ascii tracing on a collection of protocol/interface pairs by
+You can enable ASCII tracing on a collection of protocol/interface pairs by
 providing an ``Ipv4InterfaceContainer``. For each protocol of the proper type
 (the same type as is managed by the device helper), tracing is enabled for the
 corresponding interface.  Again, the ``<Node>`` is implicit since there is a
@@ -1009,7 +1009,7 @@ one-to-one correspondence between each protocol and its node. For example,::
   ...
   helper.EnableAsciiIpv4 ("prefix", interfaces);
 
-This would result in a number of ascii trace files being created, each of which
+This would result in a number of ASCII trace files being created, each of which
 follows the <prefix>-n<node id>-i<interface>.tr convention. Combining all of the
 traces into a single file is accomplished similarly to the examples above::
 
@@ -1025,7 +1025,7 @@ traces into a single file is accomplished similarly to the examples above::
   ...
   helper.EnableAsciiIpv4 (stream, interfaces);
 
-You can enable ascii tracing on a collection of protocol/interface pairs by
+You can enable ASCII tracing on a collection of protocol/interface pairs by
 providing a ``NodeContainer``. For each ``Node`` in the ``NodeContainer`` the
 appropriate protocol is found.  For each protocol, its interfaces are enumerated
 and tracing is enabled on the resulting pairs. For example,::
@@ -1034,7 +1034,7 @@ and tracing is enabled on the resulting pairs. For example,::
   ...
   helper.EnableAsciiIpv4 ("prefix", n);
 
-This would result in a number of ascii trace files being created, each of which
+This would result in a number of ASCII trace files being created, each of which
 follows the <prefix>-<node id>-<device id>.tr convention. Combining all of the
 traces into a single file is accomplished similarly to the examples above:
 
@@ -1047,12 +1047,12 @@ used to specify the resulting trace source.::
 
 Of course, the traces can be combined into a single file as shown above.
 
-Finally, you can enable ascii tracing for all interfaces in the system, with
+Finally, you can enable ASCII tracing for all interfaces in the system, with
 associated protocol being the same type as that managed by the device helper.::
 
   helper.EnableAsciiIpv4All ("prefix");
 
-This would result in a number of ascii trace files being created, one for
+This would result in a number of ASCII trace files being created, one for
 every interface in the system related to a protocol of the type managed by the
 helper. All of these files will follow the <prefix>-n<node id>-i<interface.tr
 convention. Combining all of the traces into a single file is accomplished 
@@ -1062,21 +1062,21 @@ Ascii Tracing Device Helper Filename Selection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Implicit in the prefix-style method descriptions above is the construction of
-the complete filenames by the implementation method. By convention, ascii traces
+the complete filenames by the implementation method. By convention, ASCII traces
 in the |ns3| system are of the form "<prefix>-<node id>-<device id>.tr."
 
 As previously mentioned, every node in the system will have a system-assigned
 node id. Since there is a one-to-one correspondence between protocols and nodes
 we use to node-id to identify the protocol identity. Every interface on a given
 protocol will have an interface index (also called simply an interface) relative
-to its protocol. By default, then, an ascii trace file created as a result of
+to its protocol. By default, then, an ASCII trace file created as a result of
 enabling tracing on the first device of node 21, using the prefix "prefix",
 would be "prefix-n21-i1.tr". Use the prefix to disambiguate multiple protocols
 per node.
 
 You can always use the |ns3| object name service to make this more clear.
 For example, if you use the object name service to assign the name "serverIpv4"
-to the protocol on node 21, and also specify interface one, the resulting ascii 
+to the protocol on node 21, and also specify interface one, the resulting ASCII
 trace file name will automatically become, "prefix-nserverIpv4-1.tr".
 
 Tracing implementation details

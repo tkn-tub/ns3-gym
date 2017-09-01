@@ -62,7 +62,7 @@ saves the whole path in the cache.  The paths are sorted based on the
 hop count, and whenever one path is not able to be used, we change to the 
 next path.  The link cache is a slightly better design in the sense that it 
 uses different subpaths and uses Implemented Link Cache using 
-Dijsktra algorithm, and this part is implemented by 
+Dijkstra algorithm, and this part is implemented by 
 Song Luan <lsuper@mail.ustc.edu.cn>. 
 
 The following optional protocol optimizations aren't implemented:
@@ -126,7 +126,7 @@ Implementation modification
 
 * The DsrFsHeader has added 3 fields: message type, source id, destination id, and these changes only for post-processing
 	1. Message type is used to identify the data packet from control packet
-	2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the ipv4header is not carrying the real source and destination ip address as needed
+	2. source id is used to identify the real source of the data packet since we have to deliver the packet hop-by-hop and the Ipv4Header is not carrying the real source and destination ip address as needed
 	3. destination id is for same reason of above
 * Route Reply header is not word-aligned in DSR RFC, change it to word-aligned in implementation
 * DSR works as a shim header between transport and network protocol, it needs its own forwarding mechanism, we are changing the packet transmission to hop-by-hop delivery, so we added two fields in dsr fixed header to notify packet delivery
@@ -140,7 +140,7 @@ This implementation used "path cache", which is simple to implement and ensures 
 * the path cache has automatic expire policy
 * the cache saves multiple route entries for a certain destination and sort the entries based on hop counts
 * the MaxEntriesEachDst can be tuned to change the maximum entries saved for a single destination
-* when adding mulitiple routes for one destination, the route is compared based on hop-count and expire time, the one with less hop count or relatively new route is favored
+* when adding multiple routes for one destination, the route is compared based on hop-count and expire time, the one with less hop count or relatively new route is favored
 * Future implementation may include "link cache" as another possibility
 
 DSR Instructions
@@ -164,7 +164,7 @@ and DsrMainHelpers in your simulation script. For instance:
   DsrMainHelper dsrMain;
   dsrMain.Install (dsr, adhocNodes);
 
-The example scripts inside ``src/dsr/examples/`` demonstrate the use of DSR based nodesin different scenarios. 
+The example scripts inside ``src/dsr/examples/`` demonstrate the use of DSR based nodes in different scenarios. 
 The helper source can be found inside ``src/dsr/helper/dsr-main-helper.{h,cc}`` 
 and ``src/dsr/helper/dsr-helper.{h,cc}``
 
@@ -194,7 +194,7 @@ Limitations
 ***********
 
 The model is not fully compliant with :rfc:`4728`. As an example, Dsr fixed size header
-has been extended and it is four octects longer then the RFC specification.
+has been extended and it is four octets longer then the RFC specification.
 As a consequence, the DSR headers can not be correctly decoded by Wireshark.
 
 The model full compliance with the RFC is planned for the future.

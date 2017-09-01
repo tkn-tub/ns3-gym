@@ -52,7 +52,7 @@ type the command
   ./waf configure --enable-examples
 followed by
   ./waf 
-in the the directory which contains
+in the directory which contains
 this README file. The files built will be copied in the
 build/ directory.
 

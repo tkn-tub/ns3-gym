@@ -155,7 +155,7 @@ found in practice.
 The physical layer and channel models operate on a per-packet basis, with
 no frequency-selective propagation or interference effects when using
 the default YansWifiPhy model.  Directional antennas are also not
-supported at this time.  For additive white gaussian noise (AWGN)
+supported at this time.  For additive white Gaussian noise (AWGN)
 scenarios, or wideband interference scenarios, performance is governed
 by the application of analytical models (based on modulation and factors
 such as channel width) to the received signal-to-noise ratio, where noise
@@ -446,7 +446,7 @@ were adapted to use the Spectrum channel API.  This required developing
 a few ``SpectrumModel``-related classes.  The class
 ``WifiSpectrumValueHelper`` is used to create Wi-Fi signals with the
 spectrum framework and spread their energy across the bands.  The 
-spectrum is sub-divided into 312.5 KHz sub-bands (the width of an OFDM
+spectrum is sub-divided into 312.5 kHz sub-bands (the width of an OFDM
 subcarrier).  The power allocated to a particular channel
 is spread across the sub-bands roughly according to how power would 
 be allocated to sub-carriers using an even distribution of power and

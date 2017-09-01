@@ -35,7 +35,7 @@ following attributes to be set:
 * Packet size (default 56 bytes)
 * Packet interval  (default 1 second)
 
-Moreover, the user can access the measured rtt value (as a Traced Source).
+Moreover, the user can access the measured RTT value (as a Traced Source).
 
 Ping6
 *****
