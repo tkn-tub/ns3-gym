@@ -97,12 +97,31 @@ public:
   ~FlameProtocol ();
   void DoDispose ();
 
-  /// Route request, inherited from MeshL2RoutingProtocol
-  bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-                     Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
-  /// Cleanup flame headers!
+  /**
+   * Route request, inherited from MeshL2RoutingProtocol
+   *
+   * \param sourceIface the source interface
+   * \param source the source address
+   * \param destination the destination address
+   * \param packet the packet to route
+   * \param protocolType the protocol type
+   * \param routeReply the route reply
+   * \returns if route exists
+   */
+  bool RequestRoute (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination,
+                     Ptr<const Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply);
+  /**
+   * Cleanup flame headers!
+   *
+   * \param fromIface the from interface
+   * \param source the source address
+   * \param destination the destination address
+   * \param packet the packet
+   * \param protocolType the protocol type
+   * \returns if the route removed
+   */
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
-                           const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
+                           const Mac48Address destination, Ptr<Packet> packet, uint16_t& protocolType);
   /**
    * \brief Install FLAME on given mesh point.
    * \returns true if successful
@@ -126,8 +145,13 @@ public:
   /// Reset statistics function
   void ResetStats ();
 private:
-  /// assignment operator
-  FlameProtocol& operator= (const FlameProtocol &);
+  /**
+   * assignment operator
+   *
+   * \param flame the object to assign
+   * \returns the assigned value
+   */
+  FlameProtocol& operator= (const FlameProtocol & flame);
   /// type conversion operator
   FlameProtocol (const FlameProtocol &);
 
@@ -173,7 +197,10 @@ private:
     uint32_t txBytes; ///< transmit bytes
     uint16_t droppedTtl; ///< dropped TTL
     uint16_t totalDropped; ///< total dropped
-    /// Print function
+    /**
+     * Print function
+     * \param os the output stream to print to
+     */
     void Print (std::ostream & os) const;
     /// constructor
     Statistics ();

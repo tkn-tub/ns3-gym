@@ -46,22 +46,38 @@ public:
    * \param us beacon interval in microseconds
    */
   MeshWifiBeacon (Ssid ssid, SupportedRates rates, uint64_t us);
-  /// Read standard Wifi beacon header
+  /**
+   * Read standard Wifi beacon header
+   *
+   * \returns the management beacon header
+   */
   MgtBeaconHeader BeaconHeader () const { return m_header; }
-  /// Add information element
+  /**
+   * Add information element
+   *
+   * \param ie the Wifi information element
+   */
   void AddInformationElement (Ptr<WifiInformationElement> ie);
 
   /**
-   * Create wifi header for beacon frame.
+   * Create Wifi header for beacon frame.
    *
    * \param address is sender address
    * \param mpAddress is mesh point address
    * \returns the WifiMacHeader
    */
   WifiMacHeader CreateHeader (Mac48Address address, Mac48Address mpAddress);
-  /// Returns a beacon interval of wifi beacon
+  /**
+   * Returns the beacon interval of Wifi beacon
+   *
+   * \returns the beacon interval time
+   */
   Time GetBeaconInterval () const;
-  /// Create frame = { beacon header + all information elements sorted by ElementId () }
+  /**
+   * Create frame = { beacon header + all information elements sorted by ElementId () }
+   *
+   * \returns the frame
+   */
   Ptr<Packet> CreatePacket ();
 
 private:

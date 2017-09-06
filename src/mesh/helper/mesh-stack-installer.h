@@ -39,11 +39,22 @@ public:
   /// \return The TypeId.
   static TypeId GetTypeId (void);
   
-  ///\brief Installs mesh stack. needed by helper only
+  /**
+   * \brief Installs mesh stack. needed by helper only
+   * \param mp the mesh point device
+   * \returns true if successful
+   */
   virtual bool InstallStack (Ptr<MeshPointDevice> mp) = 0;
-  /// Report statistics of a given mesh point
-  virtual void Report (const Ptr<MeshPointDevice> mp, std::ostream&) = 0;
-  /// Reset statistics of a given mesh point
+  /**
+   * Report statistics of a given mesh point
+   * \param mp the mesh point device
+   * \param os the output stream
+   */
+  virtual void Report (const Ptr<MeshPointDevice> mp, std::ostream& os) = 0;
+  /**
+   * Reset statistics of a given mesh point
+   * \param mp the mesh point device
+   */
   virtual void ResetStats (const Ptr<MeshPointDevice> mp) = 0;
 };
 }

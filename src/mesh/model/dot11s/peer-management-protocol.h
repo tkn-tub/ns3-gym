@@ -103,8 +103,7 @@ public:
    * to peer address when only one interface)
    * \param aid is association ID, which peer has assigned to us
    * \param peerManagementElement is peer link management element
-   * \param meshConfig is mesh configuration element taken from the peer
-   * management frame
+   * \param meshConfig is mesh configuration element taken from the peer management frame
    */
   void ReceivePeerLinkFrame (
     uint32_t interface,
@@ -232,12 +231,24 @@ private:
   typedef std::map<uint32_t, Ptr<PeerManagementProtocolMac> > PeerManagementProtocolMacMap;
 
 private:
-  /// assignment operator
-  PeerManagementProtocol& operator= (const PeerManagementProtocol &);
+  /**
+   * assignment operator
+   *
+   * \param peer the value to assign
+   * \returns the assigned value
+   */
+  PeerManagementProtocol& operator= (const PeerManagementProtocol & peer);
   /// type conversion operator
   PeerManagementProtocol (const PeerManagementProtocol &);
 
-  /// Initiate link functon
+  /**
+   * Initiate link functon
+   *
+   * \param interface the interface to use
+   * \param peerAddress the peer address
+   * \param peerMeshPointAddress the peer mesh point address
+   * \returns the peer link
+   */
   Ptr<PeerLink> InitiateLink (
     uint32_t interface,
     Mac48Address peerAddress,
@@ -245,6 +256,9 @@ private:
     );
   /**
    * \name External peer-chooser
+   * \param interface the interface to use
+   * \param peerAddress the peer address
+   * \returns true is should send an open
    */
   bool ShouldSendOpen (uint32_t interface, Mac48Address peerAddress);
   /**
@@ -321,7 +335,10 @@ private:
      * \param t 
      */
     Statistics (uint16_t t = 0);
-    /// Print function
+    /**
+     * Print function
+     * \param os the output stream to print to
+     */
     void Print (std::ostream & os) const;
   };
   struct Statistics m_stats; ///< statistics

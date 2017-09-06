@@ -62,20 +62,20 @@ public:
    * Set peer open function
    * \param localLinkId
    */
-  void   SetPeerOpen (uint16_t localLinkId);
+  void SetPeerOpen (uint16_t localLinkId);
   /**
    * Set peer close function
    * \param localLinkID the local link id
    * \param peerLinkId the peer link id
    * \param reasonCode the reason code 
    */   
-  void   SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, PmpReasonCode reasonCode);
+  void SetPeerClose (uint16_t localLinkID, uint16_t peerLinkId, PmpReasonCode reasonCode);
   /**
    * Set peer confirm function
    * \param localLinkID the local link id
    * \param peerLinkId the peer link id
    */   
-  void   SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
+  void SetPeerConfirm (uint16_t localLinkID, uint16_t peerLinkId);
 
   /**
    * Get reason code function
@@ -86,24 +86,27 @@ public:
    * Get local link ID function
    * \returns the local link id
    */
-  uint16_t  GetLocalLinkId () const;
-  /// Get peer link ID function
-  uint16_t  GetPeerLinkId () const;
+  uint16_t GetLocalLinkId () const;
+  /**
+   * Get peer link ID function
+   * \returns the peer link ID
+   */ 
+  uint16_t GetPeerLinkId () const;
   /**
    * Subtype is open function
    * \returns true if open
    */
-  bool   SubtypeIsOpen () const;
+  bool SubtypeIsOpen () const;
   /**
    * Subtype is close function
    * \returns true if closed
    */
-  bool   SubtypeIsClose () const;
+  bool SubtypeIsClose () const;
   /**
    * Subtype is confirm function
    * \returns true if the subtype is confirm
    */
-  bool   SubtypeIsConfirm () const;
+  bool SubtypeIsConfirm () const;
   /**
    * Get subtype function
    * \returns the subtype

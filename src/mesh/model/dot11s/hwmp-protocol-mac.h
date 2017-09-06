@@ -63,6 +63,7 @@ public:
   //\}
 
 private:
+  /// allow HwmpProtocol class friend access
   friend class HwmpProtocol;
   /**
    * \returns a path selection action header
@@ -167,7 +168,10 @@ private:
     uint32_t txDataBytes; ///< transmit data bytes
     uint16_t rxData; ///< receive data
     uint32_t rxDataBytes; ///< receive data bytes
-    /// Print function
+    /**
+     * Print function
+     * \param os the output stream
+     */
     void Print (std::ostream & os) const;
     Statistics ();
   };

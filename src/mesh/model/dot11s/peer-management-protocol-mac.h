@@ -95,12 +95,19 @@ public:
   // \}
 
 private:
-  /// assignment operator
-  PeerManagementProtocolMac& operator= (const PeerManagementProtocolMac &);
+  /**
+   * assignment operator
+   *
+   * \param peer the object to assign
+   * \returns the assigned value
+   */
+  PeerManagementProtocolMac& operator= (const PeerManagementProtocolMac & peer);
   /// type conversion operator
   PeerManagementProtocolMac (const PeerManagementProtocolMac &);
 
+  /// allow PeerManagementProtocol class access friend access
   friend class PeerManagementProtocol;
+  /// allow PeerLink class access friend access
   friend class PeerLink;
   ///\name Create peer link management frames
   // \{
@@ -173,7 +180,10 @@ private:
     IePeerManagement peerElement,
     IeConfiguration meshConfig
     );
-  ///\brief debug only, used to print established links
+  /**
+   * \brief debug only, used to print established links
+   * \returns the MAC address
+   */
   Mac48Address GetAddress () const;
   /// Statistics structure
   struct Statistics

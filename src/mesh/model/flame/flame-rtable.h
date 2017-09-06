@@ -66,9 +66,16 @@ public:
         seqnum (s)
     {
     }
-    /// True for valid route
+    /**
+     * \returns True for valid route
+     */
     bool IsValid () const;
-    /// Compare route lookup results, used by tests
+    /**
+     * Compare route lookup results, used by tests
+     *
+     * \param o the object to compare
+     * \returns true if equal
+     */
     bool operator== (const LookupResult & o) const;
   };
 public:
@@ -81,7 +88,15 @@ public:
   ~FlameRtable ();
   void DoDispose ();
 
-  /// Add path
+  /**
+   * Add path
+   *
+   * \param destination the destination address
+   * \param retransmitter the retransmitter address
+   * \param interface the interface
+   * \param cost the cost
+   * \param seqnum the sequence number
+   */
   void AddPath (
     const Mac48Address destination,
     const Mac48Address retransmitter,
@@ -96,8 +111,13 @@ public:
    */
   LookupResult Lookup (Mac48Address destination);
 private:
-  /// assignment operator
-  FlameRtable& operator= (const FlameRtable &);
+  /**
+   * assignment operator
+   *
+   * \param table the flame table to assign
+   * \returns the assigned value
+   */
+  FlameRtable& operator= (const FlameRtable & table);
   /// type conversion operator
   FlameRtable (const FlameRtable &);
 

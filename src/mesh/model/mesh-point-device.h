@@ -49,7 +49,10 @@ class Node;
 class MeshPointDevice : public NetDevice
 {
 public:
-  /// Object type ID for NS3 object system
+  /**
+   * \brief Get the type ID.
+   * \return the object TypeId
+   */
   static TypeId GetTypeId ();
   /// C-tor create empty (without interfaces and protocols) mesh point
   MeshPointDevice ();
@@ -124,10 +127,27 @@ public:
   //\}
 
 private:
-  /// Receive packet from interface
+  /**
+   * Receive packet from interface
+   *
+   * \param device the device to receive from
+   * \param packet the received packet
+   * \param protocol the protocol
+   * \param source the source address
+   * \param destination the destination address
+   * \param packetType the packet type
+   */
   void ReceiveFromDevice (Ptr<NetDevice> device, Ptr<const Packet> packet, uint16_t protocol,
                           Address const &source, Address const &destination, PacketType packetType);
-  /// Forward packet down to interfaces
+  /**
+   * Forward packet down to interfaces
+   *
+   * \param incomingPort the incoming port
+   * \param packet the packet to forward
+   * \param protocol the protocol
+   * \param src the source MAC address
+   * \param dst the destination MAC address
+   */
   void Forward (Ptr<NetDevice> incomingPort, Ptr<const Packet> packet,
                 uint16_t protocol, const Mac48Address src,
                 const Mac48Address dst);

@@ -48,15 +48,29 @@ public:
     uint32_t metric; ///< metric
     uint32_t seqnum; ///< sequence number
     Time lifetime; ///< lifetime
-    /// Lookup result function
+    /**
+     * Lookup result function
+     *
+     * \param r the result address
+     * \param i the interface
+     * \param m the metric
+     * \param s the sequence number
+     * \param l the lifetime
+     */
     LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
                   uint32_t i = INTERFACE_ANY,
                   uint32_t m = MAX_METRIC,
                   uint32_t s = 0,
                   Time l = Seconds (0.0));
-    /// True for valid route
+    /**
+     * \returns True for valid route
+     */
     bool IsValid () const;
-    /// Compare route lookup results, used by tests
+    /**
+     * Compare route lookup results, used by tests
+     * \param o the lookup result to compare
+     * \returns true if equal
+     */
     bool operator== (const LookupResult & o) const;
   };
   /// Path precursor = {MAC, interface ID}
@@ -109,7 +123,11 @@ public:
   LookupResult LookupProactiveExpired ();
   //\}
 
-  /// When peer link with a given MAC-address fails - it returns list of unreachable destination addresses
+  /**
+   * When peer link with a given MAC-address fails - it returns list of unreachable destination addresses
+   * \param peerAddress the peer address
+   * \returns the list of unreachable destinations
+   */
   std::vector<HwmpProtocol::FailedDestination> GetUnreachableDestinations (Mac48Address peerAddress);
 
 private:

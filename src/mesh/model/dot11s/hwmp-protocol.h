@@ -78,11 +78,28 @@ public:
     Mac48Address destination; ///< destination address
     uint32_t seqnum; ///< sequence number
   } FailedDestination;
-  /// Route request, inherited from MeshL2RoutingProtocol
+  /**
+   * Route request, inherited from MeshL2RoutingProtocol
+   *
+   * \param sourceIface the source interface
+   * \param source the source address
+   * \param destination the destination address
+   * \param packet the packet to route
+   * \param protocolType the protocol type
+   * \param routeReply the route reply
+   * \returns true if route exists
+   */
   bool RequestRoute (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
                      Ptr<const Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply);
   /**
    * Clean HWMP packet tag from packet; only the packet parameter is used
+   *
+   * \param fromIface the from interface
+   * \param source the source address
+   * \param destination the destination address
+   * \param packet the packet to route
+   * \param protocolType the protocol type
+   * \returns true if successful
    */
   bool RemoveRoutingStuff (uint32_t fromIface, const Mac48Address source,
                            const Mac48Address destination, Ptr<Packet>  packet, uint16_t&  protocolType);
@@ -104,8 +121,10 @@ public:
    * \param status The status of the peer link
    */
   void PeerLinkStatus (Mac48Address meshPontAddress, Mac48Address peerAddress, uint32_t interface,bool status);
-  ///\brief This callback is used to obtain active neighbours on a given interface
-  ///\param cb is a callback, which returns a list of addresses on given interface (uint32_t)
+  /**
+   * \brief This callback is used to obtain active neighbours on a given interface
+   * \param cb is a callback, which returns a list of addresses on given interface (uint32_t)
+   */
   void SetNeighboursCallback (Callback<std::vector<Mac48Address>, uint32_t> cb);
   ///\name Proactive PREQ mechanism:
   ///\{
@@ -133,13 +152,21 @@ public:
   Ptr<HwmpRtable> GetRoutingTable (void) const;
 
 private:
+  /// allow HwmpProtocolMac class friend access
   friend class HwmpProtocolMac;
 
   virtual void DoInitialize ();
 
-  /// assignment operator
-  HwmpProtocol& operator= (const HwmpProtocol &);
-  /// type conversion
+  /**
+   * assignment operator
+   * \param hwmp the HWMP protocol to assign
+   * \returns the assigned value
+   */
+  HwmpProtocol& operator= (const HwmpProtocol & hwmp);
+  /**
+   * type conversion
+   * \returns the HWMP protocol
+   */
   HwmpProtocol (const HwmpProtocol &);
 
   /**
@@ -164,19 +191,63 @@ private:
     QueuedPacket ();
   };
   typedef std::map<uint32_t, Ptr<HwmpProtocolMac> > HwmpProtocolMacMap; ///< HwmpProtocolMacMap typedef
-  /// Like RequestRoute, but for unicast packets
-  bool ForwardUnicast (uint32_t  sourceIface, const Mac48Address source, const Mac48Address destination,
-                       Ptr<Packet>  packet, uint16_t  protocolType, RouteReplyCallback  routeReply, uint32_t ttl);
+  /**
+   * Like RequestRoute, but for unicast packets
+   *
+   * \param sourceIface the source interface
+   * \param source the source address
+   * \param destination the destination address
+   * \param packet the packet to route
+   * \param protocolType the protocol type
+   * \param routeReply the route reply callback
+   * \param ttl the TTL
+   * \returns true if forwarded
+   */
+  bool ForwardUnicast (uint32_t sourceIface, const Mac48Address source, const Mac48Address destination,
+                       Ptr<Packet> packet, uint16_t protocolType, RouteReplyCallback routeReply, uint32_t ttl);
 
   ///\name Interaction with HWMP MAC plugin
   //\{
-  ///\brief Handler for receiving Path Request
+  /**
+   * \brief Handler for receiving Path Request
+   *
+   * \param preq the IE preq
+   * \param from the from address
+   * \param interface the interface
+   * \param fromMp the 'from MP' address
+   * \param metric the metric
+   */
   void ReceivePreq (IePreq preq, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  ///\brief Handler for receiving Path Reply
+  /**
+   * \brief Handler for receiving Path Reply
+   *
+   * \param prep the IE prep
+   * \param from the from address
+   * \param interface the interface
+   * \param fromMp the 'from MP' address
+   * \param metric the metric
+   */
   void ReceivePrep (IePrep prep, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric);
-  ///\brief Handler for receiving Path Error
-  void ReceivePerr (std::vector<FailedDestination>, Mac48Address from, uint32_t interface, Mac48Address fromMp);
-   ///\brief Send Path Reply
+  /**
+   * \brief Handler for receiving Path Error
+   *
+   * \param destinations the list of failed destinations
+   * \param from the from address
+   * \param interface the interface
+   * \param fromMp the from MP address
+   */
+  void ReceivePerr (std::vector<FailedDestination> destinations, Mac48Address from, uint32_t interface, Mac48Address fromMp);
+   /**
+    * \brief Send Path Reply
+    * \param src the source address
+    * \param dst the destination address
+    * \param retransmitter the retransmitter address
+    * \param initMetric the initial metric
+    * \param originatorDsn the originator DSN
+    * \param destinationSN the destination DSN
+    * \param lifetime the lifetime
+    * \param interface the interface
+    */
   void SendPrep (
     Mac48Address src,
     Mac48Address dst,
@@ -194,9 +265,15 @@ private:
    * \return PathError
    */
   PathError MakePathError (std::vector<FailedDestination> destinations);
-  ///\brief Forwards a received path error
+  /**
+   * \brief Forwards a received path error
+   * \param perr the path error
+   */
   void ForwardPathError (PathError perr);
-  ///\brief Passes a self-generated PERR to interface-plugin
+  /**
+   * \brief Passes a self-generated PERR to interface-plugin
+   * \param perr the path error
+   */
   void InitiatePathError (PathError perr);
   /**
    * Get PERR receivers

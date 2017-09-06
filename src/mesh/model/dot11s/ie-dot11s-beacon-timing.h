@@ -101,6 +101,7 @@ public:
   /**
    * This methods are needed for beacon collision
    * avoidance module:
+   * \returns the neighbor timing elements list
    */
   NeighboursTimingUnitsList GetNeighboursTimingElementsList ();
   /**

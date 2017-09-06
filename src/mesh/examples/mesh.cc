@@ -70,9 +70,17 @@ class MeshTest
 public:
   /// Init test
   MeshTest ();
-  /// Configure test from command line arguments
+  /**
+   * Configure test from command line arguments
+   *
+   * \param argc command line argument count
+   * \param argv command line arguments
+   */
   void Configure (int argc, char ** argv);
-  /// Run test
+  /**
+   * Run test
+   * \returns the test status
+   */
   int Run ();
 private:
   int       m_xSize; ///< X size
