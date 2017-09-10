@@ -206,7 +206,7 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
   NS_LOG_LOGIC ("Buffered packet of seqno=" << headSeq << " len=" << p->GetSize ());
   // Update variables
   m_size += p->GetSize ();      // Occupancy
-  for (BufIterator i = m_data.begin (); i != m_data.end (); ++i)
+  for (i = m_data.begin (); i != m_data.end (); ++i)
     {
       if (i->first < m_nextRxSeq)
         {
@@ -285,7 +285,7 @@ TcpRxBuffer::UpdateSackList (const SequenceNumber32 &head, const SequenceNumber3
   // Iterates until we examined all blocks in the list (maximum 4)
   while (it != m_sackList.end ())
     {
-      TcpOptionSack::SackBlock current = *it;
+      current = *it;
 
       // This is a left merge:
       // [current_first; current_second] [beg_first; beg_second]
@@ -339,7 +339,7 @@ TcpRxBuffer::ClearSackList (const SequenceNumber32 &seq)
   NS_LOG_FUNCTION (this << seq);
 
   TcpOptionSack::SackList::iterator it;
-  for (it = m_sackList.begin (); it != m_sackList.end (); ++it)
+  for (it = m_sackList.begin (); it != m_sackList.end (); )
     {
       TcpOptionSack::SackBlock block = *it;
       NS_ASSERT (block.first < block.second);
@@ -347,6 +347,10 @@ TcpRxBuffer::ClearSackList (const SequenceNumber32 &seq)
       if (block.second <= seq)
         {
           it = m_sackList.erase (it);
+        }
+      else
+	{
+          it++;
         }
     }
 }
