@@ -130,6 +130,7 @@ int main (int argc, char *argv[])
               staDevice = wifi.Install (phy, mac, wifiStaNode);
 
               mac.SetType ("ns3::ApWifiMac",
+                           "EnableBeaconJitter", BooleanValue (false),
                            "Ssid", SsidValue (ssid));
 
               NetDeviceContainer apDevice;

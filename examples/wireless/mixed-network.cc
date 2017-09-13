@@ -193,7 +193,7 @@ Experiment::Run (Parameters params)
   wifi.SetStandard (params.apType);
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true),
+               "EnableBeaconJitter", BooleanValue (false),
                "BE_MaxAmpduSize", UintegerValue (0),
                "BE_BlockAckThreshold", UintegerValue (2),
                "RifsSupported", BooleanValue (params.rifsSupported),

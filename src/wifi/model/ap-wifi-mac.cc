@@ -55,7 +55,7 @@ ApWifiMac::GetTypeId (void)
                    MakePointerChecker<UniformRandomVariable> ())
     .AddAttribute ("EnableBeaconJitter",
                    "If beacons are enabled, whether to jitter the initial send event.",
-                   BooleanValue (false),
+                   BooleanValue (true),
                    MakeBooleanAccessor (&ApWifiMac::m_enableBeaconJitter),
                    MakeBooleanChecker ())
     .AddAttribute ("BeaconGeneration",

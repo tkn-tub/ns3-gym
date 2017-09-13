@@ -109,7 +109,7 @@ int main (int argc, char *argv[])
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true));
+               "EnableBeaconJitter", BooleanValue (false));
   apDeviceA = wifi.Install (phy, mac, wifiApNodes.Get (0));
 
   //Network B
@@ -123,7 +123,7 @@ int main (int argc, char *argv[])
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true));
+               "EnableBeaconJitter", BooleanValue (false));
   apDeviceB = wifi.Install (phy, mac, wifiApNodes.Get (1));
 
   //Network C
@@ -138,7 +138,7 @@ int main (int argc, char *argv[])
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true));
+               "EnableBeaconJitter", BooleanValue (false));
   apDeviceC = wifi.Install (phy, mac, wifiApNodes.Get (2));
 
   //Network D
@@ -153,7 +153,7 @@ int main (int argc, char *argv[])
 
   mac.SetType ("ns3::ApWifiMac",
                "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true));
+               "EnableBeaconJitter", BooleanValue (false));
   apDeviceD = wifi.Install (phy, mac, wifiApNodes.Get (3));
 
   /* Setting mobility model */

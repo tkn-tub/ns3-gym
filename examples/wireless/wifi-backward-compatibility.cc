@@ -133,8 +133,7 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::" + apRaa + "WifiManager");
 
   mac.SetType ("ns3::ApWifiMac",
-               "Ssid", SsidValue (ssid),
-               "BeaconGeneration", BooleanValue (true));
+               "Ssid", SsidValue (ssid));
 
   NetDeviceContainer apDevice;
   apDevice = wifi.Install (phy, mac, wifiApNode);
