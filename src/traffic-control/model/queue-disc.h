@@ -129,6 +129,13 @@ private:
  * - queued = enqueued - dequeued
  * - sent = dequeued - dropped after dequeue (- 1 if there is a requeued packet)
  *
+ * The QueueDisc base class provides the SojournTime trace source, which provides
+ * the sojourn time of every packet dequeued from a queue disc, including packets
+ * that are dropped or requeued after being dequeued. The sojourn time is taken
+ * when the packet is dequeued from the queue disc, hence it does not account for
+ * the additional time the packet is retained within the queue disc in case it is
+ * requeued.
+ *
  * The design and implementation of this class is heavily inspired by Linux.
  * For more details, see the traffic-control model page.
  */
@@ -508,6 +515,7 @@ private:
 
   TracedValue<uint32_t> m_nPackets; //!< Number of packets in the queue
   TracedValue<uint32_t> m_nBytes;   //!< Number of bytes in the queue
+  TracedValue<Time> m_sojourn;      //!< Sojourn time of the latest dequeued packet
 
   Stats m_stats;                    //!< The collected statistics
   uint32_t m_quota;                 //!< Maximum number of packets dequeued in a qdisc run

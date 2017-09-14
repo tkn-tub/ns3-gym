@@ -115,6 +115,20 @@ QueueDiscItem::SetTxQueueIndex (uint8_t txq)
   m_txq = txq;
 }
 
+Time
+QueueDiscItem::GetTimeStamp (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_tstamp;
+}
+
+void
+QueueDiscItem::SetTimeStamp (Time t)
+{
+  NS_LOG_FUNCTION (this << t);
+  m_tstamp = t;
+}
+
 void
 QueueDiscItem::Print (std::ostream& os) const
 {

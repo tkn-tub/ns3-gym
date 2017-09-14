@@ -70,6 +70,13 @@ of the queue disc. The following identities hold:
 * queued = enqueued - dequeued
 * sent = dequeued - dropped after dequeue (- 1 if there is a requeued packet)
 
+The QueueDisc base class provides the SojournTime trace source, which provides
+the sojourn time of every packet dequeued from a queue disc, including packets
+that are dropped or requeued after being dequeued. The sojourn time is taken
+when the packet is dequeued from the queue disc, hence it does not account for
+the additional time the packet is retained within the queue disc in case it is
+requeued.
+
 
 Design
 ==========

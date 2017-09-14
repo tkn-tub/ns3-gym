@@ -103,6 +103,11 @@ us a note on ns-developers mailing list.</p>
 <li>Two new methods, <b>QueueDisc::DropBeforeEnqueue()</b> and <b>QueueDisc::DropAfterDequeue()</b> have
     been introduced to replace <b>QueueDisc::Drop()</b>. Correspondingly, two new trace sources have been added to the QueueDisc class: DropBeforeEnqueue and DropAfterDequeue.
 </li>
+<li>A new trace source, <b>SojournTime</b>, is exported by the QueueDisc base class to provide the
+    sojourn time of every packet dequeued from a queue disc. This has been made possible by adding a
+    timestamp to QueueDiscItem objects, which can be set/get through the new <b>GetTimeStamp()</b> and
+    <b>SetTimeStamp()</b> methods of the QueueDiscItem class.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

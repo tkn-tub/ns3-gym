@@ -78,6 +78,12 @@ DevicePacketsInQueueTrace (uint32_t oldValue, uint32_t newValue)
   std::cout << "DevicePacketsInQueue " << oldValue << " to " << newValue << std::endl;
 }
 
+void
+SojournTimeTrace (Time oldValue, Time newValue)
+{
+  std::cout << "Sojourn time " << newValue << std::endl;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -120,9 +126,8 @@ main (int argc, char *argv[])
 
   Ptr<QueueDisc> q = qdiscs.Get (1);
   q->TraceConnectWithoutContext ("PacketsInQueue", MakeCallback (&TcPacketsInQueueTrace));
-  // Alternatively:
-  // Config::ConnectWithoutContext ("/NodeList/1/$ns3::TrafficControlLayer/RootQueueDiscList/0/PacketsInQueue",
-  //                                MakeCallback (&TcPacketsInQueueTrace));
+  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TrafficControlLayer/RootQueueDiscList/0/SojournTime",
+                                 MakeCallback (&SojournTimeTrace));
 
   Ptr<NetDevice> nd = devices.Get (1);
   Ptr<PointToPointNetDevice> ptpnd = DynamicCast<PointToPointNetDevice> (nd);

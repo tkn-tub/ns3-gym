@@ -25,6 +25,7 @@
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/unused.h"
+#include "ns3/simulator.h"
 #include "queue-disc.h"
 #include <ns3/drop-tail-queue.h>
 #include "ns3/net-device-queue-interface.h"
@@ -192,6 +193,10 @@ TypeId QueueDisc::GetTypeId (void)
                      "Number of bytes currently stored in the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_nBytes),
                      "ns3::TracedValueCallback::Uint32")
+    .AddTraceSource ("SojournTime",
+                     "Sojourn time of the last packet dequeued from the queue disc",
+                     MakeTraceSourceAccessor (&QueueDisc::m_sojourn),
+                     "ns3::Time::TracedValueCallback")
   ;
   return tid;
 }
@@ -199,6 +204,7 @@ TypeId QueueDisc::GetTypeId (void)
 QueueDisc::QueueDisc ()
   :  m_nPackets (0),
      m_nBytes (0),
+     m_sojourn (0),
      m_running (false)
 {
   NS_LOG_FUNCTION (this);
@@ -435,6 +441,8 @@ QueueDisc::PacketDequeued (Ptr<const QueueDiscItem> item)
   m_stats.nTotalDequeuedPackets++;
   m_stats.nTotalDequeuedBytes += item->GetSize ();
 
+  m_sojourn = Simulator::Now () - item->GetTimeStamp ();
+
   NS_LOG_LOGIC ("m_traceDequeue (p)");
   m_traceDequeue (item);
 }
@@ -478,6 +486,11 @@ QueueDisc::Enqueue (Ptr<QueueDiscItem> item)
   m_stats.nTotalReceivedBytes += item->GetSize ();
 
   bool retval = DoEnqueue (item);
+
+  if (retval)
+    {
+      item->SetTimeStamp (Simulator::Now ());
+    }
 
   // DoEnqueue may return false because:
   // 1) the internal queue is full
