@@ -65,85 +65,6 @@ static uint32_t CoDelGetTime (void)
   return ns >> CODEL_SHIFT;
 }
 
-/**
- * CoDel time stamp, used to carry CoDel time informations.
- */
-class CoDelTimestampTag : public Tag
-{
-public:
-  CoDelTimestampTag ();
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (TagBuffer i) const;
-  virtual void Deserialize (TagBuffer i);
-  virtual void Print (std::ostream &os) const;
-
-  /**
-   * Gets the Tag creation time
-   * @return the time object stored in the tag
-   */
-  Time GetTxTime (void) const;
-private:
-  uint64_t m_creationTime; //!< Tag creation time
-};
-
-CoDelTimestampTag::CoDelTimestampTag ()
-  : m_creationTime (Simulator::Now ().GetTimeStep ())
-{
-}
-
-TypeId
-CoDelTimestampTag::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::CoDelTimestampTag")
-    .SetParent<Tag> ()
-    .AddConstructor<CoDelTimestampTag> ()
-    .AddAttribute ("CreationTime",
-                   "The time at which the timestamp was created",
-                   StringValue ("0.0s"),
-                   MakeTimeAccessor (&CoDelTimestampTag::GetTxTime),
-                   MakeTimeChecker ())
-  ;
-  return tid;
-}
-
-TypeId
-CoDelTimestampTag::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-CoDelTimestampTag::GetSerializedSize (void) const
-{
-  return 8;
-}
-void
-CoDelTimestampTag::Serialize (TagBuffer i) const
-{
-  i.WriteU64 (m_creationTime);
-}
-void
-CoDelTimestampTag::Deserialize (TagBuffer i)
-{
-  m_creationTime = i.ReadU64 ();
-}
-void
-CoDelTimestampTag::Print (std::ostream &os) const
-{
-  os << "CreationTime=" << m_creationTime;
-}
-Time
-CoDelTimestampTag::GetTxTime (void) const
-{
-  return TimeStep (m_creationTime);
-}
 
 NS_OBJECT_ENSURE_REGISTERED (CoDelQueueDisc);
 
@@ -200,10 +121,6 @@ TypeId CoDelQueueDisc::GetTypeId (void)
                      "Dropping state",
                      MakeTraceSourceAccessor (&CoDelQueueDisc::m_dropping),
                      "ns3::TracedValueCallback::Bool")
-    .AddTraceSource ("Sojourn",
-                     "Time in the queue",
-                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_sojourn),
-                     "ns3::Time::TracedValueCallback")
     .AddTraceSource ("DropNext",
                      "Time until next packet drop",
                      MakeTraceSourceAccessor (&CoDelQueueDisc::m_dropNext),
@@ -227,8 +144,7 @@ CoDelQueueDisc::CoDelQueueDisc ()
     m_state2 (0),
     m_state3 (0),
     m_states (0),
-    m_dropOverLimit (0),
-    m_sojourn (0)
+    m_dropOverLimit (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -280,7 +196,7 @@ CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   if (m_mode == QUEUE_DISC_MODE_PACKETS && (GetInternalQueue (0)->GetNPackets () + 1 > m_maxPackets))
     {
-      NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
+      NS_LOG_LOGIC ("Queue full (at max packets) -- dropping pkt");
       DropBeforeEnqueue (item);
       ++m_dropOverLimit;
       return false;
@@ -288,15 +204,11 @@ CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   if (m_mode == QUEUE_DISC_MODE_BYTES && (GetInternalQueue (0)->GetNBytes () + item->GetSize () > m_maxBytes))
     {
-      NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
+      NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- dropping pkt");
       DropBeforeEnqueue (item);
       ++m_dropOverLimit;
       return false;
     }
-
-  // Tag packet with current time for DoDequeue() to compute sojourn time
-  CoDelTimestampTag tag;
-  p->AddPacketTag (tag);
 
   bool retval = GetInternalQueue (0)->Enqueue (item);
 
@@ -313,7 +225,6 @@ bool
 CoDelQueueDisc::OkToDrop (Ptr<QueueDiscItem> item, uint32_t now)
 {
   NS_LOG_FUNCTION (this);
-  CoDelTimestampTag tag;
   bool okToDrop;
 
   if (!item)
@@ -322,12 +233,8 @@ CoDelQueueDisc::OkToDrop (Ptr<QueueDiscItem> item, uint32_t now)
       return false;
     }
 
-  bool found = item->GetPacket ()->RemovePacketTag (tag);
-  NS_ASSERT_MSG (found, "found a packet without an input timestamp tag");
-  NS_UNUSED (found);    //silence compiler warning
-  Time delta = Simulator::Now () - tag.GetTxTime ();
-  NS_LOG_INFO ("Sojourn time " << delta.GetSeconds ());
-  m_sojourn = delta;
+  Time delta = Simulator::Now () - item->GetTimeStamp ();
+  NS_LOG_INFO ("Sojourn time " << delta.ToDouble (Time::MS) << "ms");
   uint32_t sojournTime = Time2CoDel (delta);
 
   if (CoDelTimeBefore (sojournTime, Time2CoDel (m_target))

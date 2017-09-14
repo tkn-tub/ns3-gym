@@ -254,7 +254,6 @@ private:
   uint32_t m_states;                      //!< Total number of times we are in state 1, state 2, or state 3
   uint32_t m_dropOverLimit;               //!< The number of packets dropped due to full queue
   QueueDiscMode m_mode;                   //!< The operating mode (Bytes or packets)
-  TracedValue<Time> m_sojourn;            //!< Time in queue
 };
 
 } // namespace ns3

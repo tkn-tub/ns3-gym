@@ -106,7 +106,8 @@ us a note on ns-developers mailing list.</p>
 <li>A new trace source, <b>SojournTime</b>, is exported by the QueueDisc base class to provide the
     sojourn time of every packet dequeued from a queue disc. This has been made possible by adding a
     timestamp to QueueDiscItem objects, which can be set/get through the new <b>GetTimeStamp()</b> and
-    <b>SetTimeStamp()</b> methods of the QueueDiscItem class.
+    <b>SetTimeStamp()</b> methods of the QueueDiscItem class. The <b>CoDel</b> queue disc now makes use of such feature of the base class, hence its Sojourn trace source and the CoDelTimestampTag class
+    have been removed.
 </li>
 </ul>
 <h2>Changes to existing API:</h2>
