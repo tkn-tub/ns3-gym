@@ -68,7 +68,7 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (GetNPackets () >= m_limit)
     {
       NS_LOG_LOGIC ("Queue disc limit exceeded -- dropping packet");
-      DropBeforeEnqueue (item);
+      DropBeforeEnqueue (item, LIMIT_EXCEEDED_DROP);
       return false;
     }
 

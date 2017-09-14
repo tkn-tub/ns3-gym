@@ -70,6 +70,12 @@ of the queue disc. The following identities hold:
 * queued = enqueued - dequeued
 * sent = dequeued - dropped after dequeue (- 1 if there is a requeued packet)
 
+Separate counters are also kept for each possible reason to drop a packet.
+When a packet is dropped by an internal queue, e.g., because the queue is full,
+the reason is "Dropped by internal queue". When a packet is dropped by a child
+queue disc, the reason is "(Dropped by child queue disc) " followed by the
+reason why the child queue disc dropped the packet.
+
 The QueueDisc base class provides the SojournTime trace source, which provides
 the sojourn time of every packet dequeued from a queue disc, including packets
 that are dropped or requeued after being dequeued. The sojourn time is taken

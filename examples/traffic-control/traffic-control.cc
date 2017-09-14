@@ -81,7 +81,7 @@ DevicePacketsInQueueTrace (uint32_t oldValue, uint32_t newValue)
 void
 SojournTimeTrace (Time oldValue, Time newValue)
 {
-  std::cout << "Sojourn time " << newValue << std::endl;
+  std::cout << "Sojourn time " << newValue.ToDouble (Time::MS) << "ms" << std::endl;
 }
 
 int

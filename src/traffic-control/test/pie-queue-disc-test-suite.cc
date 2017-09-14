@@ -245,10 +245,10 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
   DequeueWithDelay (queue, 0.012, 400);
   Simulator::Stop (Seconds (8.0));
   Simulator::Run ();
-  PieQueueDisc::Stats st = StaticCast<PieQueueDisc> (queue)->GetStats ();
-  uint32_t test2 = st.unforcedDrop;
+  QueueDisc::Stats st = queue->GetStats ();
+  uint32_t test2 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
   NS_TEST_EXPECT_MSG_NE (test2, 0, "There should be some unforced drops");
-  NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero forced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 
 
   // test 3: same as test 2, but with higher QueueDelayReference
@@ -276,10 +276,10 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
   DequeueWithDelay (queue, 0.012, 400);
   Simulator::Stop (Seconds (8.0));
   Simulator::Run ();
-  st = StaticCast<PieQueueDisc> (queue)->GetStats ();
-  uint32_t test3 = st.unforcedDrop;
+  st = queue->GetStats ();
+  uint32_t test3 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
   NS_TEST_EXPECT_MSG_LT (test3, test2, "Test 3 should have less unforced drops than test 2");
-  NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero forced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 
 
   // test 4: same as test 2, but with reduced dequeue rate
@@ -307,10 +307,10 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
   DequeueWithDelay (queue, 0.015, 400); // delay between two successive dequeue events is increased
   Simulator::Stop (Seconds (8.0));
   Simulator::Run ();
-  st = StaticCast<PieQueueDisc> (queue)->GetStats ();
-  uint32_t test4 = st.unforcedDrop;
+  st = queue->GetStats ();
+  uint32_t test4 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
   NS_TEST_EXPECT_MSG_GT (test4, test2, "Test 4 should have more unforced drops than test 2");
-  NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero forced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 
 
   // test 5: same dequeue rate as test 4, but with higher Tupdate
@@ -338,10 +338,10 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
   DequeueWithDelay (queue, 0.015, 400);
   Simulator::Stop (Seconds (8.0));
   Simulator::Run ();
-  st = StaticCast<PieQueueDisc> (queue)->GetStats ();
-  uint32_t test5 = st.unforcedDrop;
+  st = queue->GetStats ();
+  uint32_t test5 = st.GetNDroppedPackets (PieQueueDisc::UNFORCED_DROP);
   NS_TEST_EXPECT_MSG_LT (test5, test4, "Test 5 should have less unforced drops than test 4");
-  NS_TEST_EXPECT_MSG_EQ (st.forcedDrop, 0, "There should be zero forced drops");
+  NS_TEST_EXPECT_MSG_EQ (st.GetNDroppedPackets (PieQueueDisc::FORCED_DROP), 0, "There should be zero forced drops");
 }
 
 void

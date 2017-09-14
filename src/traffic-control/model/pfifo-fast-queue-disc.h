@@ -62,6 +62,9 @@ public:
 
   virtual ~PfifoFastQueueDisc();
 
+  // Reasons for dropping packets
+  static constexpr const char* LIMIT_EXCEEDED_DROP = "Queue disc limit exceeded";  //!< Packet dropped due to queue disc limit exceeded
+
 private:
   /**
    * Priority to band map. Values are taken from the prio2band array used by

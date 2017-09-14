@@ -164,13 +164,6 @@ PieQueueDisc::GetQueueSize (void)
     }
 }
 
-PieQueueDisc::Stats
-PieQueueDisc::GetStats ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_stats;
-}
-
 Time
 PieQueueDisc::GetQueueDelay (void)
 {
@@ -197,15 +190,13 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       || (GetMode () == QUEUE_DISC_MODE_BYTES && nQueued + item->GetSize () > m_queueLimit))
     {
       // Drops due to queue limit: reactive
-      DropBeforeEnqueue (item);
-      m_stats.forcedDrop++;
+      DropBeforeEnqueue (item, FORCED_DROP);
       return false;
     }
   else if (DropEarly (item, nQueued))
     {
       // Early probability drop: proactive
-      DropBeforeEnqueue (item);
-      m_stats.unforcedDrop++;
+      DropBeforeEnqueue (item, UNFORCED_DROP);
       return false;
     }
 
@@ -232,8 +223,6 @@ PieQueueDisc::InitializeParams (void)
   m_dqStart = 0;
   m_burstState = NO_BURST;
   m_qDelayOld = Time (Seconds (0));
-  m_stats.forcedDrop = 0;
-  m_stats.unforcedDrop = 0;
 }
 
 bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)

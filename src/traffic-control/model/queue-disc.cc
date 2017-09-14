@@ -103,13 +103,86 @@ QueueDisc::Stats::Stats ()
     nTotalDroppedBytesBeforeEnqueue (0),
     nTotalDroppedBytesAfterDequeue (0),
     nTotalRequeuedPackets (0),
-    nTotalRequeuedBytes (0)
+    nTotalRequeuedBytes (0),
+    nTotalMarkedPackets (0),
+    nTotalMarkedBytes (0)
 {
+}
+
+uint32_t
+QueueDisc::Stats::GetNDroppedPackets (std::string reason) const
+{
+  uint32_t count = 0;
+  auto it = nDroppedPacketsBeforeEnqueue.find (reason);
+
+  if (it != nDroppedPacketsBeforeEnqueue.end ())
+    {
+      count += it->second;
+    }
+
+  it = nDroppedPacketsAfterDequeue.find (reason);
+
+  if (it != nDroppedPacketsAfterDequeue.end ())
+    {
+      count += it->second;
+    }
+
+  return count;
+}
+
+uint64_t
+QueueDisc::Stats::GetNDroppedBytes (std::string reason) const
+{
+  uint64_t count = 0;
+  auto it = nDroppedBytesBeforeEnqueue.find (reason);
+
+  if (it != nDroppedBytesBeforeEnqueue.end ())
+    {
+      count += it->second;
+    }
+
+  it = nDroppedBytesAfterDequeue.find (reason);
+
+  if (it != nDroppedBytesAfterDequeue.end ())
+    {
+      count += it->second;
+    }
+
+  return count;
+}
+
+uint32_t
+QueueDisc::Stats::GetNMarkedPackets (std::string reason) const
+{
+  auto it = nMarkedPackets.find (reason);
+
+  if (it != nMarkedPackets.end ())
+    {
+      return it->second;
+    }
+
+  return 0;
+}
+
+uint64_t
+QueueDisc::Stats::GetNMarkedBytes (std::string reason) const
+{
+  auto it = nMarkedBytes.find (reason);
+
+  if (it != nMarkedBytes.end ())
+    {
+      return it->second;
+    }
+
+  return 0;
 }
 
 void
 QueueDisc::Stats::Print (std::ostream &os) const
 {
+  std::map<std::string, uint32_t>::const_iterator itp;
+  std::map<std::string, uint64_t>::const_iterator itb;
+
   os << std::endl << "Packets/Bytes received: "
                   << nTotalReceivedPackets << " / "
                   << nTotalReceivedBytes
@@ -127,14 +200,59 @@ QueueDisc::Stats::Print (std::ostream &os) const
                   << nTotalDroppedBytes
      << std::endl << "Packets/Bytes dropped before enqueue: "
                   << nTotalDroppedPacketsBeforeEnqueue << " / "
-                  << nTotalDroppedBytesBeforeEnqueue
-     << std::endl << "Packets/Bytes dropped after dequeue: "
+                  << nTotalDroppedBytesBeforeEnqueue;
+
+  itp = nDroppedPacketsBeforeEnqueue.begin ();
+  itb = nDroppedBytesBeforeEnqueue.begin ();
+
+  while (itp != nDroppedPacketsBeforeEnqueue.end () &&
+         itb != nDroppedBytesBeforeEnqueue.end ())
+    {
+      NS_ASSERT (itp->first.compare (itb->first) == 0);
+      os << std::endl << "  " << itp->first << ": "
+         << itp->second << " / " << itb->second;
+      itp++;
+      itb++;
+    }
+
+  os << std::endl << "Packets/Bytes dropped after dequeue: "
                   << nTotalDroppedPacketsAfterDequeue << " / "
-                  << nTotalDroppedBytesAfterDequeue
-     << std::endl << "Packets/Bytes sent: "
+                  << nTotalDroppedBytesAfterDequeue;
+
+  itp = nDroppedPacketsAfterDequeue.begin ();
+  itb = nDroppedBytesAfterDequeue.begin ();
+
+  while (itp != nDroppedPacketsAfterDequeue.end () &&
+         itb != nDroppedBytesAfterDequeue.end ())
+    {
+      NS_ASSERT (itp->first.compare (itb->first) == 0);
+      os << std::endl << "  " << itp->first << ": "
+         << itp->second << " / " << itb->second;
+      itp++;
+      itb++;
+    }
+
+  os << std::endl << "Packets/Bytes sent: "
                   << nTotalSentPackets << " / "
                   << nTotalSentBytes
-     << std::endl;
+     << std::endl << "Packets/Bytes marked: "
+                  << nTotalMarkedPackets << " / "
+                  << nTotalMarkedBytes;
+
+  itp = nMarkedPackets.begin ();
+  itb = nMarkedBytes.begin ();
+
+  while (itp != nMarkedPackets.end () &&
+         itb != nMarkedBytes.end ())
+    {
+      NS_ASSERT (itp->first.compare (itb->first) == 0);
+      os << std::endl << "  " << itp->first << ": "
+         << itp->second << " / " << itb->second;
+      itp++;
+      itb++;
+    }
+
+  os << std::endl;
 }
 
 std::ostream & operator << (std::ostream &os, const QueueDisc::Stats &stats)
@@ -185,6 +303,9 @@ TypeId QueueDisc::GetTypeId (void)
     .AddTraceSource ("DropAfterDequeue", "Drop a packet after dequeue",
                      MakeTraceSourceAccessor (&QueueDisc::m_traceDropAfterDequeue),
                      "ns3::QueueDiscItem::TracedCallback")
+    .AddTraceSource ("Mark", "Mark a packet stored in the queue disc",
+                     MakeTraceSourceAccessor (&QueueDisc::m_traceMark),
+                     "ns3::QueueDiscItem::TracedCallback")
     .AddTraceSource ("PacketsInQueue",
                      "Number of packets currently stored in the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_nPackets),
@@ -208,6 +329,51 @@ QueueDisc::QueueDisc ()
      m_running (false)
 {
   NS_LOG_FUNCTION (this);
+
+  using namespace std::placeholders;
+
+  // Remove ambiguity for overloaded member functions
+  typedef std::basic_string<char>& (std::basic_string<char>::*Function) (const char*);
+
+  Function append = &std::basic_string<char>::append,
+           assign = &std::basic_string<char>::assign;
+
+  // The operator() of these function objects calls the QueueDisc::DropBeforeEnqueue
+  // and QueueDisc::DropAfterDequeue methods of this QueueDisc object (these function
+  // objects are bound to this QueueDisc object), which require two arguments: a
+  // Ptr<const QueueDiscItem> and a const char*. Given that a callback to the operator()
+  // is connected to the DropBeforeEnqueue and DropAfterDequeue traces of the Queue
+  // class, the first argument is provided by such traces, while the second argument
+  // (the reason why the packet was dropped) is bound to the INTERNAL_QUEUE_DROP constant.
+  m_internalQueueDbeFunctor = std::bind (&QueueDisc::DropBeforeEnqueue, this,
+                                         _1, (const char*)INTERNAL_QUEUE_DROP);
+  m_internalQueueDadFunctor = std::bind (&QueueDisc::DropAfterDequeue, this,
+                                         _1, (const char*)INTERNAL_QUEUE_DROP);
+
+  // The operator() of these function objects calls the QueueDisc::DropBeforeEnqueue
+  // and QueueDisc::DropAfterDequeue methods of this QueueDisc object (these function
+  // objects are bound to this QueueDisc object), which require two arguments: a
+  // Ptr<const QueueDiscItem> and a const char*. Given that a callback to the operator()
+  // is connected to the DropBeforeEnqueue and DropAfterDequeue traces of the QueueDisc
+  // class, both arguments are provided by such traces. The first argument is provided
+  // as is, while the second argument (the reason why the packet was dropped) is obtained
+  // by calling m_childQueueDiscDropMsg.assign (CHILD_QUEUE_DISC_DROP).append (_2).data ()
+  // i.e., the second argument is the concatenation of the CHILD_QUEUE_DISC_DROP constant
+  // and the second argument provided by the traces of the QueueDisc class.
+  m_childQueueDiscDbeFunctor = std::bind (&QueueDisc::DropBeforeEnqueue, this, _1,
+                                          std::bind (&std::basic_string<char>::data,
+                                                     std::bind (append,
+                                                                std::bind (assign,
+                                                                           &m_childQueueDiscDropMsg,
+                                                                           (const char*)CHILD_QUEUE_DISC_DROP),
+                                                                _2)));
+  m_childQueueDiscDadFunctor = std::bind (&QueueDisc::DropAfterDequeue, this, _1,
+                                          std::bind (&std::basic_string<char>::data,
+                                                     std::bind (append,
+                                                                std::bind (assign,
+                                                                           &m_childQueueDiscDropMsg,
+                                                                           (const char*)CHILD_QUEUE_DISC_DROP),
+                                                                _2)));
 }
 
 QueueDisc::~QueueDisc ()
@@ -320,6 +486,7 @@ void
 QueueDisc::AddInternalQueue (Ptr<InternalQueue> queue)
 {
   NS_LOG_FUNCTION (this);
+
   // set various callbacks on the internal queue, so that the queue disc is
   // notified of packets enqueued, dequeued or dropped by the internal queue
   queue->TraceConnectWithoutContext ("Enqueue",
@@ -327,9 +494,11 @@ QueueDisc::AddInternalQueue (Ptr<InternalQueue> queue)
   queue->TraceConnectWithoutContext ("Dequeue",
                                      MakeCallback (&QueueDisc::PacketDequeued, this));
   queue->TraceConnectWithoutContext ("DropBeforeEnqueue",
-                                     MakeCallback (&QueueDisc::DropBeforeEnqueue, this));
+                                     MakeCallback (&InternalQueueDropFunctor::operator(),
+                                                   &m_internalQueueDbeFunctor));
   queue->TraceConnectWithoutContext ("DropAfterDequeue",
-                                     MakeCallback (&QueueDisc::DropAfterDequeue, this));
+                                     MakeCallback (&InternalQueueDropFunctor::operator(),
+                                                   &m_internalQueueDadFunctor));
   m_queues.push_back (queue);
 }
 
@@ -375,6 +544,7 @@ QueueDisc::AddQueueDiscClass (Ptr<QueueDiscClass> qdClass)
   // such queue discs do not implement the enqueue/dequeue methods
   NS_ABORT_MSG_IF (qdClass->GetQueueDisc ()->GetWakeMode () == WAKE_CHILD,
                    "A queue disc with WAKE_CHILD as wake mode can only be a root queue disc");
+
   // set the parent callbacks on the child queue disc, so that it can notify
   // the parent queue disc of packets enqueued, dequeued or dropped
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("Enqueue",
@@ -382,9 +552,11 @@ QueueDisc::AddQueueDiscClass (Ptr<QueueDiscClass> qdClass)
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("Dequeue",
                                      MakeCallback (&QueueDisc::PacketDequeued, this));
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("DropBeforeEnqueue",
-                                     MakeCallback (&QueueDisc::DropBeforeEnqueue, this));
+                                     MakeCallback (&ChildQueueDiscDropFunctor::operator(),
+                                                   &m_childQueueDiscDbeFunctor));
   qdClass->GetQueueDisc ()->TraceConnectWithoutContext ("DropAfterDequeue",
-                                     MakeCallback (&QueueDisc::DropAfterDequeue, this));
+                                     MakeCallback (&ChildQueueDiscDropFunctor::operator(),
+                                                   &m_childQueueDiscDadFunctor));
   m_classes.push_back (qdClass);
 }
 
@@ -448,33 +620,124 @@ QueueDisc::PacketDequeued (Ptr<const QueueDiscItem> item)
 }
 
 void
-QueueDisc::DropBeforeEnqueue (Ptr<const QueueDiscItem> item)
+QueueDisc::DropBeforeEnqueue (Ptr<const QueueDiscItem> item, const char* reason)
 {
-  NS_LOG_FUNCTION (this << item);
+  NS_LOG_FUNCTION (this << item << reason);
 
   m_stats.nTotalDroppedPackets++;
   m_stats.nTotalDroppedBytes += item->GetSize ();
   m_stats.nTotalDroppedPacketsBeforeEnqueue++;
   m_stats.nTotalDroppedBytesBeforeEnqueue += item->GetSize ();
 
+  // update the number of packets dropped for the given reason
+  std::map<std::string, uint32_t>::iterator itp = m_stats.nDroppedPacketsBeforeEnqueue.find (reason);
+  if (itp != m_stats.nDroppedPacketsBeforeEnqueue.end ())
+    {
+      itp->second++;
+    }
+  else
+    {
+      m_stats.nDroppedPacketsBeforeEnqueue[reason] = 1;
+    }
+  // update the amount of bytes dropped for the given reason
+  std::map<std::string, uint64_t>::iterator itb = m_stats.nDroppedBytesBeforeEnqueue.find (reason);
+  if (itb != m_stats.nDroppedBytesBeforeEnqueue.end ())
+    {
+      itb->second += item->GetSize ();
+    }
+  else
+    {
+      m_stats.nDroppedBytesBeforeEnqueue[reason] = item->GetSize ();
+    }
+
+  NS_LOG_DEBUG ("Total packets/bytes dropped before enqueue: "
+                << m_stats.nTotalDroppedPacketsBeforeEnqueue << " / "
+                << m_stats.nTotalDroppedBytesBeforeEnqueue);
   NS_LOG_LOGIC ("m_traceDropBeforeEnqueue (p)");
   m_traceDrop (item);
-  m_traceDropBeforeEnqueue (item);
+  m_traceDropBeforeEnqueue (item, reason);
 }
 
 void
-QueueDisc::DropAfterDequeue (Ptr<const QueueDiscItem> item)
+QueueDisc::DropAfterDequeue (Ptr<const QueueDiscItem> item, const char* reason)
 {
-  NS_LOG_FUNCTION (this << item);
+  NS_LOG_FUNCTION (this << item << reason);
 
   m_stats.nTotalDroppedPackets++;
   m_stats.nTotalDroppedBytes += item->GetSize ();
   m_stats.nTotalDroppedPacketsAfterDequeue++;
   m_stats.nTotalDroppedBytesAfterDequeue += item->GetSize ();
 
+  // update the number of packets dropped for the given reason
+  std::map<std::string, uint32_t>::iterator itp = m_stats.nDroppedPacketsAfterDequeue.find (reason);
+  if (itp != m_stats.nDroppedPacketsAfterDequeue.end ())
+    {
+      itp->second++;
+    }
+  else
+    {
+      m_stats.nDroppedPacketsAfterDequeue[reason] = 1;
+    }
+  // update the amount of bytes dropped for the given reason
+  std::map<std::string, uint64_t>::iterator itb = m_stats.nDroppedBytesAfterDequeue.find (reason);
+  if (itb != m_stats.nDroppedBytesAfterDequeue.end ())
+    {
+      itb->second += item->GetSize ();
+    }
+  else
+    {
+      m_stats.nDroppedBytesAfterDequeue[reason] = item->GetSize ();
+    }
+
+  NS_LOG_DEBUG ("Total packets/bytes dropped after dequeue: "
+                << m_stats.nTotalDroppedPacketsAfterDequeue << " / "
+                << m_stats.nTotalDroppedBytesAfterDequeue);
   NS_LOG_LOGIC ("m_traceDropAfterDequeue (p)");
   m_traceDrop (item);
-  m_traceDropAfterDequeue (item);
+  m_traceDropAfterDequeue (item, reason);
+}
+
+bool
+QueueDisc::Mark (Ptr<QueueDiscItem> item, const char* reason)
+{
+  NS_LOG_FUNCTION (this << item << reason);
+
+  bool retval = item->Mark ();
+
+  if (!retval)
+    {
+      return false;
+    }
+
+  m_stats.nTotalMarkedPackets++;
+  m_stats.nTotalMarkedBytes += item->GetSize ();
+
+  // update the number of packets marked for the given reason
+  std::map<std::string, uint32_t>::iterator itp = m_stats.nMarkedPackets.find (reason);
+  if (itp != m_stats.nMarkedPackets.end ())
+    {
+      itp->second++;
+    }
+  else
+    {
+      m_stats.nMarkedPackets[reason] = 1;
+    }
+  // update the amount of bytes marked for the given reason
+  std::map<std::string, uint64_t>::iterator itb = m_stats.nMarkedBytes.find (reason);
+  if (itb != m_stats.nMarkedBytes.end ())
+    {
+      itb->second += item->GetSize ();
+    }
+  else
+    {
+      m_stats.nMarkedBytes[reason] = item->GetSize ();
+    }
+
+  NS_LOG_DEBUG ("Total packets/bytes marked: "
+                << m_stats.nTotalMarkedPackets << " / "
+                << m_stats.nTotalMarkedBytes);
+  m_traceMark (item, reason);
+  return true;
 }
 
 bool

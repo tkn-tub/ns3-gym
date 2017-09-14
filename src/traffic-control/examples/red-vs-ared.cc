@@ -166,24 +166,22 @@ int main (int argc, char *argv[])
   std::cout << "Running the simulation" << std::endl;
   Simulator::Run ();
 
-  RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
+  QueueDisc::Stats st = queueDiscs.Get (0)->GetStats ();
 
-  if (st.unforcedDrop == 0)
+  if (st.GetNDroppedPackets (RedQueueDisc::UNFORCED_DROP) == 0)
     {
       std::cout << "There should be some unforced drops" << std::endl;
       exit (1);
     }
 
-  if (st.qLimDrop != 0)
+  if (st.GetNDroppedPackets (QueueDisc::INTERNAL_QUEUE_DROP) != 0)
     {
       std::cout << "There should be zero drops due to queue full" << std::endl;
       exit (1);
     }
 
   std::cout << "*** Stats from the bottleneck queue disc ***" << std::endl;
-  std::cout << "\t " << st.unforcedDrop << " drops due to prob mark" << std::endl;
-  std::cout << "\t " << st.forcedDrop << " drops due to hard mark" << std::endl;
-  std::cout << "\t " << st.qLimDrop << " drops due to queue full" << std::endl;
+  std::cout << st << std::endl;
   std::cout << "Destroying the simulation" << std::endl;
 
   Simulator::Destroy ();

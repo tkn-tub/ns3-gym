@@ -25,6 +25,9 @@
 #include "ns3/net-device.h"
 #include "ns3/queue-item.h"
 #include <vector>
+#include <map>
+#include <functional>
+#include <string>
 #include "packet-filter.h"
 
 namespace ns3 {
@@ -129,6 +132,12 @@ private:
  * - queued = enqueued - dequeued
  * - sent = dequeued - dropped after dequeue (- 1 if there is a requeued packet)
  *
+ * Separate counters are also kept for each possible reason to drop a packet.
+ * When a packet is dropped by an internal queue, e.g., because the queue is full,
+ * the reason is "Dropped by internal queue". When a packet is dropped by a child
+ * queue disc, the reason is "(Dropped by child queue disc) " followed by the
+ * reason why the child queue disc dropped the packet.
+ *
  * The QueueDisc base class provides the SojournTime trace source, which provides
  * the sojourn time of every packet dequeued from a queue disc, including packets
  * that are dropped or requeued after being dequeued. The sojourn time is taken
@@ -165,22 +174,62 @@ public:
     uint32_t nTotalDroppedPackets;
     /// Total packets dropped before enqueue
     uint32_t nTotalDroppedPacketsBeforeEnqueue;
+    /// Packets dropped before enqueue, for each reason
+    std::map<std::string, uint32_t> nDroppedPacketsBeforeEnqueue;
     /// Total packets dropped after dequeue
     uint32_t nTotalDroppedPacketsAfterDequeue;
+    /// Packets dropped after dequeue, for each reason
+    std::map<std::string, uint32_t> nDroppedPacketsAfterDequeue;
     /// Total dropped bytes
     uint64_t nTotalDroppedBytes;
     /// Total bytes dropped before enqueue
     uint64_t nTotalDroppedBytesBeforeEnqueue;
+    /// Bytes dropped before enqueue, for each reason
+    std::map<std::string, uint64_t> nDroppedBytesBeforeEnqueue;
     /// Total bytes dropped after dequeue
     uint64_t nTotalDroppedBytesAfterDequeue;
+    /// Bytes dropped after dequeue, for each reason
+    std::map<std::string, uint64_t> nDroppedBytesAfterDequeue;
     /// Total requeued packets
     uint32_t nTotalRequeuedPackets;
     /// Total requeued bytes
     uint64_t nTotalRequeuedBytes;
+    /// Total marked packets
+    uint32_t nTotalMarkedPackets;
+    /// Marked packets, for each reason
+    std::map<std::string, uint32_t> nMarkedPackets;
+    /// Total marked bytes
+    uint32_t nTotalMarkedBytes;
+    /// Marked bytes, for each reason
+    std::map<std::string, uint64_t> nMarkedBytes;
 
     /// constructor
     Stats ();
 
+    /**
+     * \brief Get the number of packets dropped for the given reason
+     * \param reason the reason why packets were dropped
+     * \return the number of packets dropped for the given reason
+     */
+    uint32_t GetNDroppedPackets (std::string reason) const;
+    /**
+     * \brief Get the amount of bytes dropped for the given reason
+     * \param reason the reason why packets were dropped
+     * \return the amount of bytes dropped for the given reason
+     */
+    uint64_t GetNDroppedBytes (std::string reason) const;
+    /**
+     * \brief Get the number of packets marked for the given reason
+     * \param reason the reason why packets were marked
+     * \return the number of packets marked for the given reason
+     */
+    uint32_t GetNMarkedPackets (std::string reason) const;
+    /**
+     * \brief Get the amount of bytes marked for the given reason
+     * \param reason the reason why packets were marked
+     * \return the amount of bytes marked for the given reason
+     */
+    uint64_t GetNMarkedBytes (std::string reason) const;
     /**
      * \brief Print the statistics.
      * \param os output stream in which the data should be printed.
@@ -369,6 +418,10 @@ public:
    */
   virtual WakeMode GetWakeMode (void) const;
 
+  // Reasons for dropping packets
+  static constexpr const char* INTERNAL_QUEUE_DROP = "Dropped by internal queue";    //!< Packet dropped by an internal queue
+  static constexpr const char* CHILD_QUEUE_DISC_DROP = "(Dropped by child queue disc) "; //!< Packet dropped by a child queue disc
+
 protected:
   /**
    * \brief Dispose of the object
@@ -388,19 +441,30 @@ protected:
    *  \brief Perform the actions required when the queue disc is notified of
    *         a packet dropped before enqueue
    *  \param item item that was dropped
-   *  This method must be called by subclasses to notify parent (this class) of a packet
-   *  dropped before enqueue
+   *  \param reason the reason why the item was dropped
+   *  This method must be called by subclasses to record that a packet was
+   *  dropped before enqueue for the specified reason
    */
-  void DropBeforeEnqueue (Ptr<const QueueDiscItem> item);
+  void DropBeforeEnqueue (Ptr<const QueueDiscItem> item, const char* reason);
 
   /**
    *  \brief Perform the actions required when the queue disc is notified of
    *         a packet dropped after dequeue
    *  \param item item that was dropped
-   *  This method must be called by subclasses to notify parent (this class) of a packet
-   *  dropped after dequeue
+   *  \param reason the reason why the item was dropped
+   *  This method must be called by subclasses to record that a packet was
+   *  dropped after dequeue for the specified reason
    */
-  void DropAfterDequeue (Ptr<const QueueDiscItem> item);
+  void DropAfterDequeue (Ptr<const QueueDiscItem> item, const char* reason);
+
+  /**
+   *  \brief Marks the given packet and, if successful, updates the counters
+   *         associated with the given reason
+   *  \param item item that has to be marked
+   *  \param reason the reason why the item has to be marked
+   *  \return true if the item was successfully marked, false otherwise
+   */
+  bool Mark (Ptr<QueueDiscItem> item, const char* reason);
 
 private:
   /**
@@ -523,19 +587,36 @@ private:
   Ptr<NetDeviceQueueInterface> m_devQueueIface;   //!< NetDevice queue interface
   bool m_running;                   //!< The queue disc is performing multiple dequeue operations
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
+  std::string m_childQueueDiscDropMsg;  //!< Reason why a packet was dropped by a child queue disc
 
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceEnqueue;
-    /// Traced callback: fired when a packet is dequeued
+  /// Traced callback: fired when a packet is dequeued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceDequeue;
   /// Traced callback: fired when a packet is requeued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceRequeue;
   /// Traced callback: fired when a packet is dropped
   TracedCallback<Ptr<const QueueDiscItem> > m_traceDrop;
   /// Traced callback: fired when a packet is dropped before enqueue
-  TracedCallback<Ptr<const QueueDiscItem> > m_traceDropBeforeEnqueue;
+  TracedCallback<Ptr<const QueueDiscItem>, const char* > m_traceDropBeforeEnqueue;
   /// Traced callback: fired when a packet is dropped after dequeue
-  TracedCallback<Ptr<const QueueDiscItem> > m_traceDropAfterDequeue;
+  TracedCallback<Ptr<const QueueDiscItem>, const char* > m_traceDropAfterDequeue;
+  /// Traced callback: fired when a packet is marked
+  TracedCallback<Ptr<const QueueDiscItem>, const char* > m_traceMark;
+
+  /// Type for the function objects notifying that a packet has been dropped by an internal queue
+  typedef std::function<void (Ptr<const QueueDiscItem>)> InternalQueueDropFunctor;
+  /// Type for the function objects notifying that a packet has been dropped by a child queue disc
+  typedef std::function<void (Ptr<const QueueDiscItem>, const char*)> ChildQueueDiscDropFunctor;
+
+  /// Function object called when an internal queue dropped a packet before enqueue
+  InternalQueueDropFunctor m_internalQueueDbeFunctor;
+  /// Function object called when an internal queue dropped a packet after dequeue
+  InternalQueueDropFunctor m_internalQueueDadFunctor;
+  /// Function object called when a child queue disc dropped a packet before enqueue
+  ChildQueueDiscDropFunctor m_childQueueDiscDbeFunctor;
+  /// Function object called when a child queue disc dropped a packet after dequeue
+  ChildQueueDiscDropFunctor m_childQueueDiscDadFunctor;
 };
 
 /**

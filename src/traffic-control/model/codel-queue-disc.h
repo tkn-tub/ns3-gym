@@ -109,21 +109,6 @@ public:
   uint32_t GetQueueSize (void);
 
   /**
-   * \brief Get the number of packets dropped when packets
-   * arrive at a full queue and cannot be enqueued.
-   *
-   * \returns The number of dropped packets
-   */
-  uint32_t GetDropOverLimit (void);
-
-  /**
-   * \brief Get the number of packets dropped according to CoDel algorithm
-   *
-   * \returns The number of dropped packets
-   */
-  uint32_t GetDropCount (void);
-
-  /**
    * \brief Get the target queue delay
    *
    * \returns The target queue delay
@@ -143,6 +128,10 @@ public:
    * \returns The time for next packet drop
    */
   uint32_t GetDropNext (void);
+
+  // Reasons for dropping packets
+  static constexpr const char* TARGET_EXCEEDED_DROP = "Target exceeded drop";  //!< Sojourn time above target
+  static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
 
 private:
   friend class::CoDelQueueDiscNewtonStepTest;  // Test code
@@ -242,7 +231,6 @@ private:
   Time m_interval;                        //!< 100 ms sliding minimum time window width
   Time m_target;                          //!< 5 ms target queue delay
   TracedValue<uint32_t> m_count;          //!< Number of packets dropped since entering drop state
-  TracedValue<uint32_t> m_dropCount;      //!< Number of dropped packets according CoDel algorithm
   TracedValue<uint32_t> m_lastCount;      //!< Last number of packets dropped since entering drop state
   TracedValue<bool> m_dropping;           //!< True if in dropping state
   uint16_t m_recInvSqrt;                  //!< Reciprocal inverse square root
@@ -252,7 +240,6 @@ private:
   uint32_t m_state2;                      //!< Number of times we perform next drop while in dropping state
   uint32_t m_state3;                      //!< Number of times we enter drop state and drop the fist packet
   uint32_t m_states;                      //!< Total number of times we are in state 1, state 2, or state 3
-  uint32_t m_dropOverLimit;               //!< The number of packets dropped due to full queue
   QueueDiscMode m_mode;                   //!< The operating mode (Bytes or packets)
 };
 

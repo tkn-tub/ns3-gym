@@ -211,7 +211,8 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p6, dest, 0));
   QueueTestSize (queue, 6 * modeSize, "There should be six packets in queue");
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 0, "There should be no packets being dropped due to full queue");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
+                         0, "There should be no packets being dropped due to full queue");
 
   Ptr<QueueDiscItem> item;
 
@@ -248,7 +249,8 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item == 0), true, "There are really no packets in queue");
 
-  NS_TEST_EXPECT_MSG_EQ (queue->GetDropCount (), 0, "There should be no packet drops according to CoDel algorithm");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP), 0,
+                         "There should be no packet drops according to CoDel algorithm");
 }
 
 /**
@@ -346,7 +348,8 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
   queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, 0));
 
   QueueTestSize (queue, 500 * modeSize, "There should be 500 packets in queue");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetDropOverLimit (), 3, "There should be three packets being dropped due to full queue");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
+                         3, "There should be three packets being dropped due to full queue");
 }
 
 void
@@ -590,7 +593,7 @@ CoDelQueueDiscBasicDrop::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint
 void
 CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
 {
-  uint32_t initialDropCount = queue->GetDropCount ();
+  uint32_t initialDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
   uint32_t initialQSize = queue->GetQueueSize ();
   uint32_t initialDropNext = queue->GetDropNext ();
   Time currentTime = Simulator::Now ();
@@ -608,7 +611,7 @@ CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
         {
           if (currentTime < queue->GetInterval ())
             {
-              currentDropCount = queue->GetDropCount ();
+              currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
               NS_TEST_EXPECT_MSG_EQ (currentDropCount, 0, "We are not in dropping state."
                                      "Sojourn time has just gone above target from below."
                                      "Hence, there should be no packet drops");
@@ -617,7 +620,7 @@ CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
             }
           else if (currentTime >= queue->GetInterval ())
             {
-              currentDropCount = queue->GetDropCount ();
+              currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
               QueueTestSize (queue, initialQSize - 2 * modeSize, "Sojourn time has been above target for at least interval."
                                      "We enter the dropping state, perform initial packet drop, and dequeue the next."
                                      "So there should be 2 more packets dequeued.");
@@ -628,7 +631,7 @@ CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
         { // In dropping state
           if (currentTime.GetMicroSeconds () < initialDropNext)
             {
-              currentDropCount = queue->GetDropCount ();
+              currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
               QueueTestSize (queue, initialQSize - modeSize, "We are in dropping state."
                                      "Sojourn is still above target."
                                      "However, it's not time for next drop."
@@ -638,7 +641,7 @@ CoDelQueueDiscBasicDrop::Dequeue (Ptr<CoDelQueueDisc> queue, uint32_t modeSize)
             }
           else if (currentTime.GetMicroSeconds () >= initialDropNext)
             {
-              currentDropCount = queue->GetDropCount ();
+              currentDropCount = queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP);
               QueueTestSize (queue, initialQSize - (m_dropNextCount + 1) * modeSize, "We are in dropping state."
                                      "It's time for next drop."
                                      "The number of packets dequeued equals to the number of times m_dropNext is updated plus initial dequeue");

@@ -109,10 +109,6 @@ TypeId CoDelQueueDisc::GetTypeId (void)
                      "CoDel count",
                      MakeTraceSourceAccessor (&CoDelQueueDisc::m_count),
                      "ns3::TracedValueCallback::Uint32")
-    .AddTraceSource ("DropCount",
-                     "CoDel drop count",
-                     MakeTraceSourceAccessor (&CoDelQueueDisc::m_dropCount),
-                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("LastCount",
                      "CoDel lastcount",
                      MakeTraceSourceAccessor (&CoDelQueueDisc::m_lastCount),
@@ -134,7 +130,6 @@ CoDelQueueDisc::CoDelQueueDisc ()
   : QueueDisc (),
     m_maxBytes (),
     m_count (0),
-    m_dropCount (0),
     m_lastCount (0),
     m_dropping (false),
     m_recInvSqrt (~0U >> REC_INV_SQRT_SHIFT),
@@ -143,8 +138,7 @@ CoDelQueueDisc::CoDelQueueDisc ()
     m_state1 (0),
     m_state2 (0),
     m_state3 (0),
-    m_states (0),
-    m_dropOverLimit (0)
+    m_states (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -192,21 +186,18 @@ bool
 CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
-  Ptr<Packet> p = item->GetPacket ();
 
   if (m_mode == QUEUE_DISC_MODE_PACKETS && (GetInternalQueue (0)->GetNPackets () + 1 > m_maxPackets))
     {
       NS_LOG_LOGIC ("Queue full (at max packets) -- dropping pkt");
-      DropBeforeEnqueue (item);
-      ++m_dropOverLimit;
+      DropBeforeEnqueue (item, OVERLIMIT_DROP);
       return false;
     }
 
   if (m_mode == QUEUE_DISC_MODE_BYTES && (GetInternalQueue (0)->GetNBytes () + item->GetSize () > m_maxBytes))
     {
       NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- dropping pkt");
-      DropBeforeEnqueue (item);
-      ++m_dropOverLimit;
+      DropBeforeEnqueue (item, OVERLIMIT_DROP);
       return false;
     }
 
@@ -307,9 +298,8 @@ CoDelQueueDisc::DoDequeue (void)
               // rates so high that the next drop should happen now,
               // hence the while loop.
               NS_LOG_LOGIC ("Sojourn time is still above target and it's time for next drop; dropping " << item);
-              DropAfterDequeue (item);
+              DropAfterDequeue (item, TARGET_EXCEEDED_DROP);
 
-              ++m_dropCount;
               ++m_count;
               NewtonStep ();
               item = GetInternalQueue (0)->Dequeue ();
@@ -346,8 +336,7 @@ CoDelQueueDisc::DoDequeue (void)
         {
           // Drop the first packet and enter dropping state unless the queue is empty
           NS_LOG_LOGIC ("Sojourn time goes above target, dropping the first packet " << item << " and entering the dropping state");
-          ++m_dropCount;
-          DropAfterDequeue (item);
+          DropAfterDequeue (item, TARGET_EXCEEDED_DROP);
 
           item = GetInternalQueue (0)->Dequeue ();
 
@@ -403,18 +392,6 @@ CoDelQueueDisc::GetQueueSize (void)
     {
       NS_ABORT_MSG ("Unknown mode.");
     }
-}
-
-uint32_t
-CoDelQueueDisc::GetDropOverLimit (void)
-{
-  return m_dropOverLimit;
-}
-
-uint32_t
-CoDelQueueDisc::GetDropCount (void)
-{
-  return m_dropCount;
 }
 
 Time

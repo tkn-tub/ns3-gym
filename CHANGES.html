@@ -95,13 +95,33 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li>MqQueueDisc, a multi-queue aware queue disc modelled after the mq qdisc in Linux, has been introduced.
 </li>
-<li>Added <b>QueueDisc::GetStats()</b> which returns detailed statistics about the operations of a queue disc.
-    Consequently, a number of methods of the QueueDisc class have been removed: <b>GetTotalReceivedPackets()</b>,
-    <b>GetTotalReceivedBytes()</b>, <b>GetTotalDroppedPackets()</b>, <b>GetTotalDroppedBytes()</b>,
-    <b>GetTotalRequeuedPackets()</b>, <b>GetTotalRequeuedBytes()</b>.
-</li>
 <li>Two new methods, <b>QueueDisc::DropBeforeEnqueue()</b> and <b>QueueDisc::DropAfterDequeue()</b> have
-    been introduced to replace <b>QueueDisc::Drop()</b>. Correspondingly, two new trace sources have been added to the QueueDisc class: DropBeforeEnqueue and DropAfterDequeue.
+    been introduced to replace <b>QueueDisc::Drop()</b>. These new methods require the caller to specify the
+    reason why a packet was dropped. Correspondingly, two new trace sources ("DropBeforeEnqueue" and
+    "DropAfterDequeue") have been added to the QueueDisc class, providing both the items that were dropped
+    and the reason why they were dropped. 
+</li>
+<li>Added <b>QueueDisc::GetStats()</b> which returns detailed statistics about the operations of
+    a queue disc. Statistics can be accessed through the member variables of the returned object and
+    by calling the <b>GetNDroppedPackets()</b>, <b>GetNDroppedBytes()</b>, <b>GetNMarkedPackets()</b> and <b>GetNMarkedBytes()</b> methods on the returned object. Such methods return the number of packets/bytes
+    dropped/marked for the specified reason (passed as argument). Consequently:
+    <ul>
+      <li>A number of methods of the QueueDisc class have been removed: <b>GetTotalReceivedPackets()</b>,
+      <b>GetTotalReceivedBytes()</b>, <b>GetTotalDroppedPackets()</b>, <b>GetTotalDroppedBytes()</b>,
+      <b>GetTotalRequeuedPackets()</b>, <b>GetTotalRequeuedBytes()</b>.</li>
+      <li>The <b>Stats</b> struct and the <b>GetStats()</b> method of <b>RedQueueDisc</b> and <b>PieQueueDisc</b> have been removed and replaced by those of the QueueDisc base class.</li>
+      <li>The <b>GetDropOverLimit</b> and <b>GetDropCount</b> methods of <b>CoDelQueueDisc</b> have been removed.
+      The values they returned can be obtained by calling, respectively,
+      GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP) and
+      GetStats ().GetNDroppedPackets (CoDelQueueDisc::TARGET_EXCEEDED_DROP). The "DropCount" trace of
+      <b>CoDelQueueDisc</b> has been removed as well. Packets dropped because the target is exceeded can
+      be obtained through the new "DropAfterDequeue" trace of the QueueDisc class.</li>
+    </ul>
+</li>
+<li> The new <b>QueueDisc::Mark()</b> method has been introduced to allow subclasses to request to mark a packet.
+     The  caller must specify the reason why the packet must be marked. Correspondingly, a new trace source ("Mark")
+     has been added to the QueueDisc class, providing both the items that were marked and the reason why they
+     were marked.
 </li>
 <li>A new trace source, <b>SojournTime</b>, is exported by the QueueDisc base class to provide the
     sojourn time of every packet dequeued from a queue disc. This has been made possible by adding a

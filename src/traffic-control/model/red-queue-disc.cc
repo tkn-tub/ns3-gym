@@ -355,13 +355,6 @@ RedQueueDisc::SetTh (double minTh, double maxTh)
   m_maxTh = maxTh;
 }
 
-RedQueueDisc::Stats
-RedQueueDisc::GetStats ()
-{
-  NS_LOG_FUNCTION (this);
-  return m_stats;
-}
-
 int64_t 
 RedQueueDisc::AssignStreams (int64_t stream)
 {
@@ -453,23 +446,20 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   if (dropType == DTYPE_UNFORCED)
     {
-      if (!m_useEcn || !item->Mark ())
+      if (!m_useEcn || !Mark (item, UNFORCED_MARK))
         {
           NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qAvg);
-          m_stats.unforcedDrop++;
-          DropBeforeEnqueue (item);
+          DropBeforeEnqueue (item, UNFORCED_DROP);
           return false;
         }
       NS_LOG_DEBUG ("\t Marking due to Prob Mark " << m_qAvg);
-      m_stats.unforcedMark++;
     }
   else if (dropType == DTYPE_FORCED)
     {
-      if (m_useHardDrop || !m_useEcn || !item->Mark ())
+      if (m_useHardDrop || !m_useEcn || !Mark (item, FORCED_MARK))
         {
           NS_LOG_DEBUG ("\t Dropping due to Hard Mark " << m_qAvg);
-          m_stats.forcedDrop++;
-          DropBeforeEnqueue (item);
+          DropBeforeEnqueue (item, FORCED_DROP);
           if (m_isNs1Compat)
             {
               m_count = 0;
@@ -478,15 +468,9 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
           return false;
         }
       NS_LOG_DEBUG ("\t Marking due to Hard Mark " << m_qAvg);
-      m_stats.forcedMark++;
     }
 
   bool retval = GetInternalQueue (0)->Enqueue (item);
-
-  if (!retval)
-    {
-      m_stats.qLimDrop++;
-    }
 
   // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
   // internal queue because QueueDisc::AddInternalQueue sets the trace callback
@@ -550,11 +534,6 @@ RedQueueDisc::InitializeParams (void)
     }
 
   NS_ASSERT (m_minTh <= m_maxTh);
-  m_stats.forcedDrop = 0;
-  m_stats.unforcedDrop = 0;
-  m_stats.qLimDrop = 0;
-  m_stats.forcedMark = 0;
-  m_stats.unforcedMark = 0;
 
   m_qAvg = 0.0;
   m_count = 0;

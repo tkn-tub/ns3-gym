@@ -458,17 +458,13 @@ main (int argc, char *argv[])
 
   if (printRedStats)
     {
-      RedQueueDisc::Stats st = StaticCast<RedQueueDisc> (queueDiscs.Get (0))->GetStats ();
-      std::cout << "*** RED stats from Node 2 queue ***" << std::endl;
-      std::cout << "\t " << st.unforcedDrop << " drops due prob mark" << std::endl;
-      std::cout << "\t " << st.forcedDrop << " drops due hard mark" << std::endl;
-      std::cout << "\t " << st.qLimDrop << " drops due queue full" << std::endl;
+      QueueDisc::Stats st = queueDiscs.Get (0)->GetStats ();
+      std::cout << "*** RED stats from Node 2 queue disc ***" << std::endl;
+      std::cout << st << std::endl;
 
-      st = StaticCast<RedQueueDisc> (queueDiscs.Get (1))->GetStats ();
-      std::cout << "*** RED stats from Node 3 queue ***" << std::endl;
-      std::cout << "\t " << st.unforcedDrop << " drops due prob mark" << std::endl;
-      std::cout << "\t " << st.forcedDrop << " drops due hard mark" << std::endl;
-      std::cout << "\t " << st.qLimDrop << " drops due queue full" << std::endl;
+      st = queueDiscs.Get (1)->GetStats ();
+      std::cout << "*** RED stats from Node 3 queue disc ***" << std::endl;
+      std::cout << st << std::endl;
     }
 
   Simulator::Destroy ();
