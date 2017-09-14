@@ -65,10 +65,10 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  if (GetNPackets () > m_limit)
+  if (GetNPackets () >= m_limit)
     {
       NS_LOG_LOGIC ("Queue disc limit exceeded -- dropping packet");
-      Drop (item);
+      DropBeforeEnqueue (item);
       return false;
     }
 
@@ -83,8 +83,8 @@ PfifoFastQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   bool retval = GetInternalQueue (band)->Enqueue (item);
 
-  // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
-  // because QueueDisc::AddInternalQueue sets the drop callback
+  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
+  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
 
   NS_LOG_LOGIC ("Number packets band " << band << ": " << GetInternalQueue (band)->GetNPackets ());
 

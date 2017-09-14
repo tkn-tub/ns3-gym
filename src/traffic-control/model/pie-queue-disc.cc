@@ -197,14 +197,14 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       || (GetMode () == QUEUE_DISC_MODE_BYTES && nQueued + item->GetSize () > m_queueLimit))
     {
       // Drops due to queue limit: reactive
-      Drop (item);
+      DropBeforeEnqueue (item);
       m_stats.forcedDrop++;
       return false;
     }
   else if (DropEarly (item, nQueued))
     {
       // Early probability drop: proactive
-      Drop (item);
+      DropBeforeEnqueue (item);
       m_stats.unforcedDrop++;
       return false;
     }
@@ -212,8 +212,8 @@ PieQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   // No drop
   bool retval = GetInternalQueue (0)->Enqueue (item);
 
-  // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
-  // because QueueDisc::AddInternalQueue sets the drop callback
+  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
+  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
 
   NS_LOG_LOGIC ("\t bytesInQueue  " << GetInternalQueue (0)->GetNBytes ());
   NS_LOG_LOGIC ("\t packetsInQueue  " << GetInternalQueue (0)->GetNPackets ());

@@ -281,7 +281,7 @@ CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (m_mode == QUEUE_DISC_MODE_PACKETS && (GetInternalQueue (0)->GetNPackets () + 1 > m_maxPackets))
     {
       NS_LOG_LOGIC ("Queue full (at max packets) -- droppping pkt");
-      Drop (item);
+      DropBeforeEnqueue (item);
       ++m_dropOverLimit;
       return false;
     }
@@ -289,7 +289,7 @@ CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (m_mode == QUEUE_DISC_MODE_BYTES && (GetInternalQueue (0)->GetNBytes () + item->GetSize () > m_maxBytes))
     {
       NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- droppping pkt");
-      Drop (item);
+      DropBeforeEnqueue (item);
       ++m_dropOverLimit;
       return false;
     }
@@ -300,8 +300,8 @@ CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 
   bool retval = GetInternalQueue (0)->Enqueue (item);
 
-  // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
-  // because QueueDisc::AddInternalQueue sets the drop callback
+  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
+  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
 
   NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
@@ -400,7 +400,7 @@ CoDelQueueDisc::DoDequeue (void)
               // rates so high that the next drop should happen now,
               // hence the while loop.
               NS_LOG_LOGIC ("Sojourn time is still above target and it's time for next drop; dropping " << item);
-              Drop (item);
+              DropAfterDequeue (item);
 
               ++m_dropCount;
               ++m_count;
@@ -440,7 +440,7 @@ CoDelQueueDisc::DoDequeue (void)
           // Drop the first packet and enter dropping state unless the queue is empty
           NS_LOG_LOGIC ("Sojourn time goes above target, dropping the first packet " << item << " and entering the dropping state");
           ++m_dropCount;
-          Drop (item);
+          DropAfterDequeue (item);
 
           item = GetInternalQueue (0)->Dequeue ();
 

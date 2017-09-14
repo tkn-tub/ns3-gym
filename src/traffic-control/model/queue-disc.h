@@ -107,19 +107,80 @@ private:
  * An attempt is made, also, to enqueue each packet in the "same" queue both within the
  * queue disc and within the device.
  *
- * The traffic control layer interacts with a queue disc in a simple manner: after requesting
- * to enqueue a packet, the traffic control layer requests the qdisc to "run", i.e., to
- * dequeue a set of packets, until a predefined number ("quota") of packets is dequeued
- * or the netdevice stops the queue disc. A netdevice may stop the queue disc when its
- * transmission queue(s) is/are (almost) full. Also, a netdevice may wake the
- * queue disc when its transmission queue(s) is/are (almost) empty. Waking a queue disc
- * is equivalent to make it run.
+ * The traffic control layer interacts with a queue disc in a simple manner: after
+ * requesting to enqueue a packet, the traffic control layer requests the qdisc to
+ * "run", i.e., to dequeue a set of packets, until a predefined number ("quota")
+ * of packets is dequeued or the netdevice stops the queue disc. A netdevice shall
+ * stop the queue disc when its transmission queue does not have room for another
+ * packet. Also, a netdevice shall wake the queue disc when it detects that there
+ * is room for another packet in its transmission queue, but the transmission queue
+ * is stopped. Waking a queue disc is equivalent to make it run.
+ *
+ * Every queue disc collects statistics about the total number of packets/bytes
+ * received from the upper layers (in case of root queue disc) or from the parent
+ * queue disc (in case of child queue disc), enqueued, dequeued, requeued, dropped,
+ * dropped before enqueue, dropped after dequeue, queued in the queue disc and
+ * sent to the netdevice or to the parent queue disc. Note that packets that are
+ * dequeued may be requeued, i.e., retained by the traffic control infrastructure,
+ * if the netdevice is not ready to receive them. Requeued packets are not part
+ * of the queue disc. The following identities hold:
+ * - dropped = dropped before enqueue + dropped after dequeue
+ * - received = dropped before enqueue + enqueued
+ * - queued = enqueued - dequeued
+ * - sent = dequeued - dropped after dequeue (- 1 if there is a requeued packet)
  *
  * The design and implementation of this class is heavily inspired by Linux.
  * For more details, see the traffic-control model page.
  */
 class QueueDisc : public Object {
 public:
+
+  /// \brief Structure that keeps the queue disc statistics
+  struct Stats
+  {
+    /// Total received packets
+    uint32_t nTotalReceivedPackets;
+    /// Total received bytes
+    uint64_t nTotalReceivedBytes;
+    /// Total sent packets -- this value is not kept up to date, call GetStats first
+    uint32_t nTotalSentPackets;
+    /// Total sent bytes -- this value is not kept up to date, call GetStats first
+    uint64_t nTotalSentBytes;
+    /// Total enqueued packets
+    uint32_t nTotalEnqueuedPackets;
+    /// Total enqueued bytes
+    uint64_t nTotalEnqueuedBytes;
+    /// Total dequeued packets
+    uint32_t nTotalDequeuedPackets;
+    /// Total dequeued bytes
+    uint64_t nTotalDequeuedBytes;
+    /// Total dropped packets
+    uint32_t nTotalDroppedPackets;
+    /// Total packets dropped before enqueue
+    uint32_t nTotalDroppedPacketsBeforeEnqueue;
+    /// Total packets dropped after dequeue
+    uint32_t nTotalDroppedPacketsAfterDequeue;
+    /// Total dropped bytes
+    uint64_t nTotalDroppedBytes;
+    /// Total bytes dropped before enqueue
+    uint64_t nTotalDroppedBytesBeforeEnqueue;
+    /// Total bytes dropped after dequeue
+    uint64_t nTotalDroppedBytesAfterDequeue;
+    /// Total requeued packets
+    uint32_t nTotalRequeuedPackets;
+    /// Total requeued bytes
+    uint64_t nTotalRequeuedBytes;
+
+    /// constructor
+    Stats ();
+
+    /**
+     * \brief Print the statistics.
+     * \param os output stream in which the data should be printed.
+     */
+    void Print (std::ostream &os) const;
+  };
+
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -133,12 +194,7 @@ public:
    * \brief Get the number of packets stored by the queue disc
    * \return the number of packets stored by the queue disc.
    *
-   * Note that the number of packets stored by the queue disc is updated as soon
-   * as a packet is received by the queue disc and before actually enqueuing the
-   * packet (i.e., before calling DoEnqueue). Thus, while implementing the DoEnqueue
-   * method of a subclass, keep in mind that GetNPackets returns the number of
-   * packets stored in the queue disc, including the packet that we are trying
-   * to enqueue.
+   * The requeued packet, if any, is counted.
    */
   uint32_t GetNPackets (void) const;
 
@@ -146,50 +202,15 @@ public:
    * \brief Get the amount of bytes stored by the queue disc
    * \return the amount of bytes stored by the queue disc.
    *
-   * Note that the amount of bytes stored by the queue disc is updated as soon
-   * as a packet is received by the queue disc and before actually enqueuing the
-   * packet (i.e., before calling DoEnqueue). Thus, while implementing the DoEnqueue
-   * method of a subclass, keep in mind that GetNBytes returns the amount of
-   * bytes stored in the queue disc, including the size of the packet that we are
-   * trying to enqueue.
+   * The requeued packet, if any, is counted.
    */
   uint32_t GetNBytes (void) const;
 
   /**
-   * \brief Get the total number of received packets
-   * \return the total number of received packets.
+   * \brief Retrieve all the collected statistics.
+   * \return the collected statistics.
    */
-  uint32_t GetTotalReceivedPackets (void) const;
-
-  /**
-   * \brief Get the total amount of received bytes
-   * \return the total amount of received bytes.
-   */
-  uint32_t GetTotalReceivedBytes (void) const;
-
-  /**
-   * \brief Get the total number of dropped packets
-   * \return the total number of dropped packets.
-   */
-  uint32_t GetTotalDroppedPackets (void) const;
-
-  /**
-   * \brief Get the total amount of dropped bytes
-   * \return the total amount of dropped bytes.
-   */
-  uint32_t GetTotalDroppedBytes (void) const;
-
-  /**
-   * \brief Get the total number of requeued packets
-   * \return the total number of requeued packets.
-   */
-  uint32_t GetTotalRequeuedPackets (void) const;
-
-  /**
-   * \brief Get the total amount of requeued bytes
-   * \return the total amount of requeued bytes.
-   */
-  uint32_t GetTotalRequeuedBytes (void) const;
+  const Stats& GetStats (void);
 
   /**
    * \brief Set the NetDevice on which this queue discipline is installed.
@@ -341,18 +362,6 @@ public:
    */
   virtual WakeMode GetWakeMode (void) const;
 
-  /// Callback invoked by a child queue disc to notify the parent of a packet drop
-  typedef Callback<void, Ptr<const QueueDiscItem> > ParentDropCallback;
-
-  /**
-   * \brief Set the parent drop callback
-   * \param cb the callback to set
-   *
-   * Called when a queue disc class is added to a queue disc in order to set a
-   * callback to the Drop method of the parent queue disc.
-   */
-  virtual void SetParentDropCallback (ParentDropCallback cb);
-
 protected:
   /**
    * \brief Dispose of the object
@@ -369,11 +378,22 @@ protected:
   void DoInitialize (void);
 
   /**
-   *  \brief Drop a packet
+   *  \brief Perform the actions required when the queue disc is notified of
+   *         a packet dropped before enqueue
    *  \param item item that was dropped
-   *  This method is called by subclasses to notify parent (this class) of packet drops.
+   *  This method must be called by subclasses to notify parent (this class) of a packet
+   *  dropped before enqueue
    */
-  void Drop (Ptr<const QueueDiscItem> item);
+  void DropBeforeEnqueue (Ptr<const QueueDiscItem> item);
+
+  /**
+   *  \brief Perform the actions required when the queue disc is notified of
+   *         a packet dropped after dequeue
+   *  \param item item that was dropped
+   *  This method must be called by subclasses to notify parent (this class) of a packet
+   *  dropped after dequeue
+   */
+  void DropAfterDequeue (Ptr<const QueueDiscItem> item);
 
 private:
   /**
@@ -392,12 +412,6 @@ private:
    * Defined and unimplemented to avoid misuse
    */
   QueueDisc &operator = (const QueueDisc &o);
-
-  /**
-   *  \brief Notify the parent queue disc of a packet drop
-   *  \param item item that was dropped
-   */
-  void NotifyParentDrop (Ptr<const QueueDiscItem> item);
 
   /**
    * This function actually enqueues a packet into the queue disc.
@@ -472,6 +486,20 @@ private:
    */
   bool Transmit (Ptr<QueueDiscItem> item);
 
+  /**
+   *  \brief Perform the actions required when the queue disc is notified of
+   *         a packet enqueue
+   *  \param item item that was enqueued
+   */
+  void PacketEnqueued (Ptr<const QueueDiscItem> item);
+
+  /**
+   *  \brief Perform the actions required when the queue disc is notified of
+   *         a packet dequeue
+   *  \param item item that was dequeued
+   */
+  void PacketDequeued (Ptr<const QueueDiscItem> item);
+
   static const uint32_t DEFAULT_QUOTA = 64; //!< Default quota (as in /proc/sys/net/core/dev_weight)
 
   std::vector<Ptr<InternalQueue> > m_queues;    //!< Internal queues
@@ -481,28 +509,35 @@ private:
   TracedValue<uint32_t> m_nPackets; //!< Number of packets in the queue
   TracedValue<uint32_t> m_nBytes;   //!< Number of bytes in the queue
 
-  uint32_t m_nTotalReceivedPackets; //!< Total received packets
-  uint32_t m_nTotalReceivedBytes;   //!< Total received bytes
-  uint32_t m_nTotalDroppedPackets;  //!< Total dropped packets
-  uint32_t m_nTotalDroppedBytes;    //!< Total dropped bytes
-  uint32_t m_nTotalRequeuedPackets; //!< Total requeued packets
-  uint32_t m_nTotalRequeuedBytes;   //!< Total requeued bytes
+  Stats m_stats;                    //!< The collected statistics
   uint32_t m_quota;                 //!< Maximum number of packets dequeued in a qdisc run
   Ptr<NetDevice> m_device;          //!< The NetDevice on which this queue discipline is installed
   Ptr<NetDeviceQueueInterface> m_devQueueIface;   //!< NetDevice queue interface
   bool m_running;                   //!< The queue disc is performing multiple dequeue operations
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
-  ParentDropCallback m_parentDropCallback;   //!< Parent drop callback
 
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceEnqueue;
     /// Traced callback: fired when a packet is dequeued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceDequeue;
-    /// Traced callback: fired when a packet is requeued
+  /// Traced callback: fired when a packet is requeued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceRequeue;
   /// Traced callback: fired when a packet is dropped
   TracedCallback<Ptr<const QueueDiscItem> > m_traceDrop;
+  /// Traced callback: fired when a packet is dropped before enqueue
+  TracedCallback<Ptr<const QueueDiscItem> > m_traceDropBeforeEnqueue;
+  /// Traced callback: fired when a packet is dropped after dequeue
+  TracedCallback<Ptr<const QueueDiscItem> > m_traceDropAfterDequeue;
 };
+
+/**
+ * \brief Stream insertion operator.
+ *
+ * \param os the stream
+ * \param stats the queue disc statistics
+ * \returns a reference to the stream
+ */
+std::ostream& operator<< (std::ostream& os, const QueueDisc::Stats &stats);
 
 } // namespace ns3
 

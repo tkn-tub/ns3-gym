@@ -162,7 +162,7 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   if (ret == PacketFilter::PF_NO_MATCH)
     {
       NS_LOG_ERROR ("No filter has been able to classify this packet, drop it.");
-      Drop (item);
+      DropBeforeEnqueue (item);
       return false;
     }
 

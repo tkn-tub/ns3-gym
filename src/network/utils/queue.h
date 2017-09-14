@@ -552,6 +552,10 @@ Queue<Item>::DoRemove (ConstIterator pos)
       m_nBytes -= item->GetSize ();
       m_nPackets--;
 
+      // packets are first dequeued and then dropped
+      NS_LOG_LOGIC ("m_traceDequeue (p)");
+      m_traceDequeue (item);
+
       DropAfterDequeue (item);
     }
   return item;

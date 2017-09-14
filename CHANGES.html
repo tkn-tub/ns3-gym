@@ -95,6 +95,14 @@ us a note on ns-developers mailing list.</p>
 </li>
 <li>MqQueueDisc, a multi-queue aware queue disc modelled after the mq qdisc in Linux, has been introduced.
 </li>
+<li>Added <b>QueueDisc::GetStats()</b> which returns detailed statistics about the operations of a queue disc.
+    Consequently, a number of methods of the QueueDisc class have been removed: <b>GetTotalReceivedPackets()</b>,
+    <b>GetTotalReceivedBytes()</b>, <b>GetTotalDroppedPackets()</b>, <b>GetTotalDroppedBytes()</b>,
+    <b>GetTotalRequeuedPackets()</b>, <b>GetTotalRequeuedBytes()</b>.
+</li>
+<li>Two new methods, <b>QueueDisc::DropBeforeEnqueue()</b> and <b>QueueDisc::DropAfterDequeue()</b> have
+    been introduced to replace <b>QueueDisc::Drop()</b>. Correspondingly, two new trace sources have been added to the QueueDisc class: DropBeforeEnqueue and DropAfterDequeue.
+</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>

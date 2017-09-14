@@ -457,7 +457,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         {
           NS_LOG_DEBUG ("\t Dropping due to Prob Mark " << m_qAvg);
           m_stats.unforcedDrop++;
-          Drop (item);
+          DropBeforeEnqueue (item);
           return false;
         }
       NS_LOG_DEBUG ("\t Marking due to Prob Mark " << m_qAvg);
@@ -469,7 +469,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
         {
           NS_LOG_DEBUG ("\t Dropping due to Hard Mark " << m_qAvg);
           m_stats.forcedDrop++;
-          Drop (item);
+          DropBeforeEnqueue (item);
           if (m_isNs1Compat)
             {
               m_count = 0;
@@ -488,8 +488,8 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
       m_stats.qLimDrop++;
     }
 
-  // If Queue::Enqueue fails, QueueDisc::Drop is called by the internal queue
-  // because QueueDisc::AddInternalQueue sets the drop callback
+  // If Queue::Enqueue fails, QueueDisc::DropBeforeEnqueue is called by the
+  // internal queue because QueueDisc::AddInternalQueue sets the trace callback
 
   NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());

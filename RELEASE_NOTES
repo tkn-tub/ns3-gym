@@ -107,6 +107,7 @@ Bugs fixed
 - Bug 2733 - Ideal wifi manager cannot handle NSS higher than 1
 - Bug 2741 - IPv4 fragmentation fails when last fragment have to be re-fragmented.
 - Bug 2744 - 802.11n/ac with RTS/CTS is crashing for a large number of nodes
+- Bug 2751 - QueueDisc::Enqueue() order of operations
 - Bug 2757 - 802.11n/ac/ax maximum TXOP is not properly enforced
 - Bug 2758 - IPv4 sockets bound to unicast receive also subnet-directed broadcasts
 - Bug 2759 - Packets sent to broadcast address are converted to subnet-directed broadcast
