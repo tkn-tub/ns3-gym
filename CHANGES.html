@@ -187,6 +187,8 @@ is now exported by WifiNetDevice.</li>
 <li>Queue discs that can operate both in packet mode and byte mode (Red, CoDel, Pie) define their own
     enum QueueDiscMode instead of using QueueBase::QueueMode.
 </li>
+<li>The CoDel, PIE and RED queue discs require that the size of the internal queue is the same as
+    the queue disc limit (previously, it was allowed to be greater than or equal).
 </li>
   <li> The default value of the <b>EnableBeaconJitter</b> attribute in ApWifiMac was changed from false to true.
   </li>

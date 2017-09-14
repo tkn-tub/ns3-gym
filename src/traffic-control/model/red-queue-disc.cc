@@ -973,10 +973,10 @@ RedQueueDisc::CheckConfig (void)
       return false;
     }
 
-  if ((m_mode ==  QUEUE_DISC_MODE_PACKETS && GetInternalQueue (0)->GetMaxPackets () < m_queueLimit) ||
-      (m_mode ==  QUEUE_DISC_MODE_BYTES && GetInternalQueue (0)->GetMaxBytes () < m_queueLimit))
+  if ((m_mode ==  QUEUE_DISC_MODE_PACKETS && GetInternalQueue (0)->GetMaxPackets () != m_queueLimit) ||
+      (m_mode ==  QUEUE_DISC_MODE_BYTES && GetInternalQueue (0)->GetMaxBytes () != m_queueLimit))
     {
-      NS_LOG_ERROR ("The size of the internal queue is less than the queue disc limit");
+      NS_LOG_ERROR ("The size of the internal queue differs from the queue disc limit");
       return false;
     }
 

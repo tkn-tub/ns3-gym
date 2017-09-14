@@ -119,9 +119,7 @@ main (int argc, char *argv[])
   stack.Install (nodes);
 
   TrafficControlHelper tch;
-  uint16_t handle = tch.SetRootQueueDisc ("ns3::RedQueueDisc");
-  // Add the internal queue used by Red
-  tch.AddInternalQueues (handle, 1, "ns3::DropTailQueue", "MaxPackets", UintegerValue (10000));
+  tch.SetRootQueueDisc ("ns3::RedQueueDisc");
   QueueDiscContainer qdiscs = tch.Install (devices);
 
   Ptr<QueueDisc> q = qdiscs.Get (1);
