@@ -271,9 +271,9 @@ Figure :ref:`fig-tcp-state-machine`.
   in the tx buffer has been transmitted). This does not prevent the socket in
   receiving data, and employing retransmit mechanism if losses are detected. If
   the application calls *Close()* with unread data in its rx buffer, the socket
-  will send a reset. If the socket is in the state SYN_SENT, CLOSING, LISTEN or
-  LAST_ACK, after that call the application will be notified with
-  *NotifyNormalClose()*. In all the other cases, the notification is delayed
+  will send a reset. If the socket is in the state SYN_SENT, CLOSING, LISTEN,
+  FIN_WAIT_2, or LAST_ACK, after that call the application will be notified with
+  *NotifyNormalClose()*. In other cases, the notification is delayed
   (see *NotifyNormalClose()*).
 
 -----------------------------------------
@@ -303,7 +303,7 @@ callback as well.
   - Received an ACK for the FIN sent, with or without the FIN bit set (we are in LAST_ACK)
   - The socket reaches the maximum amount of retries in retransmitting the SYN (*)
   - We receive a timeout in the LAST_ACK state
-  - After 2*Maximum Segment Lifetime seconds passed since the socket entered the TIME_WAIT state.
+  - Upon entering the TIME_WAIT state, before waiting the 2*Maximum Segment Lifetime seconds to finally deallocate the socket.
 
 *NotifyErrorClose*: *SetCloseCallbacks*, 2nd argument
   Invoked when we send an RST segment (for whatever reason) or we reached the

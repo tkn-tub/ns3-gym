@@ -212,6 +212,8 @@ is now exported by WifiNetDevice.</li>
 </li>
   <li> The default value of the <b>EnableBeaconJitter</b> attribute in ApWifiMac was changed from false to true.
   </li>
+  <li> The NormalClose() callback of a TcpSocket object used to fire upon leaving TIME_WAIT state (2*MSL after FINs have been exchanged).  It now fires upon entering TIME_WAIT state.  Timing of the callback for the other path to state CLOSED (through LAST_ACK) has not been changed.
+  </li>
 </ul>
 
 <hr>
