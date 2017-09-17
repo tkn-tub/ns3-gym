@@ -2233,7 +2233,8 @@ TcpSocketBase::PeerClose (Ptr<Packet> p, const TcpHeader& tcpHeader)
 void
 TcpSocketBase::DoPeerClose (void)
 {
-  NS_ASSERT (m_state == ESTABLISHED || m_state == SYN_RCVD);
+  NS_ASSERT (m_state == ESTABLISHED || m_state == SYN_RCVD ||
+    m_state == FIN_WAIT_1 || m_state == FIN_WAIT_2);
 
   // Move the state to CLOSE_WAIT
   NS_LOG_DEBUG (TcpStateName[m_state] << " -> CLOSE_WAIT");

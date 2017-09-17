@@ -36,6 +36,7 @@ Bugs fixed
 ----------
 - Bug 1034 - No trace source for packet dropping from WifiMacQueue
 - Bug 2007 - uan: Remove deprecation on SetRxThresholdDb
+- Bug 2133 - tcp: Avoid assert when receiving data in FIN_WAIT_1 or _2 states
 - Bug 2214 - tcp: Use of ScheduleNow only in selected part of the code
 - Bug 2221 - network: Remove constraint on size of ns3::Packet Tag objects
 - Bug 2248 - tcp: TCP SACK added after reviews
