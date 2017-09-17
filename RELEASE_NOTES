@@ -116,6 +116,7 @@ Bugs fixed
 - Bug 2761 - Packet has no Traffic ID for CTS frames when A-MPDU is used
 - Bug 2762 - BindToNetDevice behaviour is not coherent with Linux
 - Bug 2763 - wifi management packets in the PCAPs are all marked as wrong by Wireshark
+- Bug 2769 - Set ssthresh correctly upon RTO
 
 Known issues
 ------------

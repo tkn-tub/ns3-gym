@@ -3152,6 +3152,8 @@ TcpSocketBase::ReTxTimeout ()
       return;
     }
 
+  uint32_t inFlightBeforeRto = BytesInFlight();  
+
   // From RFC 6675, Section 5.1
   // [RFC2018] suggests that a TCP sender SHOULD expunge the SACK
   // information gathered from a receiver upon a retransmission timeout
@@ -3204,7 +3206,7 @@ TcpSocketBase::ReTxTimeout ()
   // retransmission timer, decrease ssThresh
   if (m_tcb->m_congState != TcpSocketState::CA_LOSS || !m_txBuffer->IsHeadRetransmitted ())
     {
-      m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, BytesInFlight ());
+      m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, inFlightBeforeRto);
     }
 
   // Cwnd set to 1 MSS
