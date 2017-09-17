@@ -330,50 +330,36 @@ QueueDisc::QueueDisc ()
 {
   NS_LOG_FUNCTION (this);
 
-  using namespace std::placeholders;
+  // These lambdas call the DropBeforeEnqueue or DropAfterDequeue methods of this
+  // QueueDisc object. Given that a callback to the operator() of these lambdas
+  // is connected to the DropBeforeEnqueue and DropAfterDequeue traces of the
+  // internal queues, the INTERNAL_QUEUE_DROP constant is passed as the reason
+  // why the packet is dropped.
+  m_internalQueueDbeFunctor = [this] (Ptr<const QueueDiscItem> item)
+    {
+      return DropBeforeEnqueue (item, INTERNAL_QUEUE_DROP);
+    };
+  m_internalQueueDadFunctor = [this] (Ptr<const QueueDiscItem> item)
+    {
+      return DropAfterDequeue (item, INTERNAL_QUEUE_DROP);
+    };
 
-  // Remove ambiguity for overloaded member functions
-  typedef std::basic_string<char>& (std::basic_string<char>::*Function) (const char*);
-
-  Function append = &std::basic_string<char>::append,
-           assign = &std::basic_string<char>::assign;
-
-  // The operator() of these function objects calls the QueueDisc::DropBeforeEnqueue
-  // and QueueDisc::DropAfterDequeue methods of this QueueDisc object (these function
-  // objects are bound to this QueueDisc object), which require two arguments: a
-  // Ptr<const QueueDiscItem> and a const char*. Given that a callback to the operator()
-  // is connected to the DropBeforeEnqueue and DropAfterDequeue traces of the Queue
-  // class, the first argument is provided by such traces, while the second argument
-  // (the reason why the packet was dropped) is bound to the INTERNAL_QUEUE_DROP constant.
-  m_internalQueueDbeFunctor = std::bind (&QueueDisc::DropBeforeEnqueue, this,
-                                         _1, (const char*)INTERNAL_QUEUE_DROP);
-  m_internalQueueDadFunctor = std::bind (&QueueDisc::DropAfterDequeue, this,
-                                         _1, (const char*)INTERNAL_QUEUE_DROP);
-
-  // The operator() of these function objects calls the QueueDisc::DropBeforeEnqueue
-  // and QueueDisc::DropAfterDequeue methods of this QueueDisc object (these function
-  // objects are bound to this QueueDisc object), which require two arguments: a
-  // Ptr<const QueueDiscItem> and a const char*. Given that a callback to the operator()
-  // is connected to the DropBeforeEnqueue and DropAfterDequeue traces of the QueueDisc
-  // class, both arguments are provided by such traces. The first argument is provided
-  // as is, while the second argument (the reason why the packet was dropped) is obtained
-  // by calling m_childQueueDiscDropMsg.assign (CHILD_QUEUE_DISC_DROP).append (_2).data ()
-  // i.e., the second argument is the concatenation of the CHILD_QUEUE_DISC_DROP constant
-  // and the second argument provided by the traces of the QueueDisc class.
-  m_childQueueDiscDbeFunctor = std::bind (&QueueDisc::DropBeforeEnqueue, this, _1,
-                                          std::bind (&std::basic_string<char>::data,
-                                                     std::bind (append,
-                                                                std::bind (assign,
-                                                                           &m_childQueueDiscDropMsg,
-                                                                           (const char*)CHILD_QUEUE_DISC_DROP),
-                                                                _2)));
-  m_childQueueDiscDadFunctor = std::bind (&QueueDisc::DropAfterDequeue, this, _1,
-                                          std::bind (&std::basic_string<char>::data,
-                                                     std::bind (append,
-                                                                std::bind (assign,
-                                                                           &m_childQueueDiscDropMsg,
-                                                                           (const char*)CHILD_QUEUE_DISC_DROP),
-                                                                _2)));
+  // These lambdas call the DropBeforeEnqueue or DropAfterDequeue methods of this
+  // QueueDisc object. Given that a callback to the operator() of these lambdas
+  // is connected to the DropBeforeEnqueue and DropAfterDequeue traces of the
+  // child queue discs, the concatenation of the CHILD_QUEUE_DISC_DROP constant
+  // and the second argument provided by such traces is passed as the reason why
+  // the packet is dropped.
+  m_childQueueDiscDbeFunctor = [this] (Ptr<const QueueDiscItem> item, const char* r)
+    {
+      return DropBeforeEnqueue (item,
+                                m_childQueueDiscDropMsg.assign (CHILD_QUEUE_DISC_DROP).append (r).data ());
+    };
+  m_childQueueDiscDadFunctor = [this] (Ptr<const QueueDiscItem> item, const char* r)
+    {
+      return DropAfterDequeue (item,
+                               m_childQueueDiscDropMsg.assign (CHILD_QUEUE_DISC_DROP).append (r).data ());
+    };
 }
 
 QueueDisc::~QueueDisc ()

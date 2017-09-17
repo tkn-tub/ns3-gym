@@ -142,8 +142,8 @@ private:
  * the sojourn time of every packet dequeued from a queue disc, including packets
  * that are dropped or requeued after being dequeued. The sojourn time is taken
  * when the packet is dequeued from the queue disc, hence it does not account for
- * the additional time the packet is retained within the queue disc in case it is
- * requeued.
+ * the additional time the packet is retained within the traffic control
+ * infrastructure in case it is requeued.
  *
  * The design and implementation of this class is heavily inspired by Linux.
  * For more details, see the traffic-control model page.
