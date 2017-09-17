@@ -172,6 +172,148 @@ TcpRtoTest::FinalChecks ()
  * \ingroup internet-test
  * \ingroup tests
  *
+ * \brief Testing the ssthresh behavior after the RTO expires
+ *
+ * The scope of this test is to be sure that, after an RTO expiration,
+ * the TCP implementation sets the correct ssthresh value
+ *
+ */
+class TcpSsThreshRtoTest : public TcpGeneralTest
+{
+public:
+  /**
+   * \brief Constructor.
+   * \param congControl Congestion control type.
+   * \param msg Test description.
+   */
+  TcpSsThreshRtoTest (TypeId &congControl, uint32_t seqToDrop, Time minRto, const std::string &msg);
+
+protected:
+
+  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
+  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+  virtual void BytesInFlightTrace (uint32_t oldValue, uint32_t newValue);
+  virtual void SsThreshTrace (uint32_t oldValue, uint32_t newValue);
+  virtual void BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+  virtual void AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who);
+
+  virtual void ConfigureEnvironment ();
+
+    /**
+   * \brief Called when a packet has been dropped.
+   * \param ipH IPv4 header.
+   * \param tcpH TCP header.
+   * \param p The packet.
+   */
+  void PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH, Ptr<const Packet> p);
+
+private:
+  uint32_t m_bytesInFlight; //!< Store the number of bytes in flight
+  uint32_t m_bytesInFlightBeforeRto; //!< Store the number of bytes in flight before the RTO expiration
+  uint32_t m_ssThreshSocket; //<! the ssThresh as computed by the socket
+  uint32_t m_seqToDrop;
+  Time m_minRtoTime;
+};
+
+TcpSsThreshRtoTest::TcpSsThreshRtoTest (TypeId &congControl, uint32_t seqToDrop, Time minRto, const std::string &desc)
+  : TcpGeneralTest (desc),
+    m_seqToDrop (seqToDrop),
+    m_minRtoTime (minRto)
+{
+  m_congControlTypeId = congControl;
+}
+
+void
+TcpSsThreshRtoTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (100);
+  SetAppPktInterval (MicroSeconds(100));
+  SetPropagationDelay (MilliSeconds (1));
+}
+
+Ptr<TcpSocketMsgBase>
+TcpSsThreshRtoTest::CreateSenderSocket (Ptr<Node> node)
+{
+  Ptr<TcpSocketMsgBase> socket = TcpGeneralTest::CreateSenderSocket (node);
+  socket->SetAttribute ("MinRto", TimeValue (m_minRtoTime));
+  NS_LOG_DEBUG("TcpSsThreshRtoTest create sender socket");
+
+  return socket;
+}
+
+Ptr<ErrorModel>
+TcpSsThreshRtoTest::CreateReceiverErrorModel ()
+{
+  NS_LOG_DEBUG("TcpSsThreshRtoTest create errorModel");
+
+  Ptr<TcpSeqErrorModel> errorModel = CreateObject<TcpSeqErrorModel> ();
+
+  for (uint32_t i = 0; i<3; ++i)
+    {
+      errorModel->AddSeqToKill (SequenceNumber32 (m_seqToDrop));
+    }
+
+  errorModel->SetDropCallback (MakeCallback (&TcpSsThreshRtoTest::PktDropped, this));
+
+  return errorModel;
+}
+
+void
+TcpSsThreshRtoTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH,
+                            Ptr<const Packet> p)
+{
+  NS_LOG_DEBUG ("DROPPED! " << tcpH);
+}
+
+void
+TcpSsThreshRtoTest::BytesInFlightTrace (uint32_t oldValue, uint32_t newValue)
+{
+  NS_LOG_DEBUG ("Socket BytesInFlight=" << newValue);
+  m_bytesInFlight = newValue;
+}
+
+void
+TcpSsThreshRtoTest::SsThreshTrace (uint32_t oldValue, uint32_t newValue)
+{
+  NS_LOG_DEBUG ("Socket ssThresh=" << newValue);
+  m_ssThreshSocket = newValue;
+}
+
+void
+TcpSsThreshRtoTest::BeforeRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+{
+  NS_LOG_DEBUG ("Before RTO for connection " << who);
+
+  // Get the bytesInFlight value before the expiration of the RTO
+
+  if (who == SENDER)
+    {
+      m_bytesInFlightBeforeRto = m_bytesInFlight;
+      NS_LOG_DEBUG("BytesInFlight before RTO Expired " << m_bytesInFlight);
+    }
+}
+
+void
+TcpSsThreshRtoTest::AfterRTOExpired (const Ptr<const TcpSocketState> tcb, SocketWho who)
+{
+  NS_LOG_DEBUG ("After RTO for " << who);
+  Ptr<TcpSocketMsgBase> senderSocket = GetSenderSocket();
+
+  // compute the ssThresh according to RFC 5681, using the 
+  uint32_t ssThresh = std::max(m_bytesInFlightBeforeRto/2, 2*tcb->m_segmentSize);
+
+  NS_LOG_DEBUG ("ssThresh " << ssThresh << " m_ssThreshSocket " << m_ssThreshSocket);
+
+  NS_TEST_ASSERT_MSG_EQ (ssThresh, m_ssThreshSocket,
+                         "Slow Start Threshold is incorrect");
+}
+
+
+/**
+ * \ingroup internet-test
+ * \ingroup tests
+ *
  * \brief Testing the timing of RTO
  *
  * Checking if RTO is doubled ONLY after a retransmission.
@@ -260,8 +402,7 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
   if (who == SENDER)
     {
       ++m_senderSentSegments;
-      NS_LOG_INFO (Simulator::Now ().GetSeconds () << "\tMeasured RTO:" <<
-                   GetRto (SENDER).GetSeconds ());
+      NS_LOG_INFO ("Measured RTO:" << GetRto (SENDER).GetSeconds ());
 
       if (h.GetFlags () & TcpHeader::SYN)
         {
@@ -274,8 +415,7 @@ TcpTimeRtoTest::Tx (const Ptr<const Packet> p, const TcpHeader&h, SocketWho who)
         }
       else
         {
-          NS_LOG_INFO (Simulator::Now ().GetSeconds () << "\tTX: " << h <<
-                       m_senderSentSegments);
+          NS_LOG_INFO ("TX: " << h << m_senderSentSegments);
 
           NS_TEST_ASSERT_MSG_EQ (h.GetSequenceNumber ().GetValue (), 1,
                                  "First packet has been correctly sent");
@@ -351,7 +491,7 @@ void
 TcpTimeRtoTest::PktDropped (const Ipv4Header &ipH, const TcpHeader& tcpH,
                             Ptr<const Packet> p)
 {
-  NS_LOG_INFO (Simulator::Now ().GetSeconds () << "\tDROPPED! " << tcpH);
+  NS_LOG_INFO ("DROPPED! " << tcpH);
 }
 
 void
@@ -379,8 +519,15 @@ public:
 
     for (std::list<TypeId>::iterator it = types.begin (); it != types.end (); ++it)
       {
-        AddTestCase (new TcpRtoTest ((*it), "RTO retransmit testing"), TestCase::QUICK);
-        AddTestCase (new TcpTimeRtoTest ((*it), "RTO timing testing"), TestCase::QUICK);
+        AddTestCase (new TcpRtoTest ((*it), (*it).GetName () + " RTO retransmit testing"), TestCase::QUICK);
+        uint32_t seqToDrop = 25001;
+        Time minRto = Seconds (0.5);
+        // With RTO of 0.5 seconds, BytesInFlight winds down to zero before RTO
+        AddTestCase (new TcpSsThreshRtoTest ((*it), seqToDrop, minRto, (*it).GetName () + " RTO ssthresh testing, set to 2*MSL"), TestCase::QUICK);
+        // With RTO of 0.005 seconds, FlightSize/2 > 2*SMSS 
+        minRto = Seconds (0.005);
+        AddTestCase (new TcpSsThreshRtoTest ((*it), seqToDrop, minRto, (*it).GetName () + " RTO ssthresh testing, set to half of BytesInFlight"), TestCase::QUICK);
+        AddTestCase (new TcpTimeRtoTest ((*it), (*it).GetName () + " RTO timing testing"), TestCase::QUICK);
       }
   }
 };
