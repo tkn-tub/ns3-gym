@@ -1996,8 +1996,8 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
       // Always respond to first data packet to speed up the connection.
       // Remove to get the behaviour of old NS-3 code.
       m_delAckCount = m_delAckMaxCount;
-      ReceivedAck (packet, tcpHeader);
       NotifyNewConnectionCreated (this, fromAddress);
+      ReceivedAck (packet, tcpHeader);
       // As this connection is established, the socket is available to send data now
       if (GetTxAvailable () > 0)
         {
@@ -2027,6 +2027,7 @@ TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
               m_endPoint6->SetPeer (Inet6SocketAddress::ConvertFrom (fromAddress).GetIpv6 (),
                                     Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
             }
+          NotifyNewConnectionCreated (this, fromAddress);
           PeerClose (packet, tcpHeader);
         }
     }
