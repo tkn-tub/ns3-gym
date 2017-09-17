@@ -104,6 +104,7 @@ Bugs fixed
 - Bug 2665 - Ipv4RawSocket can not send packets to broadcast or multicast
 - Bug 2671 - ArpCache::Entry::SetMacAddress is misspelled
 - Bug 2673 - run-time channel switch does not update WiFi spectrum model
+- Bug 2716 - TCP socket ignoring FIN flag when in FIN_WAIT state
 - Bug 2717 - Fix mask generation for Ipv4RoutingTableEntry::CreateDefaultRoute
 - Bug 2722 - 802.11g sends DSSS spectrum signals using CreateOfdmTxPowerSpectralDensity
 - Bug 2733 - Ideal wifi manager cannot handle NSS higher than 1
@@ -118,6 +119,7 @@ Bugs fixed
 - Bug 2762 - BindToNetDevice behaviour is not coherent with Linux
 - Bug 2763 - wifi management packets in the PCAPs are all marked as wrong by Wireshark
 - Bug 2769 - Set ssthresh correctly upon RTO
+- Bug 2781 - tcp: Do not go beyond limit in TcpTxBuffer
 
 Known issues
 ------------
