@@ -52,7 +52,7 @@ def options(opt):
                    dest='python_disable')
     opt.add_option('--apiscan',
                    help=("Rescan the API for the indicated module(s), for Python bindings.  "
-                         "Needs working GCCXML / pygccxml environment.  "
+                         "Needs working CastXML / pygccxml environment.  "
                          "The metamodule 'all' expands to all available ns-3 modules."),
                    default=None, dest='apiscan', metavar="MODULE[,MODULE...]")
     opt.add_option('--with-pybindgen',

@@ -259,7 +259,6 @@ def ns3_module_scan(top_builddir, module_name, headers_map, output_file_name, cf
 
     module_parser.parse_init([scan_header],
                              None, whitelist_paths=[top_builddir],
-                             #includes=['"ns3/everything.h"'],
                              pygen_sink=output_sink,
                              castxml_options=castxml_options)
     module_parser.scan_types()

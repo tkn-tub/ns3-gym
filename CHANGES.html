@@ -172,6 +172,8 @@ is now exported by WifiNetDevice.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
+<li> The API scanning process for Python bindings now relies on CastXML, and only 64-bit scans are presently supported (Linux 64-bit systems).  Generation of 32-bit scans is documented in the Python chapter of the ns-3 manual.
+</li>
 <li> Modules can now be located in the 'contrib/' directory in addition to 'src/'
 </li>
 <li> Behavior for running Python programs was aligned with that of C++ programs; the list of modules built is no longer printed out.
