@@ -25,7 +25,7 @@ function usage
 {
     cat <<-EOF
 	
-	Usage: $me [-eithv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]
+	Usage: $me [-beithv] [-s <log-file> | -l | -w] [-m <module>] [-f <regex>] [-F <regex>]
 	
 	Run doxygen to generate all errors; report error counts
 	by module and file.
@@ -35,14 +35,15 @@ function usage
 	-s  Skip doxygen run; use existing <log-file>.
 	-w  Skip doxygen run; use existing warnings log doc/$WARNINGSLOGFILE
 	-l  Skip doxygen run; use the normal doxygen log doc/$STANDARDLOGFILE
-		
+
+	-b  Omit the blacklist filter of files whose warnings we ignore
 	-e  Filter out warnings from */examples/*
 	-t  Filter out warnings from */test/*
 	-m  Only include files matching src/<module>
 	-f  Only include files matching the <regex>
 	-F  Exclude files matching the <regex>
 
-	-v  Show the doxygen run output
+	-v  Show detailed output from each step. Multiple allowed.
 	-h  Print this usage message
 	    
 	The default behavior is to modify doxygen.conf temporarily to
@@ -118,6 +119,7 @@ skip_doxy=0
 skip_intro=0 
 
 # Filtering flags
+filter_blacklist=1
 filter_examples=0
 filter_test=0
 filter_module=""
@@ -127,9 +129,10 @@ filter_out=""
 echo
 echo "$me:"
 
-while getopts :ef:F:hilm:s:tvw option ; do
+while getopts :bef:F:hilm:s:tvw option ; do
 
     case $option in
+	(b)  filter_blacklist=0       ;;
 	
 	(e)  filter_examples=1        ;;
 
@@ -196,9 +199,13 @@ else
 	verbose "" "Skipping ./waf build and print-introspected-doxygen."
     else
         # Run introspection, which may require a build
-	verbose -n "Building and running print-introspected-doxygen..."
-	(cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
+	verbose -n "Building..."
+	(cd "$ROOT" && ./waf build >&6 2>&6 )
 	status_report $? "./waf build"
+	verbose -n "Running print-introspected-doxygen..."
+	(cd "$ROOT" && ./waf --run print-introspected-doxygen >doc/introspected-doxygen.h >&6 2>&6 )
+	status_report $? "./waf --run print-introspected-doxygen"
+	
     fi
 
     # Modify doxygen.conf to generate all the warnings
@@ -206,7 +213,7 @@ else
 
     conf=$DIR/doxygen.conf
 
-    sed -i.bak -E '/^EXTRACT_ALL |^HAVE_DOT |^WARNINGS /s/YES/no/' $conf
+    sed -i.bak -E '/^(EXTRACT_ALL|HAVE_DOT|CLASS_DIAGRAMS|WARNINGS|SOURCE_BROWSER) /s/YES/no/;/^HTML_OUTPUT /s/html/html-warn/' $conf
 
     verbose -n "Rebuilding doxygen (v$(doxygen --version)) docs with full errors..."
     (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
@@ -224,25 +231,52 @@ fi
 # Log filters --------------------------
 #
 
+# Append a regular expression to a parameter
+#  with '\|' alternation operator if the parameter wasn't empty to begin with.
+function REappend
+{
+    local param="$1"
+    local token="$2"
+
+    eval "${param}=\"${!param:-}${!param:+\\|}$token\""
+}
+
 # Filter in regular expression for -m and -f
 filter_inRE=""
 if [ "$filter_module" != "" ] ; then
-    filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}src/$filter_module"
+    REappend filter_inRE src/$filter_module
 fi
 if [ "$filter_in" != "" ] ; then
-    filter_inRE="${filter_inRE:-}${filter_inRE:+\\|}$filter_in"
+    REappend filter_inRE "$filter_in"
 fi
 
-# Filter out regular expression for -e, -t and -F
+# Blacklist filter of files whose warnings we ignore
+filter_blacklistRE=""
+
+#   External files: adding our own doxygen makes diffs with upstream very hard
+#     cairo-wideint
+REappend filter_blacklistRE "cairo-wideint"
+
+#   Functions with varying numbers of arguments
+#   This is temporary until we move to C++-14
+REappend filter_blacklistRE "Schedule(Time"
+REappend filter_blacklistRE "ScheduleWithContext(uint32_t"
+REappend filter_blacklistRE "Schedule\\(Now\\|Destroy\\)(\\(MEM\\|void\\)"
+
 filter_outRE=""
+if [ $filter_blacklist -eq 1 ]; then
+    echo "Filtering out blacklist: \"$filter_blacklistRE\""
+    REappend filter_outRE "$filter_blacklistRE"
+fi
+# Filter out regular expression for -e, -t and -F
 if [ $filter_examples -eq 1 ]; then
-    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/examples/"
+    REappend filter_outRE "/examples/"
 fi
 if [ $filter_test -eq 1 ]; then
-    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}/test/"
+    REappend filter_outRE "/test/"
 fi
 if [ "$filter_out" != "" ] ; then
-    filter_outRE="${filter_outRE:-}${filter_outRE:+\\|}$filter_out"
+    REappend filter_outRE "$filter_out"
 fi
 
 #  Show the resulting filters
@@ -252,7 +286,6 @@ fi
 if [ "${filter_outRE:-}" != "" ] ; then
     echo "Filtering out \"$filter_outRE\""
 fi
-echo
 
 # Filter log file
 function filter_log
@@ -279,6 +312,7 @@ function filter_log
 
 # Analyze the log ----------------------
 #
+verbose -n "Filtering the doxygen log..."
 
 # List of module directories (e.g, "src/core/model")
 undocmods=$(                \
@@ -346,6 +380,8 @@ if [ "${filter_inRE:-}" != "" ] ; then
 	)
 fi
 
+status_report 0 "Filter"
+echo
 
 
 # Summarize the log --------------------
