@@ -23,6 +23,13 @@
 #include "ns3/assert.h"
 #include "random-variable-stream-helper.h"
 
+/**
+ * \file
+ * \ingroup core-helpers
+ * \ingroup randomvariable
+ * ns3::RandomVariableStreamHelper implementation.
+ */
+
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("RandomVariableStreamHelper");
