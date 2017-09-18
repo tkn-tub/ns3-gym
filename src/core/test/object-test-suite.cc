@@ -23,8 +23,26 @@
 #include "ns3/object-factory.h"
 #include "ns3/assert.h"
 
+/**
+ * \file
+ * \ingroup core-tests
+ * \ingroup object
+ * \ingroup object-tests
+ * Object test suite.
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup object-tests Object test suite
+ */
+
+
 namespace {
 
+/**
+ * \ingroup object-tests
+ * Base class A.
+ */
 class BaseA : public ns3::Object
 {
 public:
@@ -41,11 +59,14 @@ public:
       .AddConstructor<BaseA> ();
     return tid;
   }
-  BaseA ()
-  {}
-  virtual void Dispose (void) {}
+  /** Constructor. */
+  BaseA () {}
 };
 
+/**
+ * \ingroup object-tests
+ * Derived class A.
+ */
 class DerivedA : public BaseA
 {
 public:
@@ -62,13 +83,18 @@ public:
       .AddConstructor<DerivedA> ();
     return tid;
   }
-  DerivedA ()
-  {}
-  virtual void Dispose (void) {
-    BaseA::Dispose ();
+  /** Constructor. */
+  DerivedA () {}
+protected:
+  virtual void DoDispose (void) {
+    BaseA::DoDispose ();
   }
 };
 
+/**
+ * \ingroup object-tests
+ * Base class B.
+ */
 class BaseB : public ns3::Object
 {
 public:
@@ -85,11 +111,14 @@ public:
       .AddConstructor<BaseB> ();
     return tid;
   }
-  BaseB ()
-  {}
-  virtual void Dispose (void) {}
+  /** Constructor. */
+  BaseB () {}
 };
 
+/**
+ * \ingroup object-tests
+ * Derived class B.
+ */
 class DerivedB : public BaseB
 {
 public:
@@ -106,10 +135,11 @@ public:
       .AddConstructor<DerivedB> ();
     return tid;
   }
-  DerivedB ()
-  {}
-  virtual void Dispose (void) {
-    BaseB::Dispose ();
+  /** Constructor. */
+  DerivedB () {}
+protected:
+  virtual void DoDispose (void) {
+    BaseB::DoDispose ();
   }
 };
 
@@ -118,17 +148,23 @@ NS_OBJECT_ENSURE_REGISTERED (DerivedA);
 NS_OBJECT_ENSURE_REGISTERED (BaseB);
 NS_OBJECT_ENSURE_REGISTERED (DerivedB);
 
-} // namespace anonymous
+}  // unnamed namespace
 
-using namespace ns3;
+namespace ns3 {
 
-// ===========================================================================
-// Test case to make sure that we can make Objects using CreateObject.
-// ===========================================================================
+  namespace tests {
+    
+
+/**
+ * \ingroup object-tests
+ * Test we can make Objects using CreateObject.
+ */
 class CreateObjectTestCase : public TestCase
 {
 public:
+  /** Constructor. */
   CreateObjectTestCase ();
+  /** Destructor. */
   virtual ~CreateObjectTestCase ();
 
 private:
@@ -188,13 +224,16 @@ CreateObjectTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (baseA->GetObject<BaseA> (DerivedA::GetTypeId ()), baseA, "GetObject returns different Ptr");
 }
 
-// ===========================================================================
-// Test case to make sure that we can aggregate Objects.
-// ===========================================================================
+/**
+ * \ingroup object-tests
+ * Test we can aggregate Objects.
+ */
 class AggregateObjectTestCase : public TestCase
 {
 public:
+  /** Constructor. */
   AggregateObjectTestCase ();
+  /** Destructor. */
   virtual ~AggregateObjectTestCase ();
 
 private:
@@ -359,13 +398,16 @@ AggregateObjectTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (baseA, 0, "Unable to GetObject on released object");
 }
 
-// ===========================================================================
-// Test case to make sure that an Object factory can create Objects
-// ===========================================================================
+/**
+ * \ingroup object-tests
+ * Test an Object factory can create Objects
+ */
 class ObjectFactoryTestCase : public TestCase
 {
 public:
+  /** Constructor. */
   ObjectFactoryTestCase ();
+  /** Destructor. */
   virtual ~ObjectFactoryTestCase ();
 
 private:
@@ -431,21 +473,32 @@ ObjectFactoryTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (a->GetObject<DerivedA> (), 0, "Unexpectedly able to work around C++ type system");
 }
 
-// ===========================================================================
-// The Test Suite that glues the Test Cases together.
-// ===========================================================================
+/**
+ * \ingroup object-tests
+ * The Test Suite that glues the Test Cases together.
+ */
 class ObjectTestSuite : public TestSuite
 {
 public:
+  /** Constructor. */
   ObjectTestSuite ();
 };
 
 ObjectTestSuite::ObjectTestSuite ()
-  : TestSuite ("object", UNIT)
+  : TestSuite ("object")
 {
-  AddTestCase (new CreateObjectTestCase, TestCase::QUICK);
-  AddTestCase (new AggregateObjectTestCase, TestCase::QUICK);
-  AddTestCase (new ObjectFactoryTestCase, TestCase::QUICK);
+  AddTestCase (new CreateObjectTestCase);
+  AddTestCase (new AggregateObjectTestCase);
+  AddTestCase (new ObjectFactoryTestCase);
 }
 
-static ObjectTestSuite objectTestSuite;
+/**
+ * \ingroup object-tests
+ * ObjectTestSuite instance variable.
+ */
+static ObjectTestSuite g_objectTestSuite;
+
+
+  }  // namespace tests
+
+}  // namespace ns3

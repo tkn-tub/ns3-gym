@@ -24,17 +24,30 @@
 #include "ns3/random-variable-stream.h"
 #include <vector>
 
-using namespace ns3;
 
+/**
+ * \file
+ * \ingroup core-tests
+ * \ingroup randomvariable
+ * \ingroup randomvariable-tests
+ * Test for many uniform random variable streams.
+ */
 
-// ===========================================================================
-// Test case for many uniform distribution random variable stream generators
-// ===========================================================================
+namespace ns3 {
 
+  namespace tests {
+    
+
+/**
+ * \ingroup randomvariable-tests
+ * Test case for many uniform distribution random variable stream generators
+ */
 class ManyUniformRandomVariablesOneGetValueCallTestCase : public TestCase
 {
 public:
+  /** Constructor. */
   ManyUniformRandomVariablesOneGetValueCallTestCase ();
+  /** Destructor. */
   virtual ~ManyUniformRandomVariablesOneGetValueCallTestCase ();
 
 private:
@@ -53,15 +66,15 @@ ManyUniformRandomVariablesOneGetValueCallTestCase::~ManyUniformRandomVariablesOn
 void
 ManyUniformRandomVariablesOneGetValueCallTestCase::DoRun (void)
 {
-  double min = 0.0;
-  double max = 10.0;
+  const double min = 0.0;
+  const double max = 10.0;
 
   Config::SetDefault ("ns3::UniformRandomVariable::Min", DoubleValue (min));
   Config::SetDefault ("ns3::UniformRandomVariable::Max", DoubleValue (max));
 
   // Get 1 value from many uniform random number generators.
   double value;
-  int count = 1000000;
+  const int count = 1000000;
   std::vector< Ptr<UniformRandomVariable> > uniformStreamVector (count);
   for (int i = 0; i < count; i++)
     {
@@ -73,16 +86,30 @@ ManyUniformRandomVariablesOneGetValueCallTestCase::DoRun (void)
     }
 }
 
+/**
+ * \ingroup randomvariable-tests
+ * Test suite for many uniform distribution random variable stream generators
+ */
 class ManyUniformRandomVariablesOneGetValueCallTestSuite : public TestSuite
 {
 public:
+  /** Constructor. */
   ManyUniformRandomVariablesOneGetValueCallTestSuite ();
 };
 
 ManyUniformRandomVariablesOneGetValueCallTestSuite::ManyUniformRandomVariablesOneGetValueCallTestSuite ()
   : TestSuite ("many-uniform-random-variables-one-get-value-call", PERFORMANCE)
 {
-  AddTestCase (new ManyUniformRandomVariablesOneGetValueCallTestCase, TestCase::QUICK);
+  AddTestCase (new ManyUniformRandomVariablesOneGetValueCallTestCase);
 }
 
-static ManyUniformRandomVariablesOneGetValueCallTestSuite manyUniformRandomVariablesOneGetValueCallTestSuite;
+/**
+ * \ingroup randomvariable-tests
+ * ManuUniformRandomVariablesOneGetValueCallTestSuite instance variable.
+ */
+static ManyUniformRandomVariablesOneGetValueCallTestSuite g_manyUniformRandomVariablesOneGetValueCallTestSuite;
+
+
+  }  // namespace tests
+
+}  // namespace ns3

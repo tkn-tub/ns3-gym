@@ -21,42 +21,93 @@
 #include "ns3/test.h"
 #include "ns3/ptr.h"
 
-using namespace ns3;
+/**
+ * \file
+ * \ingroup core-tests
+ * \ingroup ptr
+ * \ingroup ptr-tests
+ * Smart pointer test suite.
+ */
+
+/**
+ * \ingroup core-tests
+ * \defgroup ptr-tests Smart pointer test suite
+ */
+
+namespace ns3 {
+
+  namespace tests {
+    
 
 class PtrTestCase;
 
+/**
+ * \ingroup ptr-tests
+ * Pointer base test class
+ */
 class PtrTestBase
 {
 public:
+  /** Constructor. */
   PtrTestBase ();
+  /** Destructor. */
   virtual ~PtrTestBase ();
+  /** Increment the reference count. */
   void Ref (void) const;
+  /** Decrement the reference count, and delete if necessary. */
   void Unref (void) const;
 private:
-  mutable uint32_t m_count;
+  mutable uint32_t m_count; //!< The reference count.
 };
 
+/**
+ * \ingroup ptr-tests
+ * No Count class
+ */
 class NoCount : public PtrTestBase
 {
 public:
+  /**
+   * Constructor
+   *
+   * \param [in] test The object to track.
+   */
   NoCount (PtrTestCase *test);
+  /**
+   * Destructor.
+   * The object being tracked will also be destroyed,
+   * by calling DestroyNotify()
+   */
   ~NoCount ();
+  /** Noop function. */
   void Nothing (void) const;
 private:
-  PtrTestCase *m_test;
+  PtrTestCase *m_test; //!< The object being tracked.
 };
 
 
+/**
+ * \ingroup ptr-tests
+ * Test case for pointer
+ */
 class PtrTestCase : public TestCase
 {
 public:
+  /** Constructor. */
   PtrTestCase ();
+  /** Count the destruction of an object. */
   void DestroyNotify (void);
 private:
   virtual void DoRun (void);
+  /**
+   * Test that \p p is a valid object, by calling a member function.
+   * \param [in] p The object pointer to test.
+   * \returns The object pointer.
+   */
   Ptr<NoCount> CallTest (Ptr<NoCount> p);
+  /** \copydoc CallTest(Ptr<NoCount>) */
   Ptr<NoCount> const CallTestConst (Ptr<NoCount> const p);
-  uint32_t m_nDestroyed;
+  uint32_t m_nDestroyed; //!< Counter of number of objects destroyed.
 };
 
 
@@ -263,12 +314,28 @@ PtrTestCase::DoRun (void)
   }
 }
 
-static class PtrTestSuite : public TestSuite
+/**
+ * \ingroup ptr-tests
+ * Test suite for pointer
+ */
+class PtrTestSuite : public TestSuite
 {
 public:
+  /** Constructor. */
   PtrTestSuite ()
-    : TestSuite ("ptr", UNIT)
+    : TestSuite ("ptr")
   {
-    AddTestCase (new PtrTestCase (), TestCase::QUICK);
+    AddTestCase (new PtrTestCase ());  
   }
-} g_ptrTestSuite;
+};
+
+/**
+ * \ingroup ptr-tests
+ * PtrTestSuite instance variable.
+ */
+static PtrTestSuite g_ptrTestSuite;  
+
+
+  }  // namespace tests
+
+}  // namespace ns3

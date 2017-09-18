@@ -21,18 +21,41 @@
 #include "ns3/test.h"
 #include "ns3/event-garbage-collector.h"
 
-using namespace ns3;
+/**
+ * \file
+ * \ingroup core-tests
+ * \ingroup events
+ * \ingroup events-garbage-tests
+ * EventGarbageCollector test suite.
+ */
 
+/**
+ * \ingroup core-tests
+ * \defgroup event-garbage-tests EventGarbageCollector test suite
+ */
+
+namespace ns3 {
+
+  namespace tests {
+    
+
+/**
+ * \ingroup event-garbage-tests
+ * Event garbage collector test.
+ */
 class EventGarbageCollectorTestCase : public TestCase
 {
-  int m_counter;
-  EventGarbageCollector *m_events;
+  int m_counter; //!< Counter to trigger deletion of events.
+  EventGarbageCollector *m_events; //!< Object under test.
 
+  /** Callback to record event invocations. */
   void EventGarbageCollectorCallback ();
 
 public:
 
+  /** Constructor. */
   EventGarbageCollectorTestCase ();
+  /** Destructor. */
   virtual ~EventGarbageCollectorTestCase ();
   virtual void DoRun (void);
 };
@@ -75,12 +98,28 @@ void EventGarbageCollectorTestCase::DoRun (void)
   Simulator::Destroy ();
 }
 
-static class EventGarbageCollectorTestSuite : public TestSuite
+/**
+ * \ingroup event-garbage-tests
+ * Event garbage collector test suite.
+ */
+class EventGarbageCollectorTestSuite : public TestSuite
 {
 public:
   EventGarbageCollectorTestSuite ()
-    : TestSuite ("event-garbage-collector", UNIT) 
+    : TestSuite ("event-garbage-collector") 
   {
-    AddTestCase (new EventGarbageCollectorTestCase (), TestCase::QUICK);
+    AddTestCase (new EventGarbageCollectorTestCase ());
   }
-} g_eventGarbageCollectorTests;
+};
+
+/**
+ * \ingroup event-garbage-tests
+ * EventGarbageCollectorTestSuite instance variable.
+ */
+static EventGarbageCollectorTestSuite g_eventGarbageCollectorTestSuite;
+
+
+  }  // namespace tests
+
+}  // namespace ns3
+    

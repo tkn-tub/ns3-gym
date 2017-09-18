@@ -20,37 +20,99 @@
 // An essential include is test.h
 #include "ns3/test.h"
 
-// Do not put your test classes in namespace ns3.  You may find it useful
-// to use the using directive to access the ns3 namespace directly
-using namespace ns3;
+/**
+ * \file
+ * \ingroup core-tests
+ * \ingroup testing
+ * \ingroup testing-example
+ *
+ * Example use of TestSuite.
+ *
+ * Assume this is the test suite for `class Class`
+ * in module 'module'.
+ *
+ * Document the file as follows.  (Note: for purposes of this
+ * illustration Doxygen comments are set off with triple  `\\\\\\';
+ * you should use the normal Javadoc format. )
+ *
+ * Add it to the groups module-tests and class-tests:
+ *
+ * \verbatim /// \file
+/// \ingroup module-tests
+/// \ingroup class-tests
+/// Class test suite. \endverbatim
+ *
+ * Define the class-tests group:
+ * \verbatim /// \ingroup module-tests 
+/// \defgroup class-tests Class test suite \endverbatim
+ *
+ * Make sure test.h is included:
+ * \verbatim #include "ns3/test.h" \endverbatim
+ *
+ * Put the test code in namespace ns3::tests.
+ * \verbatim namespace ns3 {
+  namespace tests { \endverbatim
+ *
+ * Write your test cases and final test suite, and put them in
+ * your test group:
+ * \verbatim /// \ingroup class-tests
+class ClassTestSuite : public TestSuite {...}; \endverbatim
+ *
+ * Create a static variable to hold the instance of your test suite:
+ * \verbatim /// \ingroup class-tests
+/// ClassTestSuite instance variable.
+static ClassTestSuite g_classTestSuite; \endverbatim
+ *
+ * Finally, close the ingroup and namespace blocks:
+ * \verbatim   }  // namespace tests                
+}  // namespace ns3 \endverbatim
+*/
 
-// This is an example TestCase.
+
+/**
+ * \ingroup core-tests
+ * \defgroup testing-example Example use of TestSuite
+ */
+
+namespace ns3 {
+
+  namespace tests {
+    
+
+/**
+ * \ingroup testing-example
+ * This is an example TestCase.
+ */
 class SampleTestCase1 : public TestCase
 {
 public:
+  /** Constructor. */
   SampleTestCase1 ();
+  /** Destructor. */
   virtual ~SampleTestCase1 ();
 
 private:
   virtual void DoRun (void);
 };
 
-// Add some help text to this case to describe what it is intended to test
+/** Add some help text to this case to describe what it is intended to test. */
 SampleTestCase1::SampleTestCase1 ()
   : TestCase ("Sample test case (does nothing)")
 {
 }
 
-// This destructor does nothing but we include it as a reminder that
-// the test case should clean up after itself
+/**
+ * This destructor does nothing but we include it as a reminder that
+ * the test case should clean up after itself
+ */
 SampleTestCase1::~SampleTestCase1 ()
 {
 }
 
-//
-// This method is the pure virtual method from class TestCase that every
-// TestCase must implement
-//
+/**
+ * This method is the pure virtual method from class TestCase that every
+ * TestCase must implement
+ */
 void
 SampleTestCase1::DoRun (void)
 {
@@ -60,21 +122,33 @@ SampleTestCase1::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ_TOL (0.01, 0.01, 0.001, "Numbers are not equal within tolerance");
 }
 
-// The TestSuite class names the TestSuite, identifies what type of TestSuite,
-// and enables the TestCases to be run.  Typically, only the constructor for
-// this class must be defined
-//
+/**
+ * \ingroup testing-example
+ * The TestSuite class names the TestSuite, identifies what type of TestSuite,
+ * and enables the TestCases to be run.  Typically, only the constructor for
+ * this class must be defined
+ */
 class SampleTestSuite : public TestSuite
 {
 public:
+  /** Constructor. */
   SampleTestSuite ();
 };
 
 SampleTestSuite::SampleTestSuite ()
-  : TestSuite ("sample", UNIT)
+  : TestSuite ("sample")
 {
-  AddTestCase (new SampleTestCase1, TestCase::QUICK);
+  AddTestCase (new SampleTestCase1);
 }
 
 // Do not forget to allocate an instance of this TestSuite
-static SampleTestSuite sampleTestSuite;
+/**
+ * \ingroup testing-example
+ * SampleTestSuite instance variable.
+ */
+static SampleTestSuite g_sampleTestSuite;
+
+
+  }  // namespace tests
+
+}  // namespace ns3
