@@ -1,4 +1,8 @@
 /**
+ * \file
+ * Main page of the Doxygen-generated documentation.
+ */
+/**
  * \mainpage ns-3 Documentation
  *
  * \section intro-sec Introduction
@@ -71,10 +75,15 @@
  * ns3 namespace.
  */
 
-// Macros defined by the build system.
-//
-// These have to be visible for doxygen to document them,
-// so we put them here in a file only seen by doxygen, not the compiler.
+
+/**
+ * \name Macros defined by the build system.
+ * 
+ * These have to be visible for doxygen to document them,
+ * so we put them here in a file only seen by doxygen, not the compiler.
+ * 
+ * @{
+ */
 /**
  * \ingroup assert
  *
@@ -96,3 +105,5 @@
  * This is normally set by `./waf configure --build-profile=debug`.
  */
 #define NS3_LOG_ENABLE
+
+/**@}*/
