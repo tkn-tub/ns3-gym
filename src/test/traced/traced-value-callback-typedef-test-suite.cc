@@ -105,7 +105,7 @@ void TracedValueCbSink<SequenceNumber32> (SequenceNumber32 oldValue,
 }
 
 
-}  // anonymous namespace
+}  // unnamed namespace
 
   
 class TracedValueCallbackTestCase : public TestCase

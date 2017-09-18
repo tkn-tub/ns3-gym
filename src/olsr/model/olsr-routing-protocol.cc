@@ -638,7 +638,7 @@ CoverTwoHopNeighbors (Ipv4Address neighborMainAddr, TwoHopNeighborSet & N2)
         }
     }
 }
-} // anonymous namespace
+}  // unnamed namespace
 
 void
 RoutingProtocol::MprComputation ()
