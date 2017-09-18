@@ -259,22 +259,22 @@ Documenting with Doxygen
 We use Doxygen_ to generate browsable_ API documentation.  Doxygen
 provides a number of useful features:
 
-  * Summary table of all class members.
-  * Graphs of inheritance and collaboration for all classes.
-  * Links to the source code implementing each function.
-  * Links to every place a member is used.
-  * Links to every object used in implementing a function.
-  * Grouping of related classes, such as all the classes related to
-    a specific protocol.
+* Summary table of all class members.
+* Graphs of inheritance and collaboration for all classes.
+* Links to the source code implementing each function.
+* Links to every place a member is used.
+* Links to every object used in implementing a function.
+* Grouping of related classes, such as all the classes related to
+  a specific protocol.
 
 In addition, we use the ``TypeId`` system to add to the documentation
 for every class
 
-  * The ``Config`` paths by which such objects can be reached.
-  * Documentation for any ``Attributes``, including ``Attributes``
-    defined in parent classes.
-  * Documentation for any ``Trace`` sources defined by the class.
-  * The memory footprint for each class.
+* The ``Config`` paths by which such objects can be reached.
+* Documentation for any ``Attributes``, including ``Attributes``
+  defined in parent classes.
+* Documentation for any ``Trace`` sources defined by the class.
+* The memory footprint for each class.
 
 Doxygen operates by scaning the source code, looking for
 specially marked comments.  It also creates a cross reference,
@@ -333,9 +333,9 @@ that it refers to the *preceding* item.
 
 Some items to note:
 
-  * Use sentence case, including the initial capital.
-  * Use punctuation, especially \`.'s at the end of sentences or phrases.
-  * The ``\brief`` tag is not needed; the first sentence will be
+* Use sentence case, including the initial capital.
+* Use punctuation, especially \`.'s at the end of sentences or phrases.
+* The ``\brief`` tag is not needed; the first sentence will be
     used as the brief description.
 
 Every class, method, typedef, member variable, function argument
@@ -606,8 +606,9 @@ usage for |ns3|.
     be done for function arguments.
 
   * Use ``\tparam T \explicit`` because the type ``T`` can't be deduced;
-    it must be given explicitly at the invocation site.
-				   
+    it must be given explicitly at the invocation site, as in
+    ``Create<MyObject> (...)``
+
 * ``\internal`` should be used only to set off a discussion of implementation
   details, not to mark ``private`` functions (they are already marked,
   as ``private``!)
@@ -616,32 +617,31 @@ usage for |ns3|.
   even in test suites.  These cause all instances of the class name
   literal \`A' to be rendered as links.
 
-
 As noted above, static functions don't inherit the documentation
 of the same functions in the parent class.  |ns3| uses a few static
 functions ubiquitously; the suggested documentation block for these
 cases is:
 
-  * Default constructor/destructor::
+* Default constructor/destructor::
 
-      MyClass ();   //!< Default constructor
-      ~MyClass ();  //!< Destructor
+    MyClass ();   //!< Default constructor
+    ~MyClass ();  //!< Destructor
 
-  * Dummy destructor and DoDispose::
+* Dummy destructor and DoDispose::
 
-      /** Dummy destructor, see DoDispose. */
-      ~MyClass ();
+    /** Dummy destructor, see DoDispose. */
+    ~MyClass ();
 
-      /** Destructor implementation */
-      virtual void DoDispose ();
+    /** Destructor implementation */
+    virtual void DoDispose ();
 
-  * GetTypeId::
+* GetTypeId::
 
-      /**
-       *  Register this type.
-       *  \return The object TypeId.
-       */
-      static TypeId GetTypeId (void);
+    /**
+     *  Register this type.
+     *  \return The object TypeId.
+     */
+    static TypeId GetTypeId (void);
 
 
 
