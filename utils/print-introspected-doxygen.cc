@@ -85,7 +85,7 @@ namespace
   std::string templateArgument;    ///< template argument
   std::string variable;            ///< variable or class member
 
-} // anonymous namespace
+}  // unnamed namespace
 
 
 /**
@@ -880,6 +880,7 @@ PrintAttributeImplementations (std::ostream & os)
 
   const AttributeDescriptor attributes [] =
     {
+      // Name             Type             see Base  header-file
       // Users of ATTRIBUTE_HELPER_HEADER
       //
       { "Address",        "Address",        true,  "address.h"          },
@@ -910,7 +911,7 @@ PrintAttributeImplementations (std::ostream & os)
       { "Ssid",           "Ssid",           true,  "ssid.h"             },
       { "TypeId",         "TypeId",         true,  "type-id.h"          },
       { "UanModesList",   "UanModesList",   true,  "uan-tx-mode.h"      },
-      { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
+      // { "ValueClassTest", "ValueClassTest", false, "" /* outside ns3 */ },
       { "Vector2D",       "Vector2D",       true,  "vector.h"           },
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
       { "VhtCapabilities","VhtCapabilities",true,  "vht-capabilities.h" },
