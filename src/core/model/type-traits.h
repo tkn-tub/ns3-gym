@@ -25,9 +25,11 @@
 /**
  *  \file
  *  \ingroup object
- *  TypeTraits introspection template.
+ *  ns3::TypeTraits introspection declaration and template implementation.
  */
 
+namespace ns3 {
+  
 /**
  * \ingroup object
  *  Inspect a type to deduce its features.
@@ -597,5 +599,6 @@ public:
   typedef FunctionPtrTraits<T> FunctionPointerTraits;
 };
 
+}  // namespace ns3
 
 #endif /* TYPE_TRAITS_H */

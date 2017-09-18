@@ -29,7 +29,7 @@
 /**
  * \file
  * \ingroup scheduler
- * Declaration of ns3::ListScheduler class.
+ * ns3::ListScheduler declaration.
  */
 
 namespace ns3 {

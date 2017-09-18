@@ -31,7 +31,7 @@
 /**
  * \file
  * \ingroup ptr
- * Reference counting for smart pointers.
+ * ns3::SimpleRefCount declaration and template implementation.
  */
 
 namespace ns3 {
@@ -44,7 +44,7 @@ namespace ns3 {
  * to a class. This template does not require this class to
  * have a virtual destructor or a specific (or any) parent class.
  * 
- * Note: if you are moving to this template from the RefCountBase class,
+ * \note If you are moving to this template from the RefCountBase class,
  * you need to be careful to mark appropriately your destructor virtual
  * if needed. i.e., if your class has subclasses, _do_ mark your destructor
  * virtual.
@@ -72,23 +72,21 @@ template <typename T, typename PARENT = empty, typename DELETER = DefaultDeleter
 class SimpleRefCount : public PARENT
 {
 public:
-  /**
-   * Constructor
-   */
+  /** Default constructor.  */
   SimpleRefCount ()
     : m_count (1)
   {}
   /**
    * Copy constructor
-   * \param o The object to be copied
+   * \param [in] o The object to copy into this one.
    */
   SimpleRefCount (const SimpleRefCount &o)
     : m_count (1)
   {}
   /**
-   * Assignment
-   * \param o The object to be copied
-   * \return A reference to the new object
+   * Assignment operator
+   * \param [in] o The object to copy
+   * \returns The copy of \p o
    */
   SimpleRefCount &operator = (const SimpleRefCount &o)
   {
@@ -131,10 +129,6 @@ public:
     return m_count;
   }
 
-  /**
-   *  Noop
-   */
-  static void Cleanup (void) {}
 private:
   /**
    * The reference count.

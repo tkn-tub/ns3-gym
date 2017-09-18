@@ -28,7 +28,7 @@
 /**
  * \file
  * \ingroup ptr
- * Smart pointer implementation.
+ * ns3::Ptr smart pointer declaration and implementation.
  */
 
 namespace ns3 {
@@ -476,6 +476,8 @@ struct CallbackTraits<Ptr<T> >
 };
 
 // Duplicate of struct EventMemberImplObjTraits<T> as defined in make-event.h
+// We repeat it here to declare a specialization on Ptr<T>
+// without making this header dependent on make-event.h
 template <typename T>
 struct EventMemberImplObjTraits;
 

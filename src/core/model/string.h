@@ -26,7 +26,7 @@
 /**
  * \file
  * \ingroup attribute_String
- * String attribute value declarations.
+ * ns3::StringValue attribute value declarations.
  */
 
 namespace ns3 {

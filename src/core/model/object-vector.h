@@ -28,7 +28,7 @@
 /**
  * \file
  * \ingroup attribute_ObjectVector
- * ObjectVector attribute value declarations and template implementations.
+ * ns3::ObjectVectorValue attribute value declarations and template implementations.
  */
 
 namespace ns3 {

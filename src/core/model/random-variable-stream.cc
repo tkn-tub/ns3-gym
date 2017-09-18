@@ -40,7 +40,7 @@
 /**
  * \file
  * \ingroup randomvariable
- * Implementation of ns3::RandomVariableStream and derivatives.
+ * ns3::RandomVariableStream and related implementations
  */
 
 namespace ns3 {

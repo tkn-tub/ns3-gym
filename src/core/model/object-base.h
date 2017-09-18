@@ -28,7 +28,8 @@
 /**
  * \file
  * \ingroup object
- * ns3::ObjectBase class declaration and NS_OBJECT_ENSURE_REGISTERED() definition.
+ * ns3::ObjectBase declaration and
+ * NS_OBJECT_ENSURE_REGISTERED() madro definition.
  */
 
 /**
@@ -120,6 +121,7 @@ class ObjectBase
 public:
   /**
    * Get the type ID.
+   * \return The object TypeId.
    */
   static TypeId GetTypeId (void);
 

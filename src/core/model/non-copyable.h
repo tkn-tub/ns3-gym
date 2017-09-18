@@ -24,7 +24,7 @@
 /**
  * \file
  * \ingroup access
- * ns3::NonCopyable class declaration and implementation.
+ * ns3::NonCopyable declaration.
  */
 
 /**

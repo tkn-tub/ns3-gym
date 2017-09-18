@@ -24,8 +24,8 @@
 /**
  * \file
  * \ingroup debugging
- * Definition of build profile macros NS_BUILD_DEBUG, NS_BUILD_RELEASE,
- * and NS_BUILD_OPTIMIZED.
+ * NS_BUILD_DEBUG, NS_BUILD_RELEASE, and NS_BUILD_OPTIMIZED
+ * macro definitions.
  */
 
 /**

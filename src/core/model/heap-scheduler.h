@@ -28,7 +28,7 @@
 /**
  * \file
  * \ingroup scheduler
- * Declaration of ns3::HeapScheduler class.
+ * ns3::HeapScheduler declaration.
  */
 
 namespace ns3 {

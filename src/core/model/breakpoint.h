@@ -24,7 +24,7 @@
 /**
  * \file
  * \ingroup breakpoint
- * Definition of NS_BREAKPOINT() macro and ns3::BreakpointFallback
+ * NS_BREAKPOINT() macro definition and ns3::BreakpointFallback
  * function declaration.
  */
 
@@ -54,7 +54,7 @@ namespace ns3 {
  * Inserts a breakpoint instruction (or equivalent system call) into
  * the code for selected machines.  When an NS_ASSERT cannot verify
  * its condition, this macro is used. Falls back to calling
- * AssertBreakpoint() for architectures where breakpoint assembly
+ * ns3::BreakpointFallback() for architectures where breakpoint assembly
  * instructions are not supported.
  */
 #if (defined (__i386__) || defined (__amd64__) || defined (__x86_64__)) && defined (__GNUC__) && __GNUC__ >= 2

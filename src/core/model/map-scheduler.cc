@@ -28,7 +28,7 @@
 /**
  * \file
  * \ingroup scheduler
- * Implementation of ns3::MapScheduler class.
+ * ns3::MapScheduler implementation.
  */
 
 namespace ns3 {

@@ -29,7 +29,7 @@
 /**
  * \file
  * \ingroup scheduler
- * Implementation of ns3::CalendarScheduler class.
+ * ns3::CalendarScheduler class implementation.
  */
 
 namespace ns3 {

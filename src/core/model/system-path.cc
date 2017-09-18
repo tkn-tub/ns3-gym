@@ -66,7 +66,7 @@
 /**
  * \file
  * \ingroup systempath
- * System-independent file and directory functions implementation.
+ * ns3::SystemPath implementation.
  */
 
 namespace ns3 {
@@ -134,8 +134,9 @@ std::string FindSelfDirectory (void)
   }
 #elif defined (__win32__)
   {
-    /// \todo untested. it should work if code is compiled with
-    /// LPTSTR = char *
+    /** \todo untested. it should work if code is compiled with
+     *  LPTSTR = char *
+     */
     DWORD size = 1024;
     LPTSTR lpFilename = (LPTSTR) malloc (sizeof(TCHAR) * size);
     DWORD status = GetModuleFilename (0, lpFilename, size);
@@ -256,7 +257,7 @@ std::list<std::string> ReadFiles (std::string path)
     }
   closedir (dp);
 #elif defined (HAVE_FIND_FIRST_FILE)
-  /// \todo untested
+  /** \todo untested */
   HANDLE hFind;
   WIN32_FIND_DATA fileData;
   

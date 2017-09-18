@@ -374,15 +374,18 @@ bool
 Object::CheckLoose (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint32_t refcount = 0;
+  bool nonZeroRefCount = false;
   uint32_t n = m_aggregates->n;
   for (uint32_t i = 0; i < n; i++)
     {
       Object *current = m_aggregates->buffer[i];
-      /// \todo Shortcircuit this loop.
-      refcount += current->GetReferenceCount ();
+      if (current->GetReferenceCount ())
+        {
+          nonZeroRefCount = true;
+          break;
+        }
     }
-  return (refcount > 0);
+  return nonZeroRefCount;
 }
 void
 Object::DoDelete (void)

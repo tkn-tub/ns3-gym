@@ -24,7 +24,7 @@
 /**
  * \file
  * \ingroup core
- * Definition of the NS_UNUSED NS_UNUSED_GLOBAL macros.
+ * NS_UNUSED and NS_UNUSED_GLOBAL macro definitions.
  */
 
 /**

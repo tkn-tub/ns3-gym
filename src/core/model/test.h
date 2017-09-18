@@ -34,8 +34,8 @@
 /**
  * \file
  * \ingroup testing
- * \brief Definition of the testing macros and declaration of
- * the testing classes.
+ * \brief ns3::TestCase, ns3::TestSuite, ns3::TestRunner declarations,
+ * and \c NS_TEST_ASSERT macro definitions.
  */
 
 /**
@@ -53,6 +53,13 @@
  * \brief Internal implementation of the Testing system.
  */
 
+namespace ns3 {
+
+  /** Namespace for test files, TestCases and TestSuites. */
+  namespace tests {
+
+  }  // namespace tests
+                  
 // 
 // Note on below macros:
 //
@@ -1104,7 +1111,6 @@
 #define NS_TEST_EXPECT_MSG_GT_OR_EQ(actual, limit, msg) \
   NS_TEST_EXPECT_MSG_GT_OR_EQ_INTERNAL (actual, limit, msg, __FILE__, __LINE__)
 
-namespace ns3 {
 
 /**
  * \ingroup testing
@@ -1143,6 +1149,8 @@ class TestRunnerImpl;
  * To allow a new test to be run within the ns-3 test framework, users
  * need to create subclasses of this base class, override the DoRun
  * method, and use the NS_TEST_* macros within DoRun.
+ *
+ * \see sample-test-suite.cc
  */
 class TestCase : private NonCopyable
 {
@@ -1176,9 +1184,10 @@ protected:
    * \brief Add an individual child TestCase to this test suite.
    *
    * \param [in] testCase Pointer to the TestCase object to be added.
-   * \param [in] duration Amount of time this test takes to execute.
+   * \param [in] duration Amount of time this test takes to execute
+   *             (defaults to QUICK).
    */
-  void AddTestCase (TestCase *testCase, enum TestDuration duration);
+  void AddTestCase (TestCase *testCase, TestDuration duration = QUICK);
 
   /**
    * \brief Set the data directory where reference trace files can be
@@ -1305,9 +1314,7 @@ private:
    * \param [in] runner The test runner implementation.
    */
   void Run (TestRunnerImpl *runner);
-  /**
-   * \copydoc IsStatusFailure()
-   */
+  /** \copydoc IsStatusFailure() */
   bool IsFailed (void) const;
 
   /**
@@ -1329,6 +1336,8 @@ private:
  * \ingroup testing
  *
  * \brief A suite of tests to run.
+ *
+ * \see sample-test-suite.cc
  */
 class TestSuite : public TestCase
 {

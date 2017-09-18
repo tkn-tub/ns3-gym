@@ -368,11 +368,11 @@ public:
    * \param [in] supportMsg Upgrade hint if this attribute is no longer
    *             supported.  If the attribute is \c DEPRECATED the attribute
    *             behavior still exists, but user code should be updated
-   *             following guidance in the hint..
+   *             following guidance in the hint.
    *             If the attribute is \c OBSOLETE, the hint should indicate
    *             which class the attribute functional has been moved to,
    *             or that the functionality is no longer supported.
-   *             See test file \file type-id-test-suite.cc for examples.
+   *             See test file type-id-test-suite.cc for examples.
    * \returns This TypeId instance
    */
   TypeId AddAttribute (std::string name,
@@ -459,7 +459,7 @@ public:
    *             If the attribute is \c OBSOLETE, the hint should indicate
    *             which class the attribute functional has been moved to,
    *             or that the functionality is no longer supported.
-   *             See test file \file type-id-test-suite.cc for examples.
+   *             See test file type-id-test-suite.cc for examples.
    * \returns This TypeId instance.
    */
   TypeId AddTraceSource (std::string name,

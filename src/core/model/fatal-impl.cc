@@ -31,7 +31,9 @@
 /**
  * \file
  * \ingroup fatalimpl
- * \brief Implementation of RegisterStream(), UnregisterStream(), and FlushStreams(); see Implementation note!
+ * \brief ns3::FatalImpl::RegisterStream(), ns3::FatalImpl::UnregisterStream(),
+ * and ns3::FatalImpl::FlushStreams() implementations;
+ * see Implementation note!
  *
  * \note Implementation.
  *
@@ -56,7 +58,7 @@ namespace FatalImpl {
 
 /**
  * \ingroup fatalimpl
- * Anonymous namespace for fatal streams memory implementation
+ * Unnamed namespace for fatal streams memory implementation
  * and signal handler.
  */
 namespace {
@@ -92,7 +94,7 @@ std::list<std::ostream*> *GetStreamList (void)
   return *pstreams;
 }
 
-}  // anonymous namespace
+}  // unnamed namespace
 
 void
 RegisterStream (std::ostream* stream)
@@ -120,7 +122,7 @@ UnregisterStream (std::ostream* stream)
 
 /**
  * \ingroup fatalimpl
- * Anonymous namespace for fatal streams signal hander.
+ * Unnamed namespace for fatal streams signal hander.
  *
  * This is private to the fatal implementation.
  */
@@ -141,7 +143,7 @@ void sigHandler (int sig)
   FlushStreams ();
   std::abort ();
 }
-}  // anonymous namespace
+}  // unnamed namespace
 
 void 
 FlushStreams (void)

@@ -268,9 +268,7 @@ enum fnv_type {
 /*
  * external functions  //PDB converted to forward declarations
  */
-/**
- * \copydoc fnv_32a_buf()
- */
+/** \copydoc fnv_32a_buf() */
 /* extern */ Fnv32_t fnv_32_buf(void *buf, size_t len, Fnv32_t hval);
 /** \copydoc fnv_32a_str() */
 /* extern */ Fnv32_t fnv_32_str(char *str, Fnv32_t hval);

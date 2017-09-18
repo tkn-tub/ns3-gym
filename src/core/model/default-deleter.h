@@ -23,7 +23,8 @@
 /**
  * \file
  * \ingroup ptr
- * Default deletion implementation for reference-counted smart pointers.
+ * ns3::DefaultDeleter declaration and template implementation,
+ * for reference-counted smart pointers.
  */
 
 namespace ns3 {

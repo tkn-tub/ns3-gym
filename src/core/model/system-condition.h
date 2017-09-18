@@ -24,7 +24,7 @@
 /**
  * @file
  * @ingroup thread
- * System-independent thread conditional wait.
+ * ns3::SystemCondition declaration.
  */
 
 namespace ns3 {
@@ -81,6 +81,7 @@ public:
 
   /**
    * Get the value of the underlying condition.
+   * \returns The state of the condition
    */
   bool GetCondition (void);
 

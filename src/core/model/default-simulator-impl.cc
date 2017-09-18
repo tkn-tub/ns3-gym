@@ -34,7 +34,7 @@
 /**
  * \file
  * \ingroup simulator
- * Implementation of class ns3::DefaultSimulatorImpl.
+ * ns3::DefaultSimulatorImpl implementation.
  */
 
 namespace ns3 {
@@ -403,8 +403,6 @@ DefaultSimulatorImpl::IsExpired (const EventId &id) const
 Time 
 DefaultSimulatorImpl::GetMaximumSimulationTime (void) const
 {
-  /// \todo I am fairly certain other compilers use other non-standard
-  /// post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
 }
 

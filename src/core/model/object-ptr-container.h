@@ -28,7 +28,7 @@
 /**
  * \file
  * \ingroup attribute_ObjectPtrContainer
- * ObjectPtrContainer attribute value declarations and template implementations.
+ * ns3::ObjectPtrContainerValue attribute value declarations and template implementations.
  */
 
 

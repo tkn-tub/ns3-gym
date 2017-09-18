@@ -24,7 +24,7 @@
 /**
  * \file
  * \ingroup logging
- * Definition of logging macros.
+ * NS_LOG and related logging macro definitions.
  */
 
 #ifdef NS3_LOG_ENABLE

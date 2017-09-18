@@ -802,8 +802,6 @@ RealtimeSimulatorImpl::IsExpired (const EventId &id) const
 Time 
 RealtimeSimulatorImpl::GetMaximumSimulationTime (void) const
 {
-  /// \todo I am fairly certain other compilers use other non-standard
-  /// post-fixes to indicate 64 bit constants.
   return TimeStep (0x7fffffffffffffffLL);
 }
 

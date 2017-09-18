@@ -36,7 +36,8 @@
 /**
  * \file
  * \ingroup highprec
- * Declaration of the cairo_x functions which implement high precision arithmetic.
+ * \c cairo_x function declarations, which provide the fallback
+ * high precision arithmetic implementation.
  */
 
 // Adapt to ns-3 environment

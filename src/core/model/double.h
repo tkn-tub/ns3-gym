@@ -28,7 +28,7 @@
 /**
  * \file
  * \ingroup attribute_Double
- * Double attribute value declarations and template implementations.
+ * ns3::DoubleValue attribute value declarations and template implementations.
  */
 
 namespace ns3 {

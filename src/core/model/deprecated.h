@@ -24,7 +24,7 @@
 /**
  * \file
  * \ingroup core
- * Definition of the NS_DEPRECATED macro.
+ * NS_DEPRECATED macro definition.
  */
 
 /**

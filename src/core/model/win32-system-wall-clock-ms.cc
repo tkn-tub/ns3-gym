@@ -25,8 +25,7 @@
 /**
  * \file
  * \ingroup system
- * Wall clock class ns3::SystemWallClockMs implementation
- * for Windows-32 systems.
+ * ns3::SystemWallClockMs and ns3::SystemWallClockMsPrivate implementation.
  */
 
 namespace ns3 {

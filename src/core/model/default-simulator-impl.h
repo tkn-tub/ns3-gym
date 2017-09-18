@@ -34,7 +34,7 @@
 /**
  * \file
  * \ingroup simulator
- * Declaration of class ns3::DefaultSimulatorImpl.
+ * ns3::DefaultSimulatorImpl declaration.
  */
 
 namespace ns3 {

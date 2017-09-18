@@ -38,7 +38,7 @@
 /**
  * \file
  * \ingroup logging
- * Debug message logging implementation.
+ * ns3::LogComponent and related implementations.
  */
 
 

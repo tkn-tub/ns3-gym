@@ -23,7 +23,7 @@
 /**
  * \file
  * \ingroup simulator
- * Implementation of class ns3::SimulatorImpl.
+ * ns3::SimulatorImpl implementation.
  */
 
 namespace ns3 {
