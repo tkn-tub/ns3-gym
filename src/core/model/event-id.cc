@@ -92,19 +92,5 @@ EventId::GetUid (void) const
   return m_uid;
 }
 
-bool operator == (const EventId &a, const EventId &b)
-{
-  return 
-    a.m_uid == b.m_uid && 
-    a.m_context == b.m_context && 
-    a.m_ts == b.m_ts && 
-    a.m_eventImpl == b.m_eventImpl;
-}
-bool operator != (const EventId &a, const EventId &b)
-{
-  return !(a == b);
-}
-
-
 
 } // namespace ns3

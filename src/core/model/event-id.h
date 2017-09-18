@@ -97,7 +97,6 @@ public:
   uint32_t GetUid (void) const;
   /**@}*/
   
-private:
   /**
    * Test if two EventId's are equal.
    * \param [in] a The first EventId.
@@ -112,15 +111,49 @@ private:
    * \return \c true if the \p a and \p b are not the same event.
    */
   friend bool operator != (const EventId &a, const EventId &b);
-  
+  /**
+   * Less than operator for two EventId's, based on time stamps.
+   * \param [in] a The first EventId.
+   * \param [in] b The second EventId.
+   * \return \c true if \p a occurs before \p b.
+   */
+  friend bool operator <  (const EventId &a, const EventId &b);
+
+private:
   Ptr<EventImpl> m_eventImpl;  /**< The underlying event implementation. */
   uint64_t m_ts;               /**< The virtual time stamp. */
   uint32_t m_context;          /**< The context. */
   uint32_t m_uid;              /**< The unique id. */
 };
 
-bool operator == (const EventId &a, const EventId &b);
-bool operator != (const EventId &a, const EventId &b);
+/*************************************************
+ **  Inline implementations
+ ************************************************/
+
+inline  
+bool
+operator == (const EventId &a, const EventId &b)
+{
+  return 
+    a.m_uid == b.m_uid && 
+    a.m_context == b.m_context && 
+    a.m_ts == b.m_ts && 
+    a.m_eventImpl == b.m_eventImpl;
+}
+  
+inline  
+bool
+operator != (const EventId &a, const EventId &b)
+{
+  return !(a == b);
+}
+  
+inline  
+bool
+operator <  (const EventId &a, const EventId &b)
+{
+  return (a.GetTs () < b.GetTs ());
+}
 
 } // namespace ns3
 
