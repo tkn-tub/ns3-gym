@@ -14,8 +14,14 @@
 #  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #  */
 
-# Demonstrate use of ns-3 as a random number generator integrated with
-# plotting tools; adapted from Gustavo Carneiro's ns-3 tutorial
+## @file
+#  @ingroup core-examples
+#  @ingroup randomvariable
+#  Demonstrate use of ns-3 as a random number generator integrated with
+#  plotting tools.
+#  
+#  This is adapted from Gustavo Carneiro's ns-3 tutorial
+
 
 import numpy as np
 import matplotlib.pyplot as plt

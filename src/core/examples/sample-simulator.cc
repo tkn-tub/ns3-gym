@@ -27,12 +27,15 @@
 
 /**
  * \file
+ * \ingroup core-examples
  * \ingroup simulator
  * Example program demonstrating use of various Schedule functions.
  */
 
 using namespace ns3;
 
+namespace {
+  
 /** Simple model object to illustrate event handling. */
 class MyModel
 {
@@ -92,6 +95,9 @@ CancelledEvent (void)
 {
   std::cout << "I should never be called... " << std::endl;
 }
+
+}  // unnamed namespace
+
 
 int main (int argc, char *argv[])
 {

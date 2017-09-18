@@ -26,12 +26,14 @@
 
 /**
  * \file
+ * \ingroup core-examples
  * \ingroup commandline
  * Example program illustrating use of ns3::CommandLine.
  */
 
 using namespace ns3;
 
+namespace {
 
 /**
  * Global variable to illustrate command line arguments handled by a
@@ -51,6 +53,8 @@ bool SetCbArg (std::string val)
   g_cbArg = val;
   return true;
 }
+
+}  // unnamed namespace
 
 
 int main (int argc, char *argv[])

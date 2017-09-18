@@ -15,6 +15,13 @@
  */
 
 /**
+ * \file
+ * \ingroup core-examples
+ * \ingroup logging
+ * Example program that demonstrates how to replace the time printer.
+ */
+
+/**
  * Example program that demonstrates how to replace the time printer.
  *
  * This program creates a sample object and schedules some methods to
@@ -85,20 +92,32 @@
 
 using namespace ns3;
 
-// Prior to ns-3.26, the time printer used default C++ iostream precision
-// This function sets it back to the format used before ns-3.26
+namespace {
+  
+/**
+ * Pre-ns-3.26 LogTimePrinter equivalent.
+ * 
+ * Prior to ns-3.26, the time printer used default C++ iostream precision
+ * This function sets it back to the format used before ns-3.26
+ *
+ * \param [in] os The stream to print on.
+ */
 void
 ReplacementTimePrinter (std::ostream &os)
 {
   os << Simulator::Now ().GetSeconds () << "s";
 }
 
+/** Set ReplacementTimePrinter as the time printer for log messages. */
 void
 ReplaceTimePrinter (void)
 {
   std::cout << "Replacing time printer function after Simulator::Run ()" << std::endl;
   LogSetTimePrinter (&ReplacementTimePrinter);
 }
+
+
+}  // unnamed namespace
 
 
 int main (int argc, char *argv[])

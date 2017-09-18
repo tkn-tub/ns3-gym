@@ -22,8 +22,9 @@
 #include <iostream>
 
 /**
- * \ingroup ptr
  * \file
+ * \ingroup core-examples
+ * \ingroup ptr
  * Example program illustrating use of the ns3::Ptr smart pointer.
  */
 

@@ -32,6 +32,7 @@
 
 /**
  * \file
+ * \ingroup core-examples
  * \ingroup scheduler
  * An example of scheduling events in a background thread.
  *
@@ -41,8 +42,11 @@
 
 using namespace ns3;
 
+
 NS_LOG_COMPONENT_DEFINE ("TestSync");
 
+namespace {
+  
 /** Check that the event functions run in the intended order. */
 bool gFirstRun = false;
 
@@ -142,6 +146,9 @@ test (void)
   st3->Join ();
   Simulator::Destroy ();
 }
+
+}  // unnamed namespace
+
 
 int
 main (int argc, char *argv[])
