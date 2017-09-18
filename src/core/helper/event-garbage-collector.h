@@ -24,10 +24,18 @@
 #include "ns3/event-id.h"
 #include "ns3/simulator.h"
 
+/**
+ * \file
+ * \ingroup events
+ * \ingroup core-helpers
+ * ns3::EventGarbageCollector declaration.
+ */
+
 namespace ns3 {
 
 /**
  * \ingroup events
+ * \ingroup core-helpers
  *
  * \brief An object that tracks scheduled events and automatically
  * cancels them when it is destroyed.  It is useful in situations
@@ -43,44 +51,44 @@ public:
 
   /**
    * \brief Tracks a new event
+   * \param [in] event the Event to track
    */
   void Track (EventId event);
 
   ~EventGarbageCollector ();
 
 private:
- 
-  /**
-   * \brief comparison operator for std::multiset
-   */
-  struct EventIdLessThanTs
-  {
-    /**
-     * \brief comparison operator for std::multiset
-     */
-    bool operator () (const EventId &a, const EventId &b) const
-    {
-      return (a.GetTs () < b.GetTs ());
-    }
-  };
 
   /** Event list container */
-  typedef std::multiset<EventId, EventIdLessThanTs> EventList;
+  typedef std::multiset<EventId> EventList;
 
-  EventList::size_type m_nextCleanupSize;      //!< batch size for cleanup
-  EventList m_events;                          //!< the tracked event list 
+  /** Initial threshold for cleaning the event list. */
+  const typename EventList::size_type CHUNK_INIT_SIZE = 8;
+  /**
+   * Threshold to switch from exponential to linear growth
+   * in the cleanup frequency.
+   */
+  const typename EventList::size_type CHUNK_MAX_SIZE = 128;
+  
+  EventList::size_type m_nextCleanupSize;      //!< Batch size for cleanup
+  EventList m_events;                          //!< The tracked event list 
 
   /**
-   * \brief called when a new event was added and the cleanup limit was
+   * \brief Called when a new event was added and the cleanup limit was
    * exceeded in consequence.
    */
   void Cleanup ();
   /**
-   * \brief grow the cleanup limit
+   * \brief Grow the cleanup limit.
+   * Increase the cleanup size by the smaller of
+   * the current cleanup size (exponential growth),
+   * or the CHUNK_MAX_SIZE (linear growth).
    */
   void Grow ();
   /**
-   * \brief shrink the cleanup limit
+   * \brief Shrink the cleanup limit
+   * Reduce the cleanup size by factors of two until less than the
+   * current event list, then Grow one step.
    */
   void Shrink ();
 };

@@ -19,15 +19,19 @@
  */
 #include "event-garbage-collector.h"
 
-#define CLEANUP_CHUNK_MIN_SIZE 8
-#define CLEANUP_CHUNK_MAX_SIZE 128
-
+/**
+ * \file
+ * \ingroup core-helpers
+ * \ingroup events
+ * ns3::EventGarbageCollector implementation.
+ */
 
 namespace ns3 {
 
 
-EventGarbageCollector::EventGarbageCollector () :
-  m_nextCleanupSize (CLEANUP_CHUNK_MIN_SIZE)
+EventGarbageCollector::EventGarbageCollector ()
+  : m_nextCleanupSize (CHUNK_INIT_SIZE),
+    m_events ()
 {
 }
 
@@ -42,8 +46,8 @@ EventGarbageCollector::Track (EventId event)
 void
 EventGarbageCollector::Grow ()
 {
-  m_nextCleanupSize += (m_nextCleanupSize < CLEANUP_CHUNK_MAX_SIZE ?
-                        m_nextCleanupSize : CLEANUP_CHUNK_MAX_SIZE);
+  m_nextCleanupSize += (m_nextCleanupSize < CHUNK_MAX_SIZE ?
+                        m_nextCleanupSize : CHUNK_MAX_SIZE);
 }
 
 void
@@ -54,7 +58,8 @@ EventGarbageCollector::Shrink ()
   Grow ();
 }
 
-// Called when a new event was added and the cleanup limit was exceeded in consequence.
+// Called when a new event was added and
+// the cleanup limit was exceeded in consequence.
 void
 EventGarbageCollector::Cleanup ()
 {
@@ -78,10 +83,9 @@ EventGarbageCollector::Cleanup ()
 
 EventGarbageCollector::~EventGarbageCollector ()
 {
-  for (EventList::iterator event = m_events.begin ();
-       event != m_events.end (); event++)
+  for (auto event : m_events)
     {
-      Simulator::Cancel (*event);
+      Simulator::Cancel (event);
     }
 }
 
