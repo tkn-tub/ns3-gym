@@ -1030,6 +1030,7 @@ def _cleandir(name):
 
 def _cleandocs():
     _cleandir('doc/html')
+    _cleandir('doc/html-warn')
     _cleandir('doc/manual/build')
     _cleandir('doc/manual/source-temp')
     _cleandir('doc/tutorial/build')
