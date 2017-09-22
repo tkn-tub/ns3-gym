@@ -63,22 +63,18 @@
 //   index 8-15:   MCS 0-7, short guard interval, 20 MHz channel
 //   index 16-23:  MCS 0-7, long guard interval, 40 MHz channel
 //   index 24-31:  MCS 0-7, short guard interval, 40 MHz channel
-// and send 1000 UDP packets using each MCS, using the SpectrumWifiPhy and the
+// and send UDP for 10 seconds using each MCS, using the SpectrumWifiPhy and the
 // NistErrorRateModel, at a distance of 50 meters.  The program outputs
 // results such as:
 //
-// wifiType: ns3::SpectrumWifiPhy distance: 50m; sent: 1000
-// index   MCS Rate (Mb/s) Tput (Mb/s) Received Signal (dBm) Noise (dBm) SNR (dB)
-//     0     0       6.5      0.7776    1000    -77.6633    -100.966     23.3027
-//     1     1        13      0.7776    1000    -77.6633    -100.966     23.3027
-//     2     2      19.5      0.7776    1000    -77.6633    -100.966     23.3027
-//     3     3        26      0.7776    1000    -77.6633    -100.966     23.3027
-//  ...
+// wifiType: ns3::SpectrumWifiPhy distance: 50m; time: 10; TxPower: 1 dBm (1.3 mW)
+// index   MCS  Rate (Mb/s) Tput (Mb/s) Received Signal (dBm) Noise (dBm) SNR (dB)
+//     0     0      6.50        5.77    7414      -79.71      -93.97       14.25
+//     1     1     13.00       11.58   14892      -79.71      -93.97       14.25
+//     2     2     19.50       17.39   22358      -79.71      -93.97       14.25
+//     3     3     26.00       22.96   29521      -79.71      -93.97       14.25
+//   ...
 //
-// When UDP is used, the throughput will always be 0.7776 Mb/s since the
-// traffic generator does not attempt to match the maximum Phy data rate
-// but instead sends at a constant rate.  When TCP is used, the TCP flow
-// will exhibit different throughput depending on the index.
 
 using namespace ns3;
 
@@ -130,15 +126,15 @@ int main (int argc, char *argv[])
       stopIndex = index;
     }
 
-  std::cout << "wifiType: " << wifiType << " distance: " << distance << "m; sent: 1000 TxPower: 1 dBm (1.3 mW)" << std::endl;
+  std::cout << "wifiType: " << wifiType << " distance: " << distance << "m; time: " << simulationTime << "; TxPower: 1 dBm (1.3 mW)" << std::endl;
   std::cout << std::setw (5) << "index" <<
     std::setw (6) << "MCS" <<
-    std::setw (12) << "Rate (Mb/s)" <<
+    std::setw (13) << "Rate (Mb/s)" <<
     std::setw (12) << "Tput (Mb/s)" <<
     std::setw (10) << "Received " <<
     std::setw (12) << "Signal (dBm)" <<
     std::setw (12) << "Noise (dBm)" <<
-    std::setw (10) << "SNR (dB)" <<
+    std::setw (9) << "SNR (dB)" <<
     std::endl;
   for (uint16_t i = startIndex; i <= stopIndex; i++)
     {
@@ -163,11 +159,13 @@ int main (int argc, char *argv[])
       if (wifiType == "ns3::YansWifiPhy")
         {
           YansWifiChannelHelper channel;
-          channel.AddPropagationLoss ("ns3::FriisPropagationLossModel");
+          channel.AddPropagationLoss ("ns3::FriisPropagationLossModel",
+                                      "Frequency", DoubleValue (5.180e9));
           channel.SetPropagationDelay ("ns3::ConstantSpeedPropagationDelayModel");
           phy.SetChannel (channel.Create ());
           phy.Set ("TxPowerStart", DoubleValue (1)); // dBm (1.26 mW)
           phy.Set ("TxPowerEnd", DoubleValue (1));
+          phy.Set ("Frequency", UintegerValue (5180));
 
           if (i <= 7)
             {
@@ -199,6 +197,7 @@ int main (int argc, char *argv[])
             = CreateObject<MultiModelSpectrumChannel> ();
           Ptr<FriisPropagationLossModel> lossModel
             = CreateObject<FriisPropagationLossModel> ();
+          lossModel->SetFrequency (5.180e9);
           spectrumChannel->AddPropagationLossModel (lossModel);
 
           Ptr<ConstantSpeedPropagationDelayModel> delayModel
@@ -534,6 +533,7 @@ int main (int argc, char *argv[])
         }
       std::cout << std::setw (5) << i <<
         std::setw (6) << (i % 8) <<
+        std::setprecision (2) << std::fixed <<
         std::setw (10) << datarate <<
         std::setw (12) << throughput <<
         std::setw (8) << totalPacketsThrough;
