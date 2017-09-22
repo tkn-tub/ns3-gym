@@ -193,6 +193,8 @@ is now exported by WifiNetDevice.</li>
 </li>
   <li> The default value of the <b>TxGain</b> and <b>RxGain</b> attributes in WifiPhy was changed from 1 dB to 0 dB.
   </li>
+  <li> The reported SNR by WifiPhy::MonitorSnifferRx did not include the RxNoiseFigure, but now does; see <a href=https://www.nsnam.org/bugzilla/show_bug.cgi?id=2783>bug 2783</a> for discussion.
+  </li>
 <li><b>Queue</b> has been redesigned as a template class object, where the type parameter
     specifies the type of items to be stored in the queue. As a consequence:
     <ul>

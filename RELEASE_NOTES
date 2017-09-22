@@ -121,6 +121,7 @@ Bugs fixed
 - Bug 2763 - wifi management packets in the PCAPs are all marked as wrong by Wireshark
 - Bug 2769 - Set ssthresh correctly upon RTO
 - Bug 2781 - tcp: Do not go beyond limit in TcpTxBuffer
+- Bug 2783 - wifi: MonitorSnifferRx SNR is invariant to RxNoiseFigure
 
 Known issues
 ------------

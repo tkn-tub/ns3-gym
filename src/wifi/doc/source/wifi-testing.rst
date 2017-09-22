@@ -119,16 +119,16 @@ intervals):
 
   wifiType: ns3::SpectrumWifiPhy distance: 1m
   index   MCS   width Rate (Mb/s) Tput (Mb/s) Received 
-    0     0      20       6.5     5.96219    5063
-    1     1      20        13     11.9491   10147
-    2     2      20      19.5     17.9172   15215
-    3     3      20        26     23.9241   20316
-    4     4      20        39     35.9427   30522
-    5     5      20        52     47.9283   40700
-    6     6      20      58.5     53.7445   45639
-    7     7      20        65     59.4629   50495
-   ...
-   63    15      40       300     240.884  204555
+      0     0      20       6.5     5.81381    4937
+      1     1      20        13     11.8266   10043
+      2     2      20      19.5     17.7935   15110
+      3     3      20        26     23.7958   20207
+      4     4      20        39     35.7331   30344
+      5     5      20        52     47.6174   40436
+      6     6      20      58.5     53.6102   45525
+      7     7      20        65     59.5501   50569
+    ...
+     63    15      40       300     254.902  216459
 
 
 The above output shows the first 8 (of 32) modes, and last mode, that will be
@@ -145,13 +145,11 @@ When run with the legacy YansWifiPhy, as in ``./waf --run "wifi-spectrum-saturat
 
   wifiType: ns3::YansWifiPhy distance: 1m
   index   MCS   width Rate (Mb/s) Tput (Mb/s) Received 
-      0     0      20       6.5     5.96219    5063
-      1     1      20        13     11.9491   10147
-      2     2      20      19.5     17.9172   15215
-      3     3      20        26     23.9241   20316
-      4     4      20        39     35.9427   30522
-      5     5      20        52     47.9283   40700
-      6     6      20      58.5     53.7445   45639
+      0     0      20       6.5     5.81381    4937
+      1     1      20        13     11.8266   10043
+      2     2      20      19.5     17.7935   15110
+      3     3      20        26     23.7958   20207
+    ...
 
 This is to be expected since YansWifiPhy and SpectrumWifiPhy use the 
 same error rate model in this case.
@@ -162,25 +160,25 @@ Packet error rate performance
 The program ``examples/wireless/wifi-spectrum-per-example.cc`` allows users
 to select either `SpectrumWifiPhy` or `YansWifiPhy`, as above, and select
 the distance between the nodes, and to log the reception statistics and
-received SNR (as observed by the MonitorRx trace source), using a
+received SNR (as observed by the WifiPhy::MonitorSnifferRx trace source), using a
 Friis propagation loss model.  The transmit power is lowered from the default
 of 40 mW (16 dBm) to 1 dBm to lower the baseline SNR; the distance between
 the nodes can be changed to further change the SNR.  By default, it steps 
 through the same index values as in the saturation example (0 through 31) 
-for a 50m distance, producing output such as:
+for a 50m distance, for 10 seconds of simulation time, producing output such as:
 
 ::
 
-  wifiType: ns3::SpectrumWifiPhy distance: 50m; sent: 1000 TxPower: 1 dBm (1.3 mW)
-  index   MCS Rate (Mb/s) Tput (Mb/s) Received Signal (dBm) Noise (dBm)  SNR (dB)
-      0     0       6.5      0.7776    1000    -77.6633    -100.966     23.3027
-      1     1        13      0.7776    1000    -77.6633    -100.966     23.3027
-      2     2      19.5      0.7776    1000    -77.6633    -100.966     23.3027
-      3     3        26      0.7776    1000    -77.6633    -100.966     23.3027
-      4     4        39      0.7776    1000    -77.6633    -100.966     23.3027
-      5     5        52           0       0         N/A         N/A         N/A
-      6     6      58.5           0       0         N/A         N/A         N/A
-      7     7        65           0       0         N/A         N/A         N/A
+  wifiType: ns3::SpectrumWifiPhy distance: 50m; time: 10; TxPower: 1 dBm (1.3 mW)
+  index   MCS  Rate (Mb/s) Tput (Mb/s) Received Signal (dBm) Noise (dBm) SNR (dB)
+      0     0      6.50        5.77    7414      -79.71      -93.97       14.25
+      1     1     13.00       11.58   14892      -79.71      -93.97       14.25
+      2     2     19.50       17.39   22358      -79.71      -93.97       14.25
+      3     3     26.00       22.96   29521      -79.71      -93.97       14.25
+      4     4     39.00        0.00       0         N/A         N/A         N/A
+      5     5     52.00        0.00       0         N/A         N/A         N/A
+      6     6     58.50        0.00       0         N/A         N/A         N/A
+      7     7     65.00        0.00       0         N/A         N/A         N/A
   
 As in the above saturation example, running this program with YansWifiPhy
 will yield identical output.
@@ -206,15 +204,16 @@ Some sample output with default arguments (no interference) is:
 
   ./waf --run "wifi-spectrum-per-interference"
 
-  wifiType: ns3::SpectrumWifiPhy distance: 50m; sent: 1000 TxPower: 16 dBm (40 mW)
-  index   MCS Rate (Mb/s) Tput (Mb/s) Received Signal (dBm)Noi+Inf(dBm)  SNR (dB)
-      0     0       6.5      0.7776    1000    -62.6427    -100.966     38.3233
-      1     1        13      0.7776    1000    -62.6427    -100.966     38.3233
-      2     2      19.5      0.7776    1000    -62.6427    -100.966     38.3233
-      3     3        26      0.7776    1000    -62.6427    -100.966     38.3233
-      4     4        39      0.7776    1000    -62.6427    -100.966     38.3233
-      5     5        52      0.7776    1000    -62.6427    -100.966     38.3233
-      6     6      58.5      0.7776    1000    -62.6427    -100.966     38.3233
+  wifiType: ns3::SpectrumWifiPhy distance: 50m; time: 10; TxPower: 16 dBm (40 mW)
+  index   MCS  Rate (Mb/s) Tput (Mb/s) Received Signal (dBm)Noi+Inf(dBm) SNR (dB)
+      0     0      6.50        5.77    7414      -64.69      -93.97       29.27
+      1     1     13.00       11.58   14892      -64.69      -93.97       29.27
+      2     2     19.50       17.39   22358      -64.69      -93.97       29.27
+      3     3     26.00       23.23   29875      -64.69      -93.97       29.27
+      4     4     39.00       34.90   44877      -64.69      -93.97       29.27
+      5     5     52.00       46.51   59813      -64.69      -93.97       29.27
+      6     6     58.50       52.39   67374      -64.69      -93.97       29.27
+      7     7     65.00       58.18   74819      -64.69      -93.97       29.27
     ...
 
 while a small amount of waveform power will cause frame losses to occur at
@@ -226,13 +225,14 @@ higher order modulations, due to lower SNR:
 
   wifiType: ns3::SpectrumWifiPhy distance: 50m; sent: 1000 TxPower: 16 dBm (40 mW)
   index   MCS Rate (Mb/s) Tput (Mb/s) Received Signal (dBm)Noi+Inf(dBm)  SNR (dB)
-      0     0       6.5      0.7776    1000    -62.6427    -86.1031     23.4604
-      1     1        13      0.7776    1000    -62.6427    -86.1031     23.4604
-      2     2      19.5      0.7776    1000    -62.6427    -86.1032     23.4605
-      3     3        26      0.7776    1000    -62.6427    -86.1031     23.4604
-      4     4        39      0.7776    1000    -62.6427    -86.1032     23.4605
-      5     5        52           0       0         N/A         N/A         N/A
-      6     6      58.5           0       0         N/A         N/A         N/A
+      0     0      6.50        5.77    7414      -64.69      -80.08       15.38
+      1     1     13.00       11.58   14892      -64.69      -80.08       15.38
+      2     2     19.50       17.39   22358      -64.69      -80.08       15.38
+      3     3     26.00       23.23   29873      -64.69      -80.08       15.38
+      4     4     39.00        0.41     531      -64.69      -80.08       15.38
+      5     5     52.00        0.00       0         N/A         N/A         N/A
+      6     6     58.50        0.00       0         N/A         N/A         N/A
+      7     7     65.00        0.00       0         N/A         N/A         N/A
     ...
 
 If ns3::YansWifiPhy is selected as the wifiType, the waveform generator will
