@@ -2394,16 +2394,25 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
       NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << (uint16_t)txVector.GetMode ().GetMcsValue () << ", NSS = " << (uint16_t)txVector.GetNss ());
     }
 
-  if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
-    {
-      NS_FATAL_ERROR ("Reception ends in failure because of an unsupported number of spatial streams");
-    }
-
   Ptr<InterferenceHelper::Event> event;
   event = m_interference.Add (packet,
                               txVector,
                               rxDuration,
                               rxPowerW);
+
+  if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
+    {
+      NS_LOG_DEBUG ("drop packet because not enough RX antennas");
+      NotifyRxDrop (packet);
+      m_plcpSuccess = false;
+      if (endRx > Simulator::Now () + m_state->GetDelayUntilIdle ())
+        {
+          //that packet will be noise _after_ the transmission of the
+          //currently-transmitted packet.
+          MaybeCcaBusyDuration ();
+          return;
+        }
+    }
 
   MpduType mpdutype = tag.GetMpduType ();
   switch (m_state->GetState ())
