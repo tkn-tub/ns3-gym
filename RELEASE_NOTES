@@ -120,6 +120,7 @@ Bugs fixed
 - Bug 2762 - BindToNetDevice behaviour is not coherent with Linux
 - Bug 2763 - wifi management packets in the PCAPs are all marked as wrong by Wireshark
 - Bug 2769 - Set ssthresh correctly upon RTO
+- Bug 2771 - wifi: Simulation fails with IdealWifiManager if stations have different number of antennas
 - Bug 2781 - tcp: Do not go beyond limit in TcpTxBuffer
 - Bug 2783 - wifi: MonitorSnifferRx SNR is invariant to RxNoiseFigure
 
