@@ -193,7 +193,7 @@ TcpTxBuffer::Add (Ptr<Packet> p)
       if (p->GetSize () > 0)
         {
           TcpTxItem *item = new TcpTxItem ();
-          item->m_packet = p;
+          item->m_packet = p->Copy ();
           m_appList.insert (m_appList.end (), item);
           m_size += p->GetSize ();
 
