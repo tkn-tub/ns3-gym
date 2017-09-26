@@ -226,7 +226,7 @@ TcpTxBuffer::SizeFromSequence (const SequenceNumber32& seq) const
 Ptr<Packet>
 TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
 {
-  NS_LOG_FUNCTION (*this << numBytes << seq);
+  NS_LOG_FUNCTION (this << numBytes << seq);
 
   if (m_firstByteSeq > seq)
     {
