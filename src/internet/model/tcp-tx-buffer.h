@@ -259,9 +259,21 @@ public:
                 bool isRecovery) const;
 
   /**
+   * \brief Return the number of segments in the sent list that
+   * have been transmitted more than once, without acknowledgment.
+   *
+   * This method is to support the retransmits count for determining PipeSize
+   * in NewReno-style TCP.
+   *
+   * \returns number of segments that have been transmitted more than once, without acknowledgment
+   */
+  uint32_t GetRetransmitsCount (void) const;
+
+  /**
    * \brief Return total bytes in flight
    *
-   * The routine follows the "SetPipe" function in RFC 6675
+   * The routine follows the "SetPipe" function in RFC 6675 and assumes that
+   * SACK is enabled for the session
    *
    * \param dupThresh duplicate ACK threshold
    * \param segmentSize segment size
@@ -294,10 +306,14 @@ public:
   /**
    * \brief Reset the sent list
    *
-   * Move all the packets (except the HEAD) from the sent list to the appList.
-   * The head is then marked as un-sacked, un-retransmitted, and lost.
+   * Move all but the first 'keepItems' packets from the sent list to the 
+   * appList.  By default, the HEAD of hte sent list is kept and all others
+   * moved to the appList.  All items kept on the sent list 
+   * are then marked as un-sacked, un-retransmitted, and lost.  
+   *
+   * \param keepItems Keep a number of items at the front of the sent list
    */
-  void ResetSentList ();
+  void ResetSentList (uint32_t keepItems = 1);
 
   /**
    * \brief Take the last segment sent and put it back into the un-sent list

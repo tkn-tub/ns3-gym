@@ -435,7 +435,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
 { 
   NS_LOG_DEBUG ("Starting test case 2");
   // Set up some default values for the simulation.
-  Config::SetDefault ("ns3::Queue::MaxPackets", UintegerValue (4));
+  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (4));
 
   NodeContainer n0n1;
   n0n1.Create (2);
@@ -534,7 +534,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
   //
   
   const uint32_t MSS = 536;
-  const uint32_t N_EVENTS = 40;
+  const uint32_t N_EVENTS = 39;
 
   CwndEvent event;
 
@@ -566,15 +566,15 @@ Ns3TcpCwndTestCase2::DoRun (void)
   // Process another partial ack
   VerifyCwndRun (21, 24, (MSS * 13)/2, MSS);
  
-  //Leaving fast recovery at event 25; set cwnd to 3 segments
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (25).m_newCwnd,  (MSS * 3), "Wrong new cwnd value in cwnd change event " << 25);  
+  // Leaving fast recovery at event 25; set cwnd to 4 segments as per RFC 2582
+  // Sec. 3 para. 5 (FlightSize is 18761 - 17153 = 1608; i.e. 3 segments)
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (25).m_newCwnd,  (MSS * 4), "Wrong new cwnd value in cwnd change event " << 25);  
   
   // Until ssthresh, each event will increase cwnd by MSS
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (26).m_newCwnd, (4 * MSS), "Wrong new cwnd value in cwnd change event " << 26); 
-  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (27).m_newCwnd, (5 * MSS), "Wrong new cwnd value in cwnd change event " << 27); 
+  NS_TEST_ASSERT_MSG_EQ (m_responses.Get (26).m_newCwnd, (5 * MSS), "Wrong new cwnd value in cwnd change event " << 26); 
   //In CongAvoid each event will increase cwnd by (MSS * MSS / cwnd)
   uint32_t cwnd = 5 * MSS;
-  for (uint32_t i = 28; i < N_EVENTS; ++i)
+  for (uint32_t i = 27; i < N_EVENTS; ++i)
     {
       double adder = static_cast<double> (MSS * MSS) / cwnd;
       adder = std::max (1.0, adder);
@@ -610,11 +610,8 @@ public:
 Ns3TcpCwndTestSuite::Ns3TcpCwndTestSuite ()
   : TestSuite ("ns3-tcp-cwnd", SYSTEM)
 {
-#if 0
-  // Re-enable when bug 2649 is fixed
   AddTestCase (new Ns3TcpCwndTestCase1, TestCase::QUICK);
   AddTestCase (new Ns3TcpCwndTestCase2, TestCase::QUICK);
-#endif
 }
 
 Ns3TcpCwndTestSuite ns3TcpCwndTestSuite;

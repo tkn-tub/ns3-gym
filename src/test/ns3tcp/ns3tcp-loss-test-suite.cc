@@ -128,6 +128,9 @@ Ns3TcpLossTestCase::Ns3TcpLossTestCase (std::string tcpModel, uint32_t testCase)
 void
 Ns3TcpLossTestCase::DoSetup (void)
 {
+  // This test was written before SACK was added to ns-3
+  Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (false));
+
   //
   // We expect there to be a file called ns3tcp-state-response-vectors.pcap in
   // the data directory
