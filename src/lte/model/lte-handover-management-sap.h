@@ -118,7 +118,7 @@ public:
   /**
    * Constructor
    *
-   * \param owner the owenr class
+   * \param owner the owner class
    */
   MemberLteHandoverManagementSapProvider (C* owner);
 
@@ -160,7 +160,7 @@ public:
   /**
    * Constructor
    *
-   * \param owner the owenr class
+   * \param owner the owner class
    */
   MemberLteHandoverManagementSapUser (C* owner);
 
