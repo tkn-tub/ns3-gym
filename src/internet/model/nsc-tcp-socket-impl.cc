@@ -424,6 +424,7 @@ NscTcpSocketImpl::Listen (void)
 void
 NscTcpSocketImpl::NSCWakeup ()
 {
+  NS_LOG_FUNCTION (this);
   switch (m_state) {
     case SYN_SENT:
       if (!m_nscTcpSocket->is_connected ())
@@ -433,7 +434,16 @@ NscTcpSocketImpl::NSCWakeup ()
     // fall through to schedule read/write events
     case ESTABLISHED:
       if (!m_txBuffer.empty ())
-        Simulator::ScheduleNow (&NscTcpSocketImpl::SendPendingData, this);
+        {
+          Simulator::ScheduleNow (&NscTcpSocketImpl::SendPendingData, this);
+        }
+      else
+        {
+          if (GetTxAvailable ())
+            {
+              NotifySend (GetTxAvailable ());
+            }
+        }
       Simulator::ScheduleNow (&NscTcpSocketImpl::ReadPendingData, this);
       break;
     case LISTEN:
@@ -699,8 +709,13 @@ bool NscTcpSocketImpl::SendPendingData (void)
 
   if (written > 0)
     {
+      NS_LOG_DEBUG ("Notifying data sent, remaining txbuffer size: " << m_txBufferSize);
       Simulator::ScheduleNow (&NscTcpSocketImpl::NotifyDataSent, this, ret);
       return true;
+    }
+  else
+    {
+      NS_LOG_DEBUG ("Not notifying data sent, return value " << ret);
     }
   return false;
 }
