@@ -6,7 +6,7 @@ import wutils
 NETANIM_RELEASE_NAME = "netanim-3.108"
 
 def build (bld) :
-    module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan', 'lr-wpan', 'energy', 'wave'])
+    module = bld.create_ns3_module ('netanim', ['internet', 'mobility', 'wimax', 'wifi', 'csma', 'lte', 'uan', 'lr-wpan', 'energy', 'wave', 'point-to-point-layout'])
     module.includes = '.'
     module.source = [ 'model/animation-interface.cc', ]
     netanim_test = bld.create_ns3_module_test_library('netanim')
