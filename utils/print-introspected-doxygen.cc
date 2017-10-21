@@ -916,6 +916,7 @@ PrintAttributeImplementations (std::ostream & os)
       { "Vector3D",       "Vector3D",       true,  "vector.h"           },
       { "VhtCapabilities","VhtCapabilities",true,  "vht-capabilities.h" },
       { "VhtOperation",   "VhtOperation",   true,  "vht-operation.h"    },
+      { "HtOperation",    "HtOperation",    true,  "ht-operation.h"  },
       { "Waypoint",       "Waypoint",       true,  "waypoint.h"         },
       { "WifiMode",       "WifiMode",       true,  "wifi-mode.h"        },
       

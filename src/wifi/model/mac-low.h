@@ -1093,8 +1093,6 @@ private:
     Time timestamp; //!< the timestamp
   }; //!< item structure
 
-  typedef struct Item Item;
-
   /**
    * typedef for an iterator for a list of DcfManager.
    */

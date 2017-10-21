@@ -489,6 +489,7 @@ HtOperation::DeserializeInformationField (Buffer::Iterator start,
   return length;
 }
 
+/// HtOperation
 ATTRIBUTE_HELPER_CPP (HtOperation);
 
 /**

@@ -38,7 +38,7 @@ struct IdealWifiRemoteStation : public WifiRemoteStation
   WifiMode m_lastMode;       //!< Mode most recently used to the remote station
 };
 
-// To avoid using the cache before a valid value has been cached
+/// To avoid using the cache before a valid value has been cached
 static const double CACHE_INITIAL_VALUE = -100;
 
 NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager);
