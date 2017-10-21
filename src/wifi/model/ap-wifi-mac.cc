@@ -200,9 +200,9 @@ ApWifiMac::GetShortSlotTimeEnabled (void) const
     }
   if (m_erpSupported == true && GetShortSlotTimeSupported () == true)
     {
-      for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+      for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
         {
-          if (m_stationManager->GetShortSlotTimeSupported (*i) == false)
+          if (m_stationManager->GetShortSlotTimeSupported (i->second) == false)
             {
               return false;
             }
@@ -233,9 +233,9 @@ bool
 ApWifiMac::IsNonGfHtStasPresent (void) const
 {
   bool isNonGfHtStasPresent = false;
-  for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+  for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
     {
-      if (m_stationManager->GetGreenfieldSupported (*i) == false)
+      if (m_stationManager->GetGreenfieldSupported (i->second) == false)
         {
           isNonGfHtStasPresent = true;
           break;
@@ -249,13 +249,13 @@ uint8_t
 ApWifiMac::GetVhtOperationalChannelWidth (void) const
 {
   uint8_t channelWidth = m_phy->GetChannelWidth ();
-  for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+  for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
     {
-      if (m_stationManager->GetVhtSupported (*i))
+      if (m_stationManager->GetVhtSupported (i->second))
         {
-          if (m_stationManager->GetChannelWidthSupported (*i) < channelWidth)
+          if (m_stationManager->GetChannelWidthSupported (i->second) < channelWidth)
             {
-              channelWidth = m_stationManager->GetChannelWidthSupported (*i);
+              channelWidth = m_stationManager->GetChannelWidthSupported (i->second);
             }
         }
     }
@@ -555,12 +555,12 @@ ApWifiMac::GetHtOperation (void) const
         }
       uint8_t maxSpatialStream = m_phy->GetMaxSupportedTxSpatialStreams ();
       uint8_t nMcs = m_phy->GetNMcs ();
-      for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+      for (std::map<uint16_t, Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
         {
-          if (m_stationManager->GetHtSupported (*i))
+          if (m_stationManager->GetHtSupported (i->second))
             {
               uint64_t maxSupportedRateByHtSta = 0; //in bit/s
-              for (uint8_t j = 0; j < (std::min (nMcs, m_stationManager->GetNMcsSupported (*i))); j++)
+              for (uint8_t j = 0; j < (std::min (nMcs, m_stationManager->GetNMcsSupported (i->second))); j++)
                 {
                   WifiMode mcs = m_phy->GetMcs (j);
                   if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
@@ -569,7 +569,7 @@ ApWifiMac::GetHtOperation (void) const
                     }
                   uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
                   NS_ASSERT (nss > 0 && nss < 5);
-                  uint64_t dataRate = mcs.GetDataRate (m_stationManager->GetChannelWidthSupported (*i), m_stationManager->GetShortGuardInterval (*i) ? 400 : 800, nss);
+                  uint64_t dataRate = mcs.GetDataRate (m_stationManager->GetChannelWidthSupported (i->second), m_stationManager->GetShortGuardInterval (i->second) ? 400 : 800, nss);
                   if (dataRate > maxSupportedRateByHtSta)
                     {
                       maxSupportedRateByHtSta = dataRate;
@@ -579,13 +579,13 @@ ApWifiMac::GetHtOperation (void) const
                 {
                   maxSupportedRate = maxSupportedRateByHtSta;
                 }
-              if (m_stationManager->GetNMcsSupported (*i) < nMcs)
+              if (m_stationManager->GetNMcsSupported (i->second) < nMcs)
                 {
-                  nMcs = m_stationManager->GetNMcsSupported (*i);
+                  nMcs = m_stationManager->GetNMcsSupported (i->second);
                 }
-              if (m_stationManager->GetNumberOfSupportedStreams (*i) < maxSpatialStream)
+              if (m_stationManager->GetNumberOfSupportedStreams (i->second) < maxSpatialStream)
                 {
-                  maxSpatialStream = m_stationManager->GetNumberOfSupportedStreams (*i);
+                  maxSpatialStream = m_stationManager->GetNumberOfSupportedStreams (i->second);
                 }
             }
         }
@@ -736,7 +736,9 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
   if (success)
     {
       code.SetSuccess ();
-      m_staList.push_back (to);
+      uint16_t aid = GetNextAssociationId ();
+      m_staList.insert (std::make_pair (aid, to));
+      assoc.SetAssociationId (aid);
     }
   else
     {
@@ -1147,11 +1149,11 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           else if (hdr->IsDisassociation ())
             {
               m_stationManager->RecordDisassociated (from);
-              for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+              for (std::map<uint16_t, Mac48Address>::const_iterator j = m_staList.begin (); j != m_staList.end (); j++)
                 {
-                  if ((*i) == from)
+                  if (j->second == from)
                     {
-                      m_staList.erase (i);
+                      m_staList.erase (j);
                       break;
                     }
                 }
@@ -1259,6 +1261,21 @@ ApWifiMac::GetRifsMode (void) const
       m_stationManager->SetRifsPermitted (false);
     }
   return rifsMode;
+}
+
+uint16_t
+ApWifiMac::GetNextAssociationId (void)
+{
+  //Return the first free AID value between 1 and 2007
+  for (uint16_t nextAid = 1; nextAid <= 2007; nextAid++)
+    {
+      if (m_staList.find (nextAid) == m_staList.end ())
+        {
+          return nextAid;
+        }
+    }
+  NS_ASSERT_MSG (false, "No free association ID available!");
+  return 0;
 }
 
 } //namespace ns3

@@ -41,6 +41,7 @@ Bugs fixed
 - Bug 2827 - wifi: Active scanning not working with 802.11n/ac/ax
 - Bug 2836 - wifi: Missing VHT information in radiotap header when A-MPDU is used
 - Bug 2843 - spectrum, wifi: Incorrect channel width and center frequency provided for non-HT PPDUs when building SpectralDensity
+- Bug 2848 - wifi: Association ID not correctly set upon association
 
 Known issues
 ------------
