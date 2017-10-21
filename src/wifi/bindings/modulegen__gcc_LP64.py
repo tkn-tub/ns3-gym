@@ -2295,7 +2295,7 @@ def register_Ns3DataRate_methods(root_module, cls):
     cls.add_method('CalculateTxTime', 
                    'double', 
                    [param('uint32_t', 'bytes')], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## data-rate.h (module 'network'): uint64_t ns3::DataRate::GetBitRate() const [member function]
     cls.add_method('GetBitRate', 
                    'uint64_t', 
@@ -3133,7 +3133,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -4620,7 +4620,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -4878,7 +4879,7 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_method('Default', 
                    'ns3::WifiHelper', 
                    [], 
-                   is_static=True)
+                   is_static=True, deprecated=True)
     ## wifi-helper.h (module 'wifi'): static void ns3::WifiHelper::EnableLogComponents() [member function]
     cls.add_method('EnableLogComponents', 
                    'void', 
@@ -11677,11 +11678,6 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('GetNextPacket', 
                    'ns3::Ptr< ns3::Packet const >', 
                    [param('ns3::WifiMacHeader &', 'hdr')])
-    ## block-ack-manager.h (module 'wifi'): uint32_t ns3::BlockAckManager::GetNextPacketSize() const [member function]
-    cls.add_method('GetNextPacketSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
     ## block-ack-manager.h (module 'wifi'): uint16_t ns3::BlockAckManager::GetSeqNumOfNextRetryPacket(ns3::Mac48Address recipient, uint8_t tid) const [member function]
     cls.add_method('GetSeqNumOfNextRetryPacket', 
                    'uint16_t', 
@@ -11696,11 +11692,6 @@ def register_Ns3BlockAckManager_methods(root_module, cls):
     cls.add_method('HasBar', 
                    'bool', 
                    [param('ns3::Bar &', 'bar')])
-    ## block-ack-manager.h (module 'wifi'): bool ns3::BlockAckManager::HasOtherFragments(uint16_t sequenceNumber) const [member function]
-    cls.add_method('HasOtherFragments', 
-                   'bool', 
-                   [param('uint16_t', 'sequenceNumber')], 
-                   is_const=True)
     ## block-ack-manager.h (module 'wifi'): bool ns3::BlockAckManager::HasPackets() const [member function]
     cls.add_method('HasPackets', 
                    'bool', 
@@ -12817,11 +12808,6 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::WifiMacHeader const &', 'hdr')], 
                    visibility='protected')
-    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::NeedsAccess() const [member function]
-    cls.add_method('NeedsAccess', 
-                   'bool', 
-                   [], 
-                   is_const=True, visibility='protected', is_virtual=True)
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NextFragment() [member function]
     cls.add_method('NextFragment', 
                    'void', 
@@ -13661,16 +13647,6 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    'ns3::Ptr< ns3::MsduAggregator >', 
                    [], 
                    is_const=True)
-    ## edca-txop-n.h (module 'wifi'): uint32_t ns3::EdcaTxopN::GetNOutstandingPacketsInBa(ns3::Mac48Address address, uint8_t tid) const [member function]
-    cls.add_method('GetNOutstandingPacketsInBa', 
-                   'uint32_t', 
-                   [param('ns3::Mac48Address', 'address'), param('uint8_t', 'tid')], 
-                   is_const=True)
-    ## edca-txop-n.h (module 'wifi'): uint32_t ns3::EdcaTxopN::GetNRetryNeededPackets(ns3::Mac48Address recipient, uint8_t tid) const [member function]
-    cls.add_method('GetNRetryNeededPackets', 
-                   'uint32_t', 
-                   [param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')], 
-                   is_const=True)
     ## edca-txop-n.h (module 'wifi'): uint16_t ns3::EdcaTxopN::GetNextSequenceNumberFor(ns3::WifiMacHeader * hdr) [member function]
     cls.add_method('GetNextSequenceNumberFor', 
                    'uint16_t', 
@@ -13737,11 +13713,6 @@ def register_Ns3EdcaTxopN_methods(root_module, cls):
                    [])
     ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedFragmentation() const [member function]
     cls.add_method('NeedFragmentation', 
-                   'bool', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## edca-txop-n.h (module 'wifi'): bool ns3::EdcaTxopN::NeedsAccess() const [member function]
-    cls.add_method('NeedsAccess', 
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
@@ -17452,7 +17423,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     cls.add_method('GetMean', 
                    'double', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
     cls.add_method('GetScale', 
                    'double', 
@@ -18536,22 +18507,6 @@ def register_Ns3StaWifiMac_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet'), param('ns3::Mac48Address', 'to')], 
                    is_virtual=True)
-    ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetMaxMissedBeacons(uint32_t missed) [member function]
-    cls.add_method('SetMaxMissedBeacons', 
-                   'void', 
-                   [param('uint32_t', 'missed')])
-    ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetProbeRequestTimeout(ns3::Time timeout) [member function]
-    cls.add_method('SetProbeRequestTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'timeout')])
-    ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::SetAssocRequestTimeout(ns3::Time timeout) [member function]
-    cls.add_method('SetAssocRequestTimeout', 
-                   'void', 
-                   [param('ns3::Time', 'timeout')])
-    ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::StartActiveAssociation() [member function]
-    cls.add_method('StartActiveAssociation', 
-                   'void', 
-                   [])
     ## sta-wifi-mac.h (module 'wifi'): void ns3::StaWifiMac::Receive(ns3::Ptr<ns3::Packet> packet, ns3::WifiMacHeader const * hdr) [member function]
     cls.add_method('Receive', 
                    'void', 
@@ -19808,10 +19763,6 @@ def register_Ns3ApWifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_const=True)
-    ## ap-wifi-mac.h (module 'wifi'): void ns3::ApWifiMac::StartBeaconing() [member function]
-    cls.add_method('StartBeaconing', 
-                   'void', 
-                   [])
     ## ap-wifi-mac.h (module 'wifi'): bool ns3::ApWifiMac::GetShortSlotTimeEnabled() const [member function]
     cls.add_method('GetShortSlotTimeEnabled', 
                    'bool', 
