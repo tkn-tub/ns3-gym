@@ -841,35 +841,6 @@ BlockAckManager::TearDownBlockAck (Mac48Address recipient, uint8_t tid)
   DestroyAgreement (recipient, tid);
 }
 
-bool
-BlockAckManager::HasOtherFragments (uint16_t sequenceNumber) const
-{
-  NS_LOG_FUNCTION (this << sequenceNumber);
-  bool retVal = false;
-  if (m_retryPackets.size () > 0)
-    {
-      Item next = *(m_retryPackets.front ());
-      if (next.hdr.GetSequenceNumber () == sequenceNumber)
-        {
-          retVal = true;
-        }
-    }
-  return retVal;
-}
-
-uint32_t
-BlockAckManager::GetNextPacketSize (void) const
-{
-  NS_LOG_FUNCTION (this);
-  uint32_t size = 0;
-  if (m_retryPackets.size () > 0)
-    {
-      Item next = *(m_retryPackets.front ());
-      size = next.packet->GetSize ();
-    }
-  return size;
-}
-
 bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient)
 {
   //The standard says the BAR gets discarded when all MSDUs lifetime expires

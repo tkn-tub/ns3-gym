@@ -58,12 +58,6 @@ public:
      */
     Ptr<const Packet> GetPacket (void) const;
     /**
-     * Return the duration of the signal.
-     *
-     * \return the duration of the signal
-     */
-    Time GetDuration (void) const;
-    /**
      * Return the start time of the signal.
      *
      * \return the start time of the signal

@@ -301,14 +301,6 @@ protected:
 
   /* dcf notifications forwarded here */
   /**
-   * Check if the DCF requires access.
-   *
-   * \return true if the DCF requires access,
-   *         false otherwise
-   */
-  virtual bool NeedsAccess (void) const;
-
-  /**
    * Notify the DCF that access has been granted.
    */
   virtual void NotifyAccessGranted (void);

@@ -286,22 +286,6 @@ public:
    */
   void TearDownBlockAck (Mac48Address recipient, uint8_t tid);
   /**
-   * \param sequenceNumber Sequence number of the packet which fragment is
-   * part of.
-   * \return true if another fragment with the given sequence number is scheduled
-   * for retransmission.
-   *
-   * Returns true if another fragment with sequence number <i>sequenceNumber</i> is scheduled
-   * for retransmission.
-   */
-  bool HasOtherFragments (uint16_t sequenceNumber) const;
-  /**
-   * \return the size of the next packet that needs retransmission
-   *
-   * Returns size of the next packet that needs retransmission.
-   */
-  uint32_t GetNextPacketSize (void) const;
-  /**
    * \param maxDelay Max delay for a buffered packet.
    *
    * This method is always called by ns3::WifiMacQueue object and sets max delay equals

@@ -101,10 +101,6 @@ public:
    */
   Time GetBeaconInterval (void) const;
   /**
-   * Start beacon transmission immediately.
-   */
-  void StartBeaconing (void);
-  /**
    * Determine whether short slot time should be enabled or not in the BSS.
    * Typically, true is returned only when there is no non-erp stations associated
    * to the AP, and that short slot time is supported by the AP and by all other

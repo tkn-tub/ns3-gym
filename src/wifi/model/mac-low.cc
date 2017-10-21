@@ -1253,12 +1253,6 @@ MacLow::GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpd
 }
 
 WifiTxVector
-MacLow::GetCtsToSelfTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
-{
-  return m_stationManager->GetCtsToSelfTxVector (hdr, packet);
-}
-
-WifiTxVector
 MacLow::GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
 {
   Mac48Address to = hdr->GetAddr1 ();

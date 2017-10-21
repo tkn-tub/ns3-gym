@@ -106,34 +106,6 @@ StaWifiMac::~StaWifiMac ()
 }
 
 void
-StaWifiMac::SetMaxMissedBeacons (uint32_t missed)
-{
-  NS_LOG_FUNCTION (this << missed);
-  m_maxMissedBeacons = missed;
-}
-
-void
-StaWifiMac::SetProbeRequestTimeout (Time timeout)
-{
-  NS_LOG_FUNCTION (this << timeout);
-  m_probeRequestTimeout = timeout;
-}
-
-void
-StaWifiMac::SetAssocRequestTimeout (Time timeout)
-{
-  NS_LOG_FUNCTION (this << timeout);
-  m_assocRequestTimeout = timeout;
-}
-
-void
-StaWifiMac::StartActiveAssociation (void)
-{
-  NS_LOG_FUNCTION (this);
-  TryToEnsureAssociated ();
-}
-
-void
 StaWifiMac::SetActiveProbing (bool enable)
 {
   NS_LOG_FUNCTION (this << enable);

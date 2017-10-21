@@ -132,24 +132,6 @@ public:
    */
   bool GetBaAgreementExists (Mac48Address address, uint8_t tid) const;
   /**
-   * \param address recipient address of peer station involved in block ack mechanism.
-   * \param tid traffic ID.
-   *
-   * \return the number of packets buffered for a specified agreement.
-   *
-   * Returns number of packets buffered for a specified agreement.
-   */
-  uint32_t GetNOutstandingPacketsInBa (Mac48Address address, uint8_t tid) const;
-  /**
-   * \param recipient address of peer station involved in block ack mechanism.
-   * \param tid traffic ID.
-   *
-   * \return the number of packets for a specific agreement that need retransmission.
-   *
-   * Returns number of packets for a specific agreement that need retransmission.
-   */
-  uint32_t GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const;
-  /**
    * \param recipient address of peer station involved in block ack mechanism.
    * \param tid Ttraffic ID of transmitted packet.
    *
@@ -159,13 +141,6 @@ public:
   void CompleteAmpduTransfer (Mac48Address recipient, uint8_t tid);
 
   /* dcf notifications forwarded here */
-  /**
-   * Check if the EDCAF requires access.
-   *
-   * \return true if the EDCAF requires access,
-   *         false otherwise.
-   */
-  bool NeedsAccess (void) const;
   /**
    * Notify the EDCAF that access has been granted.
    */

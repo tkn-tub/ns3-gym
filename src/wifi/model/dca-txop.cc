@@ -353,13 +353,6 @@ DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
   return fragment;
 }
 
-bool
-DcaTxop::NeedsAccess (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return !m_queue->IsEmpty () || m_currentPacket != 0;
-}
-
 void
 DcaTxop::NotifyAccessGranted (void)
 {

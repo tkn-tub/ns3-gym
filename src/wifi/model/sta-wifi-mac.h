@@ -58,31 +58,6 @@ public:
    */
   void Enqueue (Ptr<const Packet> packet, Mac48Address to);
 
-  /**
-   * \param missed the number of beacons which must be missed
-   * before a new association sequence is started.
-   */
-  void SetMaxMissedBeacons (uint32_t missed);
-  /**
-   * \param timeout
-   *
-   * If no probe response is received within the specified
-   * timeout, the station sends a new probe request.
-   */
-  void SetProbeRequestTimeout (Time timeout);
-  /**
-   * \param timeout
-   *
-   * If no association response is received within the specified
-   * timeout, the station sends a new association request.
-   */
-  void SetAssocRequestTimeout (Time timeout);
-
-  /**
-   * Start an active association sequence immediately.
-   */
-  void StartActiveAssociation (void);
-
 
 private:
   /**
