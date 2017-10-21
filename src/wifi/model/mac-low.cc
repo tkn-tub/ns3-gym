@@ -2896,7 +2896,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                   else
                     {
                       Ptr<const WifiMacQueueItem> item = queue->PeekByTidAndAddress (tid,
-                                                                 WifiMacHeader::ADDR1, hdr.GetAddr1 ());
+                                                                                     WifiMacHeader::ADDR1, hdr.GetAddr1 ());
                       if (item != 0)
                         {
                           peekedPacket = item->GetPacket ();

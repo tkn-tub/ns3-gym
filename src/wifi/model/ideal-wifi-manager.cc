@@ -121,7 +121,7 @@ IdealWifiManager::DoInitialize ()
       nModes = GetPhy ()->GetNMcs ();
       for (uint32_t i = 0; i < nModes; i++)
         {
-          for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j*=2)
+          for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j *= 2)
             {
               txVector.SetChannelWidth (j);
               mode = GetPhy ()->GetMcs (i);
@@ -329,8 +329,8 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                   // Derive NSS from the MCS index. There is a different mode for each possible NSS value.
                   uint8_t nss = (mode.GetMcsValue () / 8) + 1;
                   txVector.SetNss (nss);
-                  if (WifiPhy::IsValidTxVector (txVector) == false ||
-                      nss > std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)))
+                  if (WifiPhy::IsValidTxVector (txVector) == false
+                      || nss > std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)))
                     {
                       NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
                                     " nss " << (uint16_t) nss << " width " <<
@@ -340,7 +340,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                   double threshold = GetSnrThreshold (txVector);
                   uint64_t dataRate = mode.GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), nss);
                   NS_LOG_DEBUG ("Testing mode " << mode.GetUniqueName () <<
-                                " data rate " << dataRate << 
+                                " data rate " << dataRate <<
                                 " threshold " << threshold  << " last snr observed " <<
                                 station->m_lastSnrObserved << " cached " <<
                                 station->m_lastSnrCached);
@@ -355,7 +355,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                       maxMode = mode;
                       selectedNss = nss;
                     }
-                 }
+                }
               else if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
                 {
                   guardInterval = std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800);
