@@ -8381,11 +8381,6 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## wifi-mac-header.h (module 'wifi'): ns3::WifiMacHeader::QosAckPolicy ns3::WifiMacHeader::GetQosAckPolicy() const [member function]
-    cls.add_method('GetQosAckPolicy', 
-                   'ns3::WifiMacHeader::QosAckPolicy', 
-                   [], 
-                   is_const=True)
     ## wifi-mac-header.h (module 'wifi'): uint8_t ns3::WifiMacHeader::GetQosTid() const [member function]
     cls.add_method('GetQosTid', 
                    'uint8_t', 
@@ -8394,11 +8389,6 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     ## wifi-mac-header.h (module 'wifi'): uint8_t ns3::WifiMacHeader::GetQosTxopLimit() const [member function]
     cls.add_method('GetQosTxopLimit', 
                    'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## wifi-mac-header.h (module 'wifi'): uint16_t ns3::WifiMacHeader::GetRawDuration() const [member function]
-    cls.add_method('GetRawDuration', 
-                   'uint16_t', 
                    [], 
                    is_const=True)
     ## wifi-mac-header.h (module 'wifi'): uint16_t ns3::WifiMacHeader::GetSequenceControl() const [member function]
@@ -8709,20 +8699,12 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     cls.add_method('SetQosAmsdu', 
                    'void', 
                    [])
-    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosBlockAck() [member function]
-    cls.add_method('SetQosBlockAck', 
-                   'void', 
-                   [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosEosp() [member function]
     cls.add_method('SetQosEosp', 
                    'void', 
                    [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosMeshControlPresent() [member function]
     cls.add_method('SetQosMeshControlPresent', 
-                   'void', 
-                   [])
-    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNoAck() [member function]
-    cls.add_method('SetQosNoAck', 
                    'void', 
                    [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNoAmsdu() [member function]
@@ -8737,10 +8719,6 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     cls.add_method('SetQosNoMeshControlPresent', 
                    'void', 
                    [])
-    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosNormalAck() [member function]
-    cls.add_method('SetQosNormalAck', 
-                   'void', 
-                   [])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetQosTid(uint8_t tid) [member function]
     cls.add_method('SetQosTid', 
                    'void', 
@@ -8749,10 +8727,6 @@ def register_Ns3WifiMacHeader_methods(root_module, cls):
     cls.add_method('SetQosTxopLimit', 
                    'void', 
                    [param('uint8_t', 'txop')])
-    ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetRawDuration(uint16_t duration) [member function]
-    cls.add_method('SetRawDuration', 
-                   'void', 
-                   [param('uint16_t', 'duration')])
     ## wifi-mac-header.h (module 'wifi'): void ns3::WifiMacHeader::SetRetry() [member function]
     cls.add_method('SetRetry', 
                    'void', 
@@ -13119,11 +13093,6 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## device-energy-model.h (module 'energy'): double ns3::DeviceEnergyModel::GetTotalEnergyConsumption() const [member function]
-    cls.add_method('GetTotalEnergyConsumption', 
-                   'double', 
-                   [], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): static ns3::TypeId ns3::DeviceEnergyModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -18415,8 +18384,6 @@ def register_Ns3Ssid_methods(root_module, cls):
     cls.add_constructor([])
     ## ssid.h (module 'wifi'): ns3::Ssid::Ssid(std::string s) [constructor]
     cls.add_constructor([param('std::string', 's')])
-    ## ssid.h (module 'wifi'): ns3::Ssid::Ssid(char const * ssid, uint8_t length) [constructor]
-    cls.add_constructor([param('char const *', 'ssid'), param('uint8_t', 'length')])
     ## ssid.h (module 'wifi'): uint8_t ns3::Ssid::DeserializeInformationField(ns3::Buffer::Iterator start, uint8_t length) [member function]
     cls.add_method('DeserializeInformationField', 
                    'uint8_t', 
@@ -19504,11 +19471,6 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-radio-energy-model.h (module 'wifi'): double ns3::WifiRadioEnergyModel::GetTotalEnergyConsumption() const [member function]
-    cls.add_method('GetTotalEnergyConsumption', 
-                   'double', 
-                   [], 
-                   is_const=True, is_virtual=True)
     ## wifi-radio-energy-model.h (module 'wifi'): double ns3::WifiRadioEnergyModel::GetTxCurrentA() const [member function]
     cls.add_method('GetTxCurrentA', 
                    'double', 
