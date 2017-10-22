@@ -81,13 +81,6 @@ SimpleDeviceEnergyModel::GetNode () const
   return m_node;
 }
 
-double
-SimpleDeviceEnergyModel::GetTotalEnergyConsumption (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_totalEnergyConsumption;
-}
-
 void
 SimpleDeviceEnergyModel::SetCurrentA (double current)
 {

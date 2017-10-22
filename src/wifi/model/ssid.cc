@@ -51,23 +51,6 @@ Ssid::Ssid (std::string s)
     }
 }
 
-Ssid::Ssid (char const ssid[32], uint8_t length)
-{
-  NS_ASSERT (length <= 32);
-  uint8_t len = 0;
-  while (len < length)
-    {
-      m_ssid[len] = ssid[len];
-      len++;
-    }
-  m_length = length;
-  while (len < 33)
-    {
-      m_ssid[len] = 0;
-      len++;
-    }
-}
-
 bool
 Ssid::IsEqual (const Ssid& o) const
 {

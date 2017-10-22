@@ -43,13 +43,6 @@ public:
    * \param s SSID in string
    */
   Ssid (std::string s);
-  /**
-   * Create SSID from a given array of char and given length.
-   *
-   * \param ssid
-   * \param length
-   */
-  Ssid (char const ssid[32], uint8_t length);
 
   /**
    * Check if the two SSIDs are equal.

@@ -205,12 +205,6 @@ public:
    */
   void SetType (WifiMacType type);
   /**
-   * Set the Duration/ID field with the given raw uint16_t value.
-   *
-   * \param duration the raw duration in uint16_t
-   */
-  void SetRawDuration (uint16_t duration);
-  /**
    * Set the Duration/ID field with the given duration (Time object).
    * The method converts the given time to microseconds.
    *
@@ -271,18 +265,6 @@ public:
    * \param policy
    */
   void SetQosAckPolicy (QosAckPolicy policy);
-  /**
-   * Set the QoS ACK policy in the QoS control field to normal ACK.
-   */
-  void SetQosNormalAck (void);
-  /**
-   * Set the QoS ACK policy in the QoS control field to block ACK.
-   */
-  void SetQosBlockAck (void);
-  /**
-   * Set the QoS ACK policy in the QoS control field to no ACK.
-   */
-  void SetQosNoAck (void);
   /**
    * Set that A-MSDU is present.
    */
@@ -489,12 +471,6 @@ public:
    */
   bool IsMultihopAction () const;
   /**
-   * Return the raw duration from the Duration/ID field.
-   *
-   * \return the raw duration from the Duration/ID field
-   */
-  uint16_t GetRawDuration (void) const;
-  /**
    * Return the duration from the Duration/ID field (Time object).
    *
    * \return the duration from the Duration/ID field (Time object)
@@ -567,12 +543,6 @@ public:
    * \return the Traffic ID of a QoS header
    */
   uint8_t GetQosTid (void) const;
-  /**
-   * Return the QoS ACK Policy of a QoS header.
-   *
-   * \return the QoS ACK Policy of a QoS header
-   */
-  QosAckPolicy GetQosAckPolicy (void) const;
   /**
    * Return the TXOP limit.
    *

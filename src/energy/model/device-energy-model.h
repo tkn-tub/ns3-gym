@@ -63,13 +63,6 @@ public:
   virtual void SetEnergySource (Ptr<EnergySource> source) = 0;
 
   /**
-   * \returns Total energy consumption of the device.
-   *
-   * DeviceEnergyModel records its own energy consumption during simulation.
-   */
-  virtual double GetTotalEnergyConsumption (void) const = 0;
-
-  /**
    * \param newState New state the device is in.
    *
    * DeviceEnergyModel is a state based model. This function is implemented by
