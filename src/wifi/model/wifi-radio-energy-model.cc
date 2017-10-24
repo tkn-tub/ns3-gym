@@ -119,7 +119,41 @@ double
 WifiRadioEnergyModel::GetTotalEnergyConsumption (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_totalEnergyConsumption;
+
+  Time duration = Simulator::Now () - m_lastUpdateTime;
+  NS_ASSERT (duration.GetNanoSeconds () >= 0); // check if duration is valid
+
+  // energy to decrease = current * voltage * time
+  double energyToDecrease = 0.0;
+  double supplyVoltage = m_source->GetSupplyVoltage ();
+  switch (m_currentState)
+    {
+    case WifiPhy::IDLE:
+      energyToDecrease = duration.GetSeconds () * m_idleCurrentA * supplyVoltage;
+      break;
+    case WifiPhy::CCA_BUSY:
+      energyToDecrease = duration.GetSeconds () * m_ccaBusyCurrentA * supplyVoltage;
+      break;
+    case WifiPhy::TX:
+      energyToDecrease = duration.GetSeconds () * m_txCurrentA * supplyVoltage;
+      break;
+    case WifiPhy::RX:
+      energyToDecrease = duration.GetSeconds () * m_rxCurrentA * supplyVoltage;
+      break;
+    case WifiPhy::SWITCHING:
+      energyToDecrease = duration.GetSeconds () * m_switchingCurrentA * supplyVoltage;
+      break;
+    case WifiPhy::SLEEP:
+      energyToDecrease = duration.GetSeconds () * m_sleepCurrentA * supplyVoltage;
+      break;
+    default:
+      NS_FATAL_ERROR ("WifiRadioEnergyModel:Undefined radio state: " << m_currentState);
+    }
+
+  // notify energy source
+  m_source->UpdateEnergySource ();
+
+  return m_totalEnergyConsumption + energyToDecrease;
 }
 
 double
