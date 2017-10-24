@@ -126,33 +126,33 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize, Ptr<Node> n,
 void
 RemainingEnergy (double oldValue, double remainingEnergy)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
-            << "s Current remaining energy = " << remainingEnergy << "J" << std::endl;
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
+                 << "s Current remaining energy = " << remainingEnergy << "J");
 }
 
 /// Trace function for total energy consumption at node.
 void
 TotalEnergy (double oldValue, double totalEnergy)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
-            << "s Total energy consumed by radio = " << totalEnergy << "J" << std::endl;
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
+                 << "s Total energy consumed by radio = " << totalEnergy << "J");
 }
 
 /// Trace function for the power harvested by the energy harvester.
 void
 HarvestedPower (double oldValue, double harvestedPower)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
-            << "s Current harvested power = " << harvestedPower << " W" << std::endl;
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
+                 << "s Current harvested power = " << harvestedPower << " W");
 }
 
 /// Trace function for the total energy harvested by the node.
 void
 TotalEnergyHarvested (double oldValue, double TotalEnergyHarvested)
 {
-  std::cout << Simulator::Now ().GetSeconds ()
-            << "s Total energy harvested by harvester = "
-            << TotalEnergyHarvested << " J" << std::endl;
+  NS_LOG_UNCOND (Simulator::Now ().GetSeconds ()
+                 << "s Total energy harvested by harvester = "
+                 << TotalEnergyHarvested << " J");
 }
 
 
@@ -322,6 +322,15 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
+
+  for (DeviceEnergyModelContainer::Iterator iter = deviceModels.Begin (); iter != deviceModels.End (); iter ++)
+    {
+      double energyConsumed = (*iter)->GetTotalEnergyConsumption ();
+      NS_LOG_UNCOND ("End of simulation (" << Simulator::Now ().GetSeconds ()
+                     << "s) Total energy consumed by radio = " << energyConsumed << "J");
+      NS_ASSERT (energyConsumed <= 1.0);
+    }
+
   Simulator::Destroy ();
 
   return 0;

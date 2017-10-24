@@ -119,6 +119,8 @@ main (int argc, char *argv[])
   LogComponentEnable ("WifiRadioEnergyModel", LOG_LEVEL_DEBUG);
    */
 
+  LogComponentEnable ("EnergyExample", LogLevel (LOG_PREFIX_TIME | LOG_PREFIX_NODE | LOG_LEVEL_INFO));
+
   std::string phyMode ("DsssRate1Mbps");
   double Prss = -80;            // dBm
   uint32_t PpacketSize = 200;   // bytes
@@ -266,6 +268,15 @@ main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (10.0));
   Simulator::Run ();
+
+  for (DeviceEnergyModelContainer::Iterator iter = deviceModels.Begin (); iter != deviceModels.End (); iter ++)
+    {
+      double energyConsumed = (*iter)->GetTotalEnergyConsumption ();
+      NS_LOG_UNCOND ("End of simulation (" << Simulator::Now ().GetSeconds ()
+                     << "s) Total energy consumed by radio = " << energyConsumed << "J");
+      NS_ASSERT (energyConsumed <= 0.1);
+    }
+
   Simulator::Destroy ();
 
   return 0;
