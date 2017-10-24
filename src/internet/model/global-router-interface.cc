@@ -838,7 +838,8 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
       // case.
       //
       ClearBridgesVisited ();
-      Ipv4Address desigRtr = FindDesignatedRouterForLink (nd);
+      Ipv4Address desigRtr;
+      desigRtr = FindDesignatedRouterForLink (nd);
 
       //
       // Let's double-check that any designated router we find out on our
@@ -848,10 +849,10 @@ GlobalRouter::ProcessSingleBroadcastLink (Ptr<NetDevice> nd, GlobalRoutingLSA *p
         {
           Ipv4Address networkHere = addrLocal.CombineMask (maskLocal);
           Ipv4Address networkThere = desigRtr.CombineMask (maskLocal);
-          NS_ABORT_MSG_UNLESS (networkHere == networkThere, 
+          NS_ABORT_MSG_UNLESS (networkHere == networkThere,
                                "GlobalRouter::ProcessSingleBroadcastLink(): Network number confusion");
         }
-      if (desigRtr == addrLocal) 
+      if (desigRtr == addrLocal)
         {
           c.Add (nd);
           NS_LOG_LOGIC ("Node " << node->GetId () << " elected a designated router");
