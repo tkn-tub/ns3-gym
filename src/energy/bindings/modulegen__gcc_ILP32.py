@@ -3880,6 +3880,11 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## device-energy-model.h (module 'energy'): double ns3::DeviceEnergyModel::GetTotalEnergyConsumption() const [member function]
+    cls.add_method('GetTotalEnergyConsumption', 
+                   'double', 
+                   [], 
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): static ns3::TypeId ns3::DeviceEnergyModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -5590,6 +5595,11 @@ def register_Ns3SimpleDeviceEnergyModel_methods(root_module, cls):
     ## simple-device-energy-model.h (module 'energy'): ns3::Ptr<ns3::Node> ns3::SimpleDeviceEnergyModel::GetNode() const [member function]
     cls.add_method('GetNode', 
                    'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## simple-device-energy-model.h (module 'energy'): double ns3::SimpleDeviceEnergyModel::GetTotalEnergyConsumption() const [member function]
+    cls.add_method('GetTotalEnergyConsumption', 
+                   'double', 
                    [], 
                    is_const=True, is_virtual=True)
     ## simple-device-energy-model.h (module 'energy'): static ns3::TypeId ns3::SimpleDeviceEnergyModel::GetTypeId() [member function]
