@@ -117,6 +117,13 @@ WifiRadioEnergyModel::SetEnergySource (const Ptr<EnergySource> source)
 }
 
 double
+WifiRadioEnergyModel::GetTotalEnergyConsumption (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_totalEnergyConsumption;
+}
+
+double
 WifiRadioEnergyModel::GetIdleCurrentA (void) const
 {
   NS_LOG_FUNCTION (this);

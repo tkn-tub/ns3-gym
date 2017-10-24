@@ -227,6 +227,13 @@ public:
    */
   void SetEnergySource (const Ptr<EnergySource> source);
 
+  /**
+   * \returns Total energy consumption of the wifi device.
+   *
+   * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
+   */
+  double GetTotalEnergyConsumption (void) const;
+
   // Setter & getters for state power consumption.
   /**
    * \brief Gets idle current.

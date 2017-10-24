@@ -70,6 +70,13 @@ public:
   virtual void SetEnergySource (Ptr<EnergySource> source);
 
   /**
+   * \returns Total energy consumption of the vehicle.
+   *
+   * Implements DeviceEnergyModel::GetTotalEnergyConsumption.
+   */
+  virtual double GetTotalEnergyConsumption (void) const;
+
+  /**
    * \param newState New state the device is in.
    *
    * Not implemented
