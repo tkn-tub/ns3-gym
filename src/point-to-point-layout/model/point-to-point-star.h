@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Define an object to create a dumbbell topology.
+// Define an object to create a star topology.
 
 #ifndef POINT_TO_POINT_STAR_HELPER_H
 #define POINT_TO_POINT_STAR_HELPER_H

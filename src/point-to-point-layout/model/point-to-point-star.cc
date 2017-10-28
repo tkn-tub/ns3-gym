@@ -14,6 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+// Implement an object to create a star topology.
+
 #include <cmath>
 #include <iostream>
 #include <sstream>
