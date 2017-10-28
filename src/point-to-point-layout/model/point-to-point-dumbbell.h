@@ -89,7 +89,7 @@ public:
   Ptr<Node> GetRight () const;
 
   /**
-   * \returns pointer to the i'th left side leaf node
+   * \returns pointer to the i'th right side leaf node
    * \param i node number
    */
   Ptr<Node> GetRight (uint32_t i) const;
@@ -104,7 +104,7 @@ public:
    * \returns an Ipv4Address of the i'th right leaf
    * \param i node number
    */
-  Ipv4Address GetRightIpv4Address (uint32_t i) const;
+  Ipv4Address GetRightIpv4Address (uint32_t i) const; // Get right leaf address
 
   /**
    * \returns an Ipv6Address of the i'th left leaf

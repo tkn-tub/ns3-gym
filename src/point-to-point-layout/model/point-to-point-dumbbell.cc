@@ -207,7 +207,7 @@ void PointToPointDumbbellHelper::AssignIpv6Addresses (Ipv6Address addrBase, Ipv6
 
 
 void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper left x/y
-                                              double lrx, double lry) // Lower right y
+                                              double lrx, double lry) // Lower right x/y
 {
   double xDist;
   double yDist;
@@ -279,7 +279,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
       // Insure did not exceed bounding box
       if (lnl.y < uly) 
         {
-          lnl.y = uly; // Set to upper right y
+          lnl.y = uly; // Set to upper left y
         }
       if (lnl.y > lry) 
         {
@@ -312,7 +312,7 @@ void PointToPointDumbbellHelper::BoundingBox (double ulx, double uly, // Upper l
       // Insure did not exceed bounding box
       if (rnl.y < uly) 
         {
-          rnl.y = uly; // Set to upper right y
+          rnl.y = uly; // Set to upper left y
         }
       if (rnl.y > lry) 
         {
