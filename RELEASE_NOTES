@@ -28,6 +28,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
 
 Known issues
 ------------

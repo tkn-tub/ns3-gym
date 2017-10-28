@@ -317,7 +317,7 @@ public:
    * \brief Deserialize and remove the header from the internal buffer.
    *
    * This method invokes Header::Deserialize (begin) and should be used for
-   * variable-length headers.
+   * fixed-length headers.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.

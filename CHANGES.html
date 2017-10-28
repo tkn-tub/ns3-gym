@@ -54,6 +54,7 @@ us a note on ns-developers mailing list.</p>
 <h1>Changes from ns-3.27 to ns-3-dev</h1>
 <h2>New API:</h2>
 <ul>
+  <li> When deserializing Packet contents, Header::Deserialize (Buffer::Iterator start) and Trailer::Deserialize (Buffer::Iterator start) can not successfully deserialize variable-length headers and trailers.  New variants of these methods that also include an 'end' parameter are now provided.</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
