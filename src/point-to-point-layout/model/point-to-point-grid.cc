@@ -16,6 +16,8 @@
  * Author: Josh Pelkey <jpelkey@gatech.edu>
  */
 
+// Implement an object to create a grid topology.
+
 #include "ns3/point-to-point-grid.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/point-to-point-helper.h"
@@ -270,7 +272,7 @@ PointToPointGridHelper::GetIpv6Address (uint32_t row, uint32_t col)
   if (row > m_nodes.size () - 1 ||
       col > m_nodes.at (row).GetN () - 1)
     {
-      NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv4Address.");
+      NS_FATAL_ERROR ("Index out of bounds in PointToPointGridHelper::GetIpv6Address.");
     }
 
   // Right now this just gets one of the addresses of the
