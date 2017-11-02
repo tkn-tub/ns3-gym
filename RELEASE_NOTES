@@ -29,6 +29,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
+- Bug 2764 - wifi: WifiSpectrumModelId doesn't distinguish 11ax from legacy
 
 Known issues
 ------------
