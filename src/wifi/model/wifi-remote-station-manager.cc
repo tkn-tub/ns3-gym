@@ -2118,7 +2118,7 @@ WifiRemoteStationManager::GetHeSupported (const WifiRemoteStation *station) cons
   return station->m_state->m_heSupported;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetNMcsSupported (const WifiRemoteStation *station) const
 {
   return station->m_state->m_operationalMcsSet.size ();
@@ -2143,6 +2143,30 @@ uint8_t
 WifiRemoteStationManager::GetChannelWidthSupported (Mac48Address address) const
 {
   return LookupState (address)->m_channelWidth;
+}
+
+bool
+WifiRemoteStationManager::GetShortGuardInterval (Mac48Address address) const
+{
+  return LookupState (address)->m_shortGuardInterval;
+}
+
+uint8_t
+WifiRemoteStationManager::GetNumberOfSupportedStreams (Mac48Address address) const
+{
+  return LookupState (address)->m_streams;
+}
+
+uint8_t
+WifiRemoteStationManager::GetNMcsSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_operationalMcsSet.size ();
+}
+
+bool
+WifiRemoteStationManager::GetHtSupported (Mac48Address address) const
+{
+  return LookupState (address)->m_htSupported;
 }
 
 bool

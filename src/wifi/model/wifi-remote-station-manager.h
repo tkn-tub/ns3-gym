@@ -475,9 +475,43 @@ public:
    *
    * \param address the address of the station
    *
-   * \return he channel width supported by the station
+   * \return the channel width supported by the station
    */
   uint8_t GetChannelWidthSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports HT/VHT short guard interval.
+   *
+   * \param station the station being queried
+   *
+   * \return true if the station supports HT/VHT short guard interval,
+   *         false otherwise
+   */
+  bool GetShortGuardInterval (Mac48Address address) const;
+  /**
+   * Return the number of spatial streams supported by the station.
+   *
+   * \param address the address of the station
+   *
+   * \return the number of spatial streams supported by the station
+   */
+  uint8_t GetNumberOfSupportedStreams (Mac48Address address) const;
+  /**
+   * Return the number of MCS supported by the station.
+   *
+   * \param address the address of the station
+   *
+   * \return the number of MCS supported by the station
+   */
+  uint8_t GetNMcsSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports HT or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if HT is supported by the station,
+   *         false otherwise
+   */
+  bool GetHtSupported (Mac48Address address) const;
   /**
    * Return whether the station supports VHT or not.
    *
@@ -956,7 +990,7 @@ protected:
    *
    * \return the number of MCS supported by the given station
    */
-  uint32_t GetNMcsSupported (const WifiRemoteStation *station) const;
+  uint8_t GetNMcsSupported (const WifiRemoteStation *station) const;
   /**
    * Return whether non-ERP mode associated with the specified station at the specified index.
    *

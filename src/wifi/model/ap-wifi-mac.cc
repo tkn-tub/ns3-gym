@@ -516,6 +516,11 @@ ApWifiMac::GetHtOperation (void) const
       operation.SetHtSupported (1);
       operation.SetRifsMode (GetRifsMode ());
       operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
+      if (m_phy->GetChannelWidth () > 20)
+        {
+          operation.SetSecondaryChannelOffset (1);
+          operation.SetStaChannelWidth (1);
+        }
       if (m_nonHtStations.empty ())
         {
           operation.SetHtProtection (NO_PROTECTION);
@@ -524,6 +529,73 @@ ApWifiMac::GetHtOperation (void) const
         {
           operation.SetHtProtection (MIXED_MODE_PROTECTION);
         }
+      uint64_t maxSupportedRate = 0; //in bit/s
+      for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
+        {
+          WifiMode mcs = m_phy->GetMcs (i);
+          if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
+            {
+              continue;
+            }
+          uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
+          NS_ASSERT (nss > 0 && nss < 5);
+          uint64_t dataRate = mcs.GetDataRate (m_phy->GetChannelWidth (), m_phy->GetShortGuardInterval () ? 400 : 800, nss);
+          if (dataRate > maxSupportedRate)
+            {
+              maxSupportedRate = dataRate;
+              NS_LOG_DEBUG ("Updating maxSupportedRate to " << maxSupportedRate);
+            }
+        }
+      uint8_t maxSpatialStream = m_phy->GetMaxSupportedTxSpatialStreams ();
+      uint8_t nMcs = m_phy->GetNMcs ();
+      for (std::list<Mac48Address>::const_iterator i = m_staList.begin (); i != m_staList.end (); i++)
+        {
+          if (m_stationManager->GetHtSupported (*i))
+            {
+              uint64_t maxSupportedRateByHtSta = 0; //in bit/s
+              for (uint8_t j = 0; j < (std::min (nMcs, m_stationManager->GetNMcsSupported (*i))); j++)
+                {
+                  WifiMode mcs = m_phy->GetMcs (j);
+                  if (mcs.GetModulationClass () != WIFI_MOD_CLASS_HT)
+                    {
+                      continue;
+                    }
+                  uint8_t nss = (mcs.GetMcsValue () / 8) + 1;
+                  NS_ASSERT (nss > 0 && nss < 5);
+                  uint64_t dataRate = mcs.GetDataRate (m_stationManager->GetChannelWidthSupported (*i), m_stationManager->GetShortGuardInterval (*i) ? 400 : 800, nss);
+                  if (dataRate > maxSupportedRateByHtSta)
+                    {
+                      maxSupportedRateByHtSta = dataRate;
+                    }
+                }
+              if (maxSupportedRateByHtSta < maxSupportedRate)
+                {
+                  maxSupportedRate = maxSupportedRateByHtSta;
+                }
+              if (m_stationManager->GetNMcsSupported (*i) < nMcs)
+                {
+                  nMcs = m_stationManager->GetNMcsSupported (*i);
+                }
+              if (m_stationManager->GetNumberOfSupportedStreams (*i) < maxSpatialStream)
+                {
+                  maxSpatialStream = m_stationManager->GetNumberOfSupportedStreams (*i);
+                }
+            }
+        }
+      operation.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
+      operation.SetTxMcsSetDefined (nMcs > 0);
+      operation.SetTxMaxNSpatialStreams (maxSpatialStream);
+      //To be filled in once supported
+      operation.SetObssNonHtStasPresent (0);
+      operation.SetDualBeacon (0);
+      operation.SetDualCtsProtection (0);
+      operation.SetStbcBeacon (0);
+      operation.SetLSigTxopProtectionFullSupport (0);
+      operation.SetPcoActive (0);
+      operation.SetPhase (0);
+      operation.SetRxMcsBitmask (0);
+      operation.SetTxRxMcsSetUnequal (0);
+      operation.SetTxUnequalModulation (0);
     }
   return operation;
 }

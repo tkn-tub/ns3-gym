@@ -320,7 +320,7 @@ WifiPhy::GetTypeId (void)
                    PointerValue (0), //StringValue ("ns3::SimpleFrameCaptureModel"),
                    MakePointerAccessor (&WifiPhy::GetFrameCaptureModel,
                                         &WifiPhy::SetFrameCaptureModel),
-                   MakePointerChecker <FrameCaptureModel>())
+                   MakePointerChecker <FrameCaptureModel> ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
                      "has begun transmitting over the channel medium",
@@ -2439,8 +2439,8 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
       break;
     case WifiPhy::RX:
       NS_ASSERT (m_currentEvent != 0);
-      if (m_frameCaptureModel != 0 &&
-          m_frameCaptureModel->CaptureNewFrame(m_currentEvent, event))
+      if (m_frameCaptureModel != 0
+          && m_frameCaptureModel->CaptureNewFrame (m_currentEvent, event))
         {
           AbortCurrentReception ();
           NS_LOG_DEBUG ("Switch to new packet");
@@ -3514,7 +3514,7 @@ WifiPhy::IsValidTxVector (WifiTxVector txVector)
 bool
 WifiPhy::IsModeSupported (WifiMode mode) const
 {
-  for (uint32_t i = 0; i < GetNModes (); i++)
+  for (uint8_t i = 0; i < GetNModes (); i++)
     {
       if (mode == GetMode (i))
         {
@@ -3527,7 +3527,7 @@ WifiPhy::IsModeSupported (WifiMode mode) const
 bool
 WifiPhy::IsMcsSupported (WifiMode mcs) const
 {
-  for (uint32_t i = 0; i < GetNMcs (); i++)
+  for (uint8_t i = 0; i < GetNMcs (); i++)
     {
       if (mcs == GetMcs (i))
         {
@@ -3709,7 +3709,7 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
       NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
       NotifyRxBegin (packet);
       m_interference.NotifyRxStart ();
-    
+
       if (preamble != WIFI_PREAMBLE_NONE)
         {
           NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
