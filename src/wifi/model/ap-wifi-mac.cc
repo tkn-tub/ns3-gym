@@ -435,6 +435,7 @@ ApWifiMac::GetCapabilities (void) const
   CapabilityInformation capabilities;
   capabilities.SetShortPreamble (GetShortPreambleEnabled ());
   capabilities.SetShortSlotTime (GetShortSlotTimeEnabled ());
+  capabilities.SetEss ();
   return capabilities;
 }
 
