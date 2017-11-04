@@ -152,22 +152,14 @@ public:
   void StorePacket (Ptr<const Packet> packet, const WifiMacHeader &hdr, Time tStamp);
   /**
    * \param hdr 802.11 header of returned packet (if exists).
+   * \param removePacket flag to indicate whether the packet should be removed from the queue.
    *
    * \return the packet
    *
    * This methods returns a packet (if exists) indicated as not received in
    * corresponding block ack bitmap.
    */
-  Ptr<const Packet> GetNextPacket (WifiMacHeader &hdr);
-  /**
-   * \param hdr 802.11 header of returned packet (if exists).
-   *
-   * \return the packet
-   *
-   * This methods returns a packet (if exists) indicated as not received in
-   * corresponding block ack bitmap. This method doesn't remove the packet from this queue.
-   */
-  Ptr<const Packet> PeekNextPacket (WifiMacHeader &hdr);
+  Ptr<const Packet> GetNextPacket (WifiMacHeader &hdr, bool removePacket);
   /**
    * Returns true if the BAR is scheduled. Returns false otherwise.
    *
