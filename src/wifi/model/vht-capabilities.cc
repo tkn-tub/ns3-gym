@@ -256,35 +256,11 @@ VhtCapabilities::SetMaxAmpduLengthExponent (uint8_t exponent)
 }
 
 void
-VhtCapabilities::SetRxMcsMap (uint16_t map)
-{
-  //Set each element in the map accoriding to the 2 bits representing it page 98 in the 11ac standard
-  uint8_t n;
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      n = i * 2;
-      m_rxMcsMap[i] = (map >> n) & 0x03;
-    }
-}
-
-void
 VhtCapabilities::SetRxMcsMap (uint8_t mcs, uint8_t nss)
 {
   //MCS index should be at least 7 and should not exceed 9
   NS_ASSERT (mcs >= 7 && mcs <= 9);
   m_rxMcsMap[nss - 1] = mcs - 7; //1 = MCS 8; 2 = MCS 9
-}
-
-void
-VhtCapabilities::SetTxMcsMap (uint16_t map)
-{
-  //Set each element in the map accoriding to the 2 bits representing it page 98 in the 11ac standard
-  uint8_t n;
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      n = i * 2;
-      m_txMcsMap[i] = (map >> n) & 0x03;
-    }
 }
 
 void
