@@ -712,7 +712,6 @@ BlockAckManager::NotifyAgreementEstablished (Mac48Address recipient, uint8_t tid
   NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid) << startingSeq);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-
   it->second.first.SetState (OriginatorBlockAckAgreement::ESTABLISHED);
   it->second.first.SetStartingSequence (startingSeq);
 }
@@ -736,7 +735,6 @@ BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, ui
   Ptr<Packet> bar = 0;
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
-
   uint16_t nextSeq;
   if (GetNRetryNeededPackets (recipient, tid) > 0)
     {
@@ -781,13 +779,6 @@ BlockAckManager::SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, 
         }
     }
   return false;
-}
-
-void
-BlockAckManager::TearDownBlockAck (Mac48Address recipient, uint8_t tid)
-{
-  NS_LOG_FUNCTION (this << recipient << (uint16_t)tid);
-  DestroyAgreement (recipient, tid);
 }
 
 bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Mac48Address recipient)

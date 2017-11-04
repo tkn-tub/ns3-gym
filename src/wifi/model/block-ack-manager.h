@@ -270,14 +270,6 @@ public:
    */
   void SetBlockAckType (BlockAckType bAckType);
   /**
-   * \param recipient Address of station involved in block ack mechanism.
-   * \param tid Traffic ID.
-   *
-   * This method is invoked by EdcaTxopN object upon receipt of a DELBA frame
-   * from recipient. The relative block ack agreement is destroyed.
-   */
-  void TearDownBlockAck (Mac48Address recipient, uint8_t tid);
-  /**
    * \param maxDelay Max delay for a buffered packet.
    *
    * This method is always called by ns3::WifiMacQueue object and sets max delay equals
