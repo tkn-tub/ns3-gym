@@ -442,7 +442,6 @@ private:
    */
   struct Item
   {
-    Item ();
     /**
      * Constructor
      *
