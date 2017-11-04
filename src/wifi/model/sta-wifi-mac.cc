@@ -130,7 +130,7 @@ StaWifiMac::SendProbeRequest (void)
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
-  hdr.SetProbeReq ();
+  hdr.SetType (WIFI_MAC_MGT_PROBE_REQUEST);
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
@@ -174,7 +174,7 @@ StaWifiMac::SendAssociationRequest (void)
 {
   NS_LOG_FUNCTION (this << GetBssid ());
   WifiMacHeader hdr;
-  hdr.SetAssocReq ();
+  hdr.SetType (WIFI_MAC_MGT_ASSOCIATION_REQUEST);
   hdr.SetAddr1 (GetBssid ());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetBssid ());
@@ -363,7 +363,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     }
   else
     {
-      hdr.SetTypeData ();
+      hdr.SetType (WIFI_MAC_DATA);
     }
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {

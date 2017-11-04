@@ -81,15 +81,15 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
         }
       if (m_htSupported)
         {
-          m_stationManager->AddStationHtCapabilities (to, GetHtCapabilities());
+          m_stationManager->AddStationHtCapabilities (to, GetHtCapabilities ());
         }
       if (m_vhtSupported)
         {
-          m_stationManager->AddStationVhtCapabilities (to, GetVhtCapabilities());
+          m_stationManager->AddStationVhtCapabilities (to, GetVhtCapabilities ());
         }
       if (m_heSupported)
         {
-          m_stationManager->AddStationHeCapabilities (to, GetHeCapabilities());
+          m_stationManager->AddStationHeCapabilities (to, GetHeCapabilities ());
         }
       m_stationManager->AddAllSupportedModes (to);
       m_stationManager->RecordDisassociated (to);
@@ -130,7 +130,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     }
   else
     {
-      hdr.SetTypeData ();
+      hdr.SetType (WIFI_MAC_DATA);
     }
 
   if (m_htSupported || m_vhtSupported || m_heSupported)
@@ -181,19 +181,19 @@ AdhocWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       if (m_htSupported || m_vhtSupported || m_heSupported)
         {
           m_stationManager->AddAllSupportedMcs (from);
-          m_stationManager->AddStationHtCapabilities (from, GetHtCapabilities());
+          m_stationManager->AddStationHtCapabilities (from, GetHtCapabilities ());
         }
       if (m_htSupported)
         {
-          m_stationManager->AddStationHtCapabilities (from, GetHtCapabilities());
+          m_stationManager->AddStationHtCapabilities (from, GetHtCapabilities ());
         }
       if (m_vhtSupported)
         {
-          m_stationManager->AddStationVhtCapabilities (from, GetVhtCapabilities());
+          m_stationManager->AddStationVhtCapabilities (from, GetVhtCapabilities ());
         }
       if (m_heSupported)
         {
-          m_stationManager->AddStationHeCapabilities (from, GetHeCapabilities());
+          m_stationManager->AddStationHeCapabilities (from, GetHeCapabilities ());
         }
       m_stationManager->AddAllSupportedModes (from);
       m_stationManager->RecordDisassociated (from);

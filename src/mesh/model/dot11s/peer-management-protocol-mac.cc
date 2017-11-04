@@ -314,7 +314,7 @@ PeerManagementProtocolMac::SendPeerLinkManagementFrame (Mac48Address peerAddress
   m_stats.txMgtBytes += packet->GetSize ();
   // Wifi Mac header:
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (peerAddress);
   hdr.SetAddr2 (m_parent->GetAddress ());
   //Addr is not used here, we use it as our MP address

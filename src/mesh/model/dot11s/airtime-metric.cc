@@ -55,9 +55,9 @@ AirtimeLinkMetricCalculator::AirtimeLinkMetricCalculator ()
 void
 AirtimeLinkMetricCalculator::SetHeaderTid (uint8_t tid)
 {
+  m_testHeader.SetType (WIFI_MAC_DATA);
   m_testHeader.SetDsFrom ();
   m_testHeader.SetDsTo ();
-  m_testHeader.SetTypeData ();
   m_testHeader.SetQosTid (tid);
 }
 void

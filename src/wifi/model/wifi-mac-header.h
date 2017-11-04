@@ -117,47 +117,6 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * Set Type/Subtype values for an association request header.
-   */
-  void SetAssocReq (void);
-  /**
-   * Set Type/Subtype values for an association response header.
-   */
-  void SetAssocResp (void);
-  /**
-   * Set Type/Subtype values for a probe request header.
-   */
-  void SetProbeReq (void);
-  /**
-   * Set Type/Subtype values for a probe response header.
-   */
-  void SetProbeResp (void);
-  /**
-   * Set Type/Subtype values for a beacon header.
-   */
-  void SetBeacon (void);
-  /**
-   * Set Type/Subtype values for a data packet with
-   * no subtype equal to 0.
-   */
-  void SetTypeData (void);
-  /**
-   * Set Type/Subtype values for an action header.
-   */
-  void SetAction ();
-  /**
-   * Set Type/Subtype values for a Block Ack Request header.
-   */
-  void SetBlockAckReq (void);
-  /**
-   * Set Type/Subtype values for a Block Ack header.
-   */
-  void SetBlockAck (void);
-  /**
-   * Set Type/Subtype values for a multihop action header.
-   */
-  void SetMultihopAction ();
-  /**
    * Set the From DS bit in the Frame Control field.
    */
   void SetDsFrom (void);

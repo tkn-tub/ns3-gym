@@ -245,7 +245,7 @@ HwmpProtocolMac::SendPreq (std::vector<IePreq> preq)
   packet->AddHeader (GetWifiActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr2 (m_parent->GetAddress ());
@@ -315,7 +315,7 @@ HwmpProtocolMac::SendPrep (IePrep prep, Mac48Address receiver)
   packet->AddHeader (GetWifiActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr1 (receiver);
@@ -356,7 +356,7 @@ HwmpProtocolMac::ForwardPerr (std::vector<HwmpProtocol::FailedDestination> faile
   packet->AddHeader (GetWifiActionHeader ());
   //create 802.11 header:
   WifiMacHeader hdr;
-  hdr.SetAction ();
+  hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   hdr.SetAddr2 (m_parent->GetAddress ());

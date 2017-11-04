@@ -313,7 +313,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
     }
   else
     {
-      hdr.SetTypeData ();
+      hdr.SetType (WIFI_MAC_DATA);
     }
 
   if (m_htSupported || m_vhtSupported || m_heSupported)
@@ -572,7 +572,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
 {
   NS_LOG_FUNCTION (this << to);
   WifiMacHeader hdr;
-  hdr.SetProbeResp ();
+  hdr.SetType (WIFI_MAC_MGT_PROBE_RESPONSE);
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetAddress ());
@@ -627,7 +627,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
 {
   NS_LOG_FUNCTION (this << to << success);
   WifiMacHeader hdr;
-  hdr.SetAssocResp ();
+  hdr.SetType (WIFI_MAC_MGT_ASSOCIATION_RESPONSE);
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetAddress ());
@@ -685,7 +685,7 @@ ApWifiMac::SendOneBeacon (void)
 {
   NS_LOG_FUNCTION (this);
   WifiMacHeader hdr;
-  hdr.SetBeacon ();
+  hdr.SetType (WIFI_MAC_MGT_BEACON);
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
   hdr.SetAddr2 (GetAddress ());
   hdr.SetAddr3 (GetAddress ());
