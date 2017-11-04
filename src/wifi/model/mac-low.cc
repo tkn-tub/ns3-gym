@@ -619,10 +619,7 @@ MacLow::IsAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       m_currentPacket = p;
       return true;
     }
-  else
-    {
-      return false;
-    }
+  return false;
 }
 
 void
@@ -1834,21 +1831,13 @@ MacLow::SendDataPacket (void)
       packet->AddHeader (m_currentHdr);
       AddWifiMacTrailer (packet);
     }
-
   ForwardDown (packet, &m_currentHdr, m_currentTxVector);
 }
 
 bool
 MacLow::IsNavZero (void) const
 {
-  if (m_lastNavStart + m_lastNavDuration < Simulator::Now ())
-    {
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+  return (m_lastNavStart + m_lastNavDuration < Simulator::Now ());
 }
 
 void
@@ -1876,7 +1865,6 @@ MacLow::SendCtsToSelf (void)
                                               m_currentTxVector, m_phy->GetFrequency ());
       if (m_txParams.MustWaitBasicBlockAck ())
         {
-
           duration += GetSifs ();
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
           duration += GetBlockAckDuration (m_currentHdr.GetAddr1 (), blockAckReqTxVector, BASIC_BLOCK_ACK);
@@ -1927,7 +1915,6 @@ MacLow::SendCtsToSelf (void)
                                          &MacLow::SendDataAfterCts, this,
                                          cts.GetAddr1 (),
                                          duration);
-
 }
 
 void
@@ -2013,7 +2000,8 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
       else
         {
           newDuration += GetSifs ();
-        }      newDuration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (), m_currentTxVector, m_phy->GetFrequency ());
+        }
+      newDuration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (), m_currentTxVector, m_phy->GetFrequency ());
       if (m_txParams.MustWaitCompressedBlockAck ())
         {
           newDuration += GetSifs ();
@@ -2044,7 +2032,6 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
       packet->AddHeader (m_currentHdr);
       AddWifiMacTrailer (packet);
     }
-
   ForwardDown (packet, &m_currentHdr, m_currentTxVector);
 }
 
@@ -2149,10 +2136,7 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
         }
       return false;
     }
-  else
-    {
-      return StoreMpduIfNeeded (packet, hdr);
-    }
+  return StoreMpduIfNeeded (packet, hdr);
 }
 
 bool
@@ -2236,7 +2220,6 @@ MacLow::DestroyBlockAckAgreement (Mac48Address originator, uint8_t tid)
       RxCompleteBufferedPacketsWithSmallerSequence (it->second.first.GetStartingSequenceControl (), originator, tid);
       RxCompleteBufferedPacketsUntilFirstLost (originator, tid);
       m_bAckAgreements.erase (it);
-
       BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));
       NS_ASSERT (i != m_bAckCaches.end ());
       m_bAckCaches.erase (i);
@@ -2485,7 +2468,6 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
     {
       NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
     }
-
   SendBlockAckResponse (&blockAck, originator, immediate, duration, blockAckReqTxMode, rxSnr);
 }
 
