@@ -19,6 +19,7 @@
  */
 
 #include "wifi-utils.h"
+#include "wifi-mac-header.h"
 #include <cmath>
 
 namespace ns3 {
@@ -73,6 +74,58 @@ ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Tim
       gi = 800;
     }
   return gi;
+}
+
+uint32_t
+GetAckSize (void)
+{
+  WifiMacHeader ack;
+  ack.SetType (WIFI_MAC_CTL_ACK);
+  return ack.GetSize () + 4;
+}
+
+uint32_t
+GetBlockAckSize (BlockAckType type)
+{
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_BACKRESP);
+  CtrlBAckResponseHeader blockAck;
+  if (type == BASIC_BLOCK_ACK)
+    {
+      blockAck.SetType (BASIC_BLOCK_ACK);
+    }
+  else if (type == COMPRESSED_BLOCK_ACK)
+    {
+      blockAck.SetType (COMPRESSED_BLOCK_ACK);
+    }
+  else if (type == MULTI_TID_BLOCK_ACK)
+    {
+      //Not implemented
+      NS_ASSERT (false);
+    }
+  return hdr.GetSize () + blockAck.GetSerializedSize () + 4;
+}
+
+uint32_t
+GetRtsSize (void)
+{
+  WifiMacHeader rts;
+  rts.SetType (WIFI_MAC_CTL_RTS);
+  return rts.GetSize () + 4;
+}
+
+uint32_t
+GetCtsSize (void)
+{
+  WifiMacHeader cts;
+  cts.SetType (WIFI_MAC_CTL_CTS);
+  return cts.GetSize () + 4;
+}
+
+bool
+IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize)
+{
+  return ((seq - winstart + 4096) % 4096) < winsize;
 }
 
 } //namespace ns3

@@ -75,12 +75,6 @@ private:
    * \param end the ending position
    */
   void ResetPortionOfBitmap (uint16_t start, uint16_t end);
-  /**
-   * Is in window function
-   * \param seq the sequence
-   * \returns true if is in the window
-   */
-  bool IsInWindow (uint16_t seq) const;
 
   uint16_t m_winStart; ///< window start
   uint8_t m_winSize; ///< window size

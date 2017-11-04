@@ -22,6 +22,7 @@
 #include "ctrl-headers.h"
 #include "wifi-mac-header.h"
 #include "qos-utils.h"
+#include "wifi-utils.h"
 #include "ns3/log.h"
 
 #define WINSIZE_ASSERT NS_ASSERT ((m_winEnd - m_winStart + 4096) % 4096 == m_winSize - 1)
@@ -53,7 +54,7 @@ BlockAckCache::UpdateWithMpdu (const WifiMacHeader *hdr)
   uint16_t seqNumber = hdr->GetSequenceNumber ();
   if (!QosUtilsIsOldPacket (m_winStart, seqNumber))
     {
-      if (!IsInWindow (seqNumber))
+      if (!IsInWindow (seqNumber, m_winStart, m_winSize))
         {
           uint16_t delta = (seqNumber - m_winEnd + 4096) % 4096;
           if (delta > 1)
@@ -75,7 +76,7 @@ BlockAckCache::UpdateWithBlockAckReq (uint16_t startingSeq)
   NS_LOG_FUNCTION (this << startingSeq);
   if (!QosUtilsIsOldPacket (m_winStart, startingSeq))
     {
-      if (IsInWindow (startingSeq))
+      if (IsInWindow (startingSeq, m_winStart, m_winSize))
         {
           if (startingSeq != m_winStart)
             {
@@ -108,13 +109,6 @@ BlockAckCache::ResetPortionOfBitmap (uint16_t start, uint16_t end)
       m_bitmap[i] = 0;
     }
   m_bitmap[i] = 0;
-}
-
-bool
-BlockAckCache::IsInWindow (uint16_t seq) const
-{
-  NS_LOG_FUNCTION (this << seq);
-  return ((seq - m_winStart + 4096) % 4096) < m_winSize;
 }
 
 void

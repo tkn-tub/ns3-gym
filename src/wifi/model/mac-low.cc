@@ -29,6 +29,7 @@
 #include "snr-tag.h"
 #include "ampdu-tag.h"
 #include "wifi-mac-queue.h"
+#include "wifi-utils.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "
@@ -1152,44 +1153,6 @@ rxPacket:
   return;
 }
 
-uint32_t
-MacLow::GetAckSize (void)
-{
-  WifiMacHeader ack;
-  ack.SetType (WIFI_MAC_CTL_ACK);
-  return ack.GetSize () + 4;
-}
-
-uint32_t
-MacLow::GetBlockAckSize (BlockAckType type)
-{
-  WifiMacHeader hdr;
-  hdr.SetType (WIFI_MAC_CTL_BACKRESP);
-  CtrlBAckResponseHeader blockAck;
-  if (type == BASIC_BLOCK_ACK)
-    {
-      blockAck.SetType (BASIC_BLOCK_ACK);
-    }
-  else if (type == COMPRESSED_BLOCK_ACK)
-    {
-      blockAck.SetType (COMPRESSED_BLOCK_ACK);
-    }
-  else if (type == MULTI_TID_BLOCK_ACK)
-    {
-      //Not implemented
-      NS_ASSERT (false);
-    }
-  return hdr.GetSize () + blockAck.GetSerializedSize () + 4;
-}
-
-uint32_t
-MacLow::GetRtsSize (void)
-{
-  WifiMacHeader rts;
-  rts.SetType (WIFI_MAC_CTL_RTS);
-  return rts.GetSize () + 4;
-}
-
 Time
 MacLow::GetAckDuration (Mac48Address to, WifiTxVector dataTxVector) const
 {
@@ -1226,14 +1189,6 @@ MacLow::GetCtsDuration (WifiTxVector ctsTxVector) const
 {
   NS_ASSERT (ctsTxVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT); //CTS should always use non-HT PPDU (HT PPDU cases not supported yet)
   return m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, m_phy->GetFrequency ());
-}
-
-uint32_t
-MacLow::GetCtsSize (void)
-{
-  WifiMacHeader cts;
-  cts.SetType (WIFI_MAC_CTL_CTS);
-  return cts.GetSize () + 4;
 }
 
 uint32_t
@@ -2153,12 +2108,6 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 
   //ACK should always use non-HT PPDU (HT PPDU cases not supported yet)
   ForwardDown (packet, &ack, ackTxVector);
-}
-
-bool
-MacLow::IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize)
-{
-  return ((seq - winstart + 4096) % 4096) < winsize;
 }
 
 bool
