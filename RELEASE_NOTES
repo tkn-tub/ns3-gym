@@ -30,6 +30,7 @@ Bugs fixed
 ----------
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
 - Bug 2764 - wifi: WifiSpectrumModelId doesn't distinguish 11ax from legacy
+- Bug 2766 - core:  Modify logging for int64x64 to avoid stack overflow
 
 Known issues
 ------------
