@@ -83,8 +83,8 @@ int main (int argc, char *argv[])
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211n_2_4GHZ);
   wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
-                                "DataMode", StringValue ("OfdmRate65MbpsBW20MHz"),
-                                "ControlMode", StringValue ("OfdmRate6_5MbpsBW20MHz"));
+                                "DataMode", StringValue ("HtMcs7"),
+                                "ControlMode", StringValue ("HtMcs0"));
   WifiMacHelper mac;
 
   //Install PHY and MAC
@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
   UdpServerHelper server (port);
   ApplicationContainer serverApp = server.Install (wifiStaNode.Get (0));
   serverApp.Start (Seconds (0.0));
-  serverApp.Stop (Seconds (simulationTime));
+  serverApp.Stop (Seconds (simulationTime + 1));
 
   UdpClientHelper client (staNodeInterface.GetAddress (0), port);
   client.SetAttribute ("MaxPackets", UintegerValue (4294967295u));
@@ -151,19 +151,19 @@ int main (int argc, char *argv[])
 
   ApplicationContainer clientApp = client.Install (wifiApNode.Get (0));
   clientApp.Start (Seconds (1.0));
-  clientApp.Stop (Seconds (simulationTime));
+  clientApp.Stop (Seconds (simulationTime + 1));
 
   //Populate routing table
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   //Set simulation time and launch simulation
-  Simulator::Stop (Seconds (simulationTime));
+  Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
   Simulator::Destroy ();
 
   //Get and print results
   uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
-  double throughput = totalPacketsThrough * 1472 * 8 / ((simulationTime - 1) * 1000000.0); //Mbit/s
+  double throughput = totalPacketsThrough * 1472 * 8 / (simulationTime * 1000000.0); //Mbit/s
   std::cout << "Throughput: " << throughput << " Mbit/s" << std::endl;
 
   return 0;
