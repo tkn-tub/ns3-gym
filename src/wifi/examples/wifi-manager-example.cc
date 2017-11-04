@@ -164,8 +164,12 @@ int main (int argc, char *argv[])
   StandardInfo serverSelectedStandard;
   StandardInfo clientSelectedStandard;
   bool infrastructure = false;
+  uint32_t maxSlrc = 7;
+  uint32_t maxSsrc = 7;
 
   CommandLine cmd;
+  cmd.AddValue ("maxSsrc", "The maximum number of retransmission attempts for a RTS packet", maxSsrc);
+  cmd.AddValue ("maxSlrc", "The maximum number of retransmission attempts for a DATA packet", maxSlrc);
   cmd.AddValue ("rtsThreshold", "RTS threshold", rtsThreshold);
   cmd.AddValue ("maxAmpduSize", "Max A-MPDU size", maxAmpduSize);
   cmd.AddValue ("stepSize", "Power between steps (dBm)", stepSize);
@@ -316,6 +320,9 @@ int main (int argc, char *argv[])
   NS_LOG_DEBUG ("Using " << steps << " steps for SNR range " << clientSelectedStandard.m_snrLow << ":" << clientSelectedStandard.m_snrHigh);
   Ptr<Node> clientNode = CreateObject<Node> ();
   Ptr<Node> serverNode = CreateObject<Node> ();
+
+  Config::SetDefault ("ns3::WifiRemoteStationManager::MaxSlrc", UintegerValue (maxSlrc));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::MaxSsrc", UintegerValue (maxSsrc));
 
   WifiHelper wifi;
   wifi.SetStandard (serverSelectedStandard.m_standard);

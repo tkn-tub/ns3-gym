@@ -146,6 +146,7 @@ int main (int argc, char *argv[])
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup stas.
   wifiMac.SetType ("ns3::StaWifiMac",
+                   "ActiveProbing", BooleanValue (true),
                    "Ssid", SsidValue (ssid));
   staDevs = wifi.Install (wifiPhy, wifiMac, stas);
   // setup ap.

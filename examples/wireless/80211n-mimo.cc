@@ -87,6 +87,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.AddValue ("step", "Granularity of the results to be plotted in meters", step);
+  cmd.AddValue ("simulationTime", "Simulation time per step (in seconds)", simulationTime);
   cmd.AddValue ("channelBonding", "Enable/disable channel bonding (channel width = 20 MHz if false, channel width = 40 MHz if true)", channelBonding);
   cmd.AddValue ("shortGuardInterval", "Enable/disable short guard interval", shortGuardInterval);
   cmd.AddValue ("frequency", "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)", frequency);
