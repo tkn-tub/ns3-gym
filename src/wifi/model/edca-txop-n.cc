@@ -1002,7 +1002,7 @@ EdcaTxopN::GetTxopFragmentSize () const
   while (!found)
     {
       size = (minSize + ((maxSize - minSize) / 2));
-      if (GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size) > txopDuration)
+      if (GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams, size) > txopDuration)
         {
           maxSize = size;
         }
@@ -1010,8 +1010,8 @@ EdcaTxopN::GetTxopFragmentSize () const
         {
           minSize = size;
         }
-      if (GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size) <= txopDuration
-          && GetLow ()->CalculateOverallTxFragmentTime (m_currentPacket, &m_currentHdr, m_currentParams, size + 1) > txopDuration)
+      if (GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams, size) <= txopDuration
+          && GetLow ()->CalculateOverallTxTime (m_currentPacket, &m_currentHdr, m_currentParams, size + 1) > txopDuration)
         {
           found = true;
         }
