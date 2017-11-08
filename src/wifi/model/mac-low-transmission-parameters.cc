@@ -27,8 +27,7 @@ namespace ns3 {
 MacLowTransmissionParameters::MacLowTransmissionParameters ()
   : m_nextSize (0),
     m_waitAck (ACK_NONE),
-    m_sendRts (false),
-    m_overrideDurationId (Seconds (0))
+    m_sendRts (false)
 {
 }
 
@@ -42,18 +41,6 @@ void
 MacLowTransmissionParameters::DisableNextData (void)
 {
   m_nextSize = 0;
-}
-
-void
-MacLowTransmissionParameters::EnableOverrideDurationId (Time durationId)
-{
-  m_overrideDurationId = durationId;
-}
-
-void
-MacLowTransmissionParameters::DisableOverrideDurationId (void)
-{
-  m_overrideDurationId = Seconds (0);
 }
 
 void
@@ -159,19 +146,6 @@ MacLowTransmissionParameters::MustSendRts (void) const
 }
 
 bool
-MacLowTransmissionParameters::HasDurationId (void) const
-{
-  return (!m_overrideDurationId.IsZero ());
-}
-
-Time
-MacLowTransmissionParameters::GetDurationId (void) const
-{
-  NS_ASSERT (!m_overrideDurationId.IsZero ());
-  return m_overrideDurationId;
-}
-
-bool
 MacLowTransmissionParameters::HasNextPacket (void) const
 {
   return (m_nextSize != 0);
@@ -189,7 +163,6 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
   os << "["
      << "send rts=" << params.m_sendRts << ", "
      << "next size=" << params.m_nextSize << ", "
-     << "dur=" << params.m_overrideDurationId << ", "
      << "ack=";
   switch (params.m_waitAck)
     {

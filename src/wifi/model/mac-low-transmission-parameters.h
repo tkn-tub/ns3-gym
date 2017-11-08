@@ -98,14 +98,6 @@ public:
    */
   void EnableNextData (uint32_t size);
   /**
-   * \param durationId the value to set in the duration/Id field of
-   *        the outgoing packet.
-   *
-   * Ignore all other durationId calculation and simply force the
-   * packet's durationId field to this value.
-   */
-  void EnableOverrideDurationId (Time durationId);
-  /**
    * Do not wait for Ack after data transmission. Typically
    * used for Broadcast and multicast frames.
    */
@@ -118,12 +110,6 @@ public:
    * Do not attempt to send data burst after current transmission
    */
   void DisableNextData (void);
-  /**
-   * Do not force the duration/id field of the packet: its
-   * value is automatically calculated by the MacLow before
-   * calling WifiPhy::Send.
-   */
-  void DisableOverrideDurationId (void);
   /**
    * \returns true if must wait for ACK after data transmission,
    *          false otherwise.
@@ -177,15 +163,6 @@ public:
    */
   bool MustSendRts (void) const;
   /**
-   * \returns true if a duration/id was forced with
-   *         EnableOverrideDurationId, false otherwise.
-   */
-  bool HasDurationId (void) const;
-  /**
-   * \returns the duration/id forced by EnableOverrideDurationId
-   */
-  Time GetDurationId (void) const;
-  /**
    * \returns true if EnableNextData was called, false otherwise.
    */
   bool HasNextPacket (void) const;
@@ -209,7 +186,6 @@ private:
     BLOCK_ACK_MULTI_TID
   } m_waitAck; //!< wait ack
   bool m_sendRts; //!< send an RTS?
-  Time m_overrideDurationId; //!< override duration ID
 };
 
 /**

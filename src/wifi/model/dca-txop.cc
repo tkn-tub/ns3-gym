@@ -380,7 +380,6 @@ DcaTxop::NotifyAccessGranted (void)
                     ", to=" << m_currentHdr.GetAddr1 () <<
                     ", seq=" << m_currentHdr.GetSequenceControl ());
     }
-  m_currentParams.DisableOverrideDurationId ();
   if (m_currentHdr.GetAddr1 ().IsGroup ())
     {
       m_currentParams.DisableRts ();
@@ -548,7 +547,6 @@ DcaTxop::StartNextFragment (void)
   Ptr<Packet> fragment = GetFragmentPacket (&hdr);
   m_currentParams.EnableAck ();
   m_currentParams.DisableRts ();
-  m_currentParams.DisableOverrideDurationId ();
   if (IsLastFragment ())
     {
       m_currentParams.DisableNextData ();
