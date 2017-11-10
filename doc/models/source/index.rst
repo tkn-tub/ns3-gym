@@ -26,7 +26,6 @@ This document is written in `reStructuredText <http://docutils.sourceforge.net/r
    buildings
    click
    csma
-   data-collection
    dsdv
    dsr
    emulation-overview
