@@ -317,7 +317,7 @@ TypeId QueueDisc::GetTypeId (void)
     .AddTraceSource ("SojournTime",
                      "Sojourn time of the last packet dequeued from the queue disc",
                      MakeTraceSourceAccessor (&QueueDisc::m_sojourn),
-                     "ns3::Time::TracedValueCallback")
+                     "ns3::TracedValueCallback::Time")
   ;
   return tid;
 }
