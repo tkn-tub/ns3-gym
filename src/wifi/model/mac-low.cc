@@ -1278,7 +1278,6 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
 
       //Add packet tag
       AmpduTag ampdutag;
-      ampdutag.SetAmpdu (true);
       Time delay = Seconds (0);
       Time remainingAmpduDuration = m_phy->CalculateTxDuration (packet->GetSize (), txVector, m_phy->GetFrequency ());
       if (queueSize > 1 || singleMpdu)
@@ -2665,7 +2664,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
                   //Add packet tag
                   AmpduTag ampdutag;
-                  ampdutag.SetAmpdu (true);
                   ampdutag.SetRemainingNbOfMpdus (i - 1);
                   newPacket = currentAggregatedPacket;
                   newPacket->AddPacketTag (ampdutag);
@@ -2708,7 +2706,6 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
 
               //Add packet tag
               AmpduTag ampdutag;
-              ampdutag.SetAmpdu (true);
               newPacket = currentAggregatedPacket;
               newPacket->AddHeader (peekedHdr);
               AddWifiMacTrailer (newPacket);

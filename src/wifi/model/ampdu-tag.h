@@ -48,12 +48,6 @@ public:
    */
   AmpduTag ();
   /**
-   * \param supported the A-MPDU supported flag
-   *
-   * Set the A-MPDU supported flag.
-   */
-  void SetAmpdu (bool supported);
-  /**
    * \param nbofmpdus the remaining number of MPDUs
    *
    * Set the remaining number of MPDUs in the A-MPDU.
@@ -72,13 +66,6 @@ public:
   void Print (std::ostream &os) const;
 
   /**
-   * \return true if it is an A-MPDU,
-   *         false otherwise.
-   *
-   * Returns m_ampdu
-   */
-  bool GetAmpdu (void) const;
-  /**
    * \return the remaining number of MPDUs in an A-MPDU
    *
    * Returns the remaining number of MPDUs in an A-MPDU
@@ -91,8 +78,8 @@ public:
    */
   Time GetRemainingAmpduDuration (void) const;
 
+
 private:
-  uint8_t m_ampdu;     //!< Flag whether it is an A-MPDU
   uint8_t m_nbOfMpdus; //!< Remaining number of MPDUs in the A-MPDU
   Time m_duration;     //!< Remaining duration of the A-MPDU in nanoseconds
 };
