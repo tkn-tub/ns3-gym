@@ -183,6 +183,9 @@ RegularWifiMac::GetHtCapabilities (void) const
       capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
       capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
       capabilities.SetTxMaxNSpatialStreams (m_phy->GetMaxSupportedTxSpatialStreams ());
+      //we do not support unequal modulations
+      capabilities.SetTxRxMcsSetUnequal (0);
+      capabilities.SetTxUnequalModulation (0);
     }
   return capabilities;
 }
