@@ -93,42 +93,6 @@ public:
   LinearWifiTxCurrentModel ();
   virtual ~LinearWifiTxCurrentModel ();
 
-  /**
-   * \param eta (dimension-less)
-   *
-   * Set the power amplifier efficiency.
-   */
-  void SetEta (double eta);
-
-  /**
-   * \param voltage (Volts)
-   *
-   * Set the supply voltage.
-   */
-  void SetVoltage (double voltage);
-
-  /**
-   * \param idleCurrent (Ampere)
-   *
-   * Set the current in the IDLE state.
-   */
-  void SetIdleCurrent (double idleCurrent);
-
-  /**
-   * \return the power amplifier efficiency.
-   */
-  double GetEta (void) const;
-
-  /**
-   * \return the supply voltage.
-   */
-  double GetVoltage (void) const;
-
-  /**
-   * \return the current in the IDLE state.
-   */
-  double GetIdleCurrent (void) const;
-
   double CalcTxCurrent (double txPowerDbm) const;
 
 

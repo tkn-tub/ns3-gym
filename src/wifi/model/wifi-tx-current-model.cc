@@ -58,18 +58,15 @@ LinearWifiTxCurrentModel::GetTypeId (void)
     .AddConstructor<LinearWifiTxCurrentModel> ()
     .AddAttribute ("Eta", "The efficiency of the power amplifier.",
                    DoubleValue (0.10),
-                   MakeDoubleAccessor (&LinearWifiTxCurrentModel::SetEta,
-                                       &LinearWifiTxCurrentModel::GetEta),
+                   MakeDoubleAccessor (&LinearWifiTxCurrentModel::m_eta),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("Voltage", "The supply voltage (in Volts).",
                    DoubleValue (3.0),
-                   MakeDoubleAccessor (&LinearWifiTxCurrentModel::SetVoltage,
-                                       &LinearWifiTxCurrentModel::GetVoltage),
+                   MakeDoubleAccessor (&LinearWifiTxCurrentModel::m_voltage),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("IdleCurrent", "The current in the IDLE state (in Watts).",
                    DoubleValue (0.273333),
-                   MakeDoubleAccessor (&LinearWifiTxCurrentModel::SetIdleCurrent,
-                                       &LinearWifiTxCurrentModel::GetIdleCurrent),
+                   MakeDoubleAccessor (&LinearWifiTxCurrentModel::m_idleCurrent),
                    MakeDoubleChecker<double> ())
   ;
   return tid;
@@ -83,45 +80,6 @@ LinearWifiTxCurrentModel::LinearWifiTxCurrentModel ()
 LinearWifiTxCurrentModel::~LinearWifiTxCurrentModel()
 {
   NS_LOG_FUNCTION (this);
-}
-
-void
-LinearWifiTxCurrentModel::SetEta (double eta)
-{
-  NS_LOG_FUNCTION (this << eta);
-  m_eta = eta;
-}
-
-void
-LinearWifiTxCurrentModel::SetVoltage (double voltage)
-{
-  NS_LOG_FUNCTION (this << voltage);
-  m_voltage = voltage;
-}
-
-void
-LinearWifiTxCurrentModel::SetIdleCurrent (double idleCurrent)
-{
-  NS_LOG_FUNCTION (this << idleCurrent);
-  m_idleCurrent = idleCurrent;
-}
-
-double
-LinearWifiTxCurrentModel::GetEta (void) const
-{
-  return m_eta;
-}
-
-double
-LinearWifiTxCurrentModel::GetVoltage (void) const
-{
-  return m_voltage;
-}
-
-double
-LinearWifiTxCurrentModel::GetIdleCurrent (void) const
-{
-  return m_idleCurrent;
 }
 
 double
