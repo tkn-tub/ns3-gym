@@ -78,12 +78,6 @@ public:
    * \return deserialized bytes
    */
   virtual uint32_t DeserializeSingleIe (Buffer::Iterator start);
-  /**
-   * Set maximum size to control overflow of the max packet length
-   *
-   * \param size the maximum size to set (bytes)
-   */
-  void SetMaxSize (uint16_t size);
   /// As soon as this is a vector, we define an Iterator
   typedef std::vector<Ptr<WifiInformationElement> >::iterator Iterator;
   /**

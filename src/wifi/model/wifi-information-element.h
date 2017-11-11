@@ -310,15 +310,6 @@ public:
    */
   virtual void Print (std::ostream &os) const;
   /**
-   * Compare information elements using Element ID
-   *
-   * \param a another information element to compare with
-   *
-   * \return true if the Element ID is less than the other IE Element ID,
-   *         false otherwise
-   */
-  virtual bool operator< (WifiInformationElement const & a) const;
-  /**
    * Compare two IEs for equality by ID & Length, and then through
    * memcmp of serialised version
    *
