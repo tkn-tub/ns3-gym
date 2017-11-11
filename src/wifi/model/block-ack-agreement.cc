@@ -25,15 +25,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("BlockAckAgreement");
 
-BlockAckAgreement::BlockAckAgreement ()
-  : m_amsduSupported (0),
-    m_blockAckPolicy (1),
-    m_htSupported (0),
-    m_inactivityEvent ()
-{
-  NS_LOG_FUNCTION (this);
-}
-
 BlockAckAgreement::BlockAckAgreement (Mac48Address peer, uint8_t tid)
   : m_amsduSupported (0),
     m_blockAckPolicy (1),
