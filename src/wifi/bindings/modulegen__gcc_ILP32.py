@@ -5587,11 +5587,6 @@ def register_Ns3AmpduTag_methods(root_module, cls):
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
                    is_virtual=True)
-    ## ampdu-tag.h (module 'wifi'): bool ns3::AmpduTag::GetAmpdu() const [member function]
-    cls.add_method('GetAmpdu', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     ## ampdu-tag.h (module 'wifi'): ns3::TypeId ns3::AmpduTag::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -5627,10 +5622,6 @@ def register_Ns3AmpduTag_methods(root_module, cls):
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
                    is_const=True, is_virtual=True)
-    ## ampdu-tag.h (module 'wifi'): void ns3::AmpduTag::SetAmpdu(bool supported) [member function]
-    cls.add_method('SetAmpdu', 
-                   'void', 
-                   [param('bool', 'supported')])
     ## ampdu-tag.h (module 'wifi'): void ns3::AmpduTag::SetRemainingAmpduDuration(ns3::Time duration) [member function]
     cls.add_method('SetRemainingAmpduDuration', 
                    'void', 
@@ -10260,10 +10251,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('Reset', 
                    'void', 
                    [])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::Reset(ns3::Mac48Address address) [member function]
-    cls.add_method('Reset', 
-                   'void', 
-                   [param('ns3::Mac48Address', 'address')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetDefaultTxPowerLevel(uint8_t txPower) [member function]
     cls.add_method('SetDefaultTxPowerLevel', 
                    'void', 
