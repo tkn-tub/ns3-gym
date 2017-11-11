@@ -544,16 +544,8 @@ def register_types(module):
     module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSet [class]
     module.add_class('DsssParameterSet', parent=root_module['ns3::WifiInformationElement'])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetChecker [class]
-    module.add_class('DsssParameterSetChecker', parent=root_module['ns3::AttributeChecker'])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetValue [class]
-    module.add_class('DsssParameterSetValue', parent=root_module['ns3::AttributeValue'])
     ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet [class]
     module.add_class('EdcaParameterSet', parent=root_module['ns3::WifiInformationElement'])
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetChecker [class]
-    module.add_class('EdcaParameterSetChecker', parent=root_module['ns3::AttributeChecker'])
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue [class]
-    module.add_class('EdcaParameterSetValue', parent=root_module['ns3::AttributeValue'])
     ## edca-txop-n.h (module 'wifi'): ns3::EdcaTxopN [class]
     module.add_class('EdcaTxopN', parent=root_module['ns3::DcaTxop'])
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
@@ -1259,11 +1251,7 @@ def register_methods(root_module):
     register_Ns3DeviceEnergyModel_methods(root_module, root_module['ns3::DeviceEnergyModel'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
     register_Ns3DsssParameterSet_methods(root_module, root_module['ns3::DsssParameterSet'])
-    register_Ns3DsssParameterSetChecker_methods(root_module, root_module['ns3::DsssParameterSetChecker'])
-    register_Ns3DsssParameterSetValue_methods(root_module, root_module['ns3::DsssParameterSetValue'])
     register_Ns3EdcaParameterSet_methods(root_module, root_module['ns3::EdcaParameterSet'])
-    register_Ns3EdcaParameterSetChecker_methods(root_module, root_module['ns3::EdcaParameterSetChecker'])
-    register_Ns3EdcaParameterSetValue_methods(root_module, root_module['ns3::EdcaParameterSetValue'])
     register_Ns3EdcaTxopN_methods(root_module, root_module['ns3::EdcaTxopN'])
     register_Ns3EmpiricalRandomVariable_methods(root_module, root_module['ns3::EmpiricalRandomVariable'])
     register_Ns3EmptyAttributeAccessor_methods(root_module, root_module['ns3::EmptyAttributeAccessor'])
@@ -1722,8 +1710,6 @@ def register_Ns3Bar_methods(root_module, cls):
 def register_Ns3BlockAckAgreement_methods(root_module, cls):
     ## block-ack-agreement.h (module 'wifi'): ns3::BlockAckAgreement::BlockAckAgreement(ns3::BlockAckAgreement const & arg0) [constructor]
     cls.add_constructor([param('ns3::BlockAckAgreement const &', 'arg0')])
-    ## block-ack-agreement.h (module 'wifi'): ns3::BlockAckAgreement::BlockAckAgreement() [constructor]
-    cls.add_constructor([])
     ## block-ack-agreement.h (module 'wifi'): ns3::BlockAckAgreement::BlockAckAgreement(ns3::Mac48Address peer, uint8_t tid) [constructor]
     cls.add_constructor([param('ns3::Mac48Address', 'peer'), param('uint8_t', 'tid')])
     ## block-ack-agreement.h (module 'wifi'): uint16_t ns3::BlockAckAgreement::GetBufferSize() const [member function]
@@ -3788,8 +3774,6 @@ def register_Ns3ObjectFactory_methods(root_module, cls):
 def register_Ns3OriginatorBlockAckAgreement_methods(root_module, cls):
     ## originator-block-ack-agreement.h (module 'wifi'): ns3::OriginatorBlockAckAgreement::OriginatorBlockAckAgreement(ns3::OriginatorBlockAckAgreement const & arg0) [constructor]
     cls.add_constructor([param('ns3::OriginatorBlockAckAgreement const &', 'arg0')])
-    ## originator-block-ack-agreement.h (module 'wifi'): ns3::OriginatorBlockAckAgreement::OriginatorBlockAckAgreement() [constructor]
-    cls.add_constructor([])
     ## originator-block-ack-agreement.h (module 'wifi'): ns3::OriginatorBlockAckAgreement::OriginatorBlockAckAgreement(ns3::Mac48Address recipient, uint8_t tid) [constructor]
     cls.add_constructor([param('ns3::Mac48Address', 'recipient'), param('uint8_t', 'tid')])
     ## originator-block-ack-agreement.h (module 'wifi'): void ns3::OriginatorBlockAckAgreement::CompleteExchange() [member function]
@@ -5306,6 +5290,8 @@ def register_Ns3WifiRemoteStationState_methods(root_module, cls):
     cls.add_instance_attribute('m_htSupported', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_info [variable]
     cls.add_instance_attribute('m_info', 'ns3::WifiRemoteStationInfo', is_const=False)
+    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_ldpc [variable]
+    cls.add_instance_attribute('m_ldpc', 'bool', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_ness [variable]
     cls.add_instance_attribute('m_ness', 'uint32_t', is_const=False)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationState::m_operationalMcsSet [variable]
@@ -7134,8 +7120,6 @@ def register_Ns3SnrTag_methods(root_module, cls):
     cls.add_constructor([param('ns3::SnrTag const &', 'arg0')])
     ## snr-tag.h (module 'wifi'): ns3::SnrTag::SnrTag() [constructor]
     cls.add_constructor([])
-    ## snr-tag.h (module 'wifi'): ns3::SnrTag::SnrTag(double snr) [constructor]
-    cls.add_constructor([param('double', 'snr')])
     ## snr-tag.h (module 'wifi'): void ns3::SnrTag::Deserialize(ns3::TagBuffer i) [member function]
     cls.add_method('Deserialize', 
                    'void', 
@@ -7958,7 +7942,6 @@ def register_Ns3WifiActionHeaderActionValue_methods(root_module, cls):
     return
 
 def register_Ns3WifiInformationElement_methods(root_module, cls):
-    cls.add_binary_comparison_operator('<')
     cls.add_binary_comparison_operator('==')
     ## wifi-information-element.h (module 'wifi'): ns3::WifiInformationElement::WifiInformationElement() [constructor]
     cls.add_constructor([])
@@ -8072,10 +8055,6 @@ def register_Ns3WifiInformationElementVector_methods(root_module, cls):
                    'void', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_const=True, is_virtual=True)
-    ## wifi-information-element-vector.h (module 'wifi'): void ns3::WifiInformationElementVector::SetMaxSize(uint16_t size) [member function]
-    cls.add_method('SetMaxSize', 
-                   'void', 
-                   [param('uint16_t', 'size')])
     ## wifi-information-element-vector.h (module 'wifi'): uint32_t ns3::WifiInformationElementVector::GetSize() const [member function]
     cls.add_method('GetSize', 
                    'uint32_t', 
@@ -10485,11 +10464,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::WifiRemoteStation const *', 'station')], 
                    is_const=True, visibility='protected')
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetStbc(ns3::WifiRemoteStation const * station) const [member function]
-    cls.add_method('GetStbc', 
-                   'bool', 
-                   [param('ns3::WifiRemoteStation const *', 'station')], 
-                   is_const=True, visibility='protected')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetSupported(ns3::WifiRemoteStation const * station, uint32_t i) const [member function]
     cls.add_method('GetSupported', 
                    'ns3::WifiMode', 
@@ -10530,11 +10504,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint8_t', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ackMode')], 
                    visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::DoGetAckTxStbc(ns3::Mac48Address address, ns3::WifiMode ackMode) [member function]
-    cls.add_method('DoGetAckTxStbc', 
-                   'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ackMode')], 
-                   visibility='private', is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetBlockAckTxChannelWidth(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
     cls.add_method('DoGetBlockAckTxChannelWidth', 
                    'uint8_t', 
@@ -10560,11 +10529,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint8_t', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'blockAckMode')], 
                    visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::DoGetBlockAckTxStbc(ns3::Mac48Address address, ns3::WifiMode blockAckMode) [member function]
-    cls.add_method('DoGetBlockAckTxStbc', 
-                   'bool', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'blockAckMode')], 
-                   visibility='private', is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetCtsTxChannelWidth(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
     cls.add_method('DoGetCtsTxChannelWidth', 
                    'uint8_t', 
@@ -10588,11 +10552,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::DoGetCtsTxPowerLevel(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
     cls.add_method('DoGetCtsTxPowerLevel', 
                    'uint8_t', 
-                   [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
-                   visibility='private', is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::DoGetCtsTxStbc(ns3::Mac48Address address, ns3::WifiMode ctsMode) [member function]
-    cls.add_method('DoGetCtsTxStbc', 
-                   'bool', 
                    [param('ns3::Mac48Address', 'address'), param('ns3::WifiMode', 'ctsMode')], 
                    visibility='private', is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::DoGetDataTxVector(ns3::WifiRemoteStation * station) [member function]
@@ -13128,7 +13087,6 @@ def register_Ns3DoubleValue_methods(root_module, cls):
     return
 
 def register_Ns3DsssParameterSet_methods(root_module, cls):
-    cls.add_output_stream_operator()
     ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSet::DsssParameterSet(ns3::DsssParameterSet const & arg0) [constructor]
     cls.add_constructor([param('ns3::DsssParameterSet const &', 'arg0')])
     ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSet::DsssParameterSet() [constructor]
@@ -13143,11 +13101,6 @@ def register_Ns3DsssParameterSet_methods(root_module, cls):
                    'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## dsss-parameter-set.h (module 'wifi'): uint8_t ns3::DsssParameterSet::GetCurrentChannel() const [member function]
-    cls.add_method('GetCurrentChannel', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
     ## dsss-parameter-set.h (module 'wifi'): uint8_t ns3::DsssParameterSet::GetInformationFieldSize() const [member function]
     cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
@@ -13178,48 +13131,7 @@ def register_Ns3DsssParameterSet_methods(root_module, cls):
                    [param('uint8_t', 'DsssSupported')])
     return
 
-def register_Ns3DsssParameterSetChecker_methods(root_module, cls):
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetChecker::DsssParameterSetChecker() [constructor]
-    cls.add_constructor([])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetChecker::DsssParameterSetChecker(ns3::DsssParameterSetChecker const & arg0) [constructor]
-    cls.add_constructor([param('ns3::DsssParameterSetChecker const &', 'arg0')])
-    return
-
-def register_Ns3DsssParameterSetValue_methods(root_module, cls):
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetValue::DsssParameterSetValue() [constructor]
-    cls.add_constructor([])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetValue::DsssParameterSetValue(ns3::DsssParameterSet const & value) [constructor]
-    cls.add_constructor([param('ns3::DsssParameterSet const &', 'value')])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSetValue::DsssParameterSetValue(ns3::DsssParameterSetValue const & arg0) [constructor]
-    cls.add_constructor([param('ns3::DsssParameterSetValue const &', 'arg0')])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::Ptr<ns3::AttributeValue> ns3::DsssParameterSetValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## dsss-parameter-set.h (module 'wifi'): bool ns3::DsssParameterSetValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## dsss-parameter-set.h (module 'wifi'): ns3::DsssParameterSet ns3::DsssParameterSetValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::DsssParameterSet', 
-                   [], 
-                   is_const=True)
-    ## dsss-parameter-set.h (module 'wifi'): std::string ns3::DsssParameterSetValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## dsss-parameter-set.h (module 'wifi'): void ns3::DsssParameterSetValue::Set(ns3::DsssParameterSet const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::DsssParameterSet const &', 'value')])
-    return
-
 def register_Ns3EdcaParameterSet_methods(root_module, cls):
-    cls.add_output_stream_operator()
     ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet::EdcaParameterSet(ns3::EdcaParameterSet const & arg0) [constructor]
     cls.add_constructor([param('ns3::EdcaParameterSet const &', 'arg0')])
     ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet::EdcaParameterSet() [constructor]
@@ -13488,46 +13400,6 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     cls.add_method('SetVoTXOPLimit', 
                    'void', 
                    [param('uint16_t', 'txop')])
-    return
-
-def register_Ns3EdcaParameterSetChecker_methods(root_module, cls):
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetChecker::EdcaParameterSetChecker() [constructor]
-    cls.add_constructor([])
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetChecker::EdcaParameterSetChecker(ns3::EdcaParameterSetChecker const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EdcaParameterSetChecker const &', 'arg0')])
-    return
-
-def register_Ns3EdcaParameterSetValue_methods(root_module, cls):
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue::EdcaParameterSetValue() [constructor]
-    cls.add_constructor([])
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue::EdcaParameterSetValue(ns3::EdcaParameterSet const & value) [constructor]
-    cls.add_constructor([param('ns3::EdcaParameterSet const &', 'value')])
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSetValue::EdcaParameterSetValue(ns3::EdcaParameterSetValue const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EdcaParameterSetValue const &', 'arg0')])
-    ## edca-parameter-set.h (module 'wifi'): ns3::Ptr<ns3::AttributeValue> ns3::EdcaParameterSetValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## edca-parameter-set.h (module 'wifi'): bool ns3::EdcaParameterSetValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## edca-parameter-set.h (module 'wifi'): ns3::EdcaParameterSet ns3::EdcaParameterSetValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'ns3::EdcaParameterSet', 
-                   [], 
-                   is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): std::string ns3::EdcaParameterSetValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSetValue::Set(ns3::EdcaParameterSet const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('ns3::EdcaParameterSet const &', 'value')])
     return
 
 def register_Ns3EdcaTxopN_methods(root_module, cls):
@@ -15758,38 +15630,11 @@ def register_Ns3LinearWifiTxCurrentModel_methods(root_module, cls):
                    'double', 
                    [param('double', 'txPowerDbm')], 
                    is_const=True, is_virtual=True)
-    ## wifi-tx-current-model.h (module 'wifi'): double ns3::LinearWifiTxCurrentModel::GetEta() const [member function]
-    cls.add_method('GetEta', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## wifi-tx-current-model.h (module 'wifi'): double ns3::LinearWifiTxCurrentModel::GetIdleCurrent() const [member function]
-    cls.add_method('GetIdleCurrent', 
-                   'double', 
-                   [], 
-                   is_const=True)
     ## wifi-tx-current-model.h (module 'wifi'): static ns3::TypeId ns3::LinearWifiTxCurrentModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## wifi-tx-current-model.h (module 'wifi'): double ns3::LinearWifiTxCurrentModel::GetVoltage() const [member function]
-    cls.add_method('GetVoltage', 
-                   'double', 
-                   [], 
-                   is_const=True)
-    ## wifi-tx-current-model.h (module 'wifi'): void ns3::LinearWifiTxCurrentModel::SetEta(double eta) [member function]
-    cls.add_method('SetEta', 
-                   'void', 
-                   [param('double', 'eta')])
-    ## wifi-tx-current-model.h (module 'wifi'): void ns3::LinearWifiTxCurrentModel::SetIdleCurrent(double idleCurrent) [member function]
-    cls.add_method('SetIdleCurrent', 
-                   'void', 
-                   [param('double', 'idleCurrent')])
-    ## wifi-tx-current-model.h (module 'wifi'): void ns3::LinearWifiTxCurrentModel::SetVoltage(double voltage) [member function]
-    cls.add_method('SetVoltage', 
-                   'void', 
-                   [param('double', 'voltage')])
     return
 
 def register_Ns3LogDistancePropagationLossModel_methods(root_module, cls):
@@ -20589,14 +20434,6 @@ def register_functions(root_module):
     module.add_function('Log2', 
                         'double', 
                         [param('double', 'val')])
-    ## dsss-parameter-set.h (module 'wifi'): ns3::Ptr<const ns3::AttributeChecker> ns3::MakeDsssParameterSetChecker() [free function]
-    module.add_function('MakeDsssParameterSetChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
-    ## edca-parameter-set.h (module 'wifi'): ns3::Ptr<const ns3::AttributeChecker> ns3::MakeEdcaParameterSetChecker() [free function]
-    module.add_function('MakeEdcaParameterSetChecker', 
-                        'ns3::Ptr< ns3::AttributeChecker const >', 
-                        [])
     ## erp-information.h (module 'wifi'): ns3::Ptr<const ns3::AttributeChecker> ns3::MakeErpInformationChecker() [free function]
     module.add_function('MakeErpInformationChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
