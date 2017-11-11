@@ -1074,14 +1074,6 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       if (htCapabilities.IsSupportedMcs (0))
                         {
                           m_stationManager->AddStationHtCapabilities (from, htCapabilities);
-                          for (uint32_t j = 0; j < m_phy->GetNMcs (); j++)
-                            {
-                              WifiMode mcs = m_phy->GetMcs (j);
-                              if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
-                                {
-                                  m_stationManager->AddSupportedMcs (from, mcs);
-                                }
-                            }
                         }
                     }
                   if (m_vhtSupported)

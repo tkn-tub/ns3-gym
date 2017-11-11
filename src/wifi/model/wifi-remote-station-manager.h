@@ -1051,15 +1051,6 @@ protected:
    */
   bool GetAggregation (const WifiRemoteStation *station) const;
   /**
-   * Return whether the given station supports space-time block coding (STBC).
-   *
-   * \param station the station being queried
-   *
-   * \return true if the station supports STBC,
-   *         false otherwise
-   */
-  bool GetStbc (const WifiRemoteStation *station) const;
-  /**
    * Return whether the station supports Greenfield or not.
    *
    * \param station the station being queried
@@ -1262,13 +1253,6 @@ private:
    * \param address the address of the recipient
    * \param ctsMode the mode to be used
    *
-   * \return the CTS transmit STBC
-   */
-  virtual bool  DoGetCtsTxStbc (Mac48Address address, WifiMode ctsMode);
-  /**
-   * \param address the address of the recipient
-   * \param ctsMode the mode to be used
-   *
    * \return the ack transmit channel width
    */
   virtual uint8_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
@@ -1293,13 +1277,6 @@ private:
    * \return the ack transmit NESS
    */
   virtual uint8_t DoGetAckTxNess (Mac48Address address, WifiMode ackMode);
-  /**
-   * \param address the address of the recipient
-   * \param ackMode the mode to be used
-   *
-   * \return the ack transmit STBC
-   */
-  virtual bool DoGetAckTxStbc (Mac48Address address, WifiMode ackMode);
   /**
    * \param address the address of the recipient
    * \param ctsMode the mode to be used
@@ -1328,13 +1305,6 @@ private:
    * \return the block ack transmit NESS
    */
   virtual uint8_t DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode);
-  /**
-   * \param address the address of the recipient
-   * \param blockAckMode the mode to be used
-   *
-   * \return the block ack transmit STBC
-   */
-  virtual bool DoGetBlockAckTxStbc (Mac48Address address, WifiMode blockAckMode);
 
   /**
    * This method is a pure virtual method that must be implemented by the sub-class.
@@ -1604,6 +1574,7 @@ struct WifiRemoteStationState
   uint8_t m_streams;          //!< Number of supported streams by the remote station
   uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is supported by the remote station
+  bool m_ldpc;                //!< Flag if LDPC is supported by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
   bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
   bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station

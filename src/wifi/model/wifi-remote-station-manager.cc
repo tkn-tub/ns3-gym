@@ -840,7 +840,7 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       v.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mode, m_wifiPhy->GetShortGuardInterval (), m_wifiPhy->GetGuardInterval ()));
       v.SetNss (1);
       v.SetNess (0);
-      v.SetStbc (false);
+      v.SetStbc (m_wifiPhy->GetStbc ());
       return v;
     }
   if (!IsLowLatency ())
@@ -1480,7 +1480,7 @@ WifiRemoteStationManager::GetCtsTxVector (Mac48Address address, WifiMode rtsMode
   v.SetGuardInterval (DoGetCtsTxGuardInterval (address, ctsMode));
   v.SetNss (DoGetCtsTxNss (address, ctsMode));
   v.SetNess (DoGetCtsTxNess (address, ctsMode));
-  v.SetStbc (DoGetCtsTxStbc (address, ctsMode));
+  v.SetStbc (m_wifiPhy->GetStbc ());
   return v;
 }
 
@@ -1497,7 +1497,7 @@ WifiRemoteStationManager::GetAckTxVector (Mac48Address address, WifiMode dataMod
   v.SetGuardInterval (DoGetAckTxGuardInterval (address, ackMode));
   v.SetNss (DoGetAckTxNss (address, ackMode));
   v.SetNess (DoGetAckTxNess (address, ackMode));
-  v.SetStbc (DoGetAckTxStbc (address, ackMode));
+  v.SetStbc (m_wifiPhy->GetStbc ());
   return v;
 }
 
@@ -1514,7 +1514,7 @@ WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address address, WifiMode bl
   v.SetGuardInterval (DoGetBlockAckTxGuardInterval (address, blockAckMode));
   v.SetNss (DoGetBlockAckTxNss (address, blockAckMode));
   v.SetNess (DoGetBlockAckTxNess (address, blockAckMode));
-  v.SetStbc (DoGetBlockAckTxStbc (address, blockAckMode));
+  v.SetStbc (m_wifiPhy->GetStbc ());
   return v;
 }
 
@@ -1548,12 +1548,6 @@ WifiRemoteStationManager::DoGetCtsTxNess (Mac48Address address, WifiMode ctsMode
   return 0;
 }
 
-bool
-WifiRemoteStationManager::DoGetCtsTxStbc (Mac48Address address, WifiMode ctsMode)
-{
-  return m_wifiPhy->GetStbc ();
-}
-
 uint8_t
 WifiRemoteStationManager::DoGetAckTxPowerLevel (Mac48Address address, WifiMode ackMode)
 {
@@ -1584,12 +1578,6 @@ WifiRemoteStationManager::DoGetAckTxNess (Mac48Address address, WifiMode ackMode
   return 0;
 }
 
-bool
-WifiRemoteStationManager::DoGetAckTxStbc (Mac48Address address, WifiMode ackMode)
-{
-  return m_wifiPhy->GetStbc ();
-}
-
 uint8_t
 WifiRemoteStationManager::DoGetBlockAckTxPowerLevel (Mac48Address address, WifiMode blockAckMode)
 {
@@ -1618,12 +1606,6 @@ uint8_t
 WifiRemoteStationManager::DoGetBlockAckTxNess (Mac48Address address, WifiMode blockAckMode)
 {
   return 0;
-}
-
-bool
-WifiRemoteStationManager::DoGetBlockAckTxStbc (Mac48Address address, WifiMode blockAckMode)
-{
-  return m_wifiPhy->GetStbc ();
 }
 
 uint8_t
@@ -1664,6 +1646,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_ness = 0;
   state->m_aggregation = false;
   state->m_stbc = false;
+  state->m_ldpc = false;
   state->m_qosSupported = false;
   state->m_htSupported = false;
   state->m_vhtSupported = false;
@@ -1736,10 +1719,18 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
     {
       state->m_channelWidth = 20;
     }
-  state->m_htSupported = true;
   SetQosSupport (from, true);
   state->m_greenfield = htCapabilities.GetGreenfield ();
   state->m_streams = htCapabilities.GetRxHighestSupportedAntennas ();
+  for (uint32_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+    {
+      WifiMode mcs = m_wifiPhy->GetMcs (j);
+      if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
+        {
+          AddSupportedMcs (from, mcs);
+        }
+    }
+  state->m_htSupported = true;
 }
 
 void
@@ -1762,6 +1753,19 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
   if (m_wifiPhy->GetChannelWidth () < state->m_channelWidth)
     {
       state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
+    }
+  state->m_ldpc = (vhtCapabilities.GetRxLdpc () != 0);
+  state->m_stbc = (vhtCapabilities.GetTxStbc () != 0 && vhtCapabilities.GetRxStbc () != 0);
+  for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
+    {
+      for (uint32_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+        {
+          WifiMode mcs = m_wifiPhy->GetMcs (j);
+          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedMcs (mcs.GetMcsValue (), i))
+            {
+              AddSupportedMcs (from, mcs);
+            }
+        }
     }
   state->m_vhtSupported = true;
 }
@@ -2044,12 +2048,6 @@ bool
 WifiRemoteStationManager::GetAggregation (const WifiRemoteStation *station) const
 {
   return station->m_state->m_aggregation;
-}
-
-bool
-WifiRemoteStationManager::GetStbc (const WifiRemoteStation *station) const
-{
-  return station->m_state->m_stbc;
 }
 
 uint8_t
