@@ -619,18 +619,6 @@ WifiRemoteStationManager::GetFragmentationThreshold (void) const
 }
 
 void
-WifiRemoteStationManager::Reset (Mac48Address address)
-{
-  NS_LOG_FUNCTION (this << address);
-  NS_ASSERT (!address.IsGroup ());
-  WifiRemoteStationState *state = LookupState (address);
-  state->m_operationalRateSet.clear ();
-  state->m_operationalMcsSet.clear ();
-  AddSupportedMode (address, GetDefaultMode ());
-  AddSupportedMcs (address, GetDefaultMcs ());
-}
-
-void
 WifiRemoteStationManager::AddSupportedPlcpPreamble (Mac48Address address, bool isShortPreambleSupported)
 {
   NS_LOG_FUNCTION (this << address << isShortPreambleSupported);

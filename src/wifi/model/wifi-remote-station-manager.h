@@ -530,14 +530,6 @@ public:
   WifiMode GetNonUnicastMode (void) const;
 
   /**
-   * Invoked in an AP upon disassociation of a
-   * specific STA.
-   *
-   * \param address the address of the STA
-   */
-  void Reset (Mac48Address address);
-
-  /**
    * Invoked in a STA or AP to store the set of
    * modes supported by a destination which is
    * also supported locally.
