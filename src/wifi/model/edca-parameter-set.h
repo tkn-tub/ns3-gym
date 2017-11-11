@@ -402,11 +402,6 @@ private:
   bool m_qosSupported;
 };
 
-std::ostream &operator << (std::ostream &os, const EdcaParameterSet &edcaParameterSet);
-std::istream &operator >> (std::istream &is, EdcaParameterSet &edcaParameterSet);
-
-ATTRIBUTE_HELPER_HEADER (EdcaParameterSet);
-
 } //namespace ns3
 
 #endif /* EDCA_PARAMETER_SET_H */
