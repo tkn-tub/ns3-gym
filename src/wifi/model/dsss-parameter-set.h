@@ -49,13 +49,6 @@ public:
   void SetCurrentChannel (uint8_t currentChannel);
 
   /**
-   * Return the Current Channel field in the DsssParameterSet information element.
-   *
-   * \return the Current Channel field in the DsssParameterSet information element
-   */
-  uint8_t GetCurrentChannel (void) const;
-
-  /**
    * Element ID function
    * \returns the wifi information element ID
    */
@@ -104,11 +97,6 @@ private:
   /// This is used to decide whether this element should be added to the frame or not
   bool m_dsssSupported;
 };
-
-std::ostream &operator << (std::ostream &os, const DsssParameterSet &dsssParameterSet);
-std::istream &operator >> (std::istream &is, DsssParameterSet &dsssParameterSet);
-
-ATTRIBUTE_HELPER_HEADER (DsssParameterSet);
 
 } //namespace ns3
 

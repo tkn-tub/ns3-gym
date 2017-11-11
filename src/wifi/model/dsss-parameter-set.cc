@@ -47,12 +47,6 @@ DsssParameterSet::SetCurrentChannel (uint8_t currentChannel)
 }
 
 uint8_t
-DsssParameterSet::GetCurrentChannel (void) const
-{
-  return m_currentChannel;
-}
-
-uint8_t
 DsssParameterSet::GetInformationFieldSize () const
 {
   NS_ASSERT (m_dsssSupported > 0);
@@ -94,35 +88,6 @@ DsssParameterSet::DeserializeInformationField (Buffer::Iterator start, uint8_t l
   Buffer::Iterator i = start;
   m_currentChannel = i.ReadU8 ();
   return length;
-}
-
-/// DsssParameterSet
-ATTRIBUTE_HELPER_CPP (DsssParameterSet);
-
-/**
- * output operator
- *
- * \param os output stream
- * \param DsssParameterSet
- *
- * \return output stream
- */
-std::ostream & operator << (std::ostream &os, const DsssParameterSet &DsssParameterSet)
-{
-  return os;
-}
-
-/**
- * input operator
- *
- * \param is input stream
- * \param DsssParameterSet
- *
- * \return output stream
- */
-std::istream &operator >> (std::istream &is, DsssParameterSet &DsssParameterSet)
-{
-  return is;
 }
 
 } //namespace ns3
