@@ -157,12 +157,6 @@ private:
    */
   void LinkDown (void);
   /**
-   * Return the Channel this device is connected to.
-   *
-   * \return Ptr to Channel object
-   */
-  Ptr<Channel> DoGetChannel (void) const;
-  /**
    * Complete the configuration of this Wi-Fi device by
    * connecting all lower components (e.g. MAC, WifiRemoteStation) together.
    */

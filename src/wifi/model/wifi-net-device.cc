@@ -48,7 +48,7 @@ WifiNetDevice::GetTypeId (void)
                    MakeUintegerChecker<uint16_t> (1,MAX_MSDU_SIZE - LLC_SNAP_HEADER_LENGTH))
     .AddAttribute ("Channel", "The channel attached to this device",
                    PointerValue (),
-                   MakePointerAccessor (&WifiNetDevice::DoGetChannel),
+                   MakePointerAccessor (&WifiNetDevice::GetChannel),
                    MakePointerChecker<Channel> ())
     .AddAttribute ("Phy", "The PHY layer attached to this device.",
                    PointerValue (),
@@ -250,12 +250,6 @@ WifiNetDevice::GetIfIndex (void) const
 
 Ptr<Channel>
 WifiNetDevice::GetChannel (void) const
-{
-  return m_phy->GetChannel ();
-}
-
-Ptr<Channel>
-WifiNetDevice::DoGetChannel (void) const
 {
   return m_phy->GetChannel ();
 }
