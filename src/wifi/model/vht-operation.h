@@ -161,23 +161,7 @@ private:
   uint8_t m_vhtSupported;
 };
 
-/**
- * output stream output operator
- *
- * \param os output stream
- * \param VhtOperation
- *
- * \returns output stream
- */
 std::ostream &operator << (std::ostream &os, const VhtOperation &VhtOperation);
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param VhtOperation
- *
- * \returns input stream
- */
 std::istream &operator >> (std::istream &is, VhtOperation &VhtOperation);
 
 ATTRIBUTE_HELPER_HEADER (VhtOperation);
