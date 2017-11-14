@@ -132,7 +132,7 @@ MgtProbeRequestHeader::Print (std::ostream &os) const
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability;
 }
 
 void
@@ -373,7 +373,7 @@ MgtProbeResponseHeader::Print (std::ostream &os) const
      << "HT Operation=" << m_htOperation << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
      << "VHT Operation=" << m_vhtOperation << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability;
 }
 
 void
@@ -423,6 +423,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_vhtOperation.DeserializeIfPresent (i);
+  i = m_heCapability.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 
@@ -584,7 +585,7 @@ MgtAssocRequestHeader::Print (std::ostream &os) const
      << "rates=" << m_rates << ", "
      << "HT Capabilities=" << m_htCapability << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability;
 }
 
 void
@@ -798,7 +799,7 @@ MgtAssocResponseHeader::Print (std::ostream &os) const
      << "HT Operation=" << m_htOperation << " , "
      << "VHT Capabilities=" << m_vhtCapability << " , "
      << "VHT Operation=" << m_vhtOperation << " , "
-     << "HE Capabilities= " << m_heCapability;
+     << "HE Capabilities=" << m_heCapability;
 }
 
 void
@@ -834,6 +835,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_vhtOperation.DeserializeIfPresent (i);
+  i = m_heCapability.DeserializeIfPresent (i);
   return i.GetDistanceFrom (start);
 }
 
