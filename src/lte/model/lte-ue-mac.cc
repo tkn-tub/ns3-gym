@@ -826,8 +826,9 @@ LteUeMac::DoSubframeIndication (uint32_t frameNo, uint32_t subframeNo)
       SendReportBufferStatus ();
       m_bsrLast = Simulator::Now ();
       m_freshUlBsr = false;
-      m_harqProcessId = (m_harqProcessId + 1) % HARQ_PERIOD;
     }
+  m_harqProcessId = (m_harqProcessId + 1) % HARQ_PERIOD;
+
 }
 
 int64_t
