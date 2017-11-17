@@ -1196,7 +1196,7 @@ RrFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sched
                 {
                   NS_LOG_ERROR ("No info find in HARQ buffer for UE (might change eNB) " << rnti);
                 }
-              if ((*itStat).second.at (harqId) > 3)
+              if ((*itStat).second.at (harqId) >= 3)
                 {
                   NS_LOG_INFO ("Max number of retransmissions reached (UL)-> drop process");
                   continue;
