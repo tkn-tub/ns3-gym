@@ -147,7 +147,7 @@ Experiment::Run (Parameters params)
   channel.AddPropagationLoss ("ns3::RangePropagationLossModel");
 
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
-  phy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
+  phy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11_RADIO);
   phy.SetChannel (channel.Create ());
 
   WifiHelper wifi;

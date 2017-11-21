@@ -101,7 +101,7 @@ WaveNetDeviceExample::CreateWaveNodes (void)
   YansWifiChannelHelper waveChannel = YansWifiChannelHelper::Default ();
   YansWavePhyHelper wavePhy =  YansWavePhyHelper::Default ();
   wavePhy.SetChannel (waveChannel.Create ());
-  wavePhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11);
+  wavePhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11);
   QosWaveMacHelper waveMac = QosWaveMacHelper::Default ();
   WaveHelper waveHelper = WaveHelper::Default ();
   devices = waveHelper.Install (wavePhy, waveMac, nodes);

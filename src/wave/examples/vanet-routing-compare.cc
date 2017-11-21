@@ -2243,11 +2243,11 @@ VanetRoutingExperiment::SetupAdhocDevices ()
   YansWifiPhyHelper wifiPhy =  YansWifiPhyHelper::Default ();
   wifiPhy.SetChannel (channel);
   // ns-3 supports generate a pcap trace
-  wifiPhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11);
+  wifiPhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11);
 
   YansWavePhyHelper wavePhy =  YansWavePhyHelper::Default ();
   wavePhy.SetChannel (channel);
-  wavePhy.SetPcapDataLinkType (YansWifiPhyHelper::DLT_IEEE802_11);
+  wavePhy.SetPcapDataLinkType (WifiPhyHelper::DLT_IEEE802_11);
 
   // Setup WAVE PHY and MAC
   NqosWaveMacHelper wifi80211pMac = NqosWaveMacHelper::Default ();
