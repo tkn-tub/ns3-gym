@@ -97,8 +97,10 @@ NdiscCache::Entry* NdiscCache::Lookup (Ipv6Address dst)
   if (m_ndCache.find (dst) != m_ndCache.end ())
     {
       NdiscCache::Entry* entry = m_ndCache[dst];
+      NS_LOG_LOGIC ("Found an entry:" << dst << " to " << entry->GetMacAddress ());
       return entry;
     }
+  NS_LOG_LOGIC ("Nothing found");
   return 0;
 }
 
@@ -112,6 +114,7 @@ std::list<NdiscCache::Entry*> NdiscCache::LookupInverse (Address dst)
       NdiscCache::Entry *entry = (*i).second;
       if (entry->GetMacAddress () == dst)
         {
+          NS_LOG_LOGIC ("Found an entry:" << (*i).first << " to " << (*i).second);
           entryList.push_back (entry);
         }
     }
