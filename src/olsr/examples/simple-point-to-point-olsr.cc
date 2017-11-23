@@ -130,33 +130,30 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
 
-  OnOffHelper onoff ("ns3::UdpSocketFactory",
+  OnOffHelper onoff1 ("ns3::UdpSocketFactory",
                      InetSocketAddress (i34.GetAddress (1), port));
-  onoff.SetConstantRate (DataRate ("448kb/s"));
+  onoff1.SetConstantRate (DataRate ("448kb/s"));
 
-  ApplicationContainer apps = onoff.Install (c.Get (0));
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
-
-  // Create a packet sink to receive these packets
-  PacketSinkHelper sink ("ns3::UdpSocketFactory",
-                         InetSocketAddress (Ipv4Address::GetAny (), port));
-
-  apps = sink.Install (c.Get (3));
-  apps.Start (Seconds (1.0));
-  apps.Stop (Seconds (10.0));
+  ApplicationContainer onOffApp1 = onoff1.Install (c.Get (0));
+  onOffApp1.Start (Seconds (10.0));
+  onOffApp1.Stop (Seconds (20.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  onoff.SetAttribute ("Remote",
-                      AddressValue (InetSocketAddress (i12.GetAddress (0), port)));
-  apps = onoff.Install (c.Get (3));
-  apps.Start (Seconds (1.1));
-  apps.Stop (Seconds (10.0));
+  OnOffHelper onoff2 ("ns3::UdpSocketFactory",
+                     InetSocketAddress (i12.GetAddress (0), port));
+  onoff2.SetConstantRate (DataRate ("448kb/s"));
 
-  // Create a packet sink to receive these packets
-  apps = sink.Install (c.Get (1));
-  apps.Start (Seconds (1.1));
-  apps.Stop (Seconds (10.0));
+  ApplicationContainer onOffApp2 = onoff2.Install (c.Get (3));
+  onOffApp2.Start (Seconds (10.1));
+  onOffApp2.Stop (Seconds (20.0));
+
+  // Create packet sinks to receive these packets
+  PacketSinkHelper sink ("ns3::UdpSocketFactory",
+                         InetSocketAddress (Ipv4Address::GetAny (), port));
+  NodeContainer sinks = NodeContainer (c.Get (4), c.Get (1));
+  ApplicationContainer sinkApps = sink.Install (sinks);
+  sinkApps.Start (Seconds (0.0));
+  sinkApps.Stop (Seconds (21.0));
 
   AsciiTraceHelper ascii;
   p2p.EnableAsciiAll (ascii.CreateFileStream ("simple-point-to-point-olsr.tr"));

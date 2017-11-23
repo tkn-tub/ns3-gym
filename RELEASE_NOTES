@@ -32,6 +32,7 @@ Bugs fixed
 - Bug 2764 - wifi: WifiSpectrumModelId doesn't distinguish 11ax from legacy
 - Bug 2766 - core:  Modify logging for int64x64 to avoid stack overflow
 - Bug 2824 - ICMP opcode fr fragment timeout drop is wrong
+- Bug 2828 - OLSR simple P2P example produces wrong results
 
 Known issues
 ------------
