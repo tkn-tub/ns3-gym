@@ -626,7 +626,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
           for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
             {
               uint32_t selector = m_phy->GetBssMembershipSelector (i);
-              if (!rates.IsSupportedRate (selector))
+              if (!rates.IsBssMembershipSelectorRate (selector))
                 {
                   return;
                 }
