@@ -154,7 +154,7 @@ private:
   uint8_t m_channelCenterFrequencySegment0; ///< channel center frequency segment 0
   uint8_t m_channelCenterFrequencySegment1; ///< channel center frequency segment 0
 
-  //Basic VHT-MCSS and NSS Set
+  //Basic VHT-MCS and NSS Set
   uint16_t m_basicVhtMcsAndNssSet; ///< basic VHT MCS NSS set
 
   /// This is used to decide whether this element should be added to the frame or not
