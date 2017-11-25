@@ -33,6 +33,7 @@ Bugs fixed
 - Bug 2766 - core:  Modify logging for int64x64 to avoid stack overflow
 - Bug 2824 - ICMP opcode fr fragment timeout drop is wrong
 - Bug 2828 - OLSR simple P2P example produces wrong results
+- Bug 2827 - wifi: Active scanning not working with 802.11n/ac/ax
 
 Known issues
 ------------
