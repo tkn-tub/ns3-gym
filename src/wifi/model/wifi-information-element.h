@@ -187,6 +187,7 @@ typedef uint8_t WifiInformationElementId;
 #define IE_VENDOR_SPECIFIC                      ((WifiInformationElementId)221)
 // 222 to 255 are reserved
 #define IE_HE_CAPABILITIES                      ((WifiInformationElementId)255) //todo: not defined yet in the standard!
+#define IE_HE_OPERATION                         ((WifiInformationElementId)255) //todo: not defined yet in the standard!
 
 
 /**

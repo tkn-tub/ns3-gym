@@ -35,6 +35,7 @@
 #include "erp-information.h"
 #include "edca-parameter-set.h"
 #include "he-capabilities.h"
+#include "he-operation.h"
 
 namespace ns3 {
 
@@ -215,6 +216,12 @@ public:
    */
   HeCapabilities GetHeCapabilities (void) const;
   /**
+   * Return the HE operation.
+   *
+   * \return HE operation
+   */
+  HeOperation GetHeOperation (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
@@ -286,6 +293,12 @@ public:
    * \param hecapabilities HE capabilities
    */
   void SetHeCapabilities (HeCapabilities hecapabilities);
+  /**
+   * Set the HE operation.
+   *
+   * \param heoperation HE operation
+   */
+  void SetHeOperation (HeOperation heoperation);
 
   /**
    * Register this type.
@@ -311,6 +324,7 @@ private:
   ErpInformation m_erpInformation; //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
   HeCapabilities m_heCapability; //!< HE capabilities
+  HeOperation m_heOperation; //!< HE operation
 };
 
 
@@ -476,6 +490,12 @@ public:
    */
   HeCapabilities GetHeCapabilities (void) const;
   /**
+   * Return the HE operation.
+   *
+   * \return HE operation
+   */
+  HeOperation GetHeOperation (void) const;
+  /**
    * Return the ERP information.
    *
    * \return the ERP information
@@ -523,6 +543,12 @@ public:
    * \param hecapabilities HE capabilities
    */
   void SetHeCapabilities (HeCapabilities hecapabilities);
+  /**
+   * Set the HE operation.
+   *
+   * \param heoperation HE operation
+   */
+  void SetHeOperation (HeOperation heoperation);
   /**
    * Set the Service Set Identifier (SSID).
    *
@@ -589,7 +615,8 @@ private:
   HtOperation m_htOperation;           //!< HT operation
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities
   VhtOperation m_vhtOperation;         //!< VHT operation
-  HeCapabilities m_heCapability;     //!< HE capabilities
+  HeCapabilities m_heCapability;       //!< HE capabilities
+  HeOperation m_heOperation;         //!< HE operation
   ErpInformation m_erpInformation;     //!< ERP information
   EdcaParameterSet m_edcaParameterSet; //!< EDCA Parameter Set
 };
