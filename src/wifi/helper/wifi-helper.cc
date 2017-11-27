@@ -810,6 +810,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("ConstantRateWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("DcaTxop", LOG_LEVEL_ALL);
   LogComponentEnable ("DcfManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("DcfState", LOG_LEVEL_ALL);
   LogComponentEnable ("DsssErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("EdcaTxopN", LOG_LEVEL_ALL);
   LogComponentEnable ("IdealWifiManager", LOG_LEVEL_ALL);
