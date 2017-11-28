@@ -188,10 +188,10 @@ LteInterferenceTestCase::DoRun (void)
   testUlSinr1->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &ulSinr1Catcher));
   enb1phy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr1);
 
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+  Config::Connect ("/NodeList/0/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/UlScheduling",
+  Config::Connect ("/NodeList/0/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 
@@ -209,10 +209,10 @@ LteInterferenceTestCase::DoRun (void)
   testUlSinr2->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &ulSinr2Catcher));
   enb1phy->GetUplinkSpectrumPhy ()->AddDataSinrChunkProcessor (testUlSinr2);
 
-  Config::Connect ("/NodeList/1/DeviceList/0/LteEnbMac/DlScheduling",
+  Config::Connect ("/NodeList/1/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
-  Config::Connect ("/NodeList/1/DeviceList/0/LteEnbMac/UlScheduling",
+  Config::Connect ("/NodeList/1/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&LteTestUlSchedulingCallback, this));
 
 // need to allow for RRC connection establishment + SRS

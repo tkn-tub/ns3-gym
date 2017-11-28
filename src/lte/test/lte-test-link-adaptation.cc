@@ -211,7 +211,7 @@ LteLinkAdaptationTestCase::DoRun (void)
   testSinr->AddCallback (MakeCallback (&LteSpectrumValueCatcher::ReportValue, &sinrCatcher));
   uePhy->GetDownlinkSpectrumPhy ()->AddCtrlSinrChunkProcessor (testSinr);
 
-  Config::Connect ("/NodeList/0/DeviceList/0/LteEnbMac/DlScheduling",
+  Config::Connect ("/NodeList/0/DeviceList/0/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&LteTestDlSchedulingCallback, this));
 
   Simulator::Stop (Seconds (0.040));
