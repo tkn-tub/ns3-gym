@@ -49,7 +49,8 @@ def options(opt):
         opt.recurse(module, mandatory=False)
 
 def configure(conf):
-    conf.env['REQUIRED_BOOST_LIBS'] = []
+    if not conf.env['REQUIRED_BOOST_LIBS']:
+        conf.env['REQUIRED_BOOST_LIBS'] = []
     for module in all_modules:
         conf.recurse (module, name="required_boost_libs", mandatory=False)
 
