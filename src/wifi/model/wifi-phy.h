@@ -193,7 +193,11 @@ public:
     /**
      * The PHY layer is sleeping.
      */
-    SLEEP
+    SLEEP,
+    /**
+     * The PHY layer is switched off.
+     */
+    OFF
   };
 
   /**

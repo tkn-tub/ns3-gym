@@ -346,8 +346,6 @@ WifiPhyStateHelper::SwitchToTx (Time txDuration, Ptr<const Packet> packet, doubl
     case WifiPhy::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
       break;
-    case WifiPhy::SWITCHING:
-    case WifiPhy::SLEEP:
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
       break;
@@ -378,10 +376,7 @@ WifiPhyStateHelper::SwitchToRx (Time rxDuration)
         ccaStart = Max (ccaStart, m_endSwitching);
         m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
       } break;
-    case WifiPhy::SWITCHING:
-    case WifiPhy::RX:
-    case WifiPhy::TX:
-    case WifiPhy::SLEEP:
+    default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
       break;
     }
@@ -418,9 +413,6 @@ WifiPhyStateHelper::SwitchToChannelSwitching (Time switchingDuration)
     case WifiPhy::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
       break;
-    case WifiPhy::TX:
-    case WifiPhy::SWITCHING:
-    case WifiPhy::SLEEP:
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
       break;
@@ -489,18 +481,10 @@ WifiPhyStateHelper::SwitchMaybeToCcaBusy (Time duration)
   Time now = Simulator::Now ();
   switch (GetState ())
     {
-    case WifiPhy::SWITCHING:
-      break;
-    case WifiPhy::SLEEP:
-      break;
     case WifiPhy::IDLE:
       LogPreviousIdleAndCcaBusyStates ();
       break;
-    case WifiPhy::CCA_BUSY:
-      break;
-    case WifiPhy::RX:
-      break;
-    case WifiPhy::TX:
+    default:
       break;
     }
   if (GetState () != WifiPhy::CCA_BUSY)
@@ -527,10 +511,7 @@ WifiPhyStateHelper::SwitchToSleep (void)
         ccaStart = Max (ccaStart, m_endSwitching);
         m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
       } break;
-    case WifiPhy::RX:
-    case WifiPhy::SWITCHING:
-    case WifiPhy::TX:
-    case WifiPhy::SLEEP:
+    default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
       break;
     }

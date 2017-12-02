@@ -413,6 +413,9 @@ WifiRadioEnergyModel::SetWifiRadioState (const WifiPhy::State state)
     case WifiPhy::SLEEP:
       stateName = "SLEEP";
       break;
+    case WifiPhy::OFF:
+      stateName = "OFF";
+      break;
     }
   NS_LOG_DEBUG ("WifiRadioEnergyModel:Switching to state: " << stateName <<
                 " at time = " << Simulator::Now ());
