@@ -10,6 +10,7 @@
 cpp_examples = [
     ("li-ion-energy-source", "True", "True"),
     ("rv-battery-model-test", "True", "True"),
+    ("basic-energy-model-test", "True", "True"),
 ]
 
 # A list of Python examples to run in order to ensure that they remain
