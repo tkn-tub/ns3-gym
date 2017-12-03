@@ -293,7 +293,7 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
       macHdr.SetNoPanIdComp ();
       break;
     case ADDR_MODE_RESERVED:
-      macHdr.SetSrcAddrMode (params.m_srcAddrMode);
+      NS_ABORT_MSG ("Can not set source address type to ADDR_MODE_RESERVED. Aborting.");
       break;
     case SHORT_ADDR:
       macHdr.SetSrcAddrMode (params.m_srcAddrMode);
