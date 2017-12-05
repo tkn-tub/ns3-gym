@@ -302,7 +302,7 @@ WifiPhyHelper::PcapSniffTxEvent (
             header.SetAmpduStatus (aMpdu.mpduRefNumber, ampduStatusFlags, hdr.GetCrc ());
           }
 
-        if (preamble == WIFI_PREAMBLE_VHT)
+        if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
           {
             uint16_t vhtKnown = RadiotapHeader::VHT_KNOWN_NONE;
             uint8_t vhtFlags = RadiotapHeader::VHT_FLAGS_NONE;
@@ -507,7 +507,7 @@ WifiPhyHelper::PcapSniffRxEvent (
             header.SetAmpduStatus (aMpdu.mpduRefNumber, ampduStatusFlags, hdr.GetCrc ());
           }
 
-        if (preamble == WIFI_PREAMBLE_VHT)
+        if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT)
           {
             uint16_t vhtKnown = RadiotapHeader::VHT_KNOWN_NONE;
             uint8_t vhtFlags = RadiotapHeader::VHT_FLAGS_NONE;
