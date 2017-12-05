@@ -1891,7 +1891,10 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
 bool
 MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
 {
-  if (m_stationManager->HasHtSupported () || m_stationManager->HasVhtSupported ())
+  if (m_stationManager->HasHtSupported ()
+      || m_stationManager->HasVhtSupported ()
+      || m_stationManager->HasHeSupported ())
+
     {
       Mac48Address originator = hdr.GetAddr2 ();
       uint8_t tid = 0;
@@ -2230,7 +2233,9 @@ MacLow::SendBlockAckAfterBlockAckRequest (const CtrlBAckRequestHeader reqHdr, Ma
           (*i).second.FillBlockAckBitmap (&blockAck);
           NS_LOG_DEBUG ("Got block Ack Req with seq " << reqHdr.GetStartingSequence ());
 
-          if (!m_stationManager->HasHtSupported () && !m_stationManager->HasVhtSupported ())
+          if (!m_stationManager->HasHtSupported ()
+              && !m_stationManager->HasVhtSupported ()
+              && !m_stationManager->HasHeSupported ())
             {
               /* All packets with smaller sequence than starting sequence control must be passed up to Wifimac
                * See 9.10.3 in IEEE 802.11e standard.
