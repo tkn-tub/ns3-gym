@@ -45,9 +45,9 @@ class HtCapabilities : public WifiInformationElement
 public:
   HtCapabilities ();
   /**
-   * Set the HT Supported field in the HT Supported information element.
+   * Set the HT supported field.
    *
-   * \param htsupported the HT Supported Info field in the HT Supported information element
+   * \param htsupported the HT supported field
    */
   void SetHtSupported (uint8_t htsupported);
 
