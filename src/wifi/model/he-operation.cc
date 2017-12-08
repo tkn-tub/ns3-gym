@@ -23,14 +23,14 @@
 namespace ns3 {
 
 HeOperation::HeOperation ()
-  : m_bsssColor (0),
+  : m_bssColor (0),
     m_defaultPEDuration (0),
     m_twtRequired (0),
     m_heDurationBasedRtsThreshold (0),
-    m_partialBsssColor (0),
+    m_partialBssColor (0),
     m_maxBssidIndicator (0),
     m_txBssidIndicator (0),
-    m_bsssColorDisabled (0),
+    m_bssColorDisabled (0),
     m_dualBeacon (0),
     m_basicHeMcsAndNssSet (0),
     m_heSupported (0)
@@ -60,14 +60,14 @@ HeOperation::GetInformationFieldSize () const
 void
 HeOperation::SetHeOperationParameters (uint32_t ctrl)
 {
-  m_bsssColor = ctrl & 0x3f;
+  m_bssColor = ctrl & 0x3f;
   m_defaultPEDuration = (ctrl >> 6) & 0x07;
   m_twtRequired = (ctrl >> 9) & 0x01;
   m_heDurationBasedRtsThreshold = (ctrl >> 10) & 0x03ff;
-  m_partialBsssColor = (ctrl >> 20) & 0x01;
+  m_partialBssColor = (ctrl >> 20) & 0x01;
   m_maxBssidIndicator = (ctrl >> 21) & 0xff;
   m_txBssidIndicator = (ctrl >> 29) & 0x01;
-  m_bsssColorDisabled = (ctrl >> 30) & 0x01;
+  m_bssColorDisabled = (ctrl >> 30) & 0x01;
   m_dualBeacon = (ctrl >> 31) & 0x01;
 }
 
@@ -75,14 +75,14 @@ uint32_t
 HeOperation::GetHeOperationParameters () const
 {
   uint32_t val = 0;
-  val |= m_bsssColor & 0x3f;
+  val |= m_bssColor & 0x3f;
   val |= (m_defaultPEDuration & 0x07) << 6;
   val |= (m_twtRequired & 0x01) << 9;
   val |= (m_heDurationBasedRtsThreshold & 0x03ff) << 10;
-  val |= (m_partialBsssColor & 0x01) << 20;
+  val |= (m_partialBssColor & 0x01) << 20;
   val |= (m_maxBssidIndicator & 0xff) << 21;
   val |= (m_txBssidIndicator & 0x01) << 29;
-  val |= (m_bsssColorDisabled & 0x01) << 30;
+  val |= (m_bssColorDisabled & 0x01) << 30;
   val |= (m_dualBeacon & 0x01) << 31;
   return val;
 }
