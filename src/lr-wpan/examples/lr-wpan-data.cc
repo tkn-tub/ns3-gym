@@ -59,10 +59,12 @@ static void StateChangeNotification (std::string context, Time now, LrWpanPhyEnu
 int main (int argc, char *argv[])
 {
   bool verbose = false;
+  bool extended = false;
 
   CommandLine cmd;
 
   cmd.AddValue ("verbose", "turn on all log components", verbose);
+  cmd.AddValue ("extended", "use extended addressing", extended);
 
   cmd.Parse (argc, argv);
 
@@ -82,8 +84,18 @@ int main (int argc, char *argv[])
   Ptr<LrWpanNetDevice> dev0 = CreateObject<LrWpanNetDevice> ();
   Ptr<LrWpanNetDevice> dev1 = CreateObject<LrWpanNetDevice> ();
 
-  dev0->SetAddress (Mac16Address ("00:01"));
-  dev1->SetAddress (Mac16Address ("00:02"));
+  if (!extended)
+    {
+      dev0->SetAddress (Mac16Address ("00:01"));
+      dev1->SetAddress (Mac16Address ("00:02"));
+    }
+  else
+    {
+      Ptr<LrWpanMac> mac0 = dev0->GetMac();
+      Ptr<LrWpanMac> mac1 = dev1->GetMac();
+      mac0->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:01"));
+      mac1->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:02"));
+    }
 
   // Each device must be attached to the same channel
   Ptr<SingleModelSpectrumChannel> channel = CreateObject<SingleModelSpectrumChannel> ();
@@ -138,10 +150,19 @@ int main (int argc, char *argv[])
   // 2) DataIndication callback is called with value of 50
   Ptr<Packet> p0 = Create<Packet> (50);  // 50 bytes of dummy data
   McpsDataRequestParams params;
-  params.m_srcAddrMode = SHORT_ADDR;
-  params.m_dstAddrMode = SHORT_ADDR;
   params.m_dstPanId = 0;
-  params.m_dstAddr = Mac16Address ("00:02");
+  if (!extended)
+    {
+      params.m_srcAddrMode = SHORT_ADDR;
+      params.m_dstAddrMode = SHORT_ADDR;
+      params.m_dstAddr = Mac16Address ("00:02");
+    }
+  else
+    {
+      params.m_srcAddrMode = EXT_ADDR;
+      params.m_dstAddrMode = EXT_ADDR;
+      params.m_dstExtAddr = Mac64Address ("00:00:00:00:00:00:00:02");
+    }
   params.m_msduHandle = 0;
   params.m_txOptions = TX_OPTION_ACK;
 //  dev0->GetMac ()->McpsDataRequest (params, p0);
@@ -151,7 +172,14 @@ int main (int argc, char *argv[])
 
   // Send a packet back at time 2 seconds
   Ptr<Packet> p2 = Create<Packet> (60);  // 60 bytes of dummy data
-  params.m_dstAddr = Mac16Address ("00:01");
+  if (!extended)
+    {
+      params.m_dstAddr = Mac16Address ("00:01");
+    }
+  else
+    {
+      params.m_dstExtAddr = Mac64Address ("00:00:00:00:00:00:00:01");
+    }
   Simulator::ScheduleWithContext (2, Seconds (2.0),
                                   &LrWpanMac::McpsDataRequest,
                                   dev1->GetMac (), params, p2);

@@ -25,6 +25,7 @@ This release has been tested on the following platforms:
 
 New user-visible features
 -------------------------
+- (lr-wpan) Extended addressing mode is now supported.
 
 Bugs fixed
 ----------

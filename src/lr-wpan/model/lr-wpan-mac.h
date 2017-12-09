@@ -158,6 +158,7 @@ struct McpsDataRequestParams
   LrWpanAddressMode m_dstAddrMode; //!< Destination address mode
   uint16_t m_dstPanId;             //!< Destination PAN identifier
   Mac16Address m_dstAddr;          //!< Destination address
+  Mac64Address m_dstExtAddr;       //!< Destination extended address
   uint8_t m_msduHandle;            //!< MSDU handle
   uint8_t m_txOptions;             //!< Tx Options (bitfield)
 };
@@ -183,9 +184,11 @@ struct McpsDataIndicationParams
   uint8_t m_srcAddrMode;  //!< Source address mode
   uint16_t m_srcPanId;    //!< Source PAN identifier
   Mac16Address m_srcAddr; //!< Source address
+  Mac64Address m_srcExtAddr;  //!< Source extended address
   uint8_t m_dstAddrMode;  //!< Destination address mode
   uint16_t m_dstPanId;    //!< Destination PAN identifier
   Mac16Address m_dstAddr; //!< Destination address
+  Mac64Address m_dstExtAddr;  //!< Destination extended address
   uint8_t m_mpduLinkQuality;  //!< LQI value measured during reception of the MPDU
   uint8_t m_dsn;          //!< The DSN of the received data frame
 };

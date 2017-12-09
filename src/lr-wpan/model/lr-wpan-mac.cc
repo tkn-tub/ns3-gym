@@ -312,10 +312,33 @@ LrWpanMac::McpsDataRequest (McpsDataRequestParams params, Ptr<Packet> p)
         }
       return;
     }
+  switch (params.m_dstAddrMode)
+    {
+    case NO_PANID_ADDR:
+      macHdr.SetDstAddrMode (params.m_dstAddrMode);
+      macHdr.SetNoPanIdComp ();
+      break;
+    case ADDR_MODE_RESERVED:
+      NS_ABORT_MSG ("Can not set destination address type to ADDR_MODE_RESERVED. Aborting.");
+      break;
+    case SHORT_ADDR:
+      macHdr.SetDstAddrMode (params.m_dstAddrMode);
+      macHdr.SetDstAddrFields (params.m_dstPanId, params.m_dstAddr);
+      break;
+    case EXT_ADDR:
+      macHdr.SetDstAddrMode (params.m_dstAddrMode);
+      macHdr.SetDstAddrFields (params.m_dstPanId, params.m_dstExtAddr);
+      break;
+    default:
+      NS_LOG_ERROR (this << " Can not send packet with incorrect Destination Address mode = " << params.m_dstAddrMode);
+      confirmParams.m_status = IEEE_802_15_4_INVALID_ADDRESS;
+      if (!m_mcpsDataConfirmCallback.IsNull ())
+        {
+          m_mcpsDataConfirmCallback (confirmParams);
+        }
+      return;
+    }
 
-  macHdr.SetDstAddrMode (params.m_dstAddrMode);
-  // TODO: Add field for EXT_ADDR destination address (and use it here).
-  macHdr.SetDstAddrFields (params.m_dstPanId, params.m_dstAddr);
   macHdr.SetSecDisable ();
   //extract the last 3 bits in TxOptions and map to macHdr
   int b0 = params.m_txOptions & TX_OPTION_ACK;
@@ -512,20 +535,34 @@ LrWpanMac::PdDataIndication (uint32_t psduLength, Ptr<Packet> p, uint8_t lqi)
       params.m_mpduLinkQuality = lqi;
       params.m_srcPanId = receivedMacHdr.GetSrcPanId ();
       params.m_srcAddrMode = receivedMacHdr.GetSrcAddrMode ();
-      // TODO: Add field for EXT_ADDR source address.
-      if (params.m_srcAddrMode == SHORT_ADDR)
+      switch (params.m_srcAddrMode)
         {
+        case SHORT_ADDR:
           params.m_srcAddr = receivedMacHdr.GetShortSrcAddr ();
+          NS_LOG_DEBUG ("Packet from " << params.m_srcAddr);
+          break;
+        case EXT_ADDR:
+          params.m_srcExtAddr = receivedMacHdr.GetExtSrcAddr ();
+          NS_LOG_DEBUG ("Packet from " << params.m_srcExtAddr);
+          break;
+        default:
+          break;
         }
       params.m_dstPanId = receivedMacHdr.GetDstPanId ();
       params.m_dstAddrMode = receivedMacHdr.GetDstAddrMode ();
-      // TODO: Add field for EXT_ADDR destination address.
-      if (params.m_dstAddrMode == SHORT_ADDR)
+      switch (params.m_dstAddrMode)
         {
+        case SHORT_ADDR:
           params.m_dstAddr = receivedMacHdr.GetShortDstAddr ();
+          NS_LOG_DEBUG ("Packet to " << params.m_dstAddr);
+          break;
+        case EXT_ADDR:
+          params.m_dstExtAddr = receivedMacHdr.GetExtDstAddr ();
+          NS_LOG_DEBUG ("Packet to " << params.m_dstExtAddr);
+          break;
+        default:
+          break;
         }
-
-      NS_LOG_DEBUG ("Packet from " << params.m_srcAddr << " to " << params.m_dstAddr);
 
       if (m_macPromiscuousMode)
         {

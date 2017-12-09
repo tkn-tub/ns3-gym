@@ -67,6 +67,21 @@ public:
    * \param params The MCPS params.
    */
   static void DataConfirm (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params);
+  /**
+   * \brief Function called when DataIndication is hit in extended addressing test.
+   * \param testCase The TestCase.
+   * \param dev The LrWpanNetDevice.
+   * \param params The MCPS params.
+   * \param p the packet.
+   */
+  static void ExtendedAddressingDataIndication (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataIndicationParams params, Ptr<Packet> p);
+  /**
+   * \brief Function called when DataConfirm is hit in extended addressing test.
+   * \param testCase The TestCase.
+   * \param dev The LrWpanNetDevice.
+   * \param params The MCPS params.
+   */
+  static void ExtendedAddressingDataConfirm (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params);
 
 private:
   virtual void DoRun (void);
@@ -125,6 +140,42 @@ LrWpanAckTestCase::DataConfirm (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice
 }
 
 void
+LrWpanAckTestCase::ExtendedAddressingDataIndication (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataIndicationParams params, Ptr<Packet> p)
+{
+  if (dev->GetMac ()->GetExtendedAddress () == Mac64Address ("00:00:00:00:00:00:00:02"))
+    {
+      Ptr<Packet> p = Create<Packet> (10);  // 10 bytes of dummy data
+      McpsDataRequestParams params;
+      params.m_srcAddrMode = EXT_ADDR;
+      params.m_dstAddrMode = EXT_ADDR;
+      params.m_dstPanId = 0;
+      params.m_dstExtAddr = Mac64Address ("00:00:00:00:00:00:00:01");
+      params.m_msduHandle = 0;
+      params.m_txOptions = TX_OPTION_NONE;
+
+      testCase->m_replyTime = Simulator::Now ();
+      dev->GetMac ()->McpsDataRequest (params, p);
+    }
+  else
+    {
+      testCase->m_replyArrivalTime = Simulator::Now ();
+    }
+}
+
+void
+LrWpanAckTestCase::ExtendedAddressingDataConfirm (LrWpanAckTestCase *testCase, Ptr<LrWpanNetDevice> dev, McpsDataConfirmParams params)
+{
+  if (dev->GetMac ()->GetExtendedAddress () == Mac64Address ("00:00:00:00:00:00:00:01"))
+    {
+      testCase->m_requestAckTime = Simulator::Now ();
+    }
+  else
+    {
+      testCase->m_replyAckTime = Simulator::Now ();
+    }
+}
+
+void
 LrWpanAckTestCase::DoRun (void)
 {
   // Test setup:
@@ -133,6 +184,7 @@ LrWpanAckTestCase::DoRun (void)
   // immediately answers with a reply packet on reception of the request.
   // We expect the ACK of the request packet to always arrive at node 1 before
   // the reply packet sent by node 2.
+  // The same is repeated for extened addressing mode.
 
   // Enable calculation of FCS in the trailers. Only necessary when interacting with real devices or wireshark.
   // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));
@@ -210,6 +262,49 @@ LrWpanAckTestCase::DoRun (void)
   NS_TEST_EXPECT_MSG_LT (m_requestTime, m_replyTime, "Sent the request before the reply (as expected)");
   NS_TEST_EXPECT_MSG_LT (m_requestAckTime, m_replyArrivalTime, "The request was ACKed before the reply arrived (as expected)");
   NS_TEST_EXPECT_MSG_LT (m_replyAckTime, m_replyArrivalTime, "The reply was ACKed before the reply arrived (as expected)");
+
+  // Test extended addressing.
+
+  // Resetting the timers.
+  m_requestTime = Seconds (0);
+  m_requestAckTime = Seconds (0);
+  m_replyTime = Seconds (0);
+  m_replyAckTime = Seconds (0);
+  m_replyArrivalTime = Seconds (0);
+
+  // Adding exteneded addresses.
+  dev0->GetMac()->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:01"));
+  dev1->GetMac()->SetExtendedAddress (Mac64Address ("00:00:00:00:00:00:00:02"));
+
+  // Changing callbacks for those with exteneded addressing.
+  cb0 = MakeBoundCallback (&LrWpanAckTestCase::ExtendedAddressingDataConfirm, this, dev0);
+  dev0->GetMac ()->SetMcpsDataConfirmCallback (cb0);
+
+  cb1 = MakeBoundCallback (&LrWpanAckTestCase::ExtendedAddressingDataIndication, this, dev0);
+  dev0->GetMac ()->SetMcpsDataIndicationCallback (cb1);
+
+  cb2 = MakeBoundCallback (&LrWpanAckTestCase::ExtendedAddressingDataConfirm, this, dev1);
+  dev1->GetMac ()->SetMcpsDataConfirmCallback (cb2);
+
+  cb3 = MakeBoundCallback (&LrWpanAckTestCase::ExtendedAddressingDataIndication, this, dev1);
+  dev1->GetMac ()->SetMcpsDataIndicationCallback (cb3);
+
+  Ptr<Packet> p1 = Create<Packet> (50);  // 50 bytes of dummy data
+  params.m_srcAddrMode = EXT_ADDR;
+  params.m_dstAddrMode = EXT_ADDR;
+  params.m_dstPanId = 0;
+  params.m_dstExtAddr = Mac64Address ("00:00:00:00:00:00:00:02");
+  params.m_msduHandle = 0;
+  params.m_txOptions = TX_OPTION_ACK;
+  m_requestTime = Simulator::Now ();
+  Simulator::ScheduleNow (&LrWpanMac::McpsDataRequest, dev0->GetMac (), params, p0);
+
+
+  Simulator::Run ();
+
+  NS_TEST_EXPECT_MSG_LT (m_requestTime, m_replyTime, "ExtendedAddressing: Sent the request before the reply (as expected)");
+  NS_TEST_EXPECT_MSG_LT (m_requestAckTime, m_replyArrivalTime, "ExtendedAddressing: The request was ACKed before the reply arrived (as expected)");
+  NS_TEST_EXPECT_MSG_LT (m_replyAckTime, m_replyArrivalTime, "ExtendedAddressing: The reply was ACKed before the reply arrived (as expected)");
 
   Simulator::Destroy ();
 }
