@@ -1405,7 +1405,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
               double achievableRate = (( m_amc->GetTbSizeFromMcs (mcsForThisUser, rbgSize)/ 8) / 0.001);
               double pf_weight = achievableRate / (*itStats).second.secondLastAveragedThroughput;
 
-              UeToAmountOfAssignedResources.find (flowId)->second = tbSize;
+              UeToAmountOfAssignedResources.find (flowId)->second = 8*tbSize;
               FfMacSchedSapProvider::SchedDlRlcBufferReqParameters lcBufferInfo = m_rlcBufferReq.find (flowId)->second;
 
               if (UeToAmountOfDataToTransfer.find (flowId)->second - UeToAmountOfAssignedResources.find (flowId)->second < 0)
