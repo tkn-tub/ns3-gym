@@ -410,16 +410,6 @@ private:
    */
   void CancelAllEvents (void);
   /**
-   * Return the total size of the packet after WifiMacHeader and FCS trailer
-   * have been added.
-   *
-   * \param packet the packet to be encapsulated with WifiMacHeader and FCS trailer
-   * \param hdr the WifiMacHeader
-   * \param isAmpdu whether packet is part of an A-MPDU
-   * \return the total packet size
-   */
-  static uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu);
-  /**
    * Forward the packet down to WifiPhy for transmission. This is called for the entire A-MPDu when MPDU aggregation is used.
    *
    * \param packet the packet

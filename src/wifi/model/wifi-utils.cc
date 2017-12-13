@@ -135,4 +135,20 @@ AddWifiMacTrailer (Ptr<Packet> packet)
   packet->AddTrailer (fcs);
 }
 
+uint32_t
+GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu)
+{
+  uint32_t size;
+  WifiMacTrailer fcs;
+  if (isAmpdu)
+    {
+      size = packet->GetSize ();
+    }
+  else
+    {
+      size = packet->GetSize () + hdr->GetSize () + fcs.GetSerializedSize ();
+    }
+  return size;
+}
+
 } //namespace ns3

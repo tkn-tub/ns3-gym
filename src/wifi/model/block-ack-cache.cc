@@ -20,7 +20,6 @@
 
 #include "block-ack-cache.h"
 #include "ctrl-headers.h"
-#include "wifi-mac-header.h"
 #include "qos-utils.h"
 #include "wifi-utils.h"
 #include "ns3/log.h"

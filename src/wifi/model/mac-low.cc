@@ -25,7 +25,6 @@
 #include "ns3/socket.h"
 #include "mac-low.h"
 #include "edca-txop-n.h"
-#include "wifi-mac-trailer.h"
 #include "snr-tag.h"
 #include "ampdu-tag.h"
 #include "wifi-mac-queue.h"
@@ -1017,22 +1016,6 @@ MacLow::GetCtsDuration (WifiTxVector ctsTxVector) const
   return m_phy->CalculateTxDuration (GetCtsSize (), ctsTxVector, m_phy->GetFrequency ());
 }
 
-uint32_t
-MacLow::GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu)
-{
-  uint32_t size;
-  WifiMacTrailer fcs;
-  if (isAmpdu)
-    {
-      size = packet->GetSize ();
-    }
-  else
-    {
-      size = packet->GetSize () + hdr->GetSize () + fcs.GetSerializedSize ();
-    }
-  return size;
-}
-
 WifiTxVector
 MacLow::GetRtsTxVector (Ptr<const Packet> packet, const WifiMacHeader *hdr) const
 {
@@ -1829,18 +1812,21 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration)
 void
 MacLow::WaitIfsAfterEndTxFragment (void)
 {
+  NS_LOG_FUNCTION (this);
   m_currentDca->StartNextFragment ();
 }
 
 void
 MacLow::WaitIfsAfterEndTxPacket (void)
 {
+  NS_LOG_FUNCTION (this);
   m_currentDca->StartNextPacket ();
 }
 
 void
 MacLow::EndTxNoAck (void)
 {
+  NS_LOG_FUNCTION (this);
   Ptr<DcaTxop> dca = m_currentDca;
   m_currentDca = 0;
   dca->EndTxNoAck ();
@@ -1894,7 +1880,6 @@ MacLow::ReceiveMpdu (Ptr<Packet> packet, WifiMacHeader hdr)
   if (m_stationManager->HasHtSupported ()
       || m_stationManager->HasVhtSupported ()
       || m_stationManager->HasHeSupported ())
-
     {
       Mac48Address originator = hdr.GetAddr2 ();
       uint8_t tid = 0;
