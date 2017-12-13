@@ -1877,7 +1877,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
               // can increase cWnd)
               segsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
               m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
-
+              m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
               exitedFastRecovery = true;
@@ -1909,7 +1909,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
               // Follow NewReno procedures to exit FR if SACK is disabled
               // (RFC2582 sec.3 bullet #5 paragraph 2, option 1)
               m_tcb->m_cWnd = std::min (m_tcb->m_ssThresh.Get (),
-                                    BytesInFlight () + m_tcb->m_segmentSize);
+                                        BytesInFlight () + m_tcb->m_segmentSize);
               NS_LOG_DEBUG ("Leaving Fast Recovery; BytesInFlight() = " <<
                             BytesInFlight () << "; cWnd = " << m_tcb->m_cWnd);
             }
@@ -2293,7 +2293,7 @@ void
 TcpSocketBase::DoPeerClose (void)
 {
   NS_ASSERT (m_state == ESTABLISHED || m_state == SYN_RCVD ||
-    m_state == FIN_WAIT_1 || m_state == FIN_WAIT_2);
+             m_state == FIN_WAIT_1 || m_state == FIN_WAIT_2);
 
   // Move the state to CLOSE_WAIT
   NS_LOG_DEBUG (TcpStateName[m_state] << " -> CLOSE_WAIT");
@@ -2939,7 +2939,10 @@ TcpSocketBase::SendPendingData (bool withAck)
             {
               m_tcb->m_nextTxSequence = next;
             }
-
+          if (m_bytesInFlight.Get () == 0)
+            {
+              m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_TX_START);
+            }
           uint32_t sz = SendDataPacket (m_tcb->m_nextTxSequence, s, withAck);
           m_tcb->m_nextTxSequence += sz;
 
@@ -3014,7 +3017,7 @@ TcpSocketBase::BytesInFlight () const
   else
     {
       // TcpTxBuffer::BytesInFlight assumes SACK is enabled, so we calculate
-      // according to RFC 4898 page 23 PipeSize equation above  
+      // according to RFC 4898 page 23 PipeSize equation above
       uint32_t flightSize = m_tcb->m_nextTxSequence.Get () - m_txBuffer->HeadSequence ();
       uint32_t duplicatedSize;
       uint32_t retransOut = m_txBuffer->GetRetransmitsCount ();
@@ -3147,6 +3150,7 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
   // Now send a new ACK packet acknowledging all received and delivered data
   if (m_rxBuffer->Size () > m_rxBuffer->Available () || m_rxBuffer->NextRxSequence () > expectedSeq + p->GetSize ())
     { // A gap exists in the buffer, or we filled a gap: Always ACK
+      m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_NON_DELAYED_ACK);
       SendEmptyPacket (TcpHeader::ACK);
     }
   else
@@ -3155,6 +3159,7 @@ TcpSocketBase::ReceivedData (Ptr<Packet> p, const TcpHeader& tcpHeader)
         {
           m_delAckEvent.Cancel ();
           m_delAckCount = 0;
+          m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_NON_DELAYED_ACK);
           SendEmptyPacket (TcpHeader::ACK);
         }
       else if (m_delAckEvent.IsExpired ())
@@ -3288,7 +3293,7 @@ TcpSocketBase::ReTxTimeout ()
       return;
     }
 
-  uint32_t inFlightBeforeRto = BytesInFlight();  
+  uint32_t inFlightBeforeRto = BytesInFlight ();
 
   // From RFC 6675, Section 5.1
   // [RFC2018] suggests that a TCP sender SHOULD expunge the SACK
@@ -3347,7 +3352,7 @@ TcpSocketBase::ReTxTimeout ()
 
   // Cwnd set to 1 MSS
   m_tcb->m_cWnd = m_tcb->m_segmentSize;
-
+  m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_LOSS);
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
   m_tcb->m_congState = TcpSocketState::CA_LOSS;
 
@@ -3372,6 +3377,7 @@ void
 TcpSocketBase::DelAckTimeout (void)
 {
   m_delAckCount = 0;
+  m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_DELAYED_ACK);
   SendEmptyPacket (TcpHeader::ACK);
 }
 
@@ -3840,7 +3846,7 @@ TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option,
   Ptr<const TcpOptionTS> ts = DynamicCast<const TcpOptionTS> (option);
 
   m_tcb->m_rcvTimestampValue = ts->GetTimestamp ();
-  m_tcb->m_rcvTimestampEchoReply = ts->GetEcho();
+  m_tcb->m_rcvTimestampEchoReply = ts->GetEcho ();
 
   if (seq == m_rxBuffer->NextRxSequence () && seq <= m_highTxAck)
     {

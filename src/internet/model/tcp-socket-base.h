@@ -137,6 +137,19 @@ public:
     CA_LAST_STATE /**< Used only in debug messages */
   } TcpCongState_t;
 
+  // Note: "not triggered" events are currently not triggered by the code.
+  typedef enum
+  {
+    CA_EVENT_TX_START,     /**< first transmit when no packets in flight */
+    CA_EVENT_CWND_RESTART, /**< congestion window restart. Not triggered */
+    CA_EVENT_COMPLETE_CWR, /**< end of congestion recovery */
+    CA_EVENT_LOSS,         /**< loss timeout */
+    CA_EVENT_ECN_NO_CE,    /**< ECT set, but not CE marked. Not triggered */
+    CA_EVENT_ECN_IS_CE,    /**< received CE marked IP packet. Not triggered */
+    CA_EVENT_DELAYED_ACK,  /**< Delayed ack is sent */
+    CA_EVENT_NON_DELAYED_ACK, /**< Non-delayed ack is sent */
+  } TcpCAEvent_t;
+
   /**
    * \ingroup tcp
    * TracedValue Callback signature for TcpCongState_t
