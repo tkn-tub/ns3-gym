@@ -57,6 +57,26 @@ RatioToDb (double ratio)
   return 10.0 * std::log10 (ratio);
 }
 
+bool
+Is2_4Ghz (double frequency)
+{
+  if (frequency >= 2400 && frequency <= 2500)
+    {
+      return true;
+    }
+  return false;
+}
+
+bool
+Is5Ghz (double frequency)
+{
+  if (frequency >= 5000 && frequency <= 6000)
+    {
+      return true;
+    }
+  return false;
+}
+
 uint16_t
 ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Time heGuardInterval)
 {

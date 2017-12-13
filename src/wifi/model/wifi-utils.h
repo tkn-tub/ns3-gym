@@ -72,6 +72,16 @@ double WToDbm (double w);
  */
 double RatioToDb (double ratio);
 /**
+ * \param frequency the frequency to check
+ * \return whether frequency is in the 2.4 GHz band
+ */
+bool Is2_4Ghz (double frequency);
+/**
+ * \param frequency the frequency to check
+ * \return whether frequency is in the 5 GHz band
+ */
+bool Is5Ghz (double frequency);
+/**
  * Convert the guard interval to nanoseconds based on the wifimode.
  *
  * \param mode the wifimode

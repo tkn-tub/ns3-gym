@@ -1522,16 +1522,6 @@ public:
    */
   uint8_t GetMaxSupportedRxSpatialStreams (void) const;
   /**
-   * \param frequency the frequency to check
-   * \return whether frequency is in the 2.4 GHz band
-   */
-  static bool Is2_4Ghz (double frequency);
-  /**
-   * \param frequency the frequency to check
-   * \return whether frequency is in the 5 GHz band
-   */
-  static bool Is5Ghz (double frequency);
-  /**
    * Enable or disable support for HT/VHT short guard interval.
    *
    * \param shortGuardInterval Enable or disable support for short guard interval

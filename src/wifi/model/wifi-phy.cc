@@ -1272,26 +1272,6 @@ WifiPhy::GetFrequency (void) const
   return m_channelCenterFrequency;
 }
 
-bool
-WifiPhy::Is2_4Ghz (double frequency)
-{
-  if (frequency >= 2400 && frequency <= 2500)
-    {
-      return true;
-    }
-  return false;
-}
-
-bool
-WifiPhy::Is5Ghz (double frequency)
-{
-  if (frequency >= 5000 && frequency <= 6000)
-    {
-      return true;
-    }
-  return false;
-}
-
 void
 WifiPhy::SetChannelWidth (uint8_t channelwidth)
 {
