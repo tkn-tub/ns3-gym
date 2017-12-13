@@ -27,6 +27,8 @@ New user-visible features
 -------------------------
 - (lr-wpan) Extended addressing mode is now supported.
 
+- (tcp) Implemented the core functionality of TCP Pacing.
+
 Bugs fixed
 ----------
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization

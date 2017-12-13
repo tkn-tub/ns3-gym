@@ -33,6 +33,8 @@
 #include "ns3/ipv6-header.h"
 #include "ns3/ipv6-interface.h"
 #include "ns3/event-id.h"
+#include "ns3/data-rate.h"
+#include "ns3/timer.h"
 #include "tcp-tx-buffer.h"
 #include "tcp-rx-buffer.h"
 #include "rtt-estimator.h"
@@ -166,6 +168,11 @@ public:
 
   uint32_t               m_rcvTimestampValue;     //!< Receiver Timestamp value 
   uint32_t               m_rcvTimestampEchoReply; //!< Sender Timestamp echoed by the receiver
+
+  // Pacing related variables
+  bool                   m_pacing;                //!< Pacing status
+  DataRate               m_maxPacingRate;         //!< Max Pacing rate
+  DataRate               m_currentPacingRate;     //!< Current Pacing rate
 
   /**
    * \brief Get cwnd in segments rather than bytes
@@ -1071,6 +1078,11 @@ protected:
    */
   static uint32_t SafeSubtraction (uint32_t a, uint32_t b);
 
+  /**
+   * \brief Notify Pacing
+   */
+  void NotifyPacingPerformed (void);
+
 protected:
   // Counters and events
   EventId           m_retxEvent;       //!< Retransmission event
@@ -1158,6 +1170,9 @@ protected:
 
   TracedCallback<Ptr<const Packet>, const TcpHeader&,
                  Ptr<const TcpSocketBase> > m_rxTrace; //!< Trace of received packets
+
+  // Pacing related variable
+  Timer                 m_pacingTimer;    //!< Pacing Event
 };
 
 /**
