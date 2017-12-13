@@ -1203,16 +1203,6 @@ public:
   static WifiMode GetHeMcs11 ();
 
   /**
-   * The standard disallows certain combinations of WifiMode, number of
-   * spatial streams, and channel widths.  This method can be used to
-   * check whether this WifiTxVector contains an invalid combination.
-   *
-   * \param txVector the WifiTxVector to inspect
-   * \return true if the WifiTxVector parameters are allowed by the standard
-   */
-  static bool IsValidTxVector (WifiTxVector txVector);
-
-  /**
    * Public method used to fire a PhyTxBegin trace.
    * Implemented for encapsulation purposes.
    *

@@ -316,12 +316,11 @@ bool
 MinstrelHtWifiManager::IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint8_t chWidth, WifiMode mode)
 {
   NS_LOG_FUNCTION (this << phy << (uint16_t)streams << (uint16_t)chWidth << mode);
-
   WifiTxVector txvector;
   txvector.SetNss (streams);
   txvector.SetChannelWidth (chWidth);
   txvector.SetMode (mode);
-  return phy->IsValidTxVector (txvector);
+  return txvector.IsValid ();
 }
 
 Time

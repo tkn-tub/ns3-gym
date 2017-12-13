@@ -329,7 +329,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                   // Derive NSS from the MCS index. There is a different mode for each possible NSS value.
                   uint8_t nss = (mode.GetMcsValue () / 8) + 1;
                   txVector.SetNss (nss);
-                  if (WifiPhy::IsValidTxVector (txVector) == false
+                  if (!txVector.IsValid ()
                       || nss > std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)))
                     {
                       NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
@@ -373,7 +373,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                   for (uint8_t nss = 1; nss <= std::min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (station)); nss++)
                     {
                       txVector.SetNss (nss);
-                      if (WifiPhy::IsValidTxVector (txVector) == false)
+                      if (!txVector.IsValid ())
                         {
                           NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
                                         " nss " << (uint16_t) nss << " width " <<
@@ -412,7 +412,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                   for (uint8_t nss = 1; nss <= GetNumberOfSupportedStreams (station); nss++)
                     {
                       txVector.SetNss (nss);
-                      if (WifiPhy::IsValidTxVector (txVector) == false)
+                      if (!txVector.IsValid ())
                         {
                           NS_LOG_DEBUG ("Skipping mode " << mode.GetUniqueName () <<
                                         " nss " << (uint16_t) nss << " width " <<

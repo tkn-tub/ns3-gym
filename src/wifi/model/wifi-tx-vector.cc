@@ -207,6 +207,38 @@ WifiTxVector::SetStbc (bool stbc)
   m_stbc = stbc;
 }
 
+bool
+WifiTxVector::IsValid (void) const
+{
+  std::string modeName = m_mode.GetUniqueName ();
+  if (m_channelWidth == 20)
+    {
+      if (m_nss != 3 && m_nss != 6)
+        {
+          return (modeName != "VhtMcs9");
+        }
+    }
+  else if (m_channelWidth == 80)
+    {
+      if (m_nss == 3 || m_nss == 7)
+        {
+          return (modeName != "VhtMcs6");
+        }
+      else if (m_nss == 6)
+        {
+          return (modeName != "VhtMcs9");
+        }
+    }
+  else if (m_channelWidth == 160)
+    {
+      if (m_nss == 3)
+        {
+          return (modeName != "VhtMcs9");
+        }
+    }
+  return true;
+}
+
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
   os << "mode: " << v.GetMode () <<

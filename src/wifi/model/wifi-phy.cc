@@ -3459,42 +3459,6 @@ WifiPhy::GetHeMcs11 ()
 }
 
 bool
-WifiPhy::IsValidTxVector (WifiTxVector txVector)
-{
-  uint8_t chWidth = txVector.GetChannelWidth ();
-  uint8_t nss = txVector.GetNss ();
-  std::string modeName = txVector.GetMode ().GetUniqueName ();
-
-  if (chWidth == 20)
-    {
-      if (nss != 3 && nss != 6)
-        {
-          return (modeName != "VhtMcs9");
-        }
-    }
-  else if (chWidth == 80)
-    {
-      if (nss == 3 || nss == 7)
-        {
-          return (modeName != "VhtMcs6");
-        }
-      else if (nss == 6)
-        {
-          return (modeName != "VhtMcs9");
-        }
-    }
-  else if (chWidth == 160)
-    {
-      if (nss == 3)
-        {
-          return (modeName != "VhtMcs9");
-        }
-    }
-
-  return true;
-}
-
-bool
 WifiPhy::IsModeSupported (WifiMode mode) const
 {
   for (uint8_t i = 0; i < GetNModes (); i++)

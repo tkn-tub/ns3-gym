@@ -203,6 +203,14 @@ public:
    * \param stbc enable or disable STBC
    */
   void SetStbc (bool stbc);
+  /**
+   * The standard disallows certain combinations of WifiMode, number of
+   * spatial streams, and channel widths.  This method can be used to
+   * check whether this WifiTxVector contains an invalid combination.
+   *
+   * \return true if the WifiTxVector parameters are allowed by the standard
+   */
+   bool IsValid (void) const;
 
 
 private:
