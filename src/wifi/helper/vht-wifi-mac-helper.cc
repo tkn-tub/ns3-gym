@@ -46,10 +46,10 @@ VhtWifiMacHelper::Default (void)
                   "VhtSupported", BooleanValue (true));
 
   //MPDU aggregation is always supported
-  helper.SetMpduAggregatorForAc (AC_VO, "ns3::MpduStandardAggregator");
-  helper.SetMpduAggregatorForAc (AC_VI, "ns3::MpduStandardAggregator");
-  helper.SetMpduAggregatorForAc (AC_BE, "ns3::MpduStandardAggregator");
-  helper.SetMpduAggregatorForAc (AC_BK, "ns3::MpduStandardAggregator");
+  helper.SetMpduAggregatorForAc (AC_VO, "ns3::MpduAggregator");
+  helper.SetMpduAggregatorForAc (AC_VI, "ns3::MpduAggregator");
+  helper.SetMpduAggregatorForAc (AC_BE, "ns3::MpduAggregator");
+  helper.SetMpduAggregatorForAc (AC_BK, "ns3::MpduAggregator");
 
   return helper;
 }

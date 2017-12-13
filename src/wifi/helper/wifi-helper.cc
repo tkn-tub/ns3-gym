@@ -821,9 +821,7 @@ WifiHelper::EnableLogComponents (void)
   LogComponentEnable ("MinstrelHtWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("MinstrelWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("MpduAggregator", LOG_LEVEL_ALL);
-  LogComponentEnable ("MpduStandardAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("MsduAggregator", LOG_LEVEL_ALL);
-  LogComponentEnable ("MsduStandardAggregator", LOG_LEVEL_ALL);
   LogComponentEnable ("NistErrorRateModel", LOG_LEVEL_ALL);
   LogComponentEnable ("OnoeWifiManager", LOG_LEVEL_ALL);
   LogComponentEnable ("ParfWifiManager", LOG_LEVEL_ALL);

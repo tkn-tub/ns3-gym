@@ -27,8 +27,8 @@
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mac-tx-middle.h"
 #include "ns3/dcf-manager.h"
-#include "ns3/msdu-standard-aggregator.h"
-#include "ns3/mpdu-standard-aggregator.h"
+#include "ns3/msdu-aggregator.h"
+#include "ns3/mpdu-aggregator.h"
 
 using namespace ns3;
 
@@ -106,7 +106,7 @@ AmpduAggregationTest::DoRun (void)
    * Configure MPDU aggregation.
    */
   m_factory = ObjectFactory ();
-  m_factory.SetTypeId ("ns3::MpduStandardAggregator");
+  m_factory.SetTypeId ("ns3::MpduAggregator");
   m_factory.Set ("MaxAmpduSize", UintegerValue (65535));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
   m_edca->SetMpduAggregator (m_mpduAggregator);
@@ -311,8 +311,8 @@ TwoLevelAggregationTest::DoRun (void)
   /*
    * Configure aggregation.
    */
-  m_msduAggregator = CreateObject<MsduStandardAggregator> ();
-  m_mpduAggregator = CreateObject<MpduStandardAggregator> ();
+  m_msduAggregator = CreateObject<MsduAggregator> ();
+  m_mpduAggregator = CreateObject<MpduAggregator> ();
 
   m_msduAggregator->SetMaxAmsduSize (4095);
   m_mpduAggregator->SetMaxAmpduSize (65535);
@@ -368,7 +368,7 @@ TwoLevelAggregationTest::DoRun (void)
    * This test is needed to ensure that no packets are removed from the queue in MacLow::PerformMsduAggregation, since aggregation will no occur in MacLow::AggregateToAmpdu.
    */
   m_factory = ObjectFactory ();
-  m_factory.SetTypeId ("ns3::MpduStandardAggregator");
+  m_factory.SetTypeId ("ns3::MpduAggregator");
   m_factory.Set ("MaxAmpduSize", UintegerValue (0));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
   m_edca->SetMpduAggregator (m_mpduAggregator);

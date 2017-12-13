@@ -19,6 +19,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/uinteger.h"
 #include "msdu-aggregator.h"
 
 namespace ns3 {
@@ -33,8 +34,69 @@ MsduAggregator::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::MsduAggregator")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
+    .AddConstructor<MsduAggregator> ()
+    .AddAttribute ("MaxAmsduSize", "Max length in byte of an A-MSDU (Deprecated!)",
+                   UintegerValue (7935),
+                   MakeUintegerAccessor (&MsduAggregator::m_maxAmsduLength),
+                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
+}
+
+MsduAggregator::MsduAggregator ()
+{
+}
+
+MsduAggregator::~MsduAggregator ()
+{
+}
+
+void
+MsduAggregator::SetMaxAmsduSize (uint16_t maxSize)
+{
+  m_maxAmsduLength = maxSize;
+}
+
+uint16_t
+MsduAggregator::GetMaxAmsduSize (void) const
+{
+  return m_maxAmsduLength;
+}
+
+bool
+MsduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacket,
+                           Mac48Address src, Mac48Address dest) const
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<Packet> currentPacket;
+  AmsduSubframeHeader currentHdr;
+
+  uint8_t padding = CalculatePadding (aggregatedPacket);
+  uint32_t actualSize = aggregatedPacket->GetSize ();
+
+  if ((14 + packet->GetSize () + actualSize + padding) <= m_maxAmsduLength)
+    {
+      if (padding)
+        {
+          Ptr<Packet> pad = Create<Packet> (padding);
+          aggregatedPacket->AddAtEnd (pad);
+        }
+      currentHdr.SetDestinationAddr (dest);
+      currentHdr.SetSourceAddr (src);
+      currentHdr.SetLength (packet->GetSize ());
+      currentPacket = packet->Copy ();
+
+      currentPacket->AddHeader (currentHdr);
+      aggregatedPacket->AddAtEnd (currentPacket);
+      return true;
+    }
+  return false;
+}
+
+uint8_t
+MsduAggregator::CalculatePadding (Ptr<const Packet> packet) const
+{
+  return (4 - (packet->GetSize () % 4 )) % 4;
 }
 
 MsduAggregator::DeaggregatedMsdus
@@ -47,7 +109,7 @@ MsduAggregator::Deaggregate (Ptr<Packet> aggregatedPacket)
   Ptr<Packet> extractedMsdu = Create<Packet> ();
   uint32_t maxSize = aggregatedPacket->GetSize ();
   uint16_t extractedLength;
-  uint32_t padding;
+  uint8_t padding;
   uint32_t deserialized = 0;
 
   while (deserialized < maxSize)

@@ -25,8 +25,8 @@
 #include "mac-tx-middle.h"
 #include "mac-low.h"
 #include "dcf-manager.h"
-#include "msdu-standard-aggregator.h"
-#include "mpdu-standard-aggregator.h"
+#include "msdu-aggregator.h"
+#include "mpdu-aggregator.h"
 
 namespace ns3 {
 
@@ -1367,12 +1367,12 @@ RegularWifiMac::EnableAggregation (void)
     {
       if (i->second->GetMsduAggregator () == 0)
         {
-          Ptr<MsduStandardAggregator> msduAggregator = CreateObject<MsduStandardAggregator> ();
+          Ptr<MsduAggregator> msduAggregator = CreateObject<MsduAggregator> ();
           i->second->SetMsduAggregator (msduAggregator);
         }
       if (i->second->GetMpduAggregator () == 0)
         {
-          Ptr<MpduStandardAggregator> mpduAggregator = CreateObject<MpduStandardAggregator> ();
+          Ptr<MpduAggregator> mpduAggregator = CreateObject<MpduAggregator> ();
           i->second->SetMpduAggregator (mpduAggregator);
         }
     }
