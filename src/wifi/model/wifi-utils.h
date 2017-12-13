@@ -25,6 +25,8 @@
 #include "ctrl-headers.h"
 #include "ns3/nstime.h"
 #include "ns3/uinteger.h"
+#include "ns3/packet.h"
+#include "wifi-mac-trailer.h"
 
 namespace ns3 {
 
@@ -112,6 +114,12 @@ uint32_t GetCtsSize (void);
  * This method checks if the MPDU's sequence number is inside the scoreboard boundaries or not
  */
 bool IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize);
+/**
+ * Add FCS trailer to a packet.
+ *
+ * \param packet
+ */
+void AddWifiMacTrailer (Ptr<Packet> packet);
 
 } // namespace ns3
 

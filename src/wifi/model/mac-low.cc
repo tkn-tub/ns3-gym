@@ -2810,11 +2810,4 @@ MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Ti
     }
 }
 
-void
-MacLow::AddWifiMacTrailer (Ptr<Packet> packet)
-{
-  WifiMacTrailer fcs;
-  packet->AddTrailer (fcs);
-}
-
 } //namespace ns3

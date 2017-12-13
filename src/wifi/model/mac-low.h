@@ -420,12 +420,6 @@ private:
    */
   static uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr, bool isAmpdu);
   /**
-   * Add FCS trailer to a packet.
-   *
-   * \param packet
-   */
-  static void AddWifiMacTrailer (Ptr<Packet> packet);
-  /**
    * Forward the packet down to WifiPhy for transmission. This is called for the entire A-MPDu when MPDU aggregation is used.
    *
    * \param packet the packet

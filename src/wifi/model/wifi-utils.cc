@@ -128,4 +128,11 @@ IsInWindow (uint16_t seq, uint16_t winstart, uint16_t winsize)
   return ((seq - winstart + 4096) % 4096) < winsize;
 }
 
+void
+AddWifiMacTrailer (Ptr<Packet> packet)
+{
+  WifiMacTrailer fcs;
+  packet->AddTrailer (fcs);
+}
+
 } //namespace ns3
