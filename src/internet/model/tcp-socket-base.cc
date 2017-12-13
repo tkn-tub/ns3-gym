@@ -3845,6 +3845,14 @@ TcpSocketBase::ProcessOptionTimestamp (const Ptr<const TcpOption> option,
 
   Ptr<const TcpOptionTS> ts = DynamicCast<const TcpOptionTS> (option);
 
+  // This is valid only when no overflow occours. It happens
+  // when a connection last longer than 50 days.
+  if (m_tcb->m_rcvTimestampValue > ts->GetTimestamp ())
+    {
+      // Do not save a smaller timestamp (probably there is reordering)
+      return;
+    }
+
   m_tcb->m_rcvTimestampValue = ts->GetTimestamp ();
   m_tcb->m_rcvTimestampEchoReply = ts->GetEcho ();
 
