@@ -992,8 +992,8 @@ MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       if (!rateFound)
         {
           Ptr<WifiPhy> phy = GetPhy ();
-          uint32_t nSupportRates = phy->GetNModes ();
-          for (uint32_t i = 0; i < nSupportRates; i++)
+          uint8_t nSupportRates = phy->GetNModes ();
+          for (uint8_t i = 0; i < nSupportRates; i++)
             {
               uint64_t rate = phy->GetMode (i).GetDataRate (20);
               if (rate <= lastDataRate)

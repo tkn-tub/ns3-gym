@@ -3484,14 +3484,14 @@ WifiPhy::IsMcsSupported (WifiMode mcs) const
   return false;
 }
 
-uint32_t
+uint8_t
 WifiPhy::GetNModes (void) const
 {
   return m_deviceRateSet.size ();
 }
 
 WifiMode
-WifiPhy::GetMode (uint32_t mode) const
+WifiPhy::GetMode (uint8_t mode) const
 {
   return m_deviceRateSet[mode];
 }

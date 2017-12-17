@@ -105,8 +105,8 @@ IdealWifiManager::DoInitialize ()
   WifiMode mode;
   WifiTxVector txVector;
   uint8_t nss = 1;
-  uint32_t nModes = GetPhy ()->GetNModes ();
-  for (uint32_t i = 0; i < nModes; i++)
+  uint8_t nModes = GetPhy ()->GetNModes ();
+  for (uint8_t i = 0; i < nModes; i++)
     {
       mode = GetPhy ()->GetMode (i);
       txVector.SetChannelWidth (GetChannelWidthForMode (mode));
