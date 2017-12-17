@@ -88,40 +88,38 @@ BasicEnergyUpdateTest::DoRun (void)
   m_energySource.SetTypeId ("ns3::BasicEnergySource");
   m_deviceEnergyModel.SetTypeId ("ns3::WifiRadioEnergyModel");
 
-  uint8_t ret = 0;
-
   // run state switch tests
   if (StateSwitchTest (WifiPhy::IDLE))
     {
-      ret = 1;
+      return 1;
       std::cerr << "Problem with state switch test (WifiPhy idle)." << std::endl;
     }
   if (StateSwitchTest (WifiPhy::CCA_BUSY))
     {
-      ret = 1;
+      return 1;
       std::cerr << "Problem with state switch test (WifiPhy cca busy)." << std::endl;
     }
   if (StateSwitchTest (WifiPhy::TX))
     {
-      ret = 1;
+      return 1;
       std::cerr << "Problem with state switch test (WifiPhy tx)." << std::endl;
     }
   if (StateSwitchTest (WifiPhy::RX))
     {
-      ret = 1;
+      return 1;
       std::cerr << "Problem with state switch test (WifiPhy rx)." << std::endl;
     }
   if (StateSwitchTest (WifiPhy::SWITCHING))
     {
-      ret = 1;
+      return 1;
       std::cerr << "Problem with state switch test (WifiPhy switching)." << std::endl;
     }
   if (StateSwitchTest (WifiPhy::SLEEP))
     {
-      ret = 1;
+      return 1;
       std::cerr << "Problem with state switch test (WifiPhy sleep)." << std::endl;
     }
-  return ret;
+  return 0;
 }
 
 bool
