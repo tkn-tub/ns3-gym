@@ -245,7 +245,7 @@ RraaWifiManager::InitThresholds (RraaWifiRemoteStation *station)
           nextMtl = m_alpha * nextCritical;
           ori = nextMtl / m_beta;
         }
-      if (i == GetMinRate (station))
+      if (i == 0)
         {
           mtl = 1;
         }
@@ -272,12 +272,6 @@ uint32_t
 RraaWifiManager::GetMaxRate (RraaWifiRemoteStation *station)
 {
   return station->m_nRate - 1;
-}
-
-uint32_t
-RraaWifiManager::GetMinRate (RraaWifiRemoteStation *station)
-{
-  return 0;
 }
 
 void
@@ -418,8 +412,7 @@ RraaWifiManager::RunBasicAlgorithm (RraaWifiRemoteStation *station)
   if (station->m_counter == 0
       || ploss > thresholds.m_mtl)
     {
-      if (station->m_rateIndex > GetMinRate (station)
-          && ploss > thresholds.m_mtl)
+      if (ploss > thresholds.m_mtl)
         {
           station->m_rateIndex--;
         }

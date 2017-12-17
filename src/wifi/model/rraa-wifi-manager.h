@@ -109,15 +109,6 @@ private:
    */
   uint32_t GetMaxRate (RraaWifiRemoteStation *station);
   /**
-   * Return the index for the minimum transmission rate for
-   * the given station.
-   *
-   * \param station
-   *
-   * \return the index for the minimum transmission rate
-   */
-  uint32_t GetMinRate (RraaWifiRemoteStation *station);
-  /**
    * Check if the counter should be resetted.
    *
    * \param station
