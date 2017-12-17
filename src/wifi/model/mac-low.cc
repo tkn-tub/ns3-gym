@@ -1554,7 +1554,7 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
   else
     {
       // since we do not expect any timer to be triggered.
-      Simulator::Schedule (txDuration, &MacLow::EndTxNoAck, this);
+      m_endTxNoAckEvent = Simulator::Schedule (txDuration, &MacLow::EndTxNoAck, this);
     }
 }
 
