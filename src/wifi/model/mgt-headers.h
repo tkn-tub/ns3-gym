@@ -28,6 +28,7 @@
 #include "supported-rates.h"
 #include "ssid.h"
 #include "dsss-parameter-set.h"
+#include "extended-capabilities.h"
 #include "ht-capabilities.h"
 #include "ht-operation.h"
 #include "vht-capabilities.h"
@@ -74,6 +75,12 @@ public:
    */
   void SetCapabilities (CapabilityInformation capabilities);
   /**
+   * Set the Extended Capabilities.
+   *
+   * \param extendedcapabilities the Extended Capabilities
+   */
+  void SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities);
+  /**
    * Set the HT capabilities.
    *
    * \param htcapabilities HT capabilities
@@ -97,6 +104,12 @@ public:
    * \return Capability information
    */
   CapabilityInformation GetCapabilities (void) const;
+  /**
+   * Return the extended capabilities.
+   *
+   * \return the extended capabilities
+   */
+  ExtendedCapabilities GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
@@ -150,6 +163,7 @@ private:
   Ssid m_ssid;                        //!< Service Set ID (SSID)
   SupportedRates m_rates;             //!< List of supported rates
   CapabilityInformation m_capability; //!< Capability information
+  ExtendedCapabilities m_extendedCapability; //!< Extended capabilities
   HtCapabilities m_htCapability;      //!< HT capabilities
   VhtCapabilities m_vhtCapability;    //!< VHT capabilities
   HeCapabilities m_heCapability;      //!< HE capabilities
@@ -185,6 +199,12 @@ public:
    * \return Capability information
    */
   CapabilityInformation GetCapabilities (void) const;
+  /**
+   * Return the extended capabilities.
+   *
+   * \return the extended capabilities
+   */
+  ExtendedCapabilities GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
@@ -239,6 +259,12 @@ public:
    * \param capabilities Capability information
    */
   void SetCapabilities (CapabilityInformation capabilities);
+  /**
+   * Set the extended capabilities.
+   *
+   * \param extendedcapabilities the extended capabilities
+   */
+  void SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities);
   /**
    * Set the VHT operation.
    *
@@ -317,6 +343,7 @@ private:
   CapabilityInformation m_capability; //!< Capability information
   StatusCode m_code; //!< Status code
   uint16_t m_aid; //!< aid
+  ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   HtCapabilities m_htCapability; //!< HT capabilities
   HtOperation m_htOperation; //!< HT operation
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
@@ -350,6 +377,12 @@ public:
    */
   void SetSupportedRates (SupportedRates rates);
   /**
+   * Set the extended capabilities.
+   *
+   * \param extendedcapabilities the extended capabilities
+   */
+  void SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities);
+  /**
    * Set the HT capabilities.
    *
    * \param htcapabilities HT capabilities
@@ -379,6 +412,12 @@ public:
    * \return the supported rates
    */
   SupportedRates GetSupportedRates (void) const;
+  /**
+   * Return the extended capabilities.
+   *
+   * \return the extended capabilities
+   */
+  ExtendedCapabilities GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
@@ -413,6 +452,7 @@ public:
 private:
   Ssid m_ssid;                     //!< Service Set ID (SSID)
   SupportedRates m_rates;          //!< List of supported rates
+  ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   HtCapabilities m_htCapability;   //!< HT capabilities
   VhtCapabilities m_vhtCapability; //!< VHT capabilities
   HeCapabilities m_heCapability; //!< HE capabilities
@@ -459,6 +499,12 @@ public:
    * \return the DSSS Parameter Set
    */
   DsssParameterSet GetDsssParameterSet (void) const;
+  /**
+   * Return the extended capabilities.
+   *
+   * \return the extended capabilities
+   */
+  ExtendedCapabilities GetExtendedCapabilities (void) const;
   /**
    * Return the HT capabilities.
    *
@@ -514,6 +560,12 @@ public:
    */
   void SetCapabilities (CapabilityInformation capabilities);
   /**
+   * Set the extended capabilities.
+   *
+   * \param extendedcapabilities the extended capabilities
+   */
+  void SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities);
+  /*
    * Set the HT capabilities.
    *
    * \param htcapabilities HT capabilities
@@ -611,6 +663,7 @@ private:
   SupportedRates m_rates;              //!< List of supported rates
   CapabilityInformation m_capability;  //!< Capability information
   DsssParameterSet m_dsssParameterSet; //!< DSSS Parameter Set
+  ExtendedCapabilities m_extendedCapability; //!< extended capabilities
   HtCapabilities m_htCapability;       //!< HT capabilities
   HtOperation m_htOperation;           //!< HT operation
   VhtCapabilities m_vhtCapability;     //!< VHT capabilities

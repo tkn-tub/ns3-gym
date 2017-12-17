@@ -234,21 +234,27 @@ public:
    */
   Ptr<WifiRemoteStationManager> GetWifiRemoteStationManager (void) const;
   /**
-   * Return the HT capability of the device.
+   * Return the extended capabilities of the device.
    *
-   * \return the HT capability that we support
+   * \return the extended capabilities that we support
+   */
+  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  /**
+   * Return the HT capabilities of the device.
+   *
+   * \return the HT capabilities that we support
    */
   HtCapabilities GetHtCapabilities (void) const;
   /**
-   * Return the VHT capability of the device.
+   * Return the VHT capabilities of the device.
    *
-   * \return the VHT capability that we support
+   * \return the VHT capabilities that we support
    */
   VhtCapabilities GetVhtCapabilities (void) const;
   /**
-   * Return the HE capability of the device.
+   * Return the HE capabilities of the device.
    *
-   * \return the HE capability that we support
+   * \return the HE capabilities that we support
    */
   HeCapabilities GetHeCapabilities (void) const;
 

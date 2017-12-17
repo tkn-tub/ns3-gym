@@ -695,6 +695,7 @@ ApWifiMac::SendProbeResp (Mac48Address to)
     }
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
+      probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities ());
       probe.SetHtOperation (GetHtOperation ());
     }
@@ -754,6 +755,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success)
     }
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
+      assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
       assoc.SetHtCapabilities (GetHtCapabilities ());
       assoc.SetHtOperation (GetHtOperation ());
     }
@@ -810,6 +812,7 @@ ApWifiMac::SendOneBeacon (void)
     }
   if (m_htSupported || m_vhtSupported)
     {
+      beacon.SetExtendedCapabilities (GetExtendedCapabilities ());
       beacon.SetHtCapabilities (GetHtCapabilities ());
       beacon.SetHtOperation (GetHtOperation ());
     }

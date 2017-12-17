@@ -143,6 +143,7 @@ StaWifiMac::SendProbeRequest (void)
   probe.SetSupportedRates (GetSupportedRates ());
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
+      probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities ());
     }
   if (m_vhtSupported || m_heSupported)
@@ -188,6 +189,7 @@ StaWifiMac::SendAssociationRequest (void)
   assoc.SetCapabilities (GetCapabilities ());
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
+      assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
       assoc.SetHtCapabilities (GetHtCapabilities ());
     }
   if (m_vhtSupported || m_heSupported)

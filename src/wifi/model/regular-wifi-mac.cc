@@ -139,6 +139,25 @@ RegularWifiMac::GetWifiRemoteStationManager () const
   return m_stationManager;
 }
 
+ExtendedCapabilities
+RegularWifiMac::GetExtendedCapabilities (void) const
+{
+  NS_LOG_FUNCTION (this);
+  ExtendedCapabilities capabilities;
+  if (m_htSupported || m_vhtSupported)
+    {
+      if (m_htSupported)
+        {
+          capabilities.SetHtSupported (1);
+        }
+      if (m_vhtSupported)
+        {
+          capabilities.SetVhtSupported (1);
+        }
+    }
+  return capabilities;
+}
+
 HtCapabilities
 RegularWifiMac::GetHtCapabilities (void) const
 {
@@ -146,7 +165,6 @@ RegularWifiMac::GetHtCapabilities (void) const
   HtCapabilities capabilities;
   if (m_htSupported)
     {
-      capabilities.SetHtSupported (1);
       capabilities.SetHtSupported (1);
       capabilities.SetLdpc (m_phy->GetLdpc ());
       capabilities.SetSupportedChannelWidth (m_phy->GetChannelWidth () >= 40);

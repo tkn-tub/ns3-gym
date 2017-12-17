@@ -54,6 +54,18 @@ MgtProbeRequestHeader::SetSupportedRates (SupportedRates rates)
 }
 
 void
+MgtProbeRequestHeader::SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities)
+{
+  m_extendedCapability = extendedcapabilities;
+}
+
+ExtendedCapabilities
+MgtProbeRequestHeader::GetExtendedCapabilities (void) const
+{
+  return m_extendedCapability;
+}
+
+void
 MgtProbeRequestHeader::SetHtCapabilities (HtCapabilities htcapabilities)
 {
   m_htCapability = htcapabilities;
@@ -102,6 +114,7 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
+  size += m_extendedCapability.GetSerializedSize ();
   size += m_htCapability.GetSerializedSize ();
   size += m_vhtCapability.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
@@ -142,6 +155,7 @@ MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
+  i = m_extendedCapability.Serialize (i);
   i = m_htCapability.Serialize (i);
   i = m_vhtCapability.Serialize (i);
   i = m_heCapability.Serialize (i);
@@ -154,6 +168,7 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
+  i = m_extendedCapability.DeserializeIfPresent (i);
   i = m_htCapability.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_heCapability.DeserializeIfPresent (i);
@@ -209,6 +224,18 @@ CapabilityInformation
 MgtProbeResponseHeader::GetCapabilities (void) const
 {
   return m_capability;
+}
+
+void
+MgtProbeResponseHeader::SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities)
+{
+  m_extendedCapability = extendedcapabilities;
+}
+
+ExtendedCapabilities
+MgtProbeResponseHeader::GetExtendedCapabilities (void) const
+{
+  return m_extendedCapability;
 }
 
 void
@@ -367,6 +394,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_erpInformation.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   size += m_edcaParameterSet.GetSerializedSize ();
+  size += m_extendedCapability.GetSerializedSize ();
   size += m_htCapability.GetSerializedSize ();
   size += m_htOperation.GetSerializedSize ();
   size += m_vhtCapability.GetSerializedSize ();
@@ -412,6 +440,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_erpInformation.Serialize (i);
   i = m_rates.extended.Serialize (i);
   i = m_edcaParameterSet.Serialize (i);
+  i = m_extendedCapability.Serialize (i);
   i = m_htCapability.Serialize (i);
   i = m_htOperation.Serialize (i);
   i = m_vhtCapability.Serialize (i);
@@ -434,6 +463,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_erpInformation.DeserializeIfPresent (i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = m_edcaParameterSet.DeserializeIfPresent (i);
+  i = m_extendedCapability.DeserializeIfPresent (i);
   i = m_htCapability.DeserializeIfPresent (i);
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
@@ -506,6 +536,18 @@ CapabilityInformation
 MgtAssocRequestHeader::GetCapabilities (void) const
 {
   return m_capability;
+}
+
+void
+MgtAssocRequestHeader::SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities)
+{
+  m_extendedCapability = extendedcapabilities;
+}
+
+ExtendedCapabilities
+MgtAssocRequestHeader::GetExtendedCapabilities (void) const
+{
+  return m_extendedCapability;
 }
 
 void
@@ -588,6 +630,7 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
+  size += m_extendedCapability.GetSerializedSize ();
   size += m_htCapability.GetSerializedSize ();
   size += m_vhtCapability.GetSerializedSize ();
   size += m_heCapability.GetSerializedSize ();
@@ -613,6 +656,7 @@ MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
   i = m_rates.extended.Serialize (i);
+  i = m_extendedCapability.Serialize (i);
   i = m_htCapability.Serialize (i);
   i = m_vhtCapability.Serialize (i);
   i = m_heCapability.Serialize (i);
@@ -627,6 +671,7 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
   i = m_rates.extended.DeserializeIfPresent (i);
+  i = m_extendedCapability.DeserializeIfPresent (i);
   i = m_htCapability.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
   i = m_heCapability.DeserializeIfPresent (i);
@@ -683,6 +728,18 @@ CapabilityInformation
 MgtAssocResponseHeader::GetCapabilities (void) const
 {
   return m_capability;
+}
+
+void
+MgtAssocResponseHeader::SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities)
+{
+  m_extendedCapability = extendedcapabilities;
+}
+
+ExtendedCapabilities
+MgtAssocResponseHeader::GetExtendedCapabilities (void) const
+{
+  return m_extendedCapability;
 }
 
 void
@@ -809,6 +866,7 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
   size += m_erpInformation.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
   size += m_edcaParameterSet.GetSerializedSize ();
+  size += m_extendedCapability.GetSerializedSize ();
   size += m_htCapability.GetSerializedSize ();
   size += m_htOperation.GetSerializedSize ();
   size += m_vhtCapability.GetSerializedSize ();
@@ -843,6 +901,7 @@ MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_erpInformation.Serialize (i);
   i = m_rates.extended.Serialize (i);
   i = m_edcaParameterSet.Serialize (i);
+  i = m_extendedCapability.Serialize (i);
   i = m_htCapability.Serialize (i);
   i = m_htOperation.Serialize (i);
   i = m_vhtCapability.Serialize (i);
@@ -862,6 +921,7 @@ MgtAssocResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_erpInformation.DeserializeIfPresent (i);
   i = m_rates.extended.DeserializeIfPresent (i);
   i = m_edcaParameterSet.DeserializeIfPresent (i);
+  i = m_extendedCapability.DeserializeIfPresent (i);
   i = m_htCapability.DeserializeIfPresent (i);
   i = m_htOperation.DeserializeIfPresent (i);
   i = m_vhtCapability.DeserializeIfPresent (i);
