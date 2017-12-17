@@ -115,6 +115,12 @@ public:
    */
   bool IsStateSleep (void) const;
   /**
+   * Check whether the current state is OFF.
+   *
+   * \return true if the current state is OFF, false otherwise
+   */
+  bool IsStateOff (void) const;
+  /**
    * Return the elapsed time of the current state.
    *
    * \return the elapsed time of the current state
@@ -189,6 +195,10 @@ public:
    * Abort current reception
    */
   void SwitchFromRxAbort (void);
+  /**
+   * Switch to off mode.
+   */
+  void SwitchToOff (void);
 
   /**
    * TracedCallback signature for state changes.
@@ -284,6 +294,10 @@ private:
    */
   void NotifySleep (void);
   /**
+   * Notify all WifiPhyListener that we are going to switch off
+   */
+  void NotifyOff (void);
+  /**
    * Notify all WifiPhyListener that we woke up
    */
   void NotifyWakeup (void);
@@ -299,6 +313,7 @@ private:
 
   bool m_rxing; ///< receiving
   bool m_sleeping; ///< sleeping
+  bool m_isOff; ///< switched off
   Time m_endTx; ///< end transmit
   Time m_endRx; ///< end receive
   Time m_endCcaBusy; ///< endn CCA busy

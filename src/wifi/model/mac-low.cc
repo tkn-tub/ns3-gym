@@ -78,6 +78,10 @@ public:
   {
     m_macLow->NotifySleepNow ();
   }
+  void NotifyOff (void)
+  {
+    m_macLow->NotifyOffNow ();
+  }
   void NotifyWakeup (void)
   {
   }
@@ -621,6 +625,21 @@ void
 MacLow::NotifySleepNow (void)
 {
   NS_LOG_DEBUG ("Device in sleep mode. Cancelling MAC pending events");
+  CancelAllEvents ();
+  if (m_navCounterResetCtsMissed.IsRunning ())
+    {
+      m_navCounterResetCtsMissed.Cancel ();
+    }
+  m_lastNavStart = Simulator::Now ();
+  m_lastNavDuration = Seconds (0);
+  m_currentPacket = 0;
+  m_currentDca = 0;
+}
+
+void
+MacLow::NotifyOffNow (void)
+{
+  NS_LOG_DEBUG ("Device is switched off. Cancelling MAC pending events");
   CancelAllEvents ();
   if (m_navCounterResetCtsMissed.IsRunning ())
     {

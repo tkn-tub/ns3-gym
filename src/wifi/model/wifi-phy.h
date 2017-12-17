@@ -150,6 +150,10 @@ public:
    */
   virtual void NotifySleep (void) = 0;
   /**
+   * Notify listeners that we went to switch off
+   */
+  virtual void NotifyOff (void) = 0;
+  /**
    * Notify listeners that we woke up
    */
   virtual void NotifyWakeup (void) = 0;

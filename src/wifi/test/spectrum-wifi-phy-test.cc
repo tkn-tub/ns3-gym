@@ -230,6 +230,9 @@ public:
   virtual void NotifySleep (void)
   {
   }
+  virtual void NotifyOff (void)
+  {
+  }
   virtual void NotifyWakeup (void)
   {
   }

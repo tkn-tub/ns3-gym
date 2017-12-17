@@ -210,6 +210,10 @@ public:
    */
   virtual void NotifySleep (void);
   /**
+   * When sleep operation occurs, the queue gets cleaned up.
+   */
+  virtual void NotifyOff (void);
+  /**
    * When wake up operation occurs, channel access will be restarted.
    */
   virtual void NotifyWakeUp (void);

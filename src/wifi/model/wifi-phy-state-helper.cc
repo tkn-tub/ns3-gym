@@ -58,6 +58,7 @@ WifiPhyStateHelper::GetTypeId (void)
 WifiPhyStateHelper::WifiPhyStateHelper ()
   : m_rxing (false),
     m_sleeping (false),
+    m_isOff (false),
     m_endTx (Seconds (0)),
     m_endRx (Seconds (0)),
     m_endCcaBusy (Seconds (0)),
@@ -142,6 +143,12 @@ WifiPhyStateHelper::IsStateSleep (void) const
   return (GetState () == WifiPhy::SLEEP);
 }
 
+bool
+WifiPhyStateHelper::IsStateOff (void) const
+{
+  return (GetState () == WifiPhy::OFF);
+}
+
 Time
 WifiPhyStateHelper::GetStateDuration (void) const
 {
@@ -174,6 +181,10 @@ WifiPhyStateHelper::GetDelayUntilIdle (void) const
       NS_FATAL_ERROR ("Cannot determine when the device will wake up.");
       retval = Seconds (0);
       break;
+    case WifiPhy::OFF:
+      NS_FATAL_ERROR ("Cannot determine when the device will be switched on.");
+      retval = Seconds (0);
+      break;
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state.");
       retval = Seconds (0);
@@ -192,6 +203,10 @@ WifiPhyStateHelper::GetLastRxStartTime (void) const
 WifiPhy::State
 WifiPhyStateHelper::GetState (void) const
 {
+  if (m_isOff)
+    {
+      return WifiPhy::OFF;
+    }
   if (m_sleeping)
     {
       return WifiPhy::SLEEP;
@@ -285,6 +300,16 @@ WifiPhyStateHelper::NotifySleep (void)
   for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
     {
       (*i)->NotifySleep ();
+    }
+}
+
+void
+WifiPhyStateHelper::NotifyOff (void)
+{
+  NS_LOG_FUNCTION (this);
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+    {
+      (*i)->NotifyOff ();
     }
 }
 
@@ -549,6 +574,48 @@ WifiPhyStateHelper::SwitchFromRxAbort (void)
   m_endRx = Simulator::Now ();
   DoSwitchFromRx ();
   NS_ASSERT (!IsStateRx ());
+}
+
+void
+WifiPhyStateHelper::SwitchToOff (void)
+{
+  NS_LOG_FUNCTION (this);
+  Time now = Simulator::Now ();
+  switch (GetState ())
+    {
+    case WifiPhy::RX:
+      /* The packet which is being received as well
+       * as its endRx event are cancelled by the caller.
+       */
+      m_rxing = false;
+      m_stateLogger (m_startRx, now - m_startRx, WifiPhy::RX);
+      m_endRx = now;
+      break;
+    case WifiPhy::TX:
+      /* The packet which is being transmitted as well
+       * as its endTx event are cancelled by the caller.
+       */
+      m_stateLogger (m_startTx, now - m_startTx, WifiPhy::TX);
+      m_endTx = now;
+      break;
+    case WifiPhy::IDLE:
+      LogPreviousIdleAndCcaBusyStates ();
+      break;
+    case WifiPhy::CCA_BUSY:
+      {
+        Time ccaStart = Max (m_endRx, m_endTx);
+        ccaStart = Max (ccaStart, m_startCcaBusy);
+        ccaStart = Max (ccaStart, m_endSwitching);
+        m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
+      } break;
+    default:
+      NS_FATAL_ERROR ("Invalid WifiPhy state.");
+      break;
+    }
+  m_previousStateChangeTime = now;
+  m_isOff = true;
+  NotifyOff ();
+  NS_ASSERT (IsStateOff ());
 }
 
 } //namespace ns3

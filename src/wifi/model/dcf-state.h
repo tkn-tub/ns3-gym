@@ -194,6 +194,10 @@ protected:
    */
   void NotifySleep (void);
   /**
+   * Notify that the device has started to switch off.
+   */
+  void NotifyOff (void);
+  /**
    * Notify that the device has started to wake up
    */
   void NotifyWakeUp (void);

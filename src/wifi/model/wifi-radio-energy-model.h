@@ -123,6 +123,11 @@ public:
   /**
    * Defined in ns3::WifiPhyListener
    */
+  void NotifyOff (void);
+
+  /**
+   * Defined in ns3::WifiPhyListener
+   */
   void NotifyWakeup (void);
 
 

@@ -451,6 +451,14 @@ DcaTxop::NotifySleep (void)
 }
 
 void
+DcaTxop::NotifyOff (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_queue->Flush ();
+  m_currentPacket = 0;
+}
+
+void
 DcaTxop::NotifyWakeUp (void)
 {
   NS_LOG_FUNCTION (this);

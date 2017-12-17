@@ -555,9 +555,17 @@ WifiRadioEnergyModelPhyListener::NotifyWakeup(void)
   m_changeStateCallback (WifiPhy::IDLE);
 }
 
-/*
- * Private function state here.
- */
+void
+WifiRadioEnergyModelPhyListener::NotifyOff (void)
+{
+  NS_LOG_FUNCTION (this);
+  if (m_changeStateCallback.IsNull ())
+    {
+      NS_FATAL_ERROR ("WifiRadioEnergyModelPhyListener:Change state callback not set!");
+    }
+  m_changeStateCallback (WifiPhy::OFF);
+  m_switchToIdleEvent.Cancel ();
+}
 
 void
 WifiRadioEnergyModelPhyListener::SwitchToIdle (void)
