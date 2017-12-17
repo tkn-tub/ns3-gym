@@ -978,12 +978,12 @@ PowerRateAdaptationTest::TestRrpaa ()
 
   for (int i = 0; i < 16; i++)
     {
-      for (int i = 0; i < 25; i++)
+      for (int j = 0; j < 25; j++)
         {
           manager->ReportDataOk (remoteAddress, &packetHeader, 0, ackMode, 0);
         }
 
-      for (int i = 0; i < 5; i++)
+      for (int j = 0; j < 5; j++)
         {
           manager->ReportDataFailed (remoteAddress,&packetHeader);
         }
