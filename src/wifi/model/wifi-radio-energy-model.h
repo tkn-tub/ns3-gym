@@ -411,7 +411,6 @@ private:
   Time m_lastUpdateTime;          ///< time stamp of previous energy update
 
   uint8_t m_nPendingChangeState; ///< pending state change
-  bool m_isSupersededChangeState; ///< superseded change state
 
   /// Energy depletion callback
   WifiRadioEnergyDepletionCallback m_energyDepletionCallback;

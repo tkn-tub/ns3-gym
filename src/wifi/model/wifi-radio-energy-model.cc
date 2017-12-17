@@ -87,14 +87,13 @@ WifiRadioEnergyModel::GetTypeId (void)
 }
 
 WifiRadioEnergyModel::WifiRadioEnergyModel ()
+  : m_source (0),
+    m_currentState (WifiPhy::IDLE),
+    m_lastUpdateTime (Seconds (0.0)),
+    m_nPendingChangeState (0)
 {
   NS_LOG_FUNCTION (this);
-  m_currentState = WifiPhy::IDLE;  // initially IDLE
-  m_lastUpdateTime = Seconds (0.0);
-  m_nPendingChangeState = 0;
-  m_isSupersededChangeState = false;
   m_energyDepletionCallback.Nullify ();
-  m_source = NULL;
   // set callback for WifiPhy listener
   m_listener = new WifiRadioEnergyModelPhyListener;
   m_listener->SetChangeStateCallback (MakeCallback (&DeviceEnergyModel::ChangeState, this));
@@ -259,7 +258,7 @@ WifiRadioEnergyModel::ChangeState (int newState)
   NS_LOG_FUNCTION (this << newState);
 
   Time duration = Simulator::Now () - m_lastUpdateTime;
-  NS_ASSERT (duration.GetNanoSeconds () >= 0); // check if duration is valid
+  NS_ASSERT (duration.IsPositive ()); // check if duration is valid
 
   // energy to decrease = current * voltage * time
   double energyToDecrease = 0.0;
@@ -267,22 +266,25 @@ WifiRadioEnergyModel::ChangeState (int newState)
   switch (m_currentState)
     {
     case WifiPhy::IDLE:
-      energyToDecrease = duration.GetSeconds () * m_idleCurrentA * supplyVoltage;
+      energyToDecrease = (duration.GetNanoSeconds () * m_idleCurrentA * supplyVoltage) / 1e9;
       break;
     case WifiPhy::CCA_BUSY:
-      energyToDecrease = duration.GetSeconds () * m_ccaBusyCurrentA * supplyVoltage;
+      energyToDecrease = (duration.GetNanoSeconds () * m_ccaBusyCurrentA * supplyVoltage) / 1e9;
       break;
     case WifiPhy::TX:
-      energyToDecrease = duration.GetSeconds () * m_txCurrentA * supplyVoltage;
+      energyToDecrease = (duration.GetNanoSeconds () * m_txCurrentA * supplyVoltage) / 1e9;
       break;
     case WifiPhy::RX:
-      energyToDecrease = duration.GetSeconds () * m_rxCurrentA * supplyVoltage;
+      energyToDecrease = (duration.GetNanoSeconds () * m_rxCurrentA * supplyVoltage) / 1e9;
       break;
     case WifiPhy::SWITCHING:
-      energyToDecrease = duration.GetSeconds () * m_switchingCurrentA * supplyVoltage;
+      energyToDecrease = (duration.GetNanoSeconds () * m_switchingCurrentA * supplyVoltage) / 1e9;
       break;
     case WifiPhy::SLEEP:
-      energyToDecrease = duration.GetSeconds () * m_sleepCurrentA * supplyVoltage;
+      energyToDecrease = (duration.GetNanoSeconds () * m_sleepCurrentA * supplyVoltage) / 1e9;
+      break;
+    case WifiPhy::OFF:
+      energyToDecrease = 0.0;
       break;
     default:
       NS_FATAL_ERROR ("WifiRadioEnergyModel:Undefined radio state: " << m_currentState);
@@ -306,7 +308,7 @@ WifiRadioEnergyModel::ChangeState (int newState)
   // by the previous instance is erroneously the final state stored in m_currentState. The check below
   // ensures that previous instances do not change m_currentState.
 
-  if (!m_isSupersededChangeState)
+  if (m_nPendingChangeState <= 1)
     {
       // update current state & last update time stamp
       SetWifiRadioState ((WifiPhy::State) newState);
@@ -315,8 +317,6 @@ WifiRadioEnergyModel::ChangeState (int newState)
       NS_LOG_DEBUG ("WifiRadioEnergyModel:Total energy consumption is " <<
                     m_totalEnergyConsumption << "J");
     }
-
-  m_isSupersededChangeState = (m_nPendingChangeState > 1);
 
   m_nPendingChangeState--;
 }
@@ -367,7 +367,6 @@ WifiRadioEnergyModel::DoDispose (void)
 double
 WifiRadioEnergyModel::DoGetCurrentA (void) const
 {
-  NS_LOG_FUNCTION (this);
   switch (m_currentState)
     {
     case WifiPhy::IDLE:
@@ -382,6 +381,8 @@ WifiRadioEnergyModel::DoGetCurrentA (void) const
       return m_switchingCurrentA;
     case WifiPhy::SLEEP:
       return m_sleepCurrentA;
+    case WifiPhy::OFF:
+      return 0.0;
     default:
       NS_FATAL_ERROR ("WifiRadioEnergyModel:Undefined radio state:" << m_currentState);
     }
