@@ -63,7 +63,6 @@ EnergySource::SetNode (Ptr<Node> node)
 Ptr<Node>
 EnergySource::GetNode (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_node;
 }
 
