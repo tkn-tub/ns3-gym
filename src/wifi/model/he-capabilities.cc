@@ -458,7 +458,7 @@ HeCapabilities::GetHeLtfAndGiForHePpdus (void) const
 }
 
 uint8_t
-HeCapabilities::GetHighestMcsSupported (uint8_t mcs) const
+HeCapabilities::GetHighestMcsSupported (void) const
 {
   return m_highestMcsSupported + 7;
 }

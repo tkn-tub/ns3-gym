@@ -208,7 +208,7 @@ AthstatsWifiTraceSink::TxFinalDataFailedTrace (std::string context, Mac48Address
 void
 AthstatsWifiTraceSink::PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
 {
-  NS_LOG_FUNCTION (this << context << packet << " mode=" << mode << " snr=" << snr );
+  NS_LOG_FUNCTION (this << context << packet << " mode=" << mode << " snr=" << snr << "preamble=" << preamble);
   ++m_phyRxOkCount;
 }
 

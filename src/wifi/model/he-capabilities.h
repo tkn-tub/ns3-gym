@@ -143,10 +143,9 @@ public:
   /**
    * Get highest MCS supported.
    *
-   * \param mcs the MCS
    * \returns the highest MCS is supported
    */
-  uint8_t GetHighestMcsSupported (uint8_t mcs) const;
+  uint8_t GetHighestMcsSupported (void) const;
   /**
    * Get highest NSS supported.
    *

@@ -532,12 +532,11 @@ private:
    * Return the time required to transmit the Block ACK to the specified address
    * given the TXVECTOR of the BAR (including preamble and FCS).
    *
-   * \param to
    * \param blockAckReqTxVector
    * \param type the Block ACK type
    * \return the time required to transmit the Block ACK (including preamble and FCS)
    */
-  Time GetBlockAckDuration (Mac48Address to, WifiTxVector blockAckReqTxVector, BlockAckType type) const;
+  Time GetBlockAckDuration (WifiTxVector blockAckReqTxVector, BlockAckType type) const;
   /**
    * Check if the current packet should be sent with a RTS protection.
    *
@@ -558,9 +557,8 @@ private:
    *
    * \param packet the packet
    * \param hdr the header
-   * \param preamble the preamble
    */
-  void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr, WifiPreamble preamble);
+  void NotifyNav (Ptr<const Packet> packet,const WifiMacHeader &hdr);
   /**
    * Reset NAV with the given duration.
    *
