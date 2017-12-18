@@ -9263,10 +9263,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::MobilityModel >', 
                    [], 
                    is_const=True)
-    ## wifi-phy.h (module 'wifi'): ns3::WifiMode ns3::WifiPhy::GetMode(uint32_t mode) const [member function]
+    ## wifi-phy.h (module 'wifi'): ns3::WifiMode ns3::WifiPhy::GetMode(uint8_t mode) const [member function]
     cls.add_method('GetMode', 
                    'ns3::WifiMode', 
-                   [param('uint32_t', 'mode')], 
+                   [param('uint8_t', 'mode')], 
                    is_const=True)
     ## wifi-phy.h (module 'wifi'): uint32_t ns3::WifiPhy::GetNBssMembershipSelectors() const [member function]
     cls.add_method('GetNBssMembershipSelectors', 
@@ -9278,9 +9278,9 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## wifi-phy.h (module 'wifi'): uint32_t ns3::WifiPhy::GetNModes() const [member function]
+    ## wifi-phy.h (module 'wifi'): uint8_t ns3::WifiPhy::GetNModes() const [member function]
     cls.add_method('GetNModes', 
-                   'uint32_t', 
+                   'uint8_t', 
                    [], 
                    is_const=True)
     ## wifi-phy.h (module 'wifi'): uint32_t ns3::WifiPhy::GetNTxPower() const [member function]
@@ -14731,10 +14731,10 @@ def register_Ns3HeCapabilities_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHighestMcsSupported(uint8_t mcs) const [member function]
+    ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHighestMcsSupported() const [member function]
     cls.add_method('GetHighestMcsSupported', 
                    'uint8_t', 
-                   [param('uint8_t', 'mcs')], 
+                   [], 
                    is_const=True)
     ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetHighestNssSupported() const [member function]
     cls.add_method('GetHighestNssSupported', 
