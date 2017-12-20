@@ -496,7 +496,7 @@ CtrlBAckResponseHeader::SerializeBitmap (Buffer::Iterator start) const
     {
       if (!m_compressed)
         {
-          for (uint32_t j = 0; j < 64; j++)
+          for (uint8_t j = 0; j < 64; j++)
             {
               i.WriteHtolsbU16 (bitmap.m_bitmap[j]);
             }
@@ -528,7 +528,7 @@ CtrlBAckResponseHeader::DeserializeBitmap (Buffer::Iterator start)
     {
       if (!m_compressed)
         {
-          for (uint32_t j = 0; j < 64; j++)
+          for (uint8_t j = 0; j < 64; j++)
             {
               bitmap.m_bitmap[j] = i.ReadLsbtohU16 ();
             }

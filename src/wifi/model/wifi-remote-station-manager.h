@@ -377,7 +377,7 @@ public:
    *
    * \return the number of basic modes we support
    */
-  uint32_t GetNBasicModes (void) const;
+  uint8_t GetNBasicModes (void) const;
   /**
    * Return a basic mode from the set of basic modes.
    *
@@ -385,7 +385,7 @@ public:
    *
    * \return the basic mode at the given index
    */
-  WifiMode GetBasicMode (uint32_t i) const;
+  WifiMode GetBasicMode (uint8_t i) const;
   /**
    * Return the number of non-ERP basic modes we support.
    *
@@ -399,7 +399,7 @@ public:
    *
    * \return the basic mode at the given index
    */
-  WifiMode GetNonErpBasicMode (uint32_t i) const;
+  WifiMode GetNonErpBasicMode (uint8_t i) const;
   /**
    * Return whether the station supports Greenfield or not.
    *
@@ -454,7 +454,7 @@ public:
    *
    * \return the number of basic MCS index
    */
-  uint32_t GetNBasicMcs (void) const;
+  uint8_t GetNBasicMcs (void) const;
   /**
    * Return the MCS at the given <i>list</i> index.
    *
@@ -462,7 +462,7 @@ public:
    *
    * \return the basic mcs at the given list index
    */
-  WifiMode GetBasicMcs (uint32_t i) const;
+  WifiMode GetBasicMcs (uint8_t i) const;
   /**
    * Record the MCS index supported by the station.
    *

@@ -49,9 +49,9 @@ struct RraaWifiRemoteStation : public WifiRemoteStation
   bool m_lastFrameFail;          //!< Flag if the last frame sent has failed.
   bool m_initialized;            //!< For initializing variables.
 
-  uint32_t m_nRate;              //!< Number of supported rates.
+  uint8_t m_nRate;              //!< Number of supported rates.
 
-  uint32_t m_rateIndex;          //!< Current rate index.
+  uint8_t m_rateIndex;          //!< Current rate index.
 
   RraaThresholdsTable m_thresholds; //!< RRAA thresholds for this station.
 };
@@ -229,7 +229,7 @@ RraaWifiManager::InitThresholds (RraaWifiRemoteStation *station)
   double nextMtl = 0;
   double mtl = 0;
   double ori = 0;
-  for (uint32_t i = 0; i < station->m_nRate; i++)
+  for (uint8_t i = 0; i < station->m_nRate; i++)
     {
       WifiMode mode = GetSupported (station, i);
       Time totalTxTime = GetCalcTxTime (mode) + m_sifs + m_difs;
@@ -268,8 +268,8 @@ RraaWifiManager::ResetCountersBasic (RraaWifiRemoteStation *station)
   station->m_lastReset = Simulator::Now ();
 }
 
-uint32_t
-RraaWifiManager::GetMaxRate (RraaWifiRemoteStation *station)
+uint8_t
+RraaWifiManager::GetMaxRate (RraaWifiRemoteStation *station) const
 {
   return station->m_nRate - 1;
 }

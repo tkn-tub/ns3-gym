@@ -923,7 +923,7 @@ WifiPhy::ConfigureHtDeviceMcsSet (void)
   NS_LOG_FUNCTION (this);
 
   bool htFound = false;
-  for (std::vector<uint32_t>::size_type i = 0; i < m_bssMembershipSelectorSet.size (); i++)
+  for (std::vector<uint8_t>::size_type i = 0; i < m_bssMembershipSelectorSet.size (); i++)
     {
       if (m_bssMembershipSelectorSet[i] == HT_PHY)
         {
@@ -1327,14 +1327,14 @@ WifiPhy::GetMaxSupportedRxSpatialStreams (void) const
   return m_rxSpatialStreams;
 }
 
-uint32_t
+uint8_t
 WifiPhy::GetNBssMembershipSelectors (void) const
 {
   return m_bssMembershipSelectorSet.size ();
 }
 
-uint32_t
-WifiPhy::GetBssMembershipSelector (uint32_t selector) const
+uint8_t
+WifiPhy::GetBssMembershipSelector (uint8_t selector) const
 {
   return m_bssMembershipSelectorSet[selector];
 }

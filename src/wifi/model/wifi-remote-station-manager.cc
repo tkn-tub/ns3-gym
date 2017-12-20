@@ -677,7 +677,7 @@ WifiRemoteStationManager::AddAllSupportedMcs (Mac48Address address)
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStationState *state = LookupState (address);
   state->m_operationalMcsSet.clear ();
-  for (uint32_t i = 0; i < m_wifiPhy->GetNMcs (); i++)
+  for (uint8_t i = 0; i < m_wifiPhy->GetNMcs (); i++)
     {
       state->m_operationalMcsSet.push_back (m_wifiPhy->GetMcs (i));
     }
@@ -1010,7 +1010,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address, uint8_t tid
   NS_LOG_FUNCTION (this << address << (uint16_t)tid << (uint16_t)nSuccessfulMpdus << (uint16_t)nFailedMpdus << rxSnr << dataSnr);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, tid);
-  for (uint32_t i = 0; i < nFailedMpdus; i++)
+  for (uint8_t i = 0; i < nFailedMpdus; i++)
     {
       m_macTxDataFailed (address);
     }
@@ -1418,7 +1418,7 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
     }
   if (HasHtSupported () || HasVhtSupported () || HasHeSupported ())
     {
-      for (uint32_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
+      for (uint8_t idx = 0; idx < m_wifiPhy->GetNMcs (); idx++)
         {
           WifiMode thismode = m_wifiPhy->GetMcs (idx);
           if (thismode.IsMandatory ()
@@ -1710,7 +1710,7 @@ WifiRemoteStationManager::AddStationHtCapabilities (Mac48Address from, HtCapabil
   SetQosSupport (from, true);
   state->m_greenfield = htCapabilities.GetGreenfield ();
   state->m_streams = htCapabilities.GetRxHighestSupportedAntennas ();
-  for (uint32_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+  for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
     {
       WifiMode mcs = m_wifiPhy->GetMcs (j);
       if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
@@ -1746,7 +1746,7 @@ WifiRemoteStationManager::AddStationVhtCapabilities (Mac48Address from, VhtCapab
   state->m_stbc = (vhtCapabilities.GetTxStbc () != 0 && vhtCapabilities.GetRxStbc () != 0);
   for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
     {
-      for (uint32_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+      for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
         {
           WifiMode mcs = m_wifiPhy->GetMcs (j);
           if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedMcs (mcs.GetMcsValue (), i))
@@ -1823,7 +1823,7 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
     {
       NS_FATAL_ERROR ("It is not allowed to add a (V)HT rate in the BSSBasicRateSet!");
     }
-  for (uint32_t i = 0; i < GetNBasicModes (); i++)
+  for (uint8_t i = 0; i < GetNBasicModes (); i++)
     {
       if (GetBasicMode (i) == mode)
         {
@@ -1833,14 +1833,14 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
   m_bssBasicRateSet.push_back (mode);
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetNBasicModes (void) const
 {
   return m_bssBasicRateSet.size ();
 }
 
 WifiMode
-WifiRemoteStationManager::GetBasicMode (uint32_t i) const
+WifiRemoteStationManager::GetBasicMode (uint8_t i) const
 {
   NS_ASSERT (i < GetNBasicModes ());
   return m_bssBasicRateSet[i];
@@ -1862,7 +1862,7 @@ WifiRemoteStationManager::GetNNonErpBasicModes (void) const
 }
 
 WifiMode
-WifiRemoteStationManager::GetNonErpBasicMode (uint32_t i) const
+WifiRemoteStationManager::GetNonErpBasicMode (uint8_t i) const
 {
   NS_ASSERT (i < GetNNonErpBasicModes ());
   uint32_t index = 0;
@@ -1890,7 +1890,7 @@ void
 WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
 {
   NS_LOG_FUNCTION (this << (uint16_t)mcs.GetMcsValue ());
-  for (uint32_t i = 0; i < GetNBasicMcs (); i++)
+  for (uint8_t i = 0; i < GetNBasicMcs (); i++)
     {
       if (GetBasicMcs (i) == mcs)
         {
@@ -1900,14 +1900,14 @@ WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
   m_bssBasicMcsSet.push_back (mcs);
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetNBasicMcs (void) const
 {
   return m_bssBasicMcsSet.size ();
 }
 
 WifiMode
-WifiRemoteStationManager::GetBasicMcs (uint32_t i) const
+WifiRemoteStationManager::GetBasicMcs (uint8_t i) const
 {
   NS_ASSERT (i < GetNBasicMcs ());
   return m_bssBasicMcsSet[i];

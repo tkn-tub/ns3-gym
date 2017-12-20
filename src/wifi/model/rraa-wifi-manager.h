@@ -107,7 +107,7 @@ private:
    *
    * \return the index for the maximum transmission rate
    */
-  uint32_t GetMaxRate (RraaWifiRemoteStation *station);
+  uint8_t GetMaxRate (RraaWifiRemoteStation *station) const;
   /**
    * Check if the counter should be resetted.
    *

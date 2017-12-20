@@ -468,9 +468,9 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         }
       SupportedRates rates = beacon.GetSupportedRates ();
       bool bssMembershipSelectorMatch = false;
-      for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
-          uint32_t selector = m_phy->GetBssMembershipSelector (i);
+          uint8_t selector = m_phy->GetBssMembershipSelector (i);
           if (rates.IsBssMembershipSelectorRate (selector))
             {
               NS_LOG_LOGIC ("Beacon is matched to our BSS membership selector");
@@ -577,7 +577,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 {
                   m_stationManager->AddStationVhtCapabilities (hdr->GetAddr2 (), vhtCapabilities);
                   VhtOperation vhtOperation = beacon.GetVhtOperation ();
-                  for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                  for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                     {
                       WifiMode mcs = m_phy->GetMcs (i);
                       if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -593,7 +593,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
               m_stationManager->AddStationHeCapabilities (hdr->GetAddr2 (), heCapabilities);
               HeOperation heOperation = beacon.GetHeOperation ();
-              for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+              for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                 {
                   WifiMode mcs = m_phy->GetMcs (i);
                   if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -625,9 +625,9 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               return;
             }
           SupportedRates rates = probeResp.GetSupportedRates ();
-          for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+          for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
             {
-              uint32_t selector = m_phy->GetBssMembershipSelector (i);
+              uint8_t selector = m_phy->GetBssMembershipSelector (i);
               if (!rates.IsBssMembershipSelectorRate (selector))
                 {
                   return;
@@ -826,7 +826,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               if (m_htSupported)
                 {
                   HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
-                  for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                  for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                     {
                       WifiMode mcs = m_phy->GetMcs (i);
                       if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HT && htCapabilities.IsSupportedMcs (mcs.GetMcsValue ()))
@@ -839,7 +839,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               if (m_vhtSupported)
                 {
                   VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
-                  for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                  for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                     {
                       WifiMode mcs = m_phy->GetMcs (i);
                       if (mcs.GetModulationClass () == WIFI_MOD_CLASS_VHT && vhtcapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -852,7 +852,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               if (m_heSupported)
                 {
                   HeCapabilities heCapabilities = assocResp.GetHeCapabilities ();
-                  for (uint32_t i = 0; i < m_phy->GetNMcs (); i++)
+                  for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
                     {
                       WifiMode mcs = m_phy->GetMcs (i);
                       if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE && heCapabilities.IsSupportedRxMcs (mcs.GetMcsValue ()))
@@ -888,7 +888,7 @@ StaWifiMac::GetSupportedRates (void) const
   SupportedRates rates;
   if (m_htSupported || m_vhtSupported || m_heSupported)
     {
-      for (uint32_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
           rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
         }

@@ -271,11 +271,11 @@ CtrlBAckResponseHeaderTest::DoRun (void)
   //Case 1: startSeq < endSeq
   //          179        242
   m_blockAckHdr.SetStartingSequence (179);
-  for (uint32_t i = 179; i < 220; i++)
+  for (uint8_t i = 179; i < 220; i++)
     {
       m_blockAckHdr.SetReceivedPacket (i);
     }
-  for (uint32_t i = 225; i <= 242; i++)
+  for (uint16_t i = 225; i <= 242; i++)
     {
       m_blockAckHdr.SetReceivedPacket (i);
     }
@@ -291,11 +291,11 @@ CtrlBAckResponseHeaderTest::DoRun (void)
   //Case 2: startSeq > endSeq
   //          4090       58
   m_blockAckHdr.SetStartingSequence (4090);
-  for (uint32_t i = 4090; i != 10; i = (i + 1) % 4096)
+  for (uint16_t i = 4090; i != 10; i = (i + 1) % 4096)
     {
       m_blockAckHdr.SetReceivedPacket (i);
     }
-  for (uint32_t i = 22; i < 25; i++)
+  for (uint8_t i = 22; i < 25; i++)
     {
       m_blockAckHdr.SetReceivedPacket (i);
     }

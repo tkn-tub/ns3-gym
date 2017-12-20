@@ -51,7 +51,7 @@ HtOperation::HtOperation ()
     m_reservedMcsSet3 (0),
     m_htSupported (0)
 {
-  for (uint32_t k = 0; k < MAX_SUPPORTED_MCS; k++)
+  for (uint8_t k = 0; k < MAX_SUPPORTED_MCS; k++)
     {
       m_rxMcsBitmask[k] = 0;
     }

@@ -429,7 +429,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
     }
 
 
-  uint32_t idx;
+  uint8_t idx;
 
   int delta = (station->m_totalPacketsCount * m_lookAroundRate / 100) - (station->m_samplePacketsCount + station->m_numSamplesDeferred / 2);
 
@@ -439,7 +439,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
   if (delta >= 0)
     {
       NS_LOG_DEBUG ("Search next sampling rate");
-      int ratesSupported = station->m_nModes;
+      uint8_t ratesSupported = station->m_nModes;
       if (delta > ratesSupported * 2)
         {
           /* From Linux implementation:
@@ -542,7 +542,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   uint32_t tempProb;
 
   NS_LOG_DEBUG ("Index-Rate\t\tAttempt\tSuccess");
-  for (uint32_t i = 0; i < station->m_nModes; i++)
+  for (uint8_t i = 0; i < station->m_nModes; i++)
     {
 
       //calculate the perfect tx time for this rate
@@ -637,7 +637,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   //go find max throughput, second maximum throughput, high probability succ
   NS_LOG_DEBUG ("Finding the maximum throughput, second maximum throughput, and highest probability");
   NS_LOG_DEBUG ("Index-Rate\t\tT-put\tEWMA");
-  for (uint32_t i = 0; i < station->m_nModes; i++)
+  for (uint8_t i = 0; i < station->m_nModes; i++)
     {
       NS_LOG_DEBUG (i << " " << GetSupported (station, i) <<
                     "\t" << station->m_minstrelTable[i].throughput <<
@@ -652,7 +652,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
 
   max_tp = 0;
   //find the second highest max
-  for (uint32_t i = 0; i < station->m_nModes; i++)
+  for (uint8_t i = 0; i < station->m_nModes; i++)
     {
       if ((i != index_max_tp) && (max_tp < station->m_minstrelTable[i].throughput))
         {
@@ -662,7 +662,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
     }
 
   uint32_t max_prob = 0, index_max_prob = 0;
-  for (uint32_t i = 0; i < station->m_nModes; i++)
+  for (uint8_t i = 0; i < station->m_nModes; i++)
     {
       if ((station->m_minstrelTable[i].ewmaProb >= 95 * 180) && (station->m_minstrelTable[i].throughput >= station->m_minstrelTable[index_max_prob].throughput))
         {
@@ -904,9 +904,9 @@ MinstrelWifiManager::RateInit (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (station);
 
-  for (uint32_t i = 0; i < station->m_nModes; i++)
+  for (uint8_t i = 0; i < station->m_nModes; i++)
     {
-      NS_LOG_DEBUG ("Initializing rate index " << i << " " << GetSupported (station, i));
+      NS_LOG_DEBUG ("Initializing rate index " << static_cast<uint16_t>(i) << " " << GetSupported (station, i));
       station->m_minstrelTable[i].numRateAttempt = 0;
       station->m_minstrelTable[i].numRateSuccess = 0;
       station->m_minstrelTable[i].prevNumRateSuccess = 0;
@@ -977,12 +977,12 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
   station->m_col = station->m_index = 0;
 
   //for off-setting to make rates fall between 0 and nModes
-  uint32_t numSampleRates = station->m_nModes;
+  uint8_t numSampleRates = station->m_nModes;
 
   uint32_t newIndex;
   for (uint32_t col = 0; col < m_sampleCol; col++)
     {
-      for (uint32_t i = 0; i < numSampleRates; i++ )
+      for (uint8_t i = 0; i < numSampleRates; i++ )
         {
           /**
            * The next two lines basically tries to generate a random number
@@ -1006,9 +1006,9 @@ MinstrelWifiManager::PrintSampleTable (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_DEBUG ("PrintSampleTable=" << station);
 
-  uint32_t numSampleRates = station->m_nModes;
+  uint8_t numSampleRates = station->m_nModes;
   std::stringstream table;
-  for (uint32_t i = 0; i < numSampleRates; i++)
+  for (uint8_t i = 0; i < numSampleRates; i++)
     {
       for (uint32_t j = 0; j < m_sampleCol; j++)
         {
@@ -1032,7 +1032,7 @@ MinstrelWifiManager::PrintTable (MinstrelWifiRemoteStation *station)
   uint32_t maxTpRate2 = station->m_maxTpRate2;
   uint32_t maxProbRate = station->m_maxProbRate;
 
-  for (uint32_t i = 0; i < station->m_nModes; i++)
+  for (uint8_t i = 0; i < station->m_nModes; i++)
     {
       RateInfo rate = station->m_minstrelTable[i];
 

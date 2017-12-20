@@ -119,7 +119,7 @@ IdealWifiManager::DoInitialize ()
   if (HasVhtSupported () == true || HasHtSupported () == true || HasHeSupported () == true)
     {
       nModes = GetPhy ()->GetNMcs ();
-      for (uint32_t i = 0; i < nModes; i++)
+      for (uint8_t i = 0; i < nModes; i++)
         {
           for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j *= 2)
             {
@@ -308,7 +308,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       if ((HasVhtSupported () == true || HasHtSupported () == true || HasHeSupported () == true)
           && (GetHtSupported (st) == true || GetVhtSupported (st) == true || GetHeSupported (st) == true))
         {
-          for (uint32_t i = 0; i < GetNMcsSupported (station); i++)
+          for (uint8_t i = 0; i < GetNMcsSupported (station); i++)
             {
               mode = GetMcsSupported (station, i);
               txVector.SetMode (mode);
@@ -445,7 +445,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
         {
           // Non-HT selection
           selectedNss = 1;
-          for (uint32_t i = 0; i < GetNSupported (station); i++)
+          for (uint8_t i = 0; i < GetNSupported (station); i++)
             {
               mode = GetSupported (station, i);
               txVector.SetMode (mode);
@@ -506,7 +506,7 @@ IdealWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   WifiMode maxMode = GetDefaultMode ();
   //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac/ax
   //RTS is sent in a legacy frame; RTS with HT/VHT/HE is not yet supported
-  for (uint32_t i = 0; i < GetNBasicModes (); i++)
+  for (uint8_t i = 0; i < GetNBasicModes (); i++)
     {
       mode = GetBasicMode (i);
       txVector.SetMode (mode);
