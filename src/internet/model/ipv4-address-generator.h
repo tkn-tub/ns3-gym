@@ -124,6 +124,23 @@ public:
   static bool AddAllocated (const Ipv4Address addr);
 
   /**
+   * \brief Check the Ipv4Address allocation in the list of IPv4 entries
+   *
+   * \param addr The Ipv4Address to be checked in the list of Ipv4 entries
+   * \returns true if the network is already allocated
+   */
+  static bool IsAddressAllocated (const Ipv4Address addr);
+
+  /**
+   * \brief Check if a network has already allocated addresses
+   *
+   * \param addr The Ipv4 network to be checked
+   * \param mask The Ipv4 network mask
+   * \returns true if the network is already allocated
+   */
+  static bool IsNetworkAllocated (const Ipv4Address addr, const Ipv4Mask mask);
+
+  /**
    * \brief Used to turn off fatal errors and assertions, for testing
    */
   static void TestMode (void);

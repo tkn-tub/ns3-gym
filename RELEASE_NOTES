@@ -26,8 +26,8 @@ This release has been tested on the following platforms:
 New user-visible features
 -------------------------
 - (lr-wpan) Extended addressing mode is now supported.
-
 - (tcp) Implemented the core functionality of TCP Pacing.
+- (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.
 
 Bugs fixed
 ----------
