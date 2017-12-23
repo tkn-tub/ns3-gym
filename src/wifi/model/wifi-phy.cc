@@ -373,8 +373,8 @@ WifiPhy::GetTypeId (void)
 WifiPhy::WifiPhy ()
   : m_mpdusNum (0),
     m_plcpSuccess (false),
-    m_txMpduReferenceNumber (0xffffffffffffffff),
-    m_rxMpduReferenceNumber (0xffffffffffffffff),
+    m_txMpduReferenceNumber (0xffffffff),
+    m_rxMpduReferenceNumber (0xffffffff),
     m_endRxEvent (),
     m_endPlcpRxEvent (),
     m_standard (WIFI_PHY_STANDARD_UNSPECIFIED),

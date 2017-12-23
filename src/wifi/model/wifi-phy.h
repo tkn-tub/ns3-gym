@@ -74,7 +74,7 @@ struct SignalNoiseDbm
 struct MpduInfo
 {
   MpduType type; ///< type
-  uint64_t mpduRefNumber; ///< MPDU ref number
+  uint32_t mpduRefNumber; ///< MPDU ref number
 };
 
 /**
@@ -1677,8 +1677,8 @@ protected:
 
   uint16_t m_mpdusNum;                 //!< carries the number of expected mpdus that are part of an A-MPDU
   bool m_plcpSuccess;                  //!< Flag if the PLCP of the packet or the first MPDU in an A-MPDU has been received
-  uint64_t m_txMpduReferenceNumber;    //!< A-MPDU reference number to identify all transmitted subframes belonging to the same received A-MPDU
-  uint64_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
+  uint32_t m_txMpduReferenceNumber;    //!< A-MPDU reference number to identify all transmitted subframes belonging to the same received A-MPDU
+  uint32_t m_rxMpduReferenceNumber;    //!< A-MPDU reference number to identify all received subframes belonging to the same received A-MPDU
 
   EventId m_endRxEvent;                //!< the end reeive event
   EventId m_endPlcpRxEvent;            //!< the end PLCP receive event

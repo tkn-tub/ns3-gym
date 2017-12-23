@@ -118,7 +118,7 @@ InterferenceExperiment::SendA (void) const
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSizeA);
   WifiTxVector txVector;
-  txVector.SetTxPowerLevel (m_input.txPowerLevelA);
+  txVector.SetTxPowerLevel (0); //only one TX power level
   txVector.SetMode (WifiMode (m_input.txModeA));
   txVector.SetPreambleType (m_input.preamble);
   m_txA->SendPacket (p, txVector);
@@ -129,7 +129,7 @@ InterferenceExperiment::SendB (void) const
 {
   Ptr<Packet> p = Create<Packet> (m_input.packetSizeB);
   WifiTxVector txVector;
-  txVector.SetTxPowerLevel (m_input.txPowerLevelB);
+  txVector.SetTxPowerLevel (0); //only one TX power level
   txVector.SetMode (WifiMode (m_input.txModeB));
   txVector.SetPreambleType (m_input.preamble);
   m_txB->SendPacket (p, txVector);

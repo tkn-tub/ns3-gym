@@ -27,8 +27,8 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("InterferenceHelperTxDurationTest");
 
-static const double CHANNEL_1_MHZ  = 2412.0; // a 2.4 GHz center frequency (MHz)
-static const double CHANNEL_36_MHZ = 5180.0; // a 5 GHz center frequency (MHz)
+static const uint16_t CHANNEL_1_MHZ  = 2412; // a 2.4 GHz center frequency (MHz)
+static const uint16_t CHANNEL_36_MHZ = 5180; // a 5 GHz center frequency (MHz)
 
 /**
  * \ingroup wifi-test
@@ -58,7 +58,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
+  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
 
   /**
    * Check if the overall tx duration returned by InterferenceHelper
@@ -73,7 +73,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
+  bool CheckTxDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
 
 };
 
@@ -87,7 +87,7 @@ TxDurationTest::~TxDurationTest ()
 }
 
 bool
-TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
+TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
 {
   WifiTxVector txVector;
   txVector.SetMode (payloadMode);
@@ -97,7 +97,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
   txVector.SetNss (1);
   txVector.SetStbc (0);
   txVector.SetNess (0);
-  double testedFrequency = CHANNEL_1_MHZ;
+  uint16_t testedFrequency = CHANNEL_1_MHZ;
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT
@@ -129,7 +129,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
         {
           std::cerr << "size=" << size
                     << " mode=" << payloadMode
-                    << " channelWidth=" << channelWidth
+                    << " channelWidth=" << static_cast<uint16_t> (channelWidth)
                     << " guardInterval=" << guardInterval
                     << " datarate=" << payloadMode.GetDataRate (channelWidth, guardInterval, 1)
                     << " known=" << knownDuration
@@ -142,7 +142,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint3
 }
 
 bool
-TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
+TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
 {
   WifiTxVector txVector;
   txVector.SetMode (payloadMode);
@@ -152,7 +152,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t c
   txVector.SetNss (1);
   txVector.SetStbc (0);
   txVector.SetNess (0);
-  double testedFrequency = CHANNEL_1_MHZ;
+  uint16_t testedFrequency = CHANNEL_1_MHZ;
   Ptr<YansWifiPhy> phy = CreateObject<YansWifiPhy> ();
   if (payloadMode.GetModulationClass () == WIFI_MOD_CLASS_OFDM
       || payloadMode.GetModulationClass () == WIFI_MOD_CLASS_HT
@@ -166,7 +166,7 @@ TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint32_t c
     {
       std::cerr << "size=" << size
                 << " mode=" << payloadMode
-                << " channelWidth=" << channelWidth
+                << " channelWidth=" << static_cast<uint16_t> (channelWidth)
                 << " guardInterval=" << guardInterval
                 << " datarate=" << payloadMode.GetDataRate (channelWidth, guardInterval, 1)
                 << " preamble=" << preamble
