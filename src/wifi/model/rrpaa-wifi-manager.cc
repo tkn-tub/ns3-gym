@@ -154,9 +154,9 @@ void
 RrpaaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this);
-  m_minPower = phy->GetTxPowerStart ();
-  m_maxPower = phy->GetTxPowerEnd ();
-  m_nPower = m_maxPower - m_minPower + 1;
+  m_nPowerLevels = phy->GetNTxPower ();
+  m_maxPowerLevel = m_nPowerLevels  - 1;
+  m_minPowerLevel = 0;
   uint8_t nModes = phy->GetNModes ();
   for (uint8_t i = 0; i < nModes; i++)
     {
@@ -246,20 +246,20 @@ RrpaaWifiManager::CheckInit (RrpaaWifiRemoteStation *station)
       //Initialize at minimal rate and maximal power.
       station->m_prevRateIndex = 0;
       station->m_rateIndex = 0;
-      station->m_prevPowerLevel = m_maxPower;
-      station->m_powerLevel = m_maxPower;
+      station->m_prevPowerLevel = m_maxPowerLevel;
+      station->m_powerLevel = m_maxPowerLevel;
       WifiMode mode = GetSupported (station, 0);
       uint8_t channelWidth = GetChannelWidth (station);
       DataRate rate = DataRate (mode.GetDataRate (channelWidth));
-      double power = GetPhy ()->GetPowerDbm (m_maxPower);
+      double power = GetPhy ()->GetPowerDbm (station->m_powerLevel);
       m_rateChange (rate, rate, station->m_state->m_address);
       m_powerChange (power, power, station->m_state->m_address);
 
-      station->m_pdTable = RrpaaProbabilitiesTable (station->m_nRate, std::vector<double> (m_nPower));
+      station->m_pdTable = RrpaaProbabilitiesTable (station->m_nRate, std::vector<double> (m_nPowerLevels));
       NS_LOG_DEBUG ("Initializing pdTable");
       for (uint8_t i = 0; i < station->m_nRate; i++)
         {
-          for (uint8_t j = 0; j < m_nPower; j++)
+          for (uint8_t j = 0; j < m_nPowerLevels; j++)
             {
               station->m_pdTable[i][j] = 1;
             }
@@ -470,7 +470,7 @@ RrpaaWifiManager::RunBasicAlgorithm (RrpaaWifiRemoteStation *station)
   NS_LOG_DEBUG ("Worst loss prob= " << wploss);
   if (bploss >= thresholds.m_mtl)
     {
-      if (station->m_powerLevel < m_maxPower)
+      if (station->m_powerLevel < m_maxPowerLevel)
         {
           NS_LOG_DEBUG ("bploss >= MTL and power < maxPower => Increase Power");
           station->m_pdTable[station->m_rateIndex][station->m_powerLevel] /= m_gamma;
@@ -505,7 +505,7 @@ RrpaaWifiManager::RunBasicAlgorithm (RrpaaWifiRemoteStation *station)
                 {
                   station->m_pdTable[i][station->m_powerLevel] = 1;
                 }
-              NS_LOG_DEBUG ("pdTable[" << i << "][" << station->m_powerLevel << "] = " << station->m_pdTable[i][station->m_powerLevel]);
+              NS_LOG_DEBUG ("pdTable[" << i << "][" << (int)station->m_powerLevel << "] = " << station->m_pdTable[i][station->m_powerLevel]);
             }
           double rand = m_uniformRandomVariable->GetValue (0,1);
           if (rand < station->m_pdTable[station->m_rateIndex + 1][station->m_powerLevel])
@@ -514,12 +514,12 @@ RrpaaWifiManager::RunBasicAlgorithm (RrpaaWifiRemoteStation *station)
               station->m_rateIndex++;
             }
         }
-      else if (station->m_powerLevel > m_minPower)
+      else if (station->m_powerLevel > m_minPowerLevel)
         {
           NS_LOG_DEBUG ("wploss <= ORI and rate = maxRate => Probabilistic Power Decrease");
 
           // Recalculate probabilities of higher powers.
-          for (uint32_t i = m_maxPower; i > station->m_powerLevel; i--)
+          for (uint32_t i = m_maxPowerLevel; i > station->m_powerLevel; i--)
             {
               station->m_pdTable[station->m_rateIndex][i] *= m_delta;
               if (station->m_pdTable[station->m_rateIndex][i] > 1)
@@ -539,12 +539,12 @@ RrpaaWifiManager::RunBasicAlgorithm (RrpaaWifiRemoteStation *station)
     }
   else if (bploss > thresholds.m_ori && wploss < thresholds.m_mtl)
     {
-      if (station->m_powerLevel > m_minPower)
+      if (station->m_powerLevel > m_minPowerLevel)
         {
-          NS_LOG_DEBUG ("loss between ORI and MTL and power > minPower => Probabilistic Power Decrease");
+          NS_LOG_DEBUG ("loss between ORI and MTL and power > minPowerLevel => Probabilistic Power Decrease");
 
           // Recalculate probabilities of higher powers.
-          for (uint32_t i = m_maxPower; i >= station->m_powerLevel; i--)
+          for (uint32_t i = m_maxPowerLevel; i >= station->m_powerLevel; i--)
             {
               station->m_pdTable[station->m_rateIndex][i] *= m_delta;
               if (station->m_pdTable[station->m_rateIndex][i] > 1)
