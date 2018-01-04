@@ -1774,17 +1774,9 @@ def run_tests():
                     f = open(xml_results_file, 'a')
                     f.write("<Test>\n")
                     f.write("  <Name>%s</Name>\n" % job.display_name)
-                    f.write('  <Result>CRASH</Suite>\n')
+                    f.write('  <Result>CRASH</Result>\n')
                     f.write("</Test>\n")
                     f.close()
-
-                    if job.returncode == 2:
-                        f = open(xml_results_file, 'a')
-                        f.write("<Test>\n")
-                        f.write("  <Name>%s</Name>\n" % job.display_name)
-                        f.write('  <Result>VALGR</Result>\n')
-                        f.write("</Test>\n")
-                        f.close()
 
     #
     # We have all of the tests run and the results written out.  One final 
