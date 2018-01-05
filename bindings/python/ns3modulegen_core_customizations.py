@@ -412,7 +412,7 @@ def add_std_ofstream(module):
 class IosOpenmodeParam(Parameter):
 
     DIRECTIONS = [Parameter.DIRECTION_IN]
-    CTYPES = ['std::ios::openmode', 'std::_Ios_Openmode']
+    CTYPES = ['std::ios_base::openmode', 'std::_Ios_Openmode']
 
     def convert_c_to_python(self, wrapper):
         assert isinstance(wrapper, ReverseWrapperBase)
@@ -420,7 +420,7 @@ class IosOpenmodeParam(Parameter):
 
     def convert_python_to_c(self, wrapper):
         assert isinstance(wrapper, ForwardWrapperBase)
-        name = wrapper.declarations.declare_variable("std::ios::openmode", self.name, self.default_value)
+        name = wrapper.declarations.declare_variable("std::ios_base::openmode", self.name, self.default_value)
         wrapper.parse_params.add_parameter('i', ['&'+name], self.name, optional=bool(self.default_value))
         wrapper.call_params.append(name)
 
