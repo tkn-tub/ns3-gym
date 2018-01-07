@@ -41,7 +41,6 @@ main (int argc, char *argv[])
   uint32_t nWifi = 20;
   CommandLine cmd;
   cmd.AddValue ("nWifi", "Number of wifi STA devices", nWifi);
-  
 
   cmd.Parse (argc,argv);
   NodeContainer allNodes;
@@ -117,12 +116,11 @@ main (int argc, char *argv[])
   AnimationInterface::SetConstantPosition (csmaNodes.Get (1), 10, 33); 
 
   Ptr<BasicEnergySource> energySource = CreateObject<BasicEnergySource>();
-  Ptr<SimpleDeviceEnergyModel> energyModel = CreateObject<SimpleDeviceEnergyModel>();
+  Ptr<WifiRadioEnergyModel> energyModel = CreateObject<WifiRadioEnergyModel>();
 
   energySource->SetInitialEnergy (300);
   energyModel->SetEnergySource (energySource);
   energySource->AppendDeviceEnergyModel (energyModel);
-  energyModel->SetCurrentA (20);
 
   // aggregate energy source to node
   wifiApNode.Get (0)->AggregateObject (energySource);
