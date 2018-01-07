@@ -26,7 +26,7 @@
  *
  * The example considers a simple communication link between a source and a
  * destination node, where the source node sends a packet to the destination
- * every 1 second. Each node is powered by a BasiEnergySource, which is recharged
+ * every 1 second. Each node is powered by a BasicEnergySource, which is recharged
  * by a BasicEnergyHarvester, and the WiFi radio consumes energy for the transmission/
  * reception of the packets.
  *
@@ -159,18 +159,9 @@ TotalEnergyHarvested (double oldValue, double TotalEnergyHarvested)
 int
 main (int argc, char *argv[])
 {
-  /*
-  LogComponentEnable ("EnergySource", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("BasicEnergySource", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("DeviceEnergyModel", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("WifiRadioEnergyModel", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("EnergyHarvester", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("BasicEnergyHarvester", LOG_LEVEL_DEBUG);
-  */
-
   std::string phyMode ("DsssRate1Mbps");
   double Prss = -80;            // dBm
-  uint32_t PpacketSize = 200;   // bytes
+  uint32_t PacketSize = 200;   // bytes
   bool verbose = false;
 
   // simulation parameters
@@ -190,7 +181,7 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("Prss", "Intended primary RSS (dBm)", Prss);
-  cmd.AddValue ("PpacketSize", "size of application packet sent", PpacketSize);
+  cmd.AddValue ("PacketSize", "size of application packet sent", PacketSize);
   cmd.AddValue ("numPackets", "Total number of packets to send", numPackets);
   cmd.AddValue ("startTime", "Simulation start time", startTime);
   cmd.AddValue ("distanceToRx", "X-Axis distance between nodes", distanceToRx);
@@ -326,7 +317,7 @@ main (int argc, char *argv[])
 
   /** simulation setup **/
   // start traffic
-  Simulator::Schedule (Seconds (startTime), &GenerateTraffic, source, PpacketSize,
+  Simulator::Schedule (Seconds (startTime), &GenerateTraffic, source, PacketSize,
                        networkNodes.Get (0), numPackets, interPacketInterval);
 
   Simulator::Stop (Seconds (10.0));
