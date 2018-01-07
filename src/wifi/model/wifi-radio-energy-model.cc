@@ -257,6 +257,8 @@ WifiRadioEnergyModel::ChangeState (int newState)
 {
   NS_LOG_FUNCTION (this << newState);
 
+  m_nPendingChangeState++;
+
   Time duration = Simulator::Now () - m_lastUpdateTime;
   NS_ASSERT (duration.IsPositive ()); // check if duration is valid
 
@@ -287,7 +289,7 @@ WifiRadioEnergyModel::ChangeState (int newState)
       energyToDecrease = 0.0;
       break;
     default:
-      NS_FATAL_ERROR ("WifiRadioEnergyModel:Undefined radio state: " << m_currentState);
+      NS_FATAL_ERROR ("WifiRadioEnergyModel: undefined radio state " << m_currentState);
     }
 
   // update total energy consumption
@@ -295,8 +297,6 @@ WifiRadioEnergyModel::ChangeState (int newState)
 
   // update last update time stamp
   m_lastUpdateTime = Simulator::Now ();
-
-  m_nPendingChangeState++;
 
   // notify energy source
   m_source->UpdateEnergySource ();
@@ -384,7 +384,7 @@ WifiRadioEnergyModel::DoGetCurrentA (void) const
     case WifiPhy::OFF:
       return 0.0;
     default:
-      NS_FATAL_ERROR ("WifiRadioEnergyModel:Undefined radio state:" << m_currentState);
+      NS_FATAL_ERROR ("WifiRadioEnergyModel: undefined radio state " << m_currentState);
     }
 }
 
