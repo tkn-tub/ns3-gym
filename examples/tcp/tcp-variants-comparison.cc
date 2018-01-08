@@ -393,7 +393,7 @@ int main (int argc, char *argv[])
       sourceApp.Stop (Seconds (stop_time - 3));
 
       sinkHelper.SetAttribute ("Protocol", TypeIdValue (TcpSocketFactory::GetTypeId ()));
-      ApplicationContainer sinkApp = sinkHelper.Install (sinks);
+      ApplicationContainer sinkApp = sinkHelper.Install (sinks.Get (i));
       sinkApp.Start (Seconds (start_time * i));
       sinkApp.Stop (Seconds (stop_time));
     }
