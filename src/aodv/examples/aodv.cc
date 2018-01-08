@@ -111,7 +111,7 @@ int main (int argc, char **argv)
 AodvExample::AodvExample () :
   size (10),
   step (100),
-  totalTime (10),
+  totalTime (100),
   pcap (true),
   printRoutes (true)
 {
