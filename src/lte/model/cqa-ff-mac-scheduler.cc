@@ -733,7 +733,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
   std::vector <struct RachListElement_s>::iterator itRach;
   for (itRach = m_rachList.begin (); itRach != m_rachList.end (); itRach++)
     {
-      NS_ASSERT_MSG (m_amc->GetTbSizeFromMcs (m_ulGrantMcs, m_cschedCellConfig.m_ulBandwidth) > (*itRach).m_estimatedSize, " Default UL Grant MCS does not allow to send RACH messages");
+      NS_ASSERT_MSG (m_amc->GetUlTbSizeFromMcs (m_ulGrantMcs, m_cschedCellConfig.m_ulBandwidth) > (*itRach).m_estimatedSize, " Default UL Grant MCS does not allow to send RACH messages");
       BuildRarListElement_s newRar;
       newRar.m_rnti = (*itRach).m_rnti;
       // DL-RACH Allocation
@@ -747,7 +747,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
       while ((tbSizeBits < (*itRach).m_estimatedSize) && (rbStart + rbLen < (ffrRbStartOffset + maxContinuousUlBandwidth)))
         {
           rbLen++;
-          tbSizeBits = m_amc->GetTbSizeFromMcs (m_ulGrantMcs, rbLen);
+          tbSizeBits = m_amc->GetUlTbSizeFromMcs (m_ulGrantMcs, rbLen);
         }
       if (tbSizeBits < (*itRach).m_estimatedSize)
         {
@@ -1399,10 +1399,10 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 }
 
               int mcsForThisUser = m_amc->GetMcsFromCqi (worstCQIAmongRBGsAllocatedForThisUser);
-              int tbSize = m_amc->GetTbSizeFromMcs (mcsForThisUser, (numberOfRBGAllocatedForThisUser+1) * rbgSize)/8;                           // similar to calculation of TB size (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
+              int tbSize = m_amc->GetDlTbSizeFromMcs (mcsForThisUser, (numberOfRBGAllocatedForThisUser+1) * rbgSize)/8;                           // similar to calculation of TB size (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
 
 
-              double achievableRate = (( m_amc->GetTbSizeFromMcs (mcsForThisUser, rbgSize)/ 8) / 0.001);
+              double achievableRate = (( m_amc->GetDlTbSizeFromMcs (mcsForThisUser, rbgSize)/ 8) / 0.001);
               double pf_weight = achievableRate / (*itStats).second.secondLastAveragedThroughput;
 
               UeToAmountOfAssignedResources.find (flowId)->second = 8*tbSize;
@@ -1543,7 +1543,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
         }
 
       newDci.m_mcs.push_back (m_amc->GetMcsFromCqi (worstCqi));
-      int tbSize = (m_amc->GetTbSizeFromMcs (newDci.m_mcs.at (0), RgbPerRnti * rbgSize) / 8);           // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
+      int tbSize = (m_amc->GetDlTbSizeFromMcs (newDci.m_mcs.at (0), RgbPerRnti * rbgSize) / 8);           // (size of TB in bytes according to table 7.1.7.2.1-1 of 36.213)
       newDci.m_tbsSize.push_back (tbSize);
       newDci.m_resAlloc = 0;            // only allocation type 0 at this stage
       newDci.m_rbBitmap = 0;    // TBD (32 bit bitmap see 7.1.6 of 36.213)
@@ -2093,7 +2093,7 @@ CqaFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sche
           uldci.m_mcs = m_amc->GetMcsFromCqi (cqi);
         }
 
-      uldci.m_tbSize = (m_amc->GetTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
+      uldci.m_tbSize = (m_amc->GetUlTbSizeFromMcs (uldci.m_mcs, rbPerFlow) / 8);
       UpdateUlRlcBufferInfo (uldci.m_rnti, uldci.m_tbSize);
       uldci.m_ndi = 1;
       uldci.m_cceIndex = 0;

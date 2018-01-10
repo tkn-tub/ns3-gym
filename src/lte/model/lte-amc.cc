@@ -92,9 +92,19 @@ static const double SpectralEfficiencyForMcs[32] = {
  * 36.213 v8.8.0 Table 7.1.7.1-1: _Modulation and TBS index table for PDSCH_.
  * The index of the vector (range 0-28) identifies the MCS index.
  */
-static const int McsToItbs[29] = {
+static const int McsToItbsDl[29] = {
   0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 15, 16, 17, 18,
   19, 20, 21, 22, 23, 24, 25, 26
+};
+
+/**
+ * Table of MCS index (IMCS) and its TBS index (ITBS). Taken from 3GPP TS
+ * 36.213 v8.8.0 Table 8.6.1-1: _Modulation, TBS index and redundancy version table for PUSCH_.
+ * The index of the vector (range 0-28) identifies the MCS index.
+ */
+static const int McsToItbsUl[29] = {
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+  19, 19, 20, 21, 22, 23, 24, 25, 26
 };
 
 /**
@@ -282,14 +292,26 @@ LteAmc::GetMcsFromCqi (int cqi)
 }
 
 int
-LteAmc::GetTbSizeFromMcs (int mcs, int nprb)
+LteAmc::GetDlTbSizeFromMcs (int mcs, int nprb)
 {
   NS_LOG_FUNCTION (mcs);
 
   NS_ASSERT_MSG (mcs < 29, "MCS=" << mcs);
   NS_ASSERT_MSG (nprb < 111, "NPRB=" << nprb);
 
-  int itbs = McsToItbs[mcs];
+  int itbs = McsToItbsDl[mcs];
+  return (TransportBlockSizeTable[nprb - 1][itbs]);
+}
+
+int
+LteAmc::GetUlTbSizeFromMcs (int mcs, int nprb)
+{
+  NS_LOG_FUNCTION (mcs);
+
+  NS_ASSERT_MSG (mcs < 29, "MCS=" << mcs);
+  NS_ASSERT_MSG (nprb < 111, "NPRB=" << nprb);
+
+  int itbs = McsToItbsUl[mcs];
   return (TransportBlockSizeTable[nprb - 1][itbs]);
 }
 
@@ -362,7 +384,7 @@ LteAmc::CreateCqiFeedbacks (const SpectrumValue& sinr, uint8_t rbgSize)
             while (mcs <= 28)
               {
                 HarqProcessInfoList_t harqInfoList;
-                tbStats = LteMiErrorModel::GetTbDecodificationStats (sinr, rbgMap, (uint16_t)GetTbSizeFromMcs (mcs, rbgSize) / 8, mcs, harqInfoList);
+                tbStats = LteMiErrorModel::GetTbDecodificationStats (sinr, rbgMap, (uint16_t)GetDlTbSizeFromMcs (mcs, rbgSize) / 8, mcs, harqInfoList);
                 if (tbStats.tbler > 0.1)
                   {
                     break;

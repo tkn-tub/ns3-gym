@@ -84,7 +84,15 @@ public:
   * \param nprb the no. of PRB
   * \return the Transport Block Size in bits
   */
-  /*static*/ int GetTbSizeFromMcs (int mcs, int nprb);
+  /*static*/ int GetDlTbSizeFromMcs (int mcs, int nprb);
+
+  /**
+   * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 8.6.1-1 of 36.213)
+   * \param mcs the mcs index
+   * \param nprb the no. of PRB
+   * \return the Transport Block Size in bits
+   */
+  /*static*/ int GetUlTbSizeFromMcs (int mcs, int nprb);
 
   /**
    * \brief Get the spectral efficiency value associated
