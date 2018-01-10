@@ -31,6 +31,7 @@
 #include "ampdu-tag.h"
 #include "wifi-utils.h"
 #include "frame-capture-model.h"
+#include "wifi-radio-energy-model.h"
 
 namespace ns3 {
 
@@ -372,7 +373,8 @@ WifiPhy::WifiPhy ()
     m_initialChannelNumber (0),
     m_totalAmpduSize (0),
     m_totalAmpduNumSymbols (0),
-    m_currentEvent (0)
+    m_currentEvent (0),
+    m_wifiRadioEnergyModel (0)
 {
   NS_LOG_FUNCTION (this);
   m_random = CreateObject<UniformRandomVariable> ();
@@ -704,6 +706,12 @@ Ptr<FrameCaptureModel>
 WifiPhy::GetFrameCaptureModel (void) const
 {
   return m_frameCaptureModel;
+}
+    
+void
+WifiPhy::SetWifiRadioEnergyModel (const Ptr<WifiRadioEnergyModel> wifiRadioEnergyModel)
+{
+  m_wifiRadioEnergyModel = wifiRadioEnergyModel;
 }
 
 double
@@ -1599,6 +1607,28 @@ WifiPhy::SetSleepMode (void)
 }
 
 void
+WifiPhy::SetOffMode (void)
+{
+  NS_LOG_FUNCTION (this);
+  switch (m_state->GetState ())
+    {
+    case WifiPhy::RX:
+      m_endPlcpRxEvent.Cancel ();
+      m_endRxEvent.Cancel ();
+    case WifiPhy::TX:
+    case WifiPhy::SWITCHING:
+    case WifiPhy::CCA_BUSY:
+    case WifiPhy::IDLE:
+    case WifiPhy::SLEEP:
+      m_state->SwitchToOff ();
+      break;
+    default:
+      NS_ASSERT (false);
+      break;
+    }
+}
+
+void
 WifiPhy::ResumeFromSleep (void)
 {
   NS_LOG_FUNCTION (this);
@@ -2328,7 +2358,17 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
   Ptr<Packet> newPacket = packet->Copy (); // obtain non-const Packet
   WifiPhyTag oldtag;
   newPacket->RemovePacketTag (oldtag);
-  WifiPhyTag tag (txVector, mpdutype);
+  if (m_state->GetState () == WifiPhy::OFF)
+    {
+      NS_LOG_DEBUG ("Transmission canceled because device is OFF");
+      return;
+    }
+  uint8_t isFrameComplete = 1;
+  if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhy::TX) < txDuration)
+    {
+      isFrameComplete = 0;
+    }
+  WifiPhyTag tag (txVector, mpdutype, isFrameComplete);
   newPacket->AddPacketTag (tag);
 
   StartTx (newPacket, txVector, txDuration);
@@ -2339,6 +2379,12 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
 {
   //This function should be later split to check separately whether plcp preamble and plcp header can be successfully received.
   //Note: plcp preamble reception is not yet modeled.
+  if (m_state->GetState () == WifiPhy::OFF)
+    {
+      NS_LOG_DEBUG ("Cannot start RX because device is OFF");
+      return;
+    }
+
   NS_LOG_FUNCTION (this << packet << WToDbm (rxPowerW) << rxDuration);
   Time endRx = Simulator::Now () + rxDuration;
 
@@ -2348,6 +2394,14 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
     {
       NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
       return;
+    }
+
+  if (tag.GetFrameComplete () == 0)
+    {
+        NS_LOG_DEBUG ("drop packet because of incomplete frame");
+        NotifyRxDrop (packet);
+        m_plcpSuccess = false;
+        return;
     }
 
   WifiTxVector txVector = tag.GetWifiTxVector ();
@@ -3493,45 +3547,51 @@ WifiPhy::GetMcs (uint8_t mcs) const
 }
 
 bool
-WifiPhy::IsStateCcaBusy (void)
+WifiPhy::IsStateCcaBusy (void) const
 {
   return m_state->IsStateCcaBusy ();
 }
 
 bool
-WifiPhy::IsStateIdle (void)
+WifiPhy::IsStateIdle (void) const
 {
   return m_state->IsStateIdle ();
 }
 
 bool
-WifiPhy::IsStateBusy (void)
+WifiPhy::IsStateBusy (void) const
 {
   return m_state->IsStateBusy ();
 }
 
 bool
-WifiPhy::IsStateRx (void)
+WifiPhy::IsStateRx (void) const
 {
   return m_state->IsStateRx ();
 }
 
 bool
-WifiPhy::IsStateTx (void)
+WifiPhy::IsStateTx (void) const
 {
   return m_state->IsStateTx ();
 }
 
 bool
-WifiPhy::IsStateSwitching (void)
+WifiPhy::IsStateSwitching (void) const
 {
   return m_state->IsStateSwitching ();
 }
 
 bool
-WifiPhy::IsStateSleep (void)
+WifiPhy::IsStateSleep (void) const
 {
   return m_state->IsStateSleep ();
+}
+
+bool
+WifiPhy::IsStateOff (void) const
+{
+  return m_state->IsStateOff ();
 }
 
 Time

@@ -460,6 +460,12 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
                            MacLowTransmissionParameters params,
                            Ptr<DcaTxop> dca)
 {
+  if (m_phy->IsStateOff ())
+    {
+      NS_LOG_DEBUG ("Cannot start TX because device is OFF");
+      return;
+    }
+
   NS_LOG_FUNCTION (this << packet << hdr << params << dca);
   /* m_currentPacket is not NULL because someone started
    * a transmission and was interrupted before one of:
@@ -572,8 +578,8 @@ MacLow::StartTransmission (Ptr<const Packet> packet,
         }
     }
 
-  /* When this method completes, we have taken ownership of the medium. */
-  NS_ASSERT (m_phy->IsStateTx ());
+  /* When this method completes, either we have taken ownership of the medium or the device switched off in the meantime. */
+  NS_ASSERT (m_phy->IsStateTx () || m_phy->IsStateOff ());
 }
 
 bool

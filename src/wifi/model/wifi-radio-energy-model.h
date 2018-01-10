@@ -355,6 +355,13 @@ public:
   void ChangeState (int newState);
 
   /**
+   * \param state the wifi state
+   *
+   * \returns the time the radio can stay in that state based on the remaining energy.
+   */
+  Time GetMaximumTimeInState (int state) const;
+
+  /**
    * \brief Handles energy depletion.
    *
    * Implements DeviceEnergyModel::HandleEnergyDepletion
@@ -367,6 +374,13 @@ public:
    * Implements DeviceEnergyModel::HandleEnergyRecharged
    */
   void HandleEnergyRecharged (void);
+
+  /**
+   * \brief Handles energy changed.
+   *
+   * Implements DeviceEnergyModel::HandleEnergyChanged
+   */
+  void HandleEnergyChanged (void);
 
   /**
    * \returns Pointer to the PHY listener.
@@ -420,6 +434,8 @@ private:
 
   /// WifiPhy listener
   WifiRadioEnergyModelPhyListener *m_listener;
+
+  EventId m_switchToOffEvent; ///< switch to off event
 };
 
 } // namespace ns3

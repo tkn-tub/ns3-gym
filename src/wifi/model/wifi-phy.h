@@ -50,6 +50,11 @@ class WifiPhyStateHelper;
 class FrameCaptureModel;
 
 /**
+ * WifiRadioEnergyModel class
+ */
+class WifiRadioEnergyModel;
+    
+/**
  * This enumeration defines the type of an MPDU.
  */
 /// MpduType enumeration
@@ -312,35 +317,44 @@ public:
    * Resume from sleep mode.
    */
   void ResumeFromSleep (void);
+  /**
+   * Put in off mode.
+   */
+  void SetOffMode (void);
 
   /**
    * \return true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
    */
-  bool IsStateIdle (void);
+  bool IsStateIdle (void) const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::CCA_BUSY, false otherwise.
    */
-  bool IsStateCcaBusy (void);
+  bool IsStateCcaBusy (void) const;
   /**
    * \return true of the current state of the PHY layer is not WifiPhy::IDLE, false otherwise.
    */
-  bool IsStateBusy (void);
+  bool IsStateBusy (void) const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
    */
-  bool IsStateRx (void);
+  bool IsStateRx (void) const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
    */
-  bool IsStateTx (void);
+  bool IsStateTx (void) const;
   /**
    * \return true of the current state of the PHY layer is WifiPhy::SWITCHING, false otherwise.
    */
-  bool IsStateSwitching (void);
+  bool IsStateSwitching (void) const;
   /**
    * \return true if the current state of the PHY layer is WifiPhy::SLEEP, false otherwise.
    */
-  bool IsStateSleep (void);
+  bool IsStateSleep (void) const;
+  /**
+   * \return true if the current state of the PHY layer is WifiPhy::OFF, false otherwise.
+   */
+  bool IsStateOff (void) const ;
+
   /**
    * \return the amount of time since the current state has started.
    */
@@ -1610,6 +1624,13 @@ public:
   Ptr<FrameCaptureModel> GetFrameCaptureModel (void) const;
 
   /**
+   * Sets the wifi radio energy model.
+   *
+   * \param wifiRadioEnergyModel the wifi radio energy model
+   */
+  void SetWifiRadioEnergyModel (const Ptr<WifiRadioEnergyModel> wifiRadioEnergyModel);
+
+  /**
    * \return the channel width
    */
   uint8_t GetChannelWidth (void) const;
@@ -1965,6 +1986,7 @@ private:
 
   Ptr<InterferenceHelper::Event> m_currentEvent; //!< Hold the current event
   Ptr<FrameCaptureModel> m_frameCaptureModel; //!< Frame capture model
+  Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel; //!< Wifi radio energy model
 };
 
 /**

@@ -104,6 +104,15 @@ public:
   }
 
   /**
+   * \brief Handles energy changed.
+   *
+   * Not implemented
+   */
+  virtual void HandleEnergyChanged (void)
+  {
+  }
+
+  /**
    * \param current the current draw of device.
    *
    * Set the actual current draw of the device.

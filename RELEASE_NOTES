@@ -39,6 +39,7 @@ Bugs fixed
 - Bug 2766 - core: Modify logging for int64x64 to avoid stack overflow
 - Bug 2768 - lte: LteUeNetDevice has a null MAC address
 - Bug 2807 - energy: GetTotalEnergyConsumption is not updated correctly
+- Bug 2809 - wifi: Wifi doesn't fully stop when energy is depleted
 - Bug 2820 - wifi: segmentation fault when Rrpaa wifi manager is used
 - Bug 2824 - ICMP opcode fr fragment timeout drop is wrong
 - Bug 2828 - OLSR simple P2P example produces wrong results
