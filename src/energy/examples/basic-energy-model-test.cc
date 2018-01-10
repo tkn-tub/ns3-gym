@@ -130,8 +130,10 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
 
   // create energy source
   Ptr<BasicEnergySource> source = m_energySource.Create<BasicEnergySource> ();
+  source->SetInitialEnergy (50);
   // aggregate energy source to node
   node->AggregateObject (source);
+  source->SetNode (node);
 
   // create device energy model
   Ptr<WifiRadioEnergyModel> model =
