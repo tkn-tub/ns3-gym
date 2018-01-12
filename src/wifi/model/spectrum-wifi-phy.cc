@@ -312,12 +312,27 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t ch
   return v;
 }
 
+uint32_t
+SpectrumWifiPhy::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
+{
+  NS_LOG_FUNCTION (txVector);
+  uint32_t centerFrequencyForSupportedWidth = GetFrequency ();
+  uint32_t supportedWidth = static_cast<uint32_t> (GetChannelWidth ());
+  uint32_t currentWidth = static_cast<uint32_t> (txVector.GetChannelWidth ());
+  if (currentWidth != supportedWidth)
+    {
+      uint32_t startingFrequency = centerFrequencyForSupportedWidth - (supportedWidth / 2);
+      return startingFrequency + (currentWidth / 2); // primary channel is in the lower part (for the time being)
+    }
+  return centerFrequencyForSupportedWidth;
+}
+
 void
 SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDuration)
 {
   NS_LOG_DEBUG ("Start transmission: signal power before antenna gain=" << GetPowerDbm (txVector.GetTxPowerLevel ()) << "dBm");
   double txPowerWatts = DbmToW (GetPowerDbm (txVector.GetTxPowerLevel ()) + GetTxGain ());
-  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetFrequency (), GetChannelWidth (), txPowerWatts, txVector.GetMode ().GetModulationClass ());
+  Ptr<SpectrumValue> txPowerSpectrum = GetTxPowerSpectralDensity (GetCenterFrequencyForChannelWidth (txVector), txVector.GetChannelWidth (), txPowerWatts, txVector.GetMode ().GetModulationClass ());
   Ptr<WifiSpectrumSignalParameters> txParams = Create<WifiSpectrumSignalParameters> ();
   txParams->duration = txDuration;
   txParams->psd = txPowerSpectrum;

@@ -198,8 +198,8 @@ int main (int argc, char *argv[])
           //Bug 2460: CcaMode1Threshold default should be set to -62 dBm when using Spectrum
           Config::SetDefault ("ns3::WifiPhy::CcaMode1Threshold", DoubleValue (-62.0));
 
-          Ptr<SingleModelSpectrumChannel> spectrumChannel
-            = CreateObject<SingleModelSpectrumChannel> ();
+          Ptr<MultiModelSpectrumChannel> spectrumChannel
+            = CreateObject<MultiModelSpectrumChannel> ();
           Ptr<FriisPropagationLossModel> lossModel
             = CreateObject<FriisPropagationLossModel> ();
           spectrumChannel->AddPropagationLossModel (lossModel);

@@ -134,6 +134,12 @@ MultiModelSpectrumChannel::GetTypeId (void)
                      "reported in this trace. ",
                      MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_pathLossTrace),
                      "ns3::SpectrumChannel::LossTracedCallback")
+    .AddTraceSource ("TxSigParams",
+                     "This trace is fired whenever a signal is transmitted. "
+                     "The sole parameter is a pointer to a copy of the "
+                     "SpectrumSignalParameters provided by the transmitter.",
+                     MakeTraceSourceAccessor (&MultiModelSpectrumChannel::m_txSigParamsTrace),
+                     "ns3::MultiModelSpectrumChannel::SignalParametersTracedCallback")
   ;
   return tid;
 }
@@ -261,7 +267,8 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 
   NS_ASSERT (txParams->txPhy);
   NS_ASSERT (txParams->psd);
-
+  Ptr<SpectrumSignalParameters> txParamsTrace = txParams->Copy (); // copy it since traced value cannot be const (because of potential underlying DynamicCasts)
+  m_txSigParamsTrace (txParamsTrace);
 
   Ptr<MobilityModel> txMobility = txParams->txPhy->GetMobility ();
   SpectrumModelUid_t txSpectrumModelUid = txParams->psd->GetSpectrumModelUid ();

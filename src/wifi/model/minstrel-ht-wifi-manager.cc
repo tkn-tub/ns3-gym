@@ -931,7 +931,7 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
         }
       WifiMode mode = GetMcsSupported (station, mcsIndex);
       return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetLongRetryCount (station),
-                           GetPreambleForTransmission (mode, GetAddress (station)), group.sgi ? 400 : 800, GetNumberOfAntennas (), group.streams, GetNess (station), group.chWidth, GetAggregation (station) && !station->m_isSampling, false);
+                           GetPreambleForTransmission (mode, GetAddress (station)), group.sgi ? 400 : 800, GetNumberOfAntennas (), group.streams, GetNess (station), GetChannelWidthForTransmission (mode, group.chWidth), GetAggregation (station) && !station->m_isSampling, false);
     }
 }
 
@@ -1007,7 +1007,7 @@ MinstrelHtWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
       NS_ASSERT (rateFound);
 
       return WifiTxVector (rtsRate, GetDefaultTxPowerLevel (), GetShortRetryCount (station), GetPreambleForTransmission (rtsRate, GetAddress (station)),
-                           800, 1, 1, 0, GetChannelWidth (station), GetAggregation (station), false);
+                           800, 1, 1, 0, GetChannelWidthForTransmission (rtsRate, GetChannelWidth (station)), GetAggregation (station), false);
     }
 }
 

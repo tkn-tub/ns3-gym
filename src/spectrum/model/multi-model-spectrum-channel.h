@@ -133,6 +133,12 @@ public:
    */
   virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
 
+  /**
+   * TracedCallback signature for Ptr<const SpectrumSignalParameters>.
+   *
+   * \param [in] params SpectrumSignalParameters instance.
+   */
+  typedef void (* SignalParametersTracedCallback) (Ptr<SpectrumSignalParameters> params);
 
 protected:
   void DoDispose ();
@@ -207,6 +213,10 @@ private:
    * in a future release.
    */
   TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
+  /**
+   * Traced callback for SpectrumSignalParameters in StartTx requests
+   */
+  TracedCallback<Ptr<SpectrumSignalParameters> > m_txSigParamsTrace;
 };
 
 

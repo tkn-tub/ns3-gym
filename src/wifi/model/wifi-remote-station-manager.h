@@ -1093,6 +1093,16 @@ protected:
    * \return the preamble to be used for the transmission
    */
   WifiPreamble GetPreambleForTransmission (WifiMode mode, Mac48Address dest);
+  /**
+   * Return the channel width that corresponds to the selected mode (instead of
+   * letting the PHY's default channel width). This is especially useful when using
+   * non-HT modes with HT/VHT/HE capable stations (with default width above 20 MHz).
+   *
+   * \param mode selected WifiMode
+   * \param maxSupportedChannelWidth maximum channel width supported by the PHY layer
+   * \return channel width adapted to the selected mode
+   */
+  static uint8_t GetChannelWidthForTransmission (WifiMode mode, uint8_t maxSupportedChannelWidth);
 
   /**
    * Return the WifiPhy.

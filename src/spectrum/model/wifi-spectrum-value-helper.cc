@@ -164,7 +164,6 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
   switch (channelWidth)
     {
     case 20:
-    default:
       // 52 subcarriers (48 data + 4 pilot)
       // skip guard band and 6 subbands, then place power in 26 subbands, then
       // skip the center subband, then place power in 26 subbands, then skip
@@ -197,6 +196,9 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
       start2 = stop1 + 2;
       stop2 = start2 + 8 - 1;
       break;
+    default:
+      NS_FATAL_ERROR ("Channel width should be correctly set.");
+      return 0;
     }
   NS_LOG_DEBUG ("Power per band " << txPowerPerBand);
   Values::iterator vit = c->ValuesBegin ();
