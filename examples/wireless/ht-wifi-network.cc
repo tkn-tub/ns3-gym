@@ -49,6 +49,7 @@ NS_LOG_COMPONENT_DEFINE ("ht-wifi-network");
 int main (int argc, char *argv[])
 {
   bool udp = true;
+  bool useRts = false;
   double simulationTime = 10; //seconds
   double distance = 1.0; //meters
   double frequency = 5.0; //whether 2.4 or 5.0 GHz
@@ -61,10 +62,16 @@ int main (int argc, char *argv[])
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
+  cmd.AddValue ("useRts", "Enable/disable RTS/CTS", useRts);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
   cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
   cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
   cmd.Parse (argc,argv);
+
+  if (useRts)
+    {
+      Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
+    }
 
   double prevThroughput [8];
   for (uint32_t l = 0; l < 8; l++)

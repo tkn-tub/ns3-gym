@@ -48,20 +48,29 @@ NS_LOG_COMPONENT_DEFINE ("he-wifi-network");
 int main (int argc, char *argv[])
 {
   bool udp = true;
+  bool useRts = false;
   double simulationTime = 10; //seconds
   double distance = 1.0; //meters
+  double frequency = 5.0; //whether 2.4 or 5.0 GHz
   int mcs = -1; // -1 indicates an unset value
   double minExpectedThroughput = 0;
   double maxExpectedThroughput = 0;
 
   CommandLine cmd;
+  cmd.AddValue ("frequency", "Whether working in the 2.4 or 5.0 GHz band (other values gets rejected)", frequency);
   cmd.AddValue ("distance", "Distance in meters between the station and the access point", distance);
   cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
   cmd.AddValue ("udp", "UDP if set to 1, TCP otherwise", udp);
+  cmd.AddValue ("useRts", "Enable/disable RTS/CTS", useRts);
   cmd.AddValue ("mcs", "if set, limit testing to a specific MCS (0-7)", mcs);
   cmd.AddValue ("minExpectedThroughput", "if set, simulation fails if the lowest throughput is below this value", minExpectedThroughput);
   cmd.AddValue ("maxExpectedThroughput", "if set, simulation fails if the highest throughput is above this value", maxExpectedThroughput);
   cmd.Parse (argc,argv);
+
+  if (useRts)
+    {
+      Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
+    }
 
   double prevThroughput [12];
   for (uint32_t l = 0; l < 12; l++)
@@ -107,9 +116,22 @@ int main (int argc, char *argv[])
               // Set guard interval
               phy.Set ("GuardInterval", TimeValue (NanoSeconds (gi)));
 
-              WifiHelper wifi;
-              wifi.SetStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
               WifiMacHelper mac;
+              WifiHelper wifi;
+              if (frequency == 5.0)
+                {
+                  wifi.SetStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
+                }
+              else if (frequency == 2.4)
+                {
+                  wifi.SetStandard (WIFI_PHY_STANDARD_80211ax_2_4GHZ);
+                  Config::SetDefault ("ns3::LogDistancePropagationLossModel::ReferenceLoss", DoubleValue (40.046));
+                }
+              else
+                {
+                  std::cout << "Wrong frequency value!" << std::endl;
+                  return 0;
+                }
 
               std::ostringstream oss;
               oss << "HeMcs" << mcs;
