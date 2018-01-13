@@ -441,6 +441,7 @@ WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
   //acknowledgements.
   m_wifiPhy = phy;
   m_defaultTxMode = phy->GetMode (0);
+  NS_ASSERT (m_defaultTxMode.IsMandatory ());
   if (HasHtSupported () || HasVhtSupported () || HasHeSupported ())
     {
       m_defaultTxMcs = phy->GetMcs (0);
@@ -1824,10 +1825,7 @@ WifiRemoteStationManager::Reset (void)
     }
   m_stations.clear ();
   m_bssBasicRateSet.clear ();
-  m_bssBasicRateSet.push_back (m_defaultTxMode);
   m_bssBasicMcsSet.clear ();
-  m_bssBasicMcsSet.push_back (m_defaultTxMcs);
-  NS_ASSERT (m_defaultTxMode.IsMandatory ());
 }
 
 void
@@ -1933,7 +1931,14 @@ WifiRemoteStationManager::GetNonUnicastMode (void) const
 {
   if (m_nonUnicastMode == WifiMode ())
     {
-      return GetBasicMode (0);
+      if (GetNBasicModes () > 0)
+        {
+          return GetBasicMode (0);
+        }
+      else
+        {
+          return GetDefaultMode ();
+        }
     }
   else
     {
