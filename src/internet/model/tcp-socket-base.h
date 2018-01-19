@@ -186,6 +186,7 @@ public:
   bool                   m_pacing;                //!< Pacing status
   DataRate               m_maxPacingRate;         //!< Max Pacing rate
   DataRate               m_currentPacingRate;     //!< Current Pacing rate
+  Time                   m_minRtt;                //!< Minimum RTT observed throughout the connection
 
   /**
    * \brief Get cwnd in segments rather than bytes

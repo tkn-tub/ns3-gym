@@ -262,7 +262,8 @@ TcpSocketState::TcpSocketState (void)
     m_rcvTimestampEchoReply (0),
     m_pacing (false),
     m_maxPacingRate (0),
-    m_currentPacingRate (0)
+    m_currentPacingRate (0),
+    m_minRtt (Time::Max ())
 {
 }
 
@@ -281,7 +282,8 @@ TcpSocketState::TcpSocketState (const TcpSocketState &other)
     m_rcvTimestampEchoReply (other.m_rcvTimestampEchoReply),
     m_pacing (other.m_pacing),
     m_maxPacingRate (other.m_maxPacingRate),
-    m_currentPacingRate (other.m_currentPacingRate)
+    m_currentPacingRate (other.m_currentPacingRate),
+    m_minRtt (other.m_minRtt)
 {
 }
 
@@ -3223,7 +3225,8 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
       // RFC 6298, clause 2.4
       m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4), m_minRto);
       m_lastRtt = m_rtt->GetEstimate ();
-      NS_LOG_FUNCTION (this << m_lastRtt);
+      m_tcb->m_minRtt = m_lastRtt.Get () < m_tcb->m_minRtt ? m_lastRtt.Get () : m_tcb->m_minRtt;
+      NS_LOG_FUNCTION (this << m_lastRtt << m_tcb->m_minRtt);
     }
 }
 
