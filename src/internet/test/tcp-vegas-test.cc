@@ -113,6 +113,7 @@ TcpVegasTest::DoRun ()
   m_state->m_ssThresh = m_ssThresh;
   m_state->m_nextTxSequence = m_nextTxSeq;
   m_state->m_lastAckedSeq = m_lastAckedSeq;
+  m_state->m_minRtt = m_rtt;
 
   Ptr<TcpVegas> cong = CreateObject <TcpVegas> ();
 

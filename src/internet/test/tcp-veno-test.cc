@@ -140,6 +140,7 @@ TcpVenoTest::DoRun ()
   m_state->m_cWnd = m_cWnd;
   m_state->m_segmentSize = m_segmentSize;
   m_state->m_ssThresh = m_ssThresh;
+  m_state->m_minRtt = m_rtt;
 
   Ptr<TcpVeno> cong = CreateObject <TcpVeno> ();
 

@@ -48,7 +48,6 @@ TcpHybla::GetTypeId (void)
 TcpHybla::TcpHybla ()
   : TcpNewReno (),
   m_rho (1.0),
-  m_minRtt (Time::Max ()),
   m_cWndCnt (0)
 {
   NS_LOG_FUNCTION (this);
@@ -57,7 +56,6 @@ TcpHybla::TcpHybla ()
 TcpHybla::TcpHybla (const TcpHybla &sock)
   : TcpNewReno (sock),
   m_rho (sock.m_rho),
-  m_minRtt (sock.m_minRtt),
   m_cWndCnt (sock.m_cWndCnt)
 {
   NS_LOG_FUNCTION (this);
@@ -69,11 +67,11 @@ TcpHybla::~TcpHybla ()
 }
 
 void
-TcpHybla::RecalcParam (Ptr<TcpSocketState> tcb, const Time &rtt)
+TcpHybla::RecalcParam (const Ptr<TcpSocketState> &tcb)
 {
-  NS_LOG_FUNCTION (this << rtt);
+  NS_LOG_FUNCTION (this);
 
-  m_rho = std::max ((double) rtt.GetMilliSeconds () / m_rRtt.GetMilliSeconds (), 1.0);
+  m_rho = std::max ((double) tcb->m_minRtt.GetMilliSeconds () / m_rRtt.GetMilliSeconds (), 1.0);
 
   NS_ASSERT (m_rho > 0.0);
   NS_LOG_DEBUG ("Calculated rho=" << m_rho);
@@ -85,11 +83,10 @@ TcpHybla::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
 {
   NS_LOG_FUNCTION (this << tcb << segmentsAcked << rtt);
 
-  if (rtt < m_minRtt)
+  if (rtt == tcb->m_minRtt)
     {
-      RecalcParam (tcb, rtt);
-      m_minRtt = rtt;
-      NS_LOG_DEBUG ("Updated m_minRtt=" << m_minRtt);
+      RecalcParam (tcb);
+      NS_LOG_DEBUG ("min rtt seen: " << rtt);
     }
 }
 
@@ -108,10 +105,10 @@ TcpHybla::SlowStart (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
        */
 
       double increment = std::pow (2, m_rho) - 1.0;
+      uint32_t incr = static_cast<uint32_t> (increment * tcb->m_segmentSize);
       NS_LOG_INFO ("Slow start: inc=" << increment);
 
-      tcb->m_cWnd = std::min (tcb->m_cWnd + (uint32_t)(increment * tcb->m_segmentSize),
-                              tcb->m_ssThresh);
+      tcb->m_cWnd = std::min (tcb->m_cWnd + incr, tcb->m_ssThresh);
 
       NS_LOG_INFO ("In SlowStart, updated to cwnd " << tcb->m_cWnd <<
                    " ssthresh " << tcb->m_ssThresh <<
@@ -138,7 +135,7 @@ TcpHybla::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
        * INC = RHO^2 / W
        */
       segCwnd = tcb->GetCwndInSegments ();
-      increment = std::pow (m_rho, 2) / ((double) segCwnd);
+      increment = std::pow (m_rho, 2) / static_cast<double> (segCwnd);
 
       m_cWndCnt += increment;
       segmentsAcked -= 1;
@@ -147,7 +144,7 @@ TcpHybla::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
   if (m_cWndCnt >= 1.0)
     {
       // double to int truncates everytime.
-      uint32_t inc = (uint32_t) m_cWndCnt;
+      uint32_t inc = static_cast<uint32_t> (m_cWndCnt);
       m_cWndCnt -= inc;
 
       NS_ASSERT (m_cWndCnt >= 0.0);

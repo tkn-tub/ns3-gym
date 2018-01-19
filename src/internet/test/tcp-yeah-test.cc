@@ -116,6 +116,7 @@ TcpYeahIncrementTest::DoRun ()
   state->m_segmentSize = m_segmentSize;
   state->m_nextTxSequence = m_nextTxSeq;
   state->m_lastAckedSeq = m_lastAckedSeq;
+  state->m_minRtt = m_minRtt;
 
   Ptr<TcpYeah> cong = CreateObject <TcpYeah> ();
 

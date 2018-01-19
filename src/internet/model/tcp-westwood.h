@@ -125,11 +125,10 @@ protected:
   TracedValue<double>    m_currentBW;              //!< Current value of the estimated BW
   double                 m_lastSampleBW;           //!< Last bandwidth sample
   double                 m_lastBW;                 //!< Last bandwidth sample after being filtered
-  Time                   m_minRtt;                 //!< Minimum RTT
   enum ProtocolType      m_pType;                  //!< 0 for Westwood, 1 for Westwood+
   enum FilterType        m_fType;                  //!< 0 for none, 1 for Tustin
 
-  int                    m_ackedSegments;          //!< The number of segments ACKed between RTTs
+  uint32_t               m_ackedSegments;          //!< The number of segments ACKed between RTTs
   bool                   m_IsCount;                //!< Start keeping track of m_ackedSegments for Westwood+ if TRUE
   EventId                m_bwEstimateEvent;        //!< The BW estimation event for Westwood+
 

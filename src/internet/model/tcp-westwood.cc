@@ -69,7 +69,6 @@ TcpWestwood::TcpWestwood (void) :
   m_currentBW (0),
   m_lastSampleBW (0),
   m_lastBW (0),
-  m_minRtt (Time (0)),
   m_ackedSegments (0),
   m_IsCount (false)
 {
@@ -81,7 +80,6 @@ TcpWestwood::TcpWestwood (const TcpWestwood& sock) :
   m_currentBW (sock.m_currentBW),
   m_lastSampleBW (sock.m_lastSampleBW),
   m_lastBW (sock.m_lastBW),
-  m_minRtt (Time (0)),
   m_pType (sock.m_pType),
   m_fType (sock.m_fType),
   m_IsCount (sock.m_IsCount)
@@ -107,21 +105,6 @@ TcpWestwood::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t packetsAcked,
     }
 
   m_ackedSegments += packetsAcked;
-
-  // Update minRtt
-  if (m_minRtt.IsZero ())
-    {
-      m_minRtt = rtt;
-    }
-  else
-    {
-      if (rtt < m_minRtt)
-        {
-          m_minRtt = rtt;
-        }
-    }
-
-  NS_LOG_LOGIC ("MinRtt: " << m_minRtt.GetMilliSeconds () << "ms");
 
   if (m_pType == TcpWestwood::WESTWOOD)
     {
@@ -178,13 +161,13 @@ uint32_t
 TcpWestwood::GetSsThresh (Ptr<const TcpSocketState> tcb,
                           uint32_t bytesInFlight)
 {
-  (void) bytesInFlight;
+  NS_UNUSED (bytesInFlight);
   NS_LOG_LOGIC ("CurrentBW: " << m_currentBW << " minRtt: " <<
-                m_minRtt << " ssthresh: " <<
-                m_currentBW * static_cast<double> (m_minRtt.GetSeconds ()));
+                tcb->m_minRtt << " ssthresh: " <<
+                m_currentBW * static_cast<double> (tcb->m_minRtt.GetSeconds ()));
 
   return std::max (2*tcb->m_segmentSize,
-                   uint32_t (m_currentBW * static_cast<double> (m_minRtt.GetSeconds ())));
+                   uint32_t (m_currentBW * static_cast<double> (tcb->m_minRtt.GetSeconds ())));
 }
 
 Ptr<TcpCongestionOps>
