@@ -25,6 +25,7 @@ This release has been tested on the following platforms:
 
 New user-visible features
 -------------------------
+- (tcp) Added TCP-LP as congestion control module
 - (lr-wpan) Extended addressing mode is now supported.
 - (tcp) Implemented the core functionality of TCP Pacing.
 - (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.

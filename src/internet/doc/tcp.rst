@@ -733,6 +733,33 @@ implementation are:
 
 More information about LEDBAT is available in RFC 6817: https://tools.ietf.org/html/rfc6817
 
+TCP-LP
+^^^^^^
+
+TCP-Low priority is a delay based congestion control protocol in which the low
+priority data utilizes only the excess bandwidth available on an end-to-end path.
+TCP-LP uses one way delay measurements as an indicator of congestion as it does
+not influence cross-traffic in the reverse direction.
+
+On acknowledgement:
+
+.. math::
+
+  One way delay = Receiver timestamp - Receiver timestamp echo reply
+  Smoothed one way delay = 7/8 * Old Smoothed one way delay + 1/8 * one way delay
+  If smoothed one way delay > owdMin + 15 * (owdMax - owdMin) / 100
+    if LP_WITHIN_INF
+      cwnd = 1
+    else
+      cwnd = cwnd / 2
+    Inference timer is set
+
+where owdMin and owdMax are the minimum and maximum one way delays experienced
+throughout the connection, LP_WITHIN_INF indicates if TCP-LP is in inference
+phase or not
+
+More information (paper): http://cs.northwestern.edu/~akuzma/rice/doc/TCP-LP.pdf
+
 Validation
 ++++++++++
 
@@ -759,6 +786,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-yeah-test:** Unit tests on the YeAH congestion control
 * **tcp-illinois-test:** Unit tests on the Illinois congestion control
 * **tcp-ledbat-test:** Unit tests on the LEDBAT congestion control
+* **tcp-lp-test:** Unit tests on the TCP-LP congestion control
 * **tcp-option:** Unit tests on TCP options
 * **tcp-pkts-acked-test:** Unit test the number of time that PktsAcked is called
 * **tcp-rto-test:** Unit test behavior after a RTO timeout occurs
