@@ -447,10 +447,6 @@ Experiment::Run (const WifiHelper &wifi, const YansWifiPhyHelper &wifiPhy,
     }
   mobil.Install (c);
 
-
-//    NS_LOG_INFO ("Enabling global routing on all nodes");
-//    Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
   if ( scenario == 1 && enableRouting)
     {
       SelectSrcDest (c);

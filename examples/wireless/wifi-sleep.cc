@@ -219,8 +219,6 @@ int main (int argc, char *argv[])
   Config::Connect ("/NodeList/0/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace<0>));
   Config::Connect ("/NodeList/1/DeviceList/*/Phy/State/State", MakeCallback (&PhyStateTrace<1>));
 
-// wifiPhy.EnablePcap ("wifi-sleep", devices);
-
   Simulator::Stop (Seconds (duration + 1));
 
   Simulator::Run ();
