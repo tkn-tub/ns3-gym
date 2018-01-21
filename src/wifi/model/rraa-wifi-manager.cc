@@ -408,7 +408,7 @@ RraaWifiManager::RunBasicAlgorithm (RraaWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
   WifiRraaThresholds thresholds = GetThresholds (station, station->m_rateIndex);
-  double ploss = (double) station->m_nFailed / (double) thresholds.m_ewnd;
+  double ploss = (static_cast<double> (station->m_nFailed) / thresholds.m_ewnd);
   if (station->m_counter == 0
       || ploss > thresholds.m_mtl)
     {

@@ -238,7 +238,7 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint8
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
-  NS_LOG_DEBUG ("bandwidth(MHz)=" << (uint16_t)channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
+  NS_LOG_DEBUG ("bandwidth(MHz)=" << static_cast<uint16_t> (channelWidth) << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
   return snr;
 }
 
@@ -292,15 +292,17 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
       return 1.0;
     }
   uint64_t rate = mode.GetPhyRate (txVector);
-  uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
+  uint64_t nbits = static_cast<uint64_t> (rate * duration.GetSeconds ());
   if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_VHT || txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
       nbits /= txVector.GetNss (); //divide effective number of bits by NSS to achieve same chunk error rate as SISO for AWGN
       double gain = (txVector.GetNTx () * m_numRxAntennas); //compute gain offered by MIMO, SIMO or MISO compared to SISO for AWGN
-      NS_LOG_DEBUG ("TX=" << (uint16_t)txVector.GetNTx () << ", RX=" << (uint16_t)m_numRxAntennas << ", SNIR improvement=+" << 10 * std::log10 (gain) << "dB");
+      NS_LOG_DEBUG ("TX=" << static_cast<uint16_t> (txVector.GetNTx ()) <<
+                    ", RX=" << static_cast<uint16_t> (m_numRxAntennas) <<
+                    ", SNIR improvement=+" << 10 * std::log10 (gain) << "dB");
       snir *= gain;
     }
-  double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, (uint32_t)nbits);
+  double csr = m_errorRateModel->GetChunkSuccessRate (mode, txVector, snir, nbits);
   return csr;
 }
 

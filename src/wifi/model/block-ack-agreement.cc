@@ -31,7 +31,7 @@ BlockAckAgreement::BlockAckAgreement (Mac48Address peer, uint8_t tid)
     m_htSupported (0),
     m_inactivityEvent ()
 {
-  NS_LOG_FUNCTION (this << peer << (uint16_t)tid);
+  NS_LOG_FUNCTION (this << peer << static_cast<uint16_t> (tid));
   m_tid = tid;
   m_peer = peer;
 }

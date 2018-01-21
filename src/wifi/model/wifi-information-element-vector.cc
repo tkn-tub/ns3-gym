@@ -104,7 +104,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
   switch (id)
     {
     default:
-      NS_FATAL_ERROR ("Information element " << (uint16_t) id << " is not implemented");
+      NS_FATAL_ERROR ("Information element " << static_cast<uint16_t> (id) << " is not implemented");
       return 0;
     }
   /*  unreachable:  b/c switch is guaranteed to return from this function

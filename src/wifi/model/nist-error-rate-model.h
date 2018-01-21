@@ -45,7 +45,7 @@ public:
 
   NistErrorRateModel ();
 
-  double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const;
+  double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
 
 
 private:
@@ -113,7 +113,7 @@ private:
    *
    * \return BER of BPSK at the given SNR after applying FEC
    */
-  double GetFecBpskBer (double snr, uint32_t nbits,
+  double GetFecBpskBer (double snr, uint64_t nbits,
                         uint32_t bValue) const;
   /**
    * Return BER of QPSK at the given SNR after applying FEC.
@@ -124,7 +124,7 @@ private:
    *
    * \return BER of QPSK at the given SNR after applying FEC
    */
-  double GetFecQpskBer (double snr, uint32_t nbits,
+  double GetFecQpskBer (double snr, uint64_t nbits,
                         uint32_t bValue) const;
   /**
    * Return BER of QAM16 at the given SNR after applying FEC.
@@ -135,7 +135,7 @@ private:
    *
    * \return BER of QAM16 at the given SNR after applying FEC
    */
-  double GetFec16QamBer (double snr, uint32_t nbits,
+  double GetFec16QamBer (double snr, uint64_t nbits,
                          uint32_t bValue) const;
   /**
    * Return BER of QAM64 at the given SNR after applying FEC.
@@ -146,7 +146,7 @@ private:
    *
    * \return BER of QAM64 at the given SNR after applying FEC
    */
-  double GetFec64QamBer (double snr, uint32_t nbits,
+  double GetFec64QamBer (double snr, uint64_t nbits,
                          uint32_t bValue) const;
   /**
    * Return BER of QAM256 at the given SNR after applying FEC.
@@ -156,7 +156,7 @@ private:
    * \param bValue
    * \return BER of QAM256 at the given SNR after applying FEC
    */
-  double GetFec256QamBer (double snr, uint32_t nbits,
+  double GetFec256QamBer (double snr, uint64_t nbits,
                           uint32_t bValue) const;
   /**
    * Return BER of QAM1024 at the given SNR after applying FEC.
@@ -166,7 +166,7 @@ private:
    * \param bValue
    * \return BER of QAM1024 at the given SNR after applying FEC
    */
-  double GetFec1024QamBer (double snr, uint32_t nbits,
+  double GetFec1024QamBer (double snr, uint64_t nbits,
                            uint32_t bValue) const;
 };
 

@@ -106,7 +106,7 @@ SpectrumWifiPhy::GetRxSpectrumModel () const
         }
       else
         {
-          NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << (uint16_t)GetChannelWidth () << ")");
+          NS_LOG_DEBUG ("Creating spectrum model from frequency/width pair of (" << GetFrequency () << ", " << static_cast<uint16_t> (GetChannelWidth ()) << ")");
           m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth (), GetBandBandwidth (), GetGuardBandwidth ());
         }
     }
@@ -130,7 +130,7 @@ SpectrumWifiPhy::ResetSpectrumModel (void)
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT_MSG (IsInitialized (), "Executing method before run-time");
-  NS_LOG_DEBUG ("Run-time change of spectrum model from frequency/width pair of (" << GetFrequency () << ", " << (uint16_t)GetChannelWidth () << ")");
+  NS_LOG_DEBUG ("Run-time change of spectrum model from frequency/width pair of (" << GetFrequency () << ", " << static_cast<uint16_t> (GetChannelWidth ()) << ")");
   // Replace existing spectrum model with new one, and must call AddRx ()
   // on the SpectrumChannel to provide this new spectrum model to it
   m_rxSpectrumModel = WifiSpectrumValueHelper::GetSpectrumModel (GetFrequency (), GetChannelWidth (), GetBandBandwidth (), GetGuardBandwidth ());
@@ -140,7 +140,7 @@ SpectrumWifiPhy::ResetSpectrumModel (void)
 void
 SpectrumWifiPhy::SetChannelNumber (uint8_t nch)
 {
-  NS_LOG_FUNCTION (this << (uint16_t) nch);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (nch));
   WifiPhy::SetChannelNumber (nch);
   if (IsInitialized ())
     {
@@ -162,7 +162,7 @@ SpectrumWifiPhy::SetFrequency (uint16_t freq)
 void
 SpectrumWifiPhy::SetChannelWidth (uint8_t channelwidth)
 {
-  NS_LOG_FUNCTION (this << (uint16_t) channelwidth);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (channelwidth));
   WifiPhy::SetChannelWidth (channelwidth);
   if (IsInitialized ())
     {
@@ -170,7 +170,7 @@ SpectrumWifiPhy::SetChannelWidth (uint8_t channelwidth)
     }
 }
 
-void 
+void
 SpectrumWifiPhy::ConfigureStandard (WifiPhyStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
@@ -286,7 +286,7 @@ SpectrumWifiPhy::CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device)
 Ptr<SpectrumValue>
 SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const
 {
-  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW);
+  NS_LOG_FUNCTION (centerFrequency << static_cast<uint16_t> (channelWidth) << txPowerW);
   Ptr<SpectrumValue> v;
   switch (modulationClass)
     {
@@ -340,7 +340,7 @@ SpectrumWifiPhy::StartTx (Ptr<Packet> packet, WifiTxVector txVector, Time txDura
   txParams->txPhy = m_wifiSpectrumPhyInterface->GetObject<SpectrumPhy> ();
   txParams->txAntenna = m_antenna;
   txParams->packet = packet;
-  NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << (uint16_t) GetChannelNumber ());
+  NS_LOG_DEBUG ("Starting transmission with power " << WToDbm (txPowerWatts) << " dBm on channel " << static_cast<uint16_t> (GetChannelNumber ()));
   NS_LOG_DEBUG ("Starting transmission with integrated spectrum power " << WToDbm (Integral (*txPowerSpectrum)) << " dBm; spectrum model Uid: " << txPowerSpectrum->GetSpectrumModel ()->GetUid ());
   m_channel->StartTx (txParams);
 }

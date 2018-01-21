@@ -62,7 +62,7 @@ public:
 
   YansErrorRateModel ();
 
-  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const;
+  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const;
 
 
 private:
@@ -136,7 +136,7 @@ private:
    *
    * \return double
    */
-  double GetFecBpskBer (double snr, double nbits,
+  double GetFecBpskBer (double snr, uint64_t nbits,
                         uint32_t signalSpread, uint64_t phyRate,
                         uint32_t dFree, uint32_t adFree) const;
   /**
@@ -151,7 +151,7 @@ private:
    *
    * \return double
    */
-  double GetFecQamBer (double snr, uint32_t nbits,
+  double GetFecQamBer (double snr, uint64_t nbits,
                        uint32_t signalSpread,
                        uint64_t phyRate,
                        uint32_t m, uint32_t dfree,

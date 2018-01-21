@@ -83,7 +83,7 @@ AmpduSubframeHeader::Print (std::ostream &os) const
 {
   os << "EOF = " << m_eof << ", length = " << m_length;
   char previousFillChar = os.fill ('0');
-  os << ", CRC = 0x" << std::hex << std::setw (2) << (uint16_t) m_crc << ", Signature = 0x" << (uint16_t) m_sig << std::dec;
+  os << ", CRC = 0x" << std::hex << std::setw (2) << static_cast<uint16_t> (m_crc) << ", Signature = 0x" << static_cast<uint16_t> (m_sig) << std::dec;
   os.fill (previousFillChar);
 }
 
