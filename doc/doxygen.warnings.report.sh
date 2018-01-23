@@ -213,7 +213,7 @@ else
 
     conf=$DIR/doxygen.conf
 
-    sed -i.bak -E '/^(EXTRACT_ALL|HAVE_DOT|CLASS_DIAGRAMS|WARNINGS|SOURCE_BROWSER) /s/YES/no/;/^HTML_OUTPUT /s/html/html-warn/' $conf
+    sed -i.bak -E '/^(EXTRACT_ALL|HAVE_DOT|CLASS_DIAGRAMS|WARNINGS|SOURCE_BROWSER) /s/(YES|yes)/no/;/^HTML_OUTPUT /s/html/html-warn/' $conf
 
     verbose -n "Rebuilding doxygen (v$(doxygen --version)) docs with full errors..."
     (cd "$ROOT" && ./waf --doxygen-no-build >&6 2>&6 )
