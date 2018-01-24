@@ -104,7 +104,7 @@ def main(argv):
     # disable fragmentation
     ns.core.Config.SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", ns.core.StringValue("2200"))
 
-    wifi = ns.wifi.WifiHelper.Default()
+    wifi = ns.wifi.WifiHelper()
     mobility = ns.mobility.MobilityHelper()
     stas = ns.network.NodeContainer()
     ap = ns.network.NodeContainer()
