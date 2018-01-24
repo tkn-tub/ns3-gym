@@ -170,8 +170,12 @@ The following details pertain to the physical layer and channel models:
 * 802.11ax only supports SU PPDU format
 * 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax beamforming is not supported
+* 802.11 PCF and 802.11 HCF/HCCA are not implemented
+* Authentication and encryption are missing
+* Processing delays are not modeled
 * PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported
+* The current implementation assumes that secondary channels are always higher than primary channels
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
 equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
