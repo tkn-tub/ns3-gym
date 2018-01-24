@@ -151,6 +151,7 @@ IdealWifiManager::DoInitialize ()
                     {
                       guardInterval = GetPhy ()->GetGuardInterval ().GetNanoSeconds ();
                     }
+                  txVector.SetGuardInterval (guardInterval);
                   for (uint8_t i = 1; i <= GetPhy ()->GetMaxSupportedTxSpatialStreams (); i++)
                     {
                       NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
