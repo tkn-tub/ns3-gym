@@ -64,7 +64,7 @@ Examples
 The example for PIE is `pie-example.cc` located in ``src/traffic-control/examples``.  To run the file (the first invocation below shows the available
 command-line options):
 
-:: 
+.. sourcecode:: bash
 
    $ ./waf --run "pie-example --PrintHelp"
    $ ./waf --run "pie-example --writePcap=1" 
@@ -84,7 +84,7 @@ The PIE model is tested using :cpp:class:`PieQueueDiscTestSuite` class defined i
 
 The test suite can be run using the following commands: 
 
-::
+.. sourcecode:: bash
 
   $ ./waf configure --enable-examples --enable-tests
   $ ./waf build
@@ -92,7 +92,7 @@ The test suite can be run using the following commands:
 
 or  
 
-::
+.. sourcecode:: bash
 
   $ NS_LOG="PieQueueDisc" ./waf --run "test-runner --suite=pie-queue-disc"
 

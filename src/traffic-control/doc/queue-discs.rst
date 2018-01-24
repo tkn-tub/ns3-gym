@@ -1,6 +1,7 @@
 Queue disciplines
 --------------------------------------------------------------
 
+.. include:: replace.txt
 .. heading hierarchy:
    ------------- Chapter
    ************* Section (#.#)

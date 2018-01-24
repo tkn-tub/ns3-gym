@@ -319,7 +319,9 @@ Output
    an output file called ``spectrum-analyzer-output-3-0.tr``. From
    this output file, you can generate a figure similar to 
    :ref:`fig-spectrum-analyzer-example` by executing the following
-   gnuplot commands::
+   gnuplot commands:
+
+.. sourcecode:: none
 
     unset surface
     set pm3d at s 
