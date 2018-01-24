@@ -693,14 +693,6 @@ WifiHelper::WifiHelper ()
   SetRemoteStationManager ("ns3::ArfWifiManager");
 }
 
-WifiHelper
-WifiHelper::Default (void)
-{
-  WifiHelper helper;
-  helper.SetRemoteStationManager ("ns3::ArfWifiManager");
-  return helper;
-}
-
 void
 WifiHelper::SetRemoteStationManager (std::string type,
                                      std::string n0, const AttributeValue &v0,

@@ -86,14 +86,10 @@ def build(bld):
         'model/he-operation.cc',
         'model/extended-capabilities.cc',
         'helper/wifi-radio-energy-model-helper.cc',
-        'helper/vht-wifi-mac-helper.cc',
-        'helper/ht-wifi-mac-helper.cc',
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
         'helper/yans-wifi-helper.cc',
         'helper/spectrum-wifi-helper.cc',
-        'helper/nqos-wifi-mac-helper.cc',
-        'helper/qos-wifi-mac-helper.cc',
         'helper/wifi-mac-helper.cc',
         ]
 
@@ -197,14 +193,10 @@ def build(bld):
         'model/he-operation.h',
         'model/extended-capabilities.h',
         'helper/wifi-radio-energy-model-helper.h',
-        'helper/vht-wifi-mac-helper.h',
-        'helper/ht-wifi-mac-helper.h',
         'helper/athstats-helper.h',
         'helper/wifi-helper.h',
         'helper/yans-wifi-helper.h',
         'helper/spectrum-wifi-helper.h',
-        'helper/nqos-wifi-mac-helper.h',
-        'helper/qos-wifi-mac-helper.h',
         'helper/wifi-mac-helper.h',
         ]
 

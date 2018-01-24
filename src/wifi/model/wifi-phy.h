@@ -1945,9 +1945,6 @@ private:
 
   Time m_guardInterval; //!< Supported HE guard interval
 
-  uint8_t m_numberOfTransmitters; //!< Number of transmitters (DEPRECATED)
-  uint8_t m_numberOfReceivers;    //!< Number of receivers (DEPRECATED)
-
   uint8_t m_numberOfAntennas;  //!< Number of transmitters
   uint8_t m_txSpatialStreams;  //!< Number of supported TX spatial streams
   uint8_t m_rxSpatialStreams;  //!< Number of supported RX spatial streams

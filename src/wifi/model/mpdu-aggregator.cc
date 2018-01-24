@@ -35,10 +35,6 @@ MpduAggregator::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
     .AddConstructor<MpduAggregator> ()
-    .AddAttribute ("MaxAmpduSize", "Max length in bytes of an A-MPDU (Deprecated!)",
-                   UintegerValue (65535),
-                   MakeUintegerAccessor (&MpduAggregator::m_maxAmpduLength),
-                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }

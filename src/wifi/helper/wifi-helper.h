@@ -226,19 +226,6 @@ public:
   WifiHelper ();
 
   /**
-   * \returns a new WifiHelper in a default state
-   *
-   * The default state is defined as being an Adhoc MAC layer with an ARF rate control algorithm
-   * and both objects using their default attribute values. By default, configure MAC and PHY
-   * for 802.11a.
-   *
-   * \deprecated This method will go away in future versions of ns-3.
-   * The constructor of the class is now performing the same job, which makes this function useless.
-   */
-  NS_DEPRECATED
-  static WifiHelper Default (void);
-
-  /**
    * \param type the type of ns3::WifiRemoteStationManager to create.
    * \param n0 the name of the attribute to set
    * \param v0 the value of the attribute to set
