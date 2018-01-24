@@ -41,12 +41,11 @@ cpp_examples = [
     ("ht-wifi-network --simulationTime=0.1 --frequency=2.4 --useRts=0 --minExpectedThroughput=5 --maxExpectedThroughput=132", "True", "True"),
     ("ht-wifi-network --simulationTime=0.1 --frequency=2.4 --useRts=1 --minExpectedThroughput=4.5 --maxExpectedThroughput=128", "True", "True"),
     ("vht-wifi-network --simulationTime=0.1 --useRts=0  --minExpectedThroughput=5 --maxExpectedThroughput=555", "True", "True"),
-    ("vht-wifi-network --simulationTime=0.1 --useRts=1", "False", "False"), # see bug 2853
-    ("he-wifi-network --simulationTime=0.25 --frequency=5 --useRts=0  --minExpectedThroughput=6.35 --maxExpectedThroughput=754", "True", "True"),
-    ("he-wifi-network --simulationTime=0.25 --frequency=5 --useRts=0  --minExpectedThroughput=6.35 --maxExpectedThroughput=754", "True", "True"),
-    ("he-wifi-network --simulationTime=0.25 --frequency=5 --useRts=1", "False", "False"), # see bug 2853
-    ("he-wifi-network --simulationTime=0.25 --frequency=1.4 --useRts=0", "False", "False"), # see bug 2854
-    ("he-wifi-network --simulationTime=0.25 --frequency=5 --useRts=1", "False", "False"), # see bug 2854
+    ("vht-wifi-network --simulationTime=0.2 --useRts=1", "True", "True"),
+    ("he-wifi-network --simulationTime=0.25 --frequency=5 --useRts=0  --minExpectedThroughput=6 --maxExpectedThroughput=754", "True", "True"),
+    ("he-wifi-network --simulationTime=0.25 --frequency=5 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=627", "True", "True"),
+    ("he-wifi-network --simulationTime=0.25 --frequency=2.4 --useRts=0 --minExpectedThroughput=6 --maxExpectedThroughput=238", "True", "True"),
+    ("he-wifi-network --simulationTime=0.25 --frequency=2.4 --useRts=1 --minExpectedThroughput=6 --maxExpectedThroughput=224", "True", "True"),
     ("simple-ht-hidden-stations --simulationTime=1 --minExpectedThroughput=16.5 --maxExpectedThroughput=17", "True", "True"),
     ("mixed-network --simulationTime=1", "True", "True"),
     ("wifi-aggregation --simulationTime=1 --verifyResults=1", "True", "True"),

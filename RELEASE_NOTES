@@ -43,6 +43,7 @@ Bugs fixed
 - Bug 2838 - wifi: ht-wifi-network crashes with RTS/CTS enabled and frequency set to 2.4GHz
 - Bug 2843 - spectrum, wifi: Incorrect channel width and center frequency provided for non-HT PPDUs when building SpectralDensity
 - Bug 2848 - wifi: Association ID not correctly set upon association
+- Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
 
 Known issues
 ------------
