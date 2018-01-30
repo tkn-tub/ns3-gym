@@ -195,15 +195,15 @@ VhtCapabilities::GetSupportedMcsAndNssSet () const
   for (uint8_t i = 0; i < 8; i++)
     {
       n = i * 2;
-      val |= ((uint64_t)m_rxMcsMap[i] & 0x03) << n;
+      val |= (static_cast<uint64_t> (m_rxMcsMap[i]) & 0x03) << n;
     }
-  val |=  ((uint64_t)m_rxHighestSupportedLongGuardIntervalDataRate & 0x1fff) << 16;
+  val |=  (static_cast<uint64_t> (m_rxHighestSupportedLongGuardIntervalDataRate) & 0x1fff) << 16;
   for (uint8_t i = 0; i < 8; i++)
     {
       n = (i * 2) + 32;
-      val |= ((uint64_t)m_txMcsMap[i] & 0x03) << n;
+      val |= (static_cast<uint64_t> (m_txMcsMap[i]) & 0x03) << n;
     }
-  val |= ((uint64_t)m_txHighestSupportedLongGuardIntervalDataRate & 0x1fff) << 48;
+  val |= (static_cast<uint64_t> (m_txHighestSupportedLongGuardIntervalDataRate) & 0x1fff) << 48;
   return val;
 }
 

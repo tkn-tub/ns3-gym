@@ -39,10 +39,6 @@ class WifiMac;
  * it is used to set type and attribute values, then hand this object over to the WifiHelper that
  * finishes the job of installing.
  *
- * This class is a merge of two previous helpers (ns3::NqosWifiMacHelper and ns::3 QosWifiMacHelper)
- * that Mirko Banchi (mk.banchi@gmail.com) originally contributed.
- * It should now be used instead of those two deprecated helpers.
- *
  * This class may be further subclassed (WaveMacHelper is an example of this).
  *
  */

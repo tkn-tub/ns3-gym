@@ -1129,7 +1129,7 @@ public:
    *
    * \param tid traffic ID
    */
-  void SetTid (uint8_t);
+  void SetTid (uint8_t tid);
   /**
    * Set the initiator bit in the DELBA.
    */

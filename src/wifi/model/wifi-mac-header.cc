@@ -256,7 +256,7 @@ WifiMacHeader::SetType (WifiMacType type)
 void
 WifiMacHeader::SetDuration (Time duration)
 {
-  int64_t duration_us = ceil ((double)duration.GetNanoSeconds () / 1000);
+  int64_t duration_us = ceil (static_cast<double> (duration.GetNanoSeconds ()) / 1000);
   NS_ASSERT (duration_us >= 0 && duration_us <= 0x7fff);
   m_duration = static_cast<uint16_t> (duration_us);
 }

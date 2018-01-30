@@ -123,7 +123,7 @@ EdcaTxopN::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remo
 void
 EdcaTxopN::SetTypeOfStation (TypeOfStation type)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)type);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (type));
   m_typeOfStation = type;
 }
 
@@ -613,7 +613,7 @@ EdcaTxopN::MissedAck (void)
 void
 EdcaTxopN::MissedBlockAck (uint8_t nMpdus)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)nMpdus);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (nMpdus));
   uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
   if (GetAmpduExist (m_currentHdr.GetAddr1 ()))
     {
@@ -1162,7 +1162,7 @@ EdcaTxopN::GetFragmentPacket (WifiMacHeader *hdr)
 void
 EdcaTxopN::SetAccessCategory (AcIndex ac)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)ac);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (ac));
   m_ac = ac;
 }
 
@@ -1418,7 +1418,7 @@ EdcaTxopN::CompleteConfig (void)
 void
 EdcaTxopN::SetBlockAckThreshold (uint8_t threshold)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)threshold);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (threshold));
   m_blockAckThreshold = threshold;
   m_baManager->SetBlockAckThreshold (threshold);
 }
@@ -1441,7 +1441,7 @@ void
 EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
                              uint16_t timeout, bool immediateBAck)
 {
-  NS_LOG_FUNCTION (this << dest << (uint16_t)tid << startSeq << timeout << immediateBAck);
+  NS_LOG_FUNCTION (this << dest << static_cast<uint16_t> (tid) << startSeq << timeout << immediateBAck);
   NS_LOG_DEBUG ("sent ADDBA request to " << dest);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_MGT_ACTION);
@@ -1501,7 +1501,7 @@ EdcaTxopN::SendAddBaRequest (Mac48Address dest, uint8_t tid, uint16_t startSeq,
 void
 EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
 {
-  NS_LOG_FUNCTION (this << addr << (uint16_t)tid << byOriginator);
+  NS_LOG_FUNCTION (this << addr << static_cast<uint16_t> (tid) << byOriginator);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_MGT_ACTION);
   hdr.SetAddr1 (addr);

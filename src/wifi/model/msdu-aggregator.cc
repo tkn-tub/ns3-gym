@@ -35,10 +35,6 @@ MsduAggregator::GetTypeId (void)
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
     .AddConstructor<MsduAggregator> ()
-    .AddAttribute ("MaxAmsduSize", "Max length in byte of an A-MSDU (Deprecated!)",
-                   UintegerValue (7935),
-                   MakeUintegerAccessor (&MsduAggregator::m_maxAmsduLength),
-                   MakeUintegerChecker<uint16_t> ())
   ;
   return tid;
 }

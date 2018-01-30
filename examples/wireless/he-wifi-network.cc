@@ -89,7 +89,8 @@ int main (int argc, char *argv[])
     {
       uint8_t index = 0;
       double previous = 0;
-      for (int channelWidth = 20; channelWidth <= 160; ) //MHz
+      uint8_t maxChannelWidth = frequency == 2.4 ? 40 : 160;
+      for (int channelWidth = 20; channelWidth <= maxChannelWidth; ) //MHz
         {
           for (int gi = 3200; gi >= 800; ) //Nanoseconds
             {
@@ -282,6 +283,11 @@ int main (int argc, char *argv[])
               gi /= 2;
             }
           channelWidth *= 2;
+          //At 5 GHz, possible maximum supported channel widths are 20, 80 and 160 MHz
+          if (channelWidth == 40 && frequency == 5)
+            {
+              channelWidth = 80;
+            }
         }
     }
   return 0;

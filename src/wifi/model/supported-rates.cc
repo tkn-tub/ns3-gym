@@ -90,7 +90,7 @@ SupportedRates::AddSupportedRate (uint32_t bs)
         }
       m_rates[m_nRates] = bs / 500000;
       m_nRates++;
-      NS_LOG_DEBUG ("add rate=" << bs << ", n rates=" << (uint32_t)m_nRates);
+      NS_LOG_DEBUG ("add rate=" << bs << ", n rates=" << static_cast<uint16_t> (m_nRates));
     }
 }
 
@@ -108,7 +108,7 @@ SupportedRates::SetBasicRate (uint32_t bs)
         }
       if (rate == m_rates[i])
         {
-          NS_LOG_DEBUG ("set basic rate=" << bs << ", n rates=" << (uint32_t)m_nRates);
+          NS_LOG_DEBUG ("set basic rate=" << bs << ", n rates=" << static_cast<uint16_t> (m_nRates));
           m_rates[i] |= 0x80;
           return;
         }

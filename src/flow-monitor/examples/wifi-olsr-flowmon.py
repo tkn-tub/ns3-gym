@@ -49,7 +49,7 @@ def main(argv):
 
     cmd.Parse(argv)
 
-    wifi = ns.wifi.WifiHelper.Default()
+    wifi = ns.wifi.WifiHelper()
     wifiMac = ns.wifi.WifiMacHelper()
     wifiPhy = ns.wifi.YansWifiPhyHelper.Default()
     wifiChannel = ns.wifi.YansWifiChannelHelper.Default()

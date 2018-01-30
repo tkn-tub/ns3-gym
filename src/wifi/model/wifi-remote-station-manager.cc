@@ -817,11 +817,11 @@ WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHe
 uint8_t
 WifiRemoteStationManager::GetChannelWidthForTransmission (WifiMode mode, uint8_t maxSupportedChannelWidth)
 {
-  NS_LOG_FUNCTION (mode << (uint16_t)maxSupportedChannelWidth);
+  NS_LOG_FUNCTION (mode << static_cast<uint16_t> (maxSupportedChannelWidth));
   WifiModulationClass modulationClass = mode.GetModulationClass ();
-  if (maxSupportedChannelWidth > 20 &&
-      (modulationClass == WifiModulationClass::WIFI_MOD_CLASS_OFDM || // all non-HT OFDM control and management frames
-       modulationClass == WifiModulationClass::WIFI_MOD_CLASS_ERP_OFDM)) // special case of beacons at 2.4 GHz
+  if (maxSupportedChannelWidth > 20
+      && (modulationClass == WifiModulationClass::WIFI_MOD_CLASS_OFDM // all non-HT OFDM control and management frames
+          || modulationClass == WifiModulationClass::WIFI_MOD_CLASS_ERP_OFDM)) // special case of beacons at 2.4 GHz
     {
       NS_LOG_LOGIC ("Channel width reduced to 20 MHz");
       return 20;
@@ -1023,7 +1023,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address, uint8_t tid
                                                uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
                                                double rxSnr, double dataSnr)
 {
-  NS_LOG_FUNCTION (this << address << (uint16_t)tid << (uint16_t)nSuccessfulMpdus << (uint16_t)nFailedMpdus << rxSnr << dataSnr);
+  NS_LOG_FUNCTION (this << address << static_cast<uint16_t> (tid) << static_cast<uint16_t> (nSuccessfulMpdus) << static_cast<uint16_t> (nFailedMpdus) << rxSnr << dataSnr);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, tid);
   for (uint8_t i = 0; i < nFailedMpdus; i++)
@@ -1678,7 +1678,7 @@ WifiRemoteStationManager::Lookup (Mac48Address address, const WifiMacHeader *hea
 WifiRemoteStation *
 WifiRemoteStationManager::Lookup (Mac48Address address, uint8_t tid) const
 {
-  NS_LOG_FUNCTION (this << address << (uint16_t)tid);
+  NS_LOG_FUNCTION (this << address << static_cast<uint16_t> (tid));
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
     {
       if ((*i)->m_tid == tid
@@ -1781,6 +1781,22 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
   NS_LOG_FUNCTION (this << from << heCapabilities);
   WifiRemoteStationState *state;
   state = LookupState (from);
+  if (heCapabilities.GetChannelWidthSet () & 0x04 && Is5Ghz (m_wifiPhy->GetFrequency ()))
+    {
+      state->m_channelWidth = 160;
+    }
+  else if (heCapabilities.GetChannelWidthSet () & 0x02 && Is5Ghz (m_wifiPhy->GetFrequency ()))
+    {
+      state->m_channelWidth = 80;
+    }
+  else if ((heCapabilities.GetChannelWidthSet () & 0x01) && Is2_4Ghz (m_wifiPhy->GetFrequency ()))
+    {
+      state->m_channelWidth = 40;
+    }
+  else
+    {
+      state->m_channelWidth = 20;
+    }
   if (heCapabilities.GetHeLtfAndGiForHePpdus () >= 2)
     {
       state->m_guardInterval = 800;
@@ -1902,7 +1918,7 @@ WifiRemoteStationManager::GetNonErpBasicMode (uint8_t i) const
 void
 WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
 {
-  NS_LOG_FUNCTION (this << (uint16_t)mcs.GetMcsValue ());
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (mcs.GetMcsValue ()));
   for (uint8_t i = 0; i < GetNBasicMcs (); i++)
     {
       if (GetBasicMcs (i) == mcs)
@@ -2248,8 +2264,7 @@ WifiRemoteStationInfo::WifiRemoteStationInfo ()
 double
 WifiRemoteStationInfo::CalculateAveragingCoefficient ()
 {
-  double retval = std::exp ((double)(m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds ())
-                            / (double)m_memoryTime.GetMicroSeconds ());
+  double retval = std::exp (static_cast<double> (m_lastUpdate.GetMicroSeconds () - Simulator::Now ().GetMicroSeconds ()) / m_memoryTime.GetMicroSeconds ());
   m_lastUpdate = Simulator::Now ();
   return retval;
 }
@@ -2258,14 +2273,14 @@ void
 WifiRemoteStationInfo::NotifyTxSuccess (uint32_t retryCounter)
 {
   double coefficient = CalculateAveragingCoefficient ();
-  m_failAvg = (double)retryCounter / (1 + (double)retryCounter) * (1.0 - coefficient) + coefficient * m_failAvg;
+  m_failAvg = static_cast<double> (retryCounter) / (1 + retryCounter) * (1 - coefficient) + coefficient * m_failAvg;
 }
 
 void
 WifiRemoteStationInfo::NotifyTxFailed ()
 {
   double coefficient = CalculateAveragingCoefficient ();
-  m_failAvg = (1.0 - coefficient) + coefficient * m_failAvg;
+  m_failAvg = (1 - coefficient) + coefficient * m_failAvg;
 }
 
 double

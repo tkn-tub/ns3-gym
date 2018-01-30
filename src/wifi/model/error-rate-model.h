@@ -60,7 +60,7 @@ public:
    * are passed into this method.  The WifiTxVector may be from a signal that
    * contains multiple modes (e.g. PLCP header sent differently from PLCP
    * payload).  Consequently, the mode parameter is what the method uses
-   * to calculate the chunk error rate, and the txVector is used for 
+   * to calculate the chunk error rate, and the txVector is used for
    * other information as needed.
    *
    * \param mode the Wi-Fi mode applicable to this chunk
@@ -70,7 +70,7 @@ public:
    *
    * \return probability of successfully receiving the chunk
    */
-  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint32_t nbits) const = 0;
+  virtual double GetChunkSuccessRate (WifiMode mode, WifiTxVector txVector, double snr, uint64_t nbits) const = 0;
 };
 
 } //namespace ns3

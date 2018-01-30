@@ -127,8 +127,6 @@ static void GenerateTraffic (Ptr<Socket> socket, uint32_t pktSize,
 
 int main (int argc, char *argv[])
 {
-//  LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
-
   std::string phyMode ("DsssRate1Mbps");
   double Prss = -80;  // -dBm
   double Irss = -95;  // -dBm

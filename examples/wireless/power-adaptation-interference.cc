@@ -383,7 +383,6 @@ int main (int argc, char *argv[])
 
   //Configure the STA nodes
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager", "RtsCtsThreshold", UintegerValue (rtsThreshold));
-  //wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode",StringValue ("ErpOfdmRate6Mbps"),"ControlMode",StringValue ("ErpOfdmRate6Mbps"));
   wifiPhy.Set ("TxPowerStart", DoubleValue (maxPower));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (maxPower));
 

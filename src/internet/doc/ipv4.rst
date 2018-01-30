@@ -34,7 +34,7 @@ IPv4 global addresses can be:
 |ns3| can use both methods, and it's quite important to understand the implications of both.
 
 Manually assigned IPv4 addresses
-++++++++++++++++++++++++++++++++
+================================
 
 This is probably the easiest and most used method. As an example:
 
@@ -81,7 +81,7 @@ Alternatively, it is possible to assign a specific address to a node:
 
 
 DHCP assigned IPv4 addresses
-++++++++++++++++++++++++++++
+============================
 
 DHCP is available in the internet-apps module. In order to use DHCP you have to have a 
 :cpp:class:`DhcpServer` application in a node (the DHC server node) and a :cpp:class:`DhcpClient` application in

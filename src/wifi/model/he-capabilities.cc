@@ -288,24 +288,24 @@ HeCapabilities::GetHePhyCapabilitiesInfo1 () const
   val |= (m_dcmEncodingRx & 0x0f) << 27;
   val |= (m_ulHeMuPpduPayloadSupport & 0x01) << 30;
   val |= (m_suBeamformer & 0x01) << 31;
-  val |= ((uint64_t)m_suBeamformee & 0x01) << 32;
-  val |= ((uint64_t)m_muBeamformer & 0x01) << 33;
-  val |= ((uint64_t)m_beamformeeStsForSmallerOrEqualThan80Mhz & 0x07) << 34;
-  val |= ((uint64_t)m_nstsTotalForSmallerOrEqualThan80Mhz & 0x07) << 37;
-  val |= ((uint64_t)m_beamformeeStsForLargerThan80Mhz & 0x07) << 40;
-  val |= ((uint64_t)m_nstsTotalForLargerThan80Mhz & 0x07) << 43;
-  val |= ((uint64_t)m_numberOfSoundingDimensionsForSmallerOrEqualThan80Mhz & 0x07) << 46;
-  val |= ((uint64_t)m_numberOfSoundingDimensionsForLargerThan80Mhz & 0x07) << 49;
-  val |= ((uint64_t)m_ngEqual16ForSuFeedbackSupport & 0x01) << 52;
-  val |= ((uint64_t)m_ngEqual16ForMuFeedbackSupport & 0x01) << 53;
-  val |= ((uint64_t)m_codebookSize42ForSuSupport & 0x01) << 54;
-  val |= ((uint64_t)m_codebookSize75ForSuSupport & 0x01) << 55;
-  val |= ((uint64_t)m_beamformingFeedbackWithTriggerFrame & 0x07) << 56;
-  val |= ((uint64_t)m_heErSuPpduPayload & 0x01) << 59;
-  val |= ((uint64_t)m_dlMuMimoOnPartialBandwidth & 0x01) << 60;
-  val |= ((uint64_t)m_ppeThresholdPresent & 0x01) << 61;
-  val |= ((uint64_t)m_srpBasedSrSupport & 0x01) << 62;
-  val |= ((uint64_t)m_powerBoostFactorAlphaSupport & 0x01) << 63;
+  val |= (static_cast<uint64_t> (m_suBeamformee) & 0x01) << 32;
+  val |= (static_cast<uint64_t> (m_muBeamformer) & 0x01) << 33;
+  val |= (static_cast<uint64_t> (m_beamformeeStsForSmallerOrEqualThan80Mhz) & 0x07) << 34;
+  val |= (static_cast<uint64_t> (m_nstsTotalForSmallerOrEqualThan80Mhz) & 0x07) << 37;
+  val |= (static_cast<uint64_t> (m_beamformeeStsForLargerThan80Mhz) & 0x07) << 40;
+  val |= (static_cast<uint64_t> (m_nstsTotalForLargerThan80Mhz) & 0x07) << 43;
+  val |= (static_cast<uint64_t> (m_numberOfSoundingDimensionsForSmallerOrEqualThan80Mhz) & 0x07) << 46;
+  val |= (static_cast<uint64_t> (m_numberOfSoundingDimensionsForLargerThan80Mhz) & 0x07) << 49;
+  val |= (static_cast<uint64_t> (m_ngEqual16ForSuFeedbackSupport) & 0x01) << 52;
+  val |= (static_cast<uint64_t> (m_ngEqual16ForMuFeedbackSupport) & 0x01) << 53;
+  val |= (static_cast<uint64_t> (m_codebookSize42ForSuSupport) & 0x01) << 54;
+  val |= (static_cast<uint64_t> (m_codebookSize75ForSuSupport) & 0x01) << 55;
+  val |= (static_cast<uint64_t> (m_beamformingFeedbackWithTriggerFrame) & 0x07) << 56;
+  val |= (static_cast<uint64_t> (m_heErSuPpduPayload) & 0x01) << 59;
+  val |= (static_cast<uint64_t> (m_dlMuMimoOnPartialBandwidth) & 0x01) << 60;
+  val |= (static_cast<uint64_t> (m_ppeThresholdPresent) & 0x01) << 61;
+  val |= (static_cast<uint64_t> (m_srpBasedSrSupport) & 0x01) << 62;
+  val |= (static_cast<uint64_t> (m_powerBoostFactorAlphaSupport) & 0x01) << 63;
   return val;
 }
 
@@ -481,9 +481,9 @@ std::ostream &
 operator << (std::ostream &os, const HeCapabilities &HeCapabilities)
 {
   os << HeCapabilities.GetHeMacCapabilitiesInfo1 () << "|"
-     << (uint16_t) HeCapabilities.GetHeMacCapabilitiesInfo2 () << "|"
+     << static_cast<uint16_t> (HeCapabilities.GetHeMacCapabilitiesInfo2 ()) << "|"
      << HeCapabilities.GetHePhyCapabilitiesInfo1 () << "|"
-     << (uint16_t) HeCapabilities.GetHePhyCapabilitiesInfo2 () << "|"
+     << static_cast<uint16_t> (HeCapabilities.GetHePhyCapabilitiesInfo2 ()) << "|"
      << HeCapabilities.GetSupportedMcsAndNss ();
   return os;
 }

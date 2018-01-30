@@ -257,7 +257,7 @@ def main(argv):
         #  Create another ad hoc network and devices
         # 
         ssid = ns.wifi.Ssid('wifi-infra' + str(i))
-        wifiInfra = ns.wifi.WifiHelper.Default()
+        wifiInfra = ns.wifi.WifiHelper()
         wifiPhy.SetChannel(wifiChannel.Create())
         wifiInfra.SetRemoteStationManager('ns3::ArfWifiManager')
         macInfra = ns.wifi.WifiMacHelper();

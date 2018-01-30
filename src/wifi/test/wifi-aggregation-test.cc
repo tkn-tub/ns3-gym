@@ -107,8 +107,8 @@ AmpduAggregationTest::DoRun (void)
    */
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MpduAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue (65535));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
+  m_mpduAggregator->SetMaxAmpduSize (65535);
   m_edca->SetMpduAggregator (m_mpduAggregator);
 
   /*
@@ -369,8 +369,8 @@ TwoLevelAggregationTest::DoRun (void)
    */
   m_factory = ObjectFactory ();
   m_factory.SetTypeId ("ns3::MpduAggregator");
-  m_factory.Set ("MaxAmpduSize", UintegerValue (0));
   m_mpduAggregator = m_factory.Create<MpduAggregator> ();
+  m_mpduAggregator->SetMaxAmpduSize (65535);
   m_edca->SetMpduAggregator (m_mpduAggregator);
 
   m_edca->GetQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));

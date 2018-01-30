@@ -103,10 +103,6 @@ AdvancePosition (Ptr<Node> node)
     }
   SetPosition (node, pos);
 
-  if (g_verbose)
-    {
-      //std::cout << "x="<<pos.x << std::endl;
-    }
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
 }
 
