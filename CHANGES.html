@@ -59,7 +59,8 @@ us a note on ns-developers mailing list.</p>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
-  <li> Class <b>LrWpanMac</b> now supports extended addressing mode. Both <b>McpsDataRequest</b> and <b>PdDataIndication</b> methods will now use extended addressing if <b>McpsDataRequestParams::m_srcAddrMode</b> or <b>McpsDataRequestParams::m_dstAddrMode</b> are set to <b>EXT_ADDR</b>.
+  <li> Class <b>LrWpanMac</b> now supports extended addressing mode. Both <b>McpsDataRequest</b> and <b>PdDataIndication</b> methods will now use extended addressing if <b>McpsDataRequestParams::m_srcAddrMode</b> or <b>McpsDataRequestParams::m_dstAddrMode</b> are set to <b>EXT_ADDR</b>.</li>
+  <li> Class <b>LteUeNetDevice</b> MAC address is now a 64-bit address and it's set during construction.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

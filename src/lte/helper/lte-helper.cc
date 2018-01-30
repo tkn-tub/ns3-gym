@@ -909,6 +909,9 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
   dev->SetAttribute ("LteUeRrc", PointerValue (rrc));
   dev->SetAttribute ("EpcUeNas", PointerValue (nas));
   dev->SetAttribute ("LteUeComponentCarrierManager", PointerValue (ccmUe));
+  // \todo The UE identifier should be dynamically set by the EPC
+  // when the default PDP context is created. This is a simplification.
+  dev->SetAddress (Mac64Address::Allocate ());
 
   for (std::map<uint8_t, Ptr<ComponentCarrierUe> >::iterator it = ueCcMap.begin (); it != ueCcMap.end (); ++it)
     {
