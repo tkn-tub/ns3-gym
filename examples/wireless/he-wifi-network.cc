@@ -283,11 +283,6 @@ int main (int argc, char *argv[])
               gi /= 2;
             }
           channelWidth *= 2;
-          //At 5 GHz, possible maximum supported channel widths are 20, 80 and 160 MHz
-          if (channelWidth == 40 && frequency == 5)
-            {
-              channelWidth = 80;
-            }
         }
     }
   return 0;

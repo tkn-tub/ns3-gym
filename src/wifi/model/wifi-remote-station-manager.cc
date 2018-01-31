@@ -1781,21 +1781,28 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
   NS_LOG_FUNCTION (this << from << heCapabilities);
   WifiRemoteStationState *state;
   state = LookupState (from);
-  if (heCapabilities.GetChannelWidthSet () & 0x04 && Is5Ghz (m_wifiPhy->GetFrequency ()))
+  if (Is5Ghz (m_wifiPhy->GetFrequency ()))
     {
-      state->m_channelWidth = 160;
+      if (heCapabilities.GetChannelWidthSet () & 0x04)
+        {
+          state->m_channelWidth = 160;
+        }
+      else if (heCapabilities.GetChannelWidthSet () & 0x02)
+        {
+          state->m_channelWidth = 80;
+        }
+      //For other cases at 5 GHz, the supported channel width is set by the VHT capabilities
     }
-  else if (heCapabilities.GetChannelWidthSet () & 0x02 && Is5Ghz (m_wifiPhy->GetFrequency ()))
+  else if (Is2_4Ghz (m_wifiPhy->GetFrequency ()))
     {
-      state->m_channelWidth = 80;
-    }
-  else if ((heCapabilities.GetChannelWidthSet () & 0x01) && Is2_4Ghz (m_wifiPhy->GetFrequency ()))
-    {
-      state->m_channelWidth = 40;
-    }
-  else
-    {
-      state->m_channelWidth = 20;
+      if (heCapabilities.GetChannelWidthSet () & 0x01)
+        {
+          state->m_channelWidth = 40;
+        }
+      else
+        {
+          state->m_channelWidth = 20;
+        }
     }
   if (heCapabilities.GetHeLtfAndGiForHePpdus () >= 2)
     {
