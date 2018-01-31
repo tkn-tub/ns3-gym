@@ -43,6 +43,7 @@
 #include "ns3/stats-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/propagation-module.h"
+#include "ns3/rng-seed-manager.h"
 
 using namespace ns3;
 
@@ -363,6 +364,11 @@ int main (int argc, char *argv[])
       serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
       clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
     }
+
+  RngSeedManager::SetSeed (1);
+  RngSeedManager::SetRun (2);
+  wifi.AssignStreams(serverDevice, 100);
+  wifi.AssignStreams(clientDevice, 100);
 
   if (wifiManager == "MinstrelHt")
     {

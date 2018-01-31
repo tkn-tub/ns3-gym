@@ -475,7 +475,7 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
        */
       if (!GetHtSupported (station) && !GetVhtSupported (station))
         {
-          NS_LOG_DEBUG ("Non-HT station " << station);
+          NS_LOG_INFO ("Non-HT station " << station);
           station->m_isHt = false;
           // We will use non-HT minstrel for this station. Initialize the manager.
           m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_updateStats));
@@ -566,14 +566,14 @@ MinstrelHtWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       return;
     }
 
+  NS_LOG_DEBUG ("DoReportDataFailed " << station << "\t rate " << station->m_txrate << "\tlongRetry \t" << station->m_longRetry);
+
   if (!station->m_isHt)
     {
       m_legacyManager->UpdateRate (station);
     }
   else
     {
-      NS_LOG_DEBUG ("DoReportDataFailed " << station << "\t rate " << station->m_txrate << "\tlongRetry \t" << station->m_longRetry);
-
       uint32_t rateId = GetRateId (station->m_txrate);
       uint32_t groupId = GetGroupId (station->m_txrate);
       station->m_groupsTable[groupId].m_ratesTable[rateId].numRateAttempt++; // Increment the attempts counter for the rate used.
@@ -595,7 +595,7 @@ MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st,
       return;
     }
 
-  NS_LOG_DEBUG ("Data OK - Txrate = " << station->m_txrate  );
+  NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (before update).");
 
   if (!station->m_isHt)
     {
@@ -603,6 +603,8 @@ MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st,
       station->m_minstrelTable[station->m_txrate].numRateAttempt++;
 
       m_legacyManager->UpdatePacketCounters (station);
+
+      NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (after update).");
 
       UpdateRetry (station);
       m_legacyManager->UpdateStats (station);
@@ -620,6 +622,8 @@ MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st,
       station->m_groupsTable[groupId].m_ratesTable[rateId].numRateAttempt++;
 
       UpdatePacketCounters (station, 1, 0);
+
+      NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (after update).");
 
       station->m_isSampling = false;
       station->m_sampleDeferred = false;
