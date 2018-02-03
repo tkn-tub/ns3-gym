@@ -5106,13 +5106,18 @@ def register_Ns3WifiPhyTag_methods(root_module, cls):
     cls.add_constructor([param('ns3::WifiPhyTag const &', 'arg0')])
     ## wifi-phy-tag.h (module 'wifi'): ns3::WifiPhyTag::WifiPhyTag() [constructor]
     cls.add_constructor([])
-    ## wifi-phy-tag.h (module 'wifi'): ns3::WifiPhyTag::WifiPhyTag(ns3::WifiTxVector txVector, ns3::MpduType mpdutype) [constructor]
-    cls.add_constructor([param('ns3::WifiTxVector', 'txVector'), param('ns3::MpduType', 'mpdutype')])
+    ## wifi-phy-tag.h (module 'wifi'): ns3::WifiPhyTag::WifiPhyTag(ns3::WifiTxVector txVector, ns3::MpduType mpdutype, uint8_t frameComplete) [constructor]
+    cls.add_constructor([param('ns3::WifiTxVector', 'txVector'), param('ns3::MpduType', 'mpdutype'), param('uint8_t', 'frameComplete')])
     ## wifi-phy-tag.h (module 'wifi'): void ns3::WifiPhyTag::Deserialize(ns3::TagBuffer i) [member function]
     cls.add_method('Deserialize', 
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
                    is_virtual=True)
+    ## wifi-phy-tag.h (module 'wifi'): uint8_t ns3::WifiPhyTag::GetFrameComplete() const [member function]
+    cls.add_method('GetFrameComplete', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
     ## wifi-phy-tag.h (module 'wifi'): ns3::TypeId ns3::WifiPhyTag::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
@@ -9500,34 +9505,46 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'bool', 
                    [param('ns3::WifiMode', 'mode')], 
                    is_const=True)
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateBusy() [member function]
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateBusy() const [member function]
     cls.add_method('IsStateBusy', 
                    'bool', 
-                   [])
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateCcaBusy() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateCcaBusy() const [member function]
     cls.add_method('IsStateCcaBusy', 
                    'bool', 
-                   [])
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateIdle() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateIdle() const [member function]
     cls.add_method('IsStateIdle', 
                    'bool', 
-                   [])
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateRx() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateOff() const [member function]
+    cls.add_method('IsStateOff', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateRx() const [member function]
     cls.add_method('IsStateRx', 
                    'bool', 
-                   [])
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSleep() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSleep() const [member function]
     cls.add_method('IsStateSleep', 
                    'bool', 
-                   [])
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSwitching() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateSwitching() const [member function]
     cls.add_method('IsStateSwitching', 
                    'bool', 
-                   [])
-    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateTx() [member function]
+                   [], 
+                   is_const=True)
+    ## wifi-phy.h (module 'wifi'): bool ns3::WifiPhy::IsStateTx() const [member function]
     cls.add_method('IsStateTx', 
                    'bool', 
-                   [])
+                   [], 
+                   is_const=True)
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::NotifyMonitorSniffRx(ns3::Ptr<const ns3::Packet> packet, uint16_t channelFreqMhz, ns3::WifiTxVector txVector, ns3::MpduInfo aMpdu, ns3::SignalNoiseDbm signalNoise) [member function]
     cls.add_method('NotifyMonitorSniffRx', 
                    'void', 
@@ -9639,6 +9656,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetNumberOfAntennas', 
                    'void', 
                    [param('uint8_t', 'antennas')])
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetOffMode() [member function]
+    cls.add_method('SetOffMode', 
+                   'void', 
+                   [])
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetReceiveErrorCallback(ns3::WifiPhy::RxErrorCallback callback) [member function]
     cls.add_method('SetReceiveErrorCallback', 
                    'void', 
@@ -9683,6 +9704,10 @@ def register_Ns3WifiPhy_methods(root_module, cls):
     cls.add_method('SetTxPowerStart', 
                    'void', 
                    [param('double', 'start')])
+    ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::SetWifiRadioEnergyModel(ns3::Ptr<ns3::WifiRadioEnergyModel> const wifiRadioEnergyModel) [member function]
+    cls.add_method('SetWifiRadioEnergyModel', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::WifiRadioEnergyModel > const', 'wifiRadioEnergyModel')])
     ## wifi-phy.h (module 'wifi'): void ns3::WifiPhy::StartReceivePacket(ns3::Ptr<ns3::Packet> packet, ns3::WifiTxVector txVector, ns3::MpduType mpdutype, ns3::Ptr<ns3::InterferenceHelper::Event> event) [member function]
     cls.add_method('StartReceivePacket', 
                    'void', 
@@ -13022,6 +13047,11 @@ def register_Ns3DeviceEnergyModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyChanged() [member function]
+    cls.add_method('HandleEnergyChanged', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     ## device-energy-model.h (module 'energy'): void ns3::DeviceEnergyModel::HandleEnergyDepletion() [member function]
     cls.add_method('HandleEnergyDepletion', 
                    'void', 
@@ -13885,6 +13915,11 @@ def register_Ns3EnergySource_methods(root_module, cls):
     ## energy-source.h (module 'energy'): double ns3::EnergySource::CalculateTotalCurrent() [member function]
     cls.add_method('CalculateTotalCurrent', 
                    'double', 
+                   [], 
+                   visibility='protected')
+    ## energy-source.h (module 'energy'): void ns3::EnergySource::NotifyEnergyChanged() [member function]
+    cls.add_method('NotifyEnergyChanged', 
+                   'void', 
                    [], 
                    visibility='protected')
     ## energy-source.h (module 'energy'): void ns3::EnergySource::NotifyEnergyDrained() [member function]
@@ -19432,6 +19467,11 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
+    ## wifi-radio-energy-model.h (module 'wifi'): ns3::Time ns3::WifiRadioEnergyModel::GetMaximumTimeInState(int state) const [member function]
+    cls.add_method('GetMaximumTimeInState', 
+                   'ns3::Time', 
+                   [param('int', 'state')], 
+                   is_const=True)
     ## wifi-radio-energy-model.h (module 'wifi'): ns3::WifiRadioEnergyModelPhyListener * ns3::WifiRadioEnergyModel::GetPhyListener() [member function]
     cls.add_method('GetPhyListener', 
                    'ns3::WifiRadioEnergyModelPhyListener *', 
@@ -19466,6 +19506,11 @@ def register_Ns3WifiRadioEnergyModel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## wifi-radio-energy-model.h (module 'wifi'): void ns3::WifiRadioEnergyModel::HandleEnergyChanged() [member function]
+    cls.add_method('HandleEnergyChanged', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
     ## wifi-radio-energy-model.h (module 'wifi'): void ns3::WifiRadioEnergyModel::HandleEnergyDepletion() [member function]
     cls.add_method('HandleEnergyDepletion', 
                    'void', 
