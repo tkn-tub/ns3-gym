@@ -29,9 +29,11 @@ New user-visible features
 - (lr-wpan) Extended addressing mode is now supported.
 - (tcp) Implemented the core functionality of TCP Pacing.
 - (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.
+- (internet) Ipv6AddressHelper is now more pedantic but you can use more than one in a script.
 
 Bugs fixed
 ----------
+- Bug 1745 - There can be only one Ipv6AddressHelper in a script
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
 - Bug 2656 - wifi: Minstrel and MinstrelHt provide different results for 802.11a/b/g
 - Bug 2653 - tcp: Avoid saving smaller TS in case of packet reordering

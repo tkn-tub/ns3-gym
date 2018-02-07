@@ -167,6 +167,11 @@ public:
    */
   Ipv6InterfaceContainer AssignWithoutAddress (const NetDeviceContainer &c);
 
+private:
+  Ipv6Address m_network; //!< network address
+  Ipv6Prefix m_prefix;   //!< prefix length
+  Ipv6Address m_address; //!< host address
+  Ipv6Address m_base;    //!< host base address
 };
 
 } /* namespace ns3 */

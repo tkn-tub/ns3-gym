@@ -81,9 +81,9 @@ IpAddressHelperTestCasev6::DoRun (void)
   // Increment network
   ip1.NewNetwork ();
   ipAddr1 = ip1.NewAddress ();
-  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv6Address ("2001:db81:0:1::15"), "Ipv6AddressHelper failure");
+  NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv6Address ("2001:db82::15"), "Ipv6AddressHelper failure");
   // Reset
-  ip1.SetBase (Ipv6Address ("2001:dddd::"), Ipv6Prefix (32), Ipv6Address ("::1"));
+  ip1.SetBase (Ipv6Address ("2001:dddd::"), Ipv6Prefix (64), Ipv6Address ("::1"));
   ipAddr1 = ip1.NewAddress (); // ::1
   ipAddr1 = ip1.NewAddress (); // ::2
   ipAddr1 = ip1.NewAddress (); // ::3
@@ -93,7 +93,7 @@ IpAddressHelperTestCasev6::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv6Address ("2001:dddd:0:2::1"), "Ipv6AddressHelper failure");
 
   // Set again
-  ip1.SetBase (Ipv6Address ("2001:db82::1"), Ipv6Prefix (32));
+  ip1.SetBase (Ipv6Address ("2001:db82::"), Ipv6Prefix (32));
   ipAddr1 = ip1.NewAddress ();
   NS_TEST_ASSERT_MSG_EQ (ipAddr1, Ipv6Address ("2001:db82::1"), "Ipv6AddressHelper failure");
 

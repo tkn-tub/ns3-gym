@@ -135,7 +135,7 @@ int main (int argc, char** argv)
   iic1.Add (iicr1);
 
   /* add another IPv6 address for second prefix advertised on first subnet */
-  ipv6.SetBase (Ipv6Address ("2001:ABCD::2"), Ipv6Prefix (64));
+  ipv6.SetBase (Ipv6Address ("2001:ABCD::"), Ipv6Prefix (64));
   ipv6.Assign (tmp2);
 
   /* second subnet R - n1 */
