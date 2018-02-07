@@ -13,6 +13,15 @@ def build(bld):
     obj = bld.create_ns3_program('lena-intercell-interference',
                                  ['lte'])
     obj.source = 'lena-intercell-interference.cc'
+    obj = bld.create_ns3_program('lena-ipv6-addr-conf',
+                                 ['lte'])
+    obj.source = 'lena-ipv6-addr-conf.cc'
+    obj = bld.create_ns3_program('lena-ipv6-ue-rh',
+                                 ['lte'])
+    obj.source = 'lena-ipv6-ue-rh.cc'
+    obj = bld.create_ns3_program('lena-ipv6-ue-ue',
+                                 ['lte'])
+    obj.source = 'lena-ipv6-ue-ue.cc'
     obj = bld.create_ns3_program('lena-pathloss-traces',
                                  ['lte'])
     obj.source = 'lena-pathloss-traces.cc'

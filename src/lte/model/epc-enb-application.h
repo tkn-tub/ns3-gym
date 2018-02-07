@@ -71,15 +71,18 @@ public:
   /** 
    * Constructor
    * 
-   * \param lteSocket the socket to be used to send/receive packets to/from the LTE radio interface
+   * \param lteSocket the socket to be used to send/receive IPv4 packets to/from the LTE radio interface
+   * \param lteSocket the socket to be used to send/receive IPv6 packets to/from the LTE radio interface
    * \param s1uSocket the socket to be used to send/receive packets
    * to/from the S1-U interface connected with the SGW 
    * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
    * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for S1-U communications
    * \param cellId the identifier of the enb
    */
-  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId);
+  EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId);
 
+  void SetLteSocket6(Ptr<Socket> lteSocket6);
+  Ptr<Socket> GetLteSocket6(); 
   /**
    * Destructor
    * 
@@ -127,6 +130,14 @@ public:
    * \param socket pointer to the S1-U socket
    */
   void RecvFromS1uSocket (Ptr<Socket> socket);
+
+  /**
+   * TracedCallback signature for data Packet reception event.
+   *
+   * \param [in] packet The data packet sent from the internet.
+   */
+  typedef void (* RxTracedCallback)
+    (Ptr<Packet> packet);
 
 
   /**
@@ -246,6 +257,11 @@ private:
   Ptr<Socket> m_lteSocket;
 
   /**
+   * raw packet socket to send and receive the packets to and from the LTE radio interface
+   */
+  Ptr<Socket> m_lteSocket6;
+
+  /**
    * UDP socket to send and receive GTP-U the packets to and from the S1-U interface
    */
   Ptr<Socket> m_s1uSocket;
@@ -307,6 +323,15 @@ private:
 
   uint16_t m_cellId; ///< cell ID
 
+  /**
+   * \brief Callback to trace RX (reception) data packets from LTE Socket.
+   */ 
+  TracedCallback<Ptr<Packet> > m_rxLteSocketPktTrace;
+
+  /**
+   * \brief Callback to trace RX (reception) data packets from S1-U Socket.
+   */ 
+  TracedCallback<Ptr<Packet> > m_rxS1uSocketPktTrace;
 };
 
 } //namespace ns3

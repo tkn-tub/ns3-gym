@@ -779,9 +779,9 @@ Evolved Packet Core (EPC)
 
 We now explain how to write a simulation program that allows to
 simulate the EPC in addition to the LTE radio access network. The use
-of EPC allows to use IPv4 networking with LTE devices. In other words,
+of EPC allows to use IPv4 and IPv6 networking with LTE devices. In other words,
 you will be able to use the regular ns-3 applications and sockets over
-IPv4 over LTE, and also to connect an LTE network to any other IPv4
+IPv4 and IPv6 over LTE, and also to connect an LTE network to any other IPv4 and IPv6
 network you might have in your simulation.
 
 First of all, in addition to ``LteHelper`` that we already introduced
@@ -820,9 +820,9 @@ It is to be noted that the ``EpcHelper`` will also automatically
 create the PGW node and configure it so that it can properly handle
 traffic from/to the LTE radio access network.  Still,
 you need to add some explicit code to connect the PGW to other
-IPv4 networks (e.g., the internet). Here is a very simple example about
-how to connect a single remote host to the PGW via a point-to-point
-link::
+IPv4/IPv6 networks (e.g., the internet, another EPC). Here is a very
+simple example about how to connect a single remote host (IPv4 type)
+to the PGW via a point-to-point link::
 
   Ptr<Node> pgw = epcHelper->GetPgwNode ();
 
@@ -844,16 +844,11 @@ link::
   Ipv4InterfaceContainer internetIpIfaces = ipv4h.Assign (internetDevices);
   // interface 0 is localhost, 1 is the p2p device
   Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
-  
 
-It's important to specify routes so that the remote host can reach LTE
-UEs. One way of doing this is by exploiting the fact that the
-``PointToPointEpcHelper`` will by default assign to LTE UEs an IP address in the
-7.0.0.0 network. With this in mind, it suffices to do::
 
   Ipv4StaticRoutingHelper ipv4RoutingHelper;
   Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
-  remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.0.0.0"), 1);
+  remoteHostStaticRouting->AddNetworkRouteTo (epcHelper->GetEpcIpv4NetworkAddress (), Ipv4Mask ("255.255.0.0"), 1);
 
 Now, you should go on and create LTE eNBs and UEs as explained in the
 previous sections. You can of course configure other LTE aspects such
@@ -1046,7 +1041,7 @@ It is typically invoked before the simulation begins::
 
 ``LteHelper::InstallEnbDevice`` and ``LteHelper::InstallUeDevice`` functions
 must have been called before attaching. In an EPC-enabled simulation, it is also
-required to have IPv4 properly pre-installed in the UE.
+required to have IPv4/IPv6 properly pre-installed in the UE.
 
 This method is very simple, but requires you to know exactly which UE belongs to
 to which eNodeB before the simulation begins. This can be difficult when the UE

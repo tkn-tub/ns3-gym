@@ -63,7 +63,16 @@ EpcEnbApplication::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EpcEnbApplication")
     .SetParent<Object> ()
-    .SetGroupName("Lte");
+    .SetGroupName("Lte")
+    .AddTraceSource ("RxFromEnb",
+                     "Receive data packets from LTE Enb Net Device",
+                     MakeTraceSourceAccessor (&EpcEnbApplication::m_rxLteSocketPktTrace),
+                     "ns3::EpcEnbApplication::RxTracedCallback")
+    .AddTraceSource ("RxFromS1u",
+                     "Receive data packets from S1-U Net Device",
+                     MakeTraceSourceAccessor (&EpcEnbApplication::m_rxS1uSocketPktTrace),
+                     "ns3::EpcEnbApplication::RxTracedCallback")
+    ;
   return tid;
 }
 
@@ -72,14 +81,15 @@ EpcEnbApplication::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_lteSocket = 0;
+  m_lteSocket6 = 0;
   m_s1uSocket = 0;
   delete m_s1SapProvider;
   delete m_s1apSapEnb;
 }
 
-
-EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId)
+EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId)
   : m_lteSocket (lteSocket),
+    m_lteSocket6 (lteSocket6),
     m_s1uSocket (s1uSocket),    
     m_enbS1uAddress (enbS1uAddress),
     m_sgwS1uAddress (sgwS1uAddress),
@@ -91,6 +101,7 @@ EpcEnbApplication::EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> s1uSock
   NS_LOG_FUNCTION (this << lteSocket << s1uSocket << sgwS1uAddress);
   m_s1uSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromS1uSocket, this));
   m_lteSocket->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
+  m_lteSocket6->SetRecvCallback (MakeCallback (&EpcEnbApplication::RecvFromLteSocket, this));
   m_s1SapProvider = new MemberEpcEnbS1SapProvider<EpcEnbApplication> (this);
   m_s1apSapEnb = new MemberEpcS1apSapEnb<EpcEnbApplication> (this);
 }
@@ -240,7 +251,14 @@ void
 EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
 {
   NS_LOG_FUNCTION (this);  
-  NS_ASSERT (socket == m_lteSocket);
+  if(m_lteSocket6)
+    {
+      NS_ASSERT (socket == m_lteSocket || socket == m_lteSocket6);
+    }
+  else
+    {
+      NS_ASSERT (socket == m_lteSocket);
+    }
   Ptr<Packet> packet = socket->Recv ();
 
   EpsBearerTag tag;
@@ -259,6 +277,7 @@ EpcEnbApplication::RecvFromLteSocket (Ptr<Socket> socket)
       std::map<uint8_t, uint32_t>::iterator bidIt = rntiIt->second.find (bid);
       NS_ASSERT (bidIt != rntiIt->second.end ());
       uint32_t teid = bidIt->second;
+      m_rxLteSocketPktTrace (packet->Copy ());
       SendToS1uSocket (packet, teid);
     }
 }
@@ -275,6 +294,7 @@ EpcEnbApplication::RecvFromS1uSocket (Ptr<Socket> socket)
   std::map<uint32_t, EpsFlowId_t>::iterator it = m_teidRbidMap.find (teid);
   NS_ASSERT (it != m_teidRbidMap.end ());
 
+  m_rxS1uSocketPktTrace (packet->Copy ());
   SendToLteSocket (packet, it->second.m_rnti, it->second.m_bid);
 }
 
@@ -284,7 +304,25 @@ EpcEnbApplication::SendToLteSocket (Ptr<Packet> packet, uint16_t rnti, uint8_t b
   NS_LOG_FUNCTION (this << packet << rnti << (uint16_t) bid << packet->GetSize ());  
   EpsBearerTag tag (rnti, bid);
   packet->AddPacketTag (tag);
-  int sentBytes = m_lteSocket->Send (packet);
+  uint8_t ipType;
+
+  packet->CopyData (&ipType, 1);
+  ipType = (ipType>>4) & 0x0f;
+
+  int sentBytes;
+  if (ipType == 0x04)
+    {
+      sentBytes = m_lteSocket->Send (packet);
+    }
+  else if (ipType == 0x06)
+    {
+      sentBytes = m_lteSocket6->Send (packet);
+    }
+  else
+    {
+      NS_ABORT_MSG ("EpcEnbApplication::SendToLteSocket - Unknown IP type...");
+    }
+
   NS_ASSERT (sentBytes > 0);
 }
 
@@ -314,4 +352,5 @@ EpcEnbApplication::DoReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t be
   //From 3GPP TS 23401-950 Section 5.4.4.2, enB sends EPS bearer Identity in Bearer Release Indication message to MME
   m_s1apSapMme->ErabReleaseIndication (imsi, rnti, erabToBeReleaseIndication);
 }
+
 }  // namespace ns3

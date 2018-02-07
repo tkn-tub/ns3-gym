@@ -191,6 +191,7 @@ def build(bld):
         'test/lte-simple-spectrum-phy.cc',
         'test/lte-test-carrier-aggregation.cc',
         'test/lte-test-aggregation-throughput-scale.cc',
+        'test/lte-test-ipv6-routing.cc'
         ]
 
     headers = bld(features='ns3header')

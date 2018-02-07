@@ -25,6 +25,7 @@
 
 #include <ns3/object.h>
 #include <ns3/ipv4-address-helper.h>
+#include <ns3/ipv6-address-helper.h>
 #include <ns3/data-rate.h>
 #include <ns3/epc-tft.h>
 #include <ns3/eps-bearer.h>
@@ -68,6 +69,7 @@ public:
    *  \return The object TypeId.
    */
   static TypeId GetTypeId (void);
+  TypeId GetInstanceTypeId () const;
   virtual void DoDispose ();
 
   // inherited from EpcHelper
@@ -77,16 +79,21 @@ public:
   virtual uint8_t ActivateEpsBearer (Ptr<NetDevice> ueLteDevice, uint64_t imsi, Ptr<EpcTft> tft, EpsBearer bearer);
   virtual Ptr<Node> GetPgwNode ();
   virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices);
+  Ipv6InterfaceContainer AssignUeIpv6Address (NetDeviceContainer ueDevices);
   virtual Ipv4Address GetUeDefaultGatewayAddress ();
-
+  Ipv6Address GetUeDefaultGatewayAddress6 ();
 
 
 private:
 
   /** 
-   * helper to assign addresses to UE devices as well as to the TUN device of the SGW/PGW
+   * helper to assign IPv4 addresses to UE devices as well as to the TUN device of the SGW/PGW
    */
-  Ipv4AddressHelper m_ueAddressHelper; 
+  Ipv4AddressHelper m_uePgwAddressHelper;
+  /** 
+   * helper to assign IPv6 addresses to UE devices as well as to the TUN device of the SGW/PGW
+   */
+  Ipv6AddressHelper m_uePgwAddressHelper6;
   
   /**
    * SGW-PGW network element
@@ -165,7 +172,6 @@ private:
    * because of some big X2 messages, you need a big MTU.
    */
   uint16_t m_x2LinkMtu;
-
 };
 
 

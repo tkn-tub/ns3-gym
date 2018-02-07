@@ -23,18 +23,18 @@
  *
  */
 
-
-
-
 #include "epc-tft-classifier.h"
 #include "epc-tft.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/ipv6-header.h"
 #include "ns3/udp-header.h"
 #include "ns3/tcp-header.h"
 #include "ns3/udp-l4-protocol.h"
 #include "ns3/tcp-l4-protocol.h"
+#include "ns3/icmpv6-l4-protocol.h"
+#include "ns3/icmpv4-l4-protocol.h"
 
 namespace ns3 {
 
@@ -71,31 +71,68 @@ EpcTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction)
 
   Ptr<Packet> pCopy = p->Copy ();
 
-  Ipv4Header ipv4Header;
-  pCopy->RemoveHeader (ipv4Header);
+  uint8_t ipType;
+  pCopy->CopyData (&ipType, 1);
+  ipType = (ipType>>4) & 0x0f;
 
-  Ipv4Address localAddress;
-  Ipv4Address remoteAddress;
+  Ipv4Address localAddressIpv4;
+  Ipv4Address remoteAddressIpv4;
 
-  
-  if (direction ==  EpcTft::UPLINK)
-    {
-      localAddress = ipv4Header.GetSource ();
-      remoteAddress = ipv4Header.GetDestination ();
-    }
-  else
-    { 
-      NS_ASSERT (direction ==  EpcTft::DOWNLINK);
-      remoteAddress = ipv4Header.GetSource ();
-      localAddress = ipv4Header.GetDestination ();      
-    }
-  
-  uint8_t protocol = ipv4Header.GetProtocol ();
+  Ipv6Address localAddressIpv6;
+  Ipv6Address remoteAddressIpv6;
 
-  uint8_t tos = ipv4Header.GetTos ();
+  uint8_t protocol;
+  uint8_t tos;
 
   uint16_t localPort = 0;
   uint16_t remotePort = 0;
+
+  if (ipType == 0x04)
+    {
+      Ipv4Header ipv4Header;
+      pCopy->RemoveHeader (ipv4Header);
+
+      if (direction ==  EpcTft::UPLINK)
+        {
+          localAddressIpv4 = ipv4Header.GetSource ();
+          remoteAddressIpv4 = ipv4Header.GetDestination ();
+        }
+      else
+        {
+          NS_ASSERT (direction ==  EpcTft::DOWNLINK);
+          remoteAddressIpv4 = ipv4Header.GetSource ();
+          localAddressIpv4 = ipv4Header.GetDestination ();
+        }
+      NS_LOG_INFO ("local address: " << localAddressIpv4 << " remote address: " << remoteAddressIpv4);
+
+      protocol = ipv4Header.GetProtocol ();
+      tos = ipv4Header.GetTos ();
+    }
+  else if (ipType == 0x06)
+    {
+      Ipv6Header ipv6Header;
+      pCopy->RemoveHeader (ipv6Header);
+
+      if (direction ==  EpcTft::UPLINK)
+        {
+          localAddressIpv6 = ipv6Header.GetSourceAddress ();
+          remoteAddressIpv6 = ipv6Header.GetDestinationAddress ();
+        }
+      else
+        {
+          NS_ASSERT (direction ==  EpcTft::DOWNLINK);
+          remoteAddressIpv6 = ipv6Header.GetSourceAddress ();
+          localAddressIpv6 = ipv6Header.GetDestinationAddress ();
+        }
+      NS_LOG_INFO ("local address: " << localAddressIpv6 << " remote address: " << remoteAddressIpv6);
+
+      protocol = ipv6Header.GetNextHeader ();
+      tos = ipv6Header.GetTrafficClass ();
+    }
+  else
+    {
+      NS_ABORT_MSG ("EpcTftClassifier::Classify - Unknown IP type...");
+    }
 
   if (protocol == UdpL4Protocol::PROT_NUMBER)
     {
@@ -103,30 +140,35 @@ EpcTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction)
       pCopy->RemoveHeader (udpHeader);
 
       if (direction ==  EpcTft::UPLINK)
-	{
-	  localPort = udpHeader.GetSourcePort ();
-	  remotePort = udpHeader.GetDestinationPort ();
-	}
+        {
+          localPort = udpHeader.GetSourcePort ();
+          remotePort = udpHeader.GetDestinationPort ();
+        }
       else
-	{
-	  remotePort = udpHeader.GetSourcePort ();
-	  localPort = udpHeader.GetDestinationPort ();
-	}
+        {
+          remotePort = udpHeader.GetSourcePort ();
+          localPort = udpHeader.GetDestinationPort ();
+        }
     }
   else if (protocol == TcpL4Protocol::PROT_NUMBER)
     {
       TcpHeader tcpHeader;
       pCopy->RemoveHeader (tcpHeader);
       if (direction ==  EpcTft::UPLINK)
-	{
-	  localPort = tcpHeader.GetSourcePort ();
-	  remotePort = tcpHeader.GetDestinationPort ();
-	}
+        {
+          localPort = tcpHeader.GetSourcePort ();
+          remotePort = tcpHeader.GetDestinationPort ();
+        }
       else
-	{
-	  remotePort = tcpHeader.GetSourcePort ();
-	  localPort = tcpHeader.GetDestinationPort ();
-	}
+        {
+          remotePort = tcpHeader.GetSourcePort ();
+          localPort = tcpHeader.GetDestinationPort ();
+        }
+    }
+  else if (protocol == Icmpv6L4Protocol::PROT_NUMBER || protocol == Icmpv4L4Protocol::PROT_NUMBER)
+    {
+      remotePort = 0;
+      localPort = 0;
     }
   else
     {
@@ -134,28 +176,58 @@ EpcTftClassifier::Classify (Ptr<Packet> p, EpcTft::Direction direction)
       return 0;  // no match
     }
 
-  NS_LOG_INFO ("Classifing packet:"
-	       << " localAddr="  << localAddress 
-	       << " remoteAddr=" << remoteAddress 
-	       << " localPort="  << localPort 
-	       << " remotePort=" << remotePort 
-	       << " tos=0x" << (uint16_t) tos );
-
-  // now it is possible to classify the packet!
-  // we use a reverse iterator since filter priority is not implemented properly.
-  // This way, since the default bearer is expected to be added first, it will be evaluated last.
-  std::map <uint32_t, Ptr<EpcTft> >::const_reverse_iterator it;
-  NS_LOG_LOGIC ("TFT MAP size: " << m_tftMap.size ());
-
-  for (it = m_tftMap.rbegin (); it != m_tftMap.rend (); ++it)
+  if (ipType == 0x04)
     {
-      NS_LOG_LOGIC ("TFT id: " << it->first );
-      NS_LOG_LOGIC (" Ptr<EpcTft>: " << it->second);
-      Ptr<EpcTft> tft = it->second;         
-      if (tft->Matches (direction, remoteAddress, localAddress, remotePort, localPort, tos))
+      NS_LOG_INFO ("Classifying packet:"
+          << " localAddr="  << localAddressIpv4
+          << " remoteAddr=" << remoteAddressIpv4
+          << " localPort="  << localPort
+          << " remotePort=" << remotePort
+          << " tos=0x" << (uint16_t) tos );
+
+      // now it is possible to classify the packet!
+      // we use a reverse iterator since filter priority is not implemented properly.
+      // This way, since the default bearer is expected to be added first, it will be evaluated last.
+      std::map <uint32_t, Ptr<EpcTft> >::const_reverse_iterator it;
+      NS_LOG_LOGIC ("TFT MAP size: " << m_tftMap.size ());
+
+      for (it = m_tftMap.rbegin (); it != m_tftMap.rend (); ++it)
         {
-	  NS_LOG_LOGIC ("matches with TFT ID = " << it->first);
-	  return it->first; // the id of the matching TFT
+          NS_LOG_LOGIC ("TFT id: " << it->first );
+          NS_LOG_LOGIC (" Ptr<EpcTft>: " << it->second);
+          Ptr<EpcTft> tft = it->second;
+          if (tft->Matches (direction, remoteAddressIpv4, localAddressIpv4, remotePort, localPort, tos))
+            {
+              NS_LOG_LOGIC ("matches with TFT ID = " << it->first);
+              return it->first; // the id of the matching TFT
+            }
+        }
+    }
+  else if (ipType == 0x06)
+    {
+      NS_LOG_INFO ("Classifying packet:"
+          << " localAddr="  << localAddressIpv6
+          << " remoteAddr=" << remoteAddressIpv6
+          << " localPort="  << localPort
+          << " remotePort=" << remotePort
+          << " tos=0x" << (uint16_t) tos );
+
+      // now it is possible to classify the packet!
+      // we use a reverse iterator since filter priority is not implemented properly.
+      // This way, since the default bearer is expected to be added first, it will be evaluated last.
+      std::map <uint32_t, Ptr<EpcTft> >::const_reverse_iterator it;
+      NS_LOG_LOGIC ("TFT MAP size: " << m_tftMap.size ());
+
+      for (it = m_tftMap.rbegin (); it != m_tftMap.rend (); ++it)
+        {
+          NS_LOG_LOGIC ("TFT id: " << it->first );
+          NS_LOG_LOGIC (" Ptr<EpcTft>: " << it->second);
+          Ptr<EpcTft> tft = it->second;
+          if (tft->Matches (direction, remoteAddressIpv6, localAddressIpv6, remotePort, localPort, tos))
+            {
+              NS_LOG_LOGIC ("matches with TFT ID = " << it->first);
+              return it->first; // the id of the matching TFT
+            }
         }
     }
   NS_LOG_LOGIC ("no match");

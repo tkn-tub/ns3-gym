@@ -30,6 +30,7 @@ New user-visible features
 - (tcp) Implemented the core functionality of TCP Pacing.
 - (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.
 - (internet) Ipv6AddressHelper is now more pedantic but you can use more than one in a script.
+- (lte) UEs can now use IPv6 to send and receive traffic.
 
 Bugs fixed
 ----------

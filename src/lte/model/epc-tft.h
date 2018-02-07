@@ -25,6 +25,7 @@
 
 #include <ns3/simple-ref-count.h>
 #include <ns3/ipv4-address.h>
+#include <ns3/ipv6-address.h>
 
 #include <list>
 
@@ -88,7 +89,26 @@ public:
      */
     bool Matches (Direction d,
 		  Ipv4Address ra, 
-		  Ipv4Address la, 
+		  Ipv4Address la,
+		  uint16_t rp,
+		  uint16_t lp,
+		  uint8_t tos);
+
+    /** 
+     * 
+     * \param d the direction 
+     * \param ra the remote address 
+     * \param la the local address 
+     * \param rp the remote port 
+     * \param lp the local port 
+     * \param tos the type of service 
+     * 
+     * \return true if the parameters match with the PacketFilter,
+     * false otherwise.
+     */
+    bool Matches (Direction d,
+		  Ipv6Address ra, 
+		  Ipv6Address la,
 		  uint16_t rp,
 		  uint16_t lp,
 		  uint8_t tos);
@@ -105,8 +125,10 @@ public:
 			    to uplink / downlink only, or in both cases*/
 
     Ipv4Address remoteAddress;     /**< IPv4 address of the remote host  */
-    Ipv4Mask remoteMask; /**< IPv4 address mask of the remote host */
-    Ipv4Address localAddress;      /**< IPv4 address of the UE */
+    Ipv6Address remoteAddress6;     /**< IPv6 address of the remote host  */
+    Ipv4Mask remoteMask;            /**< IPv4 address mask of the remote host */
+    Ipv4Address localAddress;       /**< IPv4 address of the UE */
+    Ipv6Address localAddress6;      /**< IPv6 address of the UE */
     Ipv4Mask localMask;  /**< IPv4 address mask of the UE */
   
     uint16_t remotePortStart;  /**< start of the port number range of the remote host */
@@ -144,8 +166,27 @@ public:
      * parameters, false otherwise.
      */
     bool Matches (Direction direction,
-		  Ipv4Address remoteAddress, 
-		  Ipv4Address localAddress, 
+		  Ipv4Address remoteAddress,
+		  Ipv4Address localAddress,
+		  uint16_t remotePort,
+		  uint16_t localPort,
+		  uint8_t typeOfService);
+
+    /** 
+     * 
+     * \param direction 
+     * \param remoteAddress 
+     * \param localAddress 
+     * \param remotePort 
+     * \param localPort 
+     * \param typeOfService 
+     * 
+     * \return true if any PacketFilter in the TFT matches with the
+     * parameters, false otherwise.
+     */
+    bool Matches (Direction direction,
+		  Ipv6Address remoteAddress,
+		  Ipv6Address localAddress,
 		  uint16_t remotePort,
 		  uint16_t localPort,
 		  uint8_t typeOfService);
