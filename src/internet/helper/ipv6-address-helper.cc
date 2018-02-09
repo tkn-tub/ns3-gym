@@ -127,7 +127,6 @@ Ipv6Address Ipv6AddressHelper::NewAddress (void)
   uint8_t addrBuf[16];
   m_network.GetBytes (netBuf);
   m_address.GetBytes (hostBuf);
-  // uint128_t host = 0;
 
   NS_ASSERT_MSG (m_address.CombinePrefix (m_prefix) == Ipv6Address::GetZero (),
                  "Ipv6AddressHelper::NewAddress(): Too many hosts in the network: " << m_address << " " << m_prefix);
