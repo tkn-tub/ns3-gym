@@ -183,7 +183,7 @@ Furthermore, 802.11n provides an optional mode (GreenField mode) to reduce pream
 
   WifiHelper wifi;
   wifi.SetStandard (WIFI_PHY_STANDARD_80211ac);
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("VHtMcs9"), "ControlMode", StringValue("VhtMcs0"));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue("VhtMcs9"), "ControlMode", StringValue("VhtMcs0"));
 
   //Install PHY and MAC
   Ssid ssid = Ssid ("ns3-wifi");
