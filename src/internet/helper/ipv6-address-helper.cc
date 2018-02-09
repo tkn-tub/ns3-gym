@@ -127,7 +127,7 @@ Ipv6Address Ipv6AddressHelper::NewAddress (void)
   uint8_t addrBuf[16];
   m_network.GetBytes (netBuf);
   m_address.GetBytes (hostBuf);
-  uint128_t host = 0;
+  // uint128_t host = 0;
 
   NS_ASSERT_MSG (m_address.CombinePrefix (m_prefix) == Ipv6Address::GetZero (),
                  "Ipv6AddressHelper::NewAddress(): Too many hosts in the network: " << m_address << " " << m_prefix);
@@ -139,19 +139,21 @@ Ipv6Address Ipv6AddressHelper::NewAddress (void)
 
   Ipv6Address addr = Ipv6Address (addrBuf);
 
-  // To add one more address we have to go through some conversions...
-  for (uint8_t i=0; i<15; i++)
+  // Remember: hostBuf[15] is the Least Significant Byte.
+  uint16_t sum;
+  sum = static_cast<uint16_t> (hostBuf[15]) + 1;
+  hostBuf[15] += 1;
+  for (uint8_t index=0; index<15; index++)
     {
-      host |= hostBuf[i];
-      host <<= 8;
-    }
-  host |= hostBuf[15];
-
-  host += 1;
-  for (uint8_t i=0; i<16; i++)
-    {
-      hostBuf[15-i] = (host & 0xff);
-      host >>= 8;
+      if (sum > hostBuf[15-index])
+        {
+          sum = static_cast<uint16_t> (hostBuf[14-index]) + 1;
+          hostBuf[14-index] += 1;
+        }
+      else
+        {
+          break;
+        }
     }
   m_address = Ipv6Address (hostBuf);
 
@@ -164,26 +166,37 @@ void Ipv6AddressHelper::NewNetwork (void)
   NS_LOG_FUNCTION (this);
 
   uint8_t netBuf[16];
+  uint8_t addBuf[16];
   m_network.GetBytes (netBuf);
-  uint128_t network = 0;
 
-  for (uint8_t i=0; i<15; i++)
+  uint8_t prefixIndex = (m_prefix.GetPrefixLength ()-1)/8;
+  uint8_t prefixPosition = (8-(m_prefix.GetPrefixLength ()%8))%8;
+
+  for (uint8_t index=0; index<16; index++)
     {
-      network |= netBuf[i];
-      network <<= 8;
+      addBuf[index] = 0;
+      if (index==prefixIndex)
+        {
+          addBuf[index] = (1<<prefixPosition);
+        }
     }
-  network |= netBuf[15];
 
-  std::cout << "** Shifting the network by " <<  128 - int(m_prefix.GetPrefixLength ()) << " bits" << std::endl;
-  network >>= 128 - m_prefix.GetPrefixLength ();
-  network += 1;
-  network <<= 128 - m_prefix.GetPrefixLength ();
-
-  for (uint8_t i=0; i<16; i++)
+  uint16_t sum[16];
+  for (uint8_t index=0; index<16; index++)
     {
-      netBuf[15-i] = (network & 0xff);
-      network >>= 8;
+      sum[index] = static_cast<uint16_t> (netBuf[index]) + static_cast<uint16_t> (addBuf[index]);
+      netBuf[index] += addBuf[index];
     }
+
+  for (uint8_t index=0; index<15; index++)
+    {
+      if (sum[15-index] > netBuf[15-index])
+        {
+          sum[14-index] = static_cast<uint16_t> (netBuf[14-index]) + 1;
+          netBuf[14-index] += 1;
+        }
+    }
+
   m_network = Ipv6Address (netBuf);
   m_address = m_base;
 }
