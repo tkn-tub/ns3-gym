@@ -571,7 +571,7 @@ public:
    * \param extendedcapabilities the extended capabilities
    */
   void SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities);
-  /*
+  /**
    * Set the HT capabilities.
    *
    * \param htcapabilities HT capabilities

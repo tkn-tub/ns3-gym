@@ -481,7 +481,7 @@ public:
   /**
    * Return whether the station supports HT/VHT short guard interval.
    *
-   * \param station the station being queried
+   * \param address the address of the station
    *
    * \return true if the station supports HT/VHT short guard interval,
    *         false otherwise

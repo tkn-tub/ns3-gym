@@ -1191,6 +1191,7 @@ private:
   /**
    * Stores the distinct {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation type} tuples
    * that have been used during the testcase run.
+   * \param context the context
    * \param txParams spectrum signal parameters set by transmitter
    */
   void StoreDistinctTuple (std::string context, Ptr<SpectrumSignalParameters> txParams);

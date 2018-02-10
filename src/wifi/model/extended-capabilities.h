@@ -263,9 +263,8 @@ private:
   uint8_t m_operatingModeNotification; ///< Operating Mode Notification
   uint8_t m_maxNumberOfMsdusInAmsdu; ///< Max Number Of MSDUs In A-MSDU
 
-  /// Those are used to decide whether this element should be added to the frame or not
-  uint8_t m_htSupported;
-  uint8_t m_vhtSupported;
+  uint8_t m_htSupported;  ///< Flag to indicate HT is supported in order to decide whether this element should be added to the frame or not
+  uint8_t m_vhtSupported; ///< Flag to indicate VHT is supported in order to decide whether this element should be added to the frame or not
 };
 
 std::ostream &operator << (std::ostream &os, const ExtendedCapabilities &extendedcapabilities);
