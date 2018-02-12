@@ -370,7 +370,7 @@ private:
   /// @}
 
   /**
-   * Send packet to desitnation scoket
+   * Send packet to destination scoket
    * \param socket - destination node socket
    * \param packet - packet to send
    * \param destination - destination node IP address

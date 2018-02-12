@@ -63,7 +63,7 @@ public:
   void SetLength (uint16_t length);
   /**
    * Get destination address function
-   * \returns the desitnation MAC address
+   * \returns the destination MAC address
    */
   Mac48Address GetDestinationAddr (void) const;
   /**

@@ -776,15 +776,15 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
             {
               // we use one of the sending sockets, as they're bound to the right interface
               // and the local address might be used on different interfaces.
-              Ptr<Socket> sendingSoket;
+              Ptr<Socket> sendingSocket;
               for (SocketListI iter = m_sendSocketList.begin (); iter != m_sendSocketList.end (); iter++ )
                 {
                   if (iter->second == incomingInterface)
                     {
-                      sendingSoket = iter->first;
+                      sendingSocket = iter->first;
                     }
                 }
-              NS_ASSERT_MSG (sendingSoket, "HandleRequest - Impossible to find a socket to send the reply");
+              NS_ASSERT_MSG (sendingSocket, "HandleRequest - Impossible to find a socket to send the reply");
 
               uint16_t mtu = m_ipv6->GetMtu (incomingInterface);
               uint16_t maxRte = (mtu - Ipv6Header ().GetSerializedSize () - UdpHeader ().GetSerializedSize () - RipNgHeader ().GetSerializedSize ()) / RipNgRte ().GetSerializedSize ();
@@ -834,7 +834,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
                     {
                       p->AddHeader (hdr);
                       NS_LOG_DEBUG ("SendTo: " << *p);
-                      sendingSoket->SendTo (p, 0, Inet6SocketAddress (senderAddress, RIPNG_PORT));
+                      sendingSocket->SendTo (p, 0, Inet6SocketAddress (senderAddress, RIPNG_PORT));
                       p->RemoveHeader (hdr);
                       hdr.ClearRtes ();
                     }
@@ -843,7 +843,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
                 {
                   p->AddHeader (hdr);
                   NS_LOG_DEBUG ("SendTo: " << *p);
-                  sendingSoket->SendTo (p, 0, Inet6SocketAddress (senderAddress, RIPNG_PORT));
+                  sendingSocket->SendTo (p, 0, Inet6SocketAddress (senderAddress, RIPNG_PORT));
                 }
             }
         }
@@ -854,20 +854,20 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
 
       // we use one of the sending sockets, as they're bound to the right interface
       // and the local address might be used on different interfaces.
-      Ptr<Socket> sendingSoket;
+      Ptr<Socket> sendingSocket;
       if (senderAddress.IsLinkLocal ())
         {
           for (SocketListI iter = m_sendSocketList.begin (); iter != m_sendSocketList.end (); iter++ )
             {
               if (iter->second == incomingInterface)
                 {
-                  sendingSoket = iter->first;
+                  sendingSocket = iter->first;
                 }
             }
         }
       else
         {
-          sendingSoket = m_recvSocket;
+          sendingSocket = m_recvSocket;
         }
 
       Ptr<Packet> p = Create<Packet> ();
@@ -913,7 +913,7 @@ void RipNg::HandleRequests (RipNgHeader requestHdr, Ipv6Address senderAddress, u
         }
       p->AddHeader (hdr);
       NS_LOG_DEBUG ("SendTo: " << *p);
-      sendingSoket->SendTo (p, 0, Inet6SocketAddress (senderAddress, senderPort));
+      sendingSocket->SendTo (p, 0, Inet6SocketAddress (senderAddress, senderPort));
     }
 
 }

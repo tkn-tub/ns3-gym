@@ -83,7 +83,7 @@ private:
   bool m_do; ///< DO
   bool m_rf; ///< RF
   bool m_usn; ///< USN
-  Mac48Address m_destinationAddress; ///< desitnation address
+  Mac48Address m_destinationAddress; ///< destination address
   uint32_t m_destSeqNumber; ///< destiantion sequence number
 
   /**

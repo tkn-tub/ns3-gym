@@ -119,7 +119,7 @@ FdNetDevice::GetTypeId (void)
     // Trace sources at the "top" of the net device, where packets transition
     // to/from higher layers.  These points do not really correspond to the
     // MAC layer of the underlying operating system, but exist to provide
-    // a consitent tracing environment.  These trace hooks should really be
+    // a consistent tracing environment.  These trace hooks should really be
     // interpreted as the points at which a packet leaves the ns-3 environment
     // destined for the underlying operating system or vice-versa.
     //

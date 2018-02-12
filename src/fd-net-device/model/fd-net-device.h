@@ -269,7 +269,7 @@ private:
   Mac48Address m_address;
 
   /**
-   * The typ of encapsulation of the received/transmited frames.
+   * The type of encapsulation of the received/transmitted frames.
    */
   EncapsulationMode m_encapMode;
 
@@ -297,12 +297,12 @@ private:
   bool m_isMulticast;
 
   /**
-   * Number of packets that were received and scheduled for read but not yeat read.
+   * Number of packets that were received and scheduled for read but not yet read.
    */
   std::queue< std::pair<uint8_t *, ssize_t> > m_pendingQueue;
 
   /**
-   * Maximum number of packets that can be received and scheduled for read but not yeat read.
+   * Maximum number of packets that can be received and scheduled for read but not yet read.
    */
   uint32_t m_maxPendingReads;
 
