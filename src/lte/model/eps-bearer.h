@@ -27,7 +27,7 @@
 namespace ns3 {
 
 /**
- * 3GPP TS 36.143 9.2.1.18 GBR QoS Information
+ * 3GPP TS 36.413 9.2.1.18 GBR QoS Information
  *
  */
 struct GbrQosInformation
