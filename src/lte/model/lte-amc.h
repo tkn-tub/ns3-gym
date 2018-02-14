@@ -36,9 +36,6 @@ class SpectrumValue;
  * Implements the Adaptive Modulation And Coding Scheme. As proposed in 3GPP
  * TSG-RAN WG1 [R1-081483 Conveying MCS and TB size via PDCCH]
  * (http://www.3gpp.org/ftp/tsg_ran/WG1_RL1/TSGR1_52b/Docs/R1-081483.zip).
- *
- * \note All the methods of this class are static, so you'll never
- *       need to create and manage instances of this class.
  */
 class LteAmc : public Object
 {
@@ -71,12 +68,12 @@ public:
     };
   
   /**
-   * \brief Get the Modulation anc Coding Scheme for
+   * \brief Get the Modulation and Coding Scheme for
    * a CQI value
    * \param cqi the cqi value
    * \return the MCS  value
    */
-  /*static*/ int GetMcsFromCqi (int cqi);
+  int GetMcsFromCqi (int cqi);
 
   /**
   * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 7.1.7.2.1-1 of 36.213)
@@ -84,7 +81,7 @@ public:
   * \param nprb the no. of PRB
   * \return the Transport Block Size in bits
   */
-  /*static*/ int GetDlTbSizeFromMcs (int mcs, int nprb);
+  int GetDlTbSizeFromMcs (int mcs, int nprb);
 
   /**
    * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 8.6.1-1 of 36.213)
@@ -92,7 +89,7 @@ public:
    * \param nprb the no. of PRB
    * \return the Transport Block Size in bits
    */
-  /*static*/ int GetUlTbSizeFromMcs (int mcs, int nprb);
+  int GetUlTbSizeFromMcs (int mcs, int nprb);
 
   /**
    * \brief Get the spectral efficiency value associated
@@ -100,7 +97,7 @@ public:
    * \param cqi the cqi value
    * \return the spectral efficiency in (bit/s)/Hz
    */
-  /*static*/ double GetSpectralEfficiencyFromCqi (int cqi);
+  double GetSpectralEfficiencyFromCqi (int cqi);
 
   /**
    * \brief Create a message with CQI feedback
@@ -108,17 +105,17 @@ public:
    * \param rbgSize size of RB group (in RBs) for evaluating subband/wideband CQI
    * \return a vector of CQI feedbacks
    */
-  /*static*/ std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr,
+  std::vector<int> CreateCqiFeedbacks (const SpectrumValue& sinr,
                                                   uint8_t rbgSize = 0);
 
   /**
    * \brief Get a proper CQI for the spectral efficiency value.
-   * In order to assure a fewer block error rate, the AMC chooses the lower CQI value
+   * In order to assure a lower block error rate, the AMC chooses the lower CQI value
    * for a given spectral efficiency
    * \param s the spectral efficiency
    * \return the CQI value
    */
-  /*static*/ int GetCqiFromSpectralEfficiency (double s);
+  int GetCqiFromSpectralEfficiency (double s);
   
 private:
   
