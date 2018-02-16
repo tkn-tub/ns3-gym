@@ -56,7 +56,7 @@ WifiMacQueueItem::GetHeader (void) const
 }
 
 Mac48Address
-WifiMacQueueItem::GetAddress (enum WifiMacHeader::AddressType type) const
+WifiMacQueueItem::GetAddress (WifiMacHeader::AddressType type) const
 {
   if (type == WifiMacHeader::ADDR1)
     {

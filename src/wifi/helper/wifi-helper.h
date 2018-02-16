@@ -120,7 +120,7 @@ public:
    *
    * @param dlt The data link type of the pcap file (and packets) to be used
    */
-  void SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt);
+  void SetPcapDataLinkType (SupportedPcapDataLinkTypes dlt);
 
   /**
    * Get the data link type of PCAP traces to be used.
@@ -316,7 +316,7 @@ public:
    * \sa WifiMac::ConfigureStandard
    * \sa Config::Set
    */
-  virtual void SetStandard (enum WifiPhyStandard standard);
+  virtual void SetStandard (WifiPhyStandard standard);
 
   /**
    * Helper to enable all WifiNetDevice log components with one statement
@@ -342,7 +342,7 @@ public:
 
 protected:
   ObjectFactory m_stationManager; ///< station manager
-  enum WifiPhyStandard m_standard; ///< wifi standard
+  WifiPhyStandard m_standard; ///< wifi standard
 };
 
 } //namespace ns3

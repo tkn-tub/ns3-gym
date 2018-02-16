@@ -163,7 +163,7 @@ public:
    * @param mode
    * @param preamble
    */
-  void PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble);
+  void PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble);
 
   /**
    * Function to be called when a frame reception by the PHY
@@ -197,7 +197,7 @@ public:
    * @param duration
    * @param state
    */
-  void PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state);
+  void PhyStateTrace (std::string context, Time start, Time duration, WifiPhy::State state);
 
   /**
    * Open a file for output

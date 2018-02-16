@@ -103,7 +103,7 @@ struct StandardInfo
    * \param xMax x maximum
    * \param yMax y maximum
    */
-  StandardInfo (std::string name, enum WifiPhyStandard standard, uint16_t width, double snrLow, double snrHigh, double xMin, double xMax, double yMax)
+  StandardInfo (std::string name, WifiPhyStandard standard, uint16_t width, double snrLow, double snrHigh, double xMin, double xMax, double yMax)
     : m_name (name),
       m_standard (standard),
       m_width (width),
@@ -115,7 +115,7 @@ struct StandardInfo
   {
   }
   std::string m_name; ///< name
-  enum WifiPhyStandard m_standard; ///< standard
+  WifiPhyStandard m_standard; ///< standard
   uint16_t m_width; ///< channel width
   double m_snrLow; ///< lowest SNR
   double m_snrHigh; ///< highest SNR

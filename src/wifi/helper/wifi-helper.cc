@@ -94,7 +94,7 @@ AsciiPhyReceiveSinkWithContext (
   Ptr<const Packet> p,
   double snr,
   WifiMode mode,
-  enum WifiPreamble preamble)
+  WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << context << p << snr << mode << preamble);
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *p << std::endl;
@@ -114,7 +114,7 @@ AsciiPhyReceiveSinkWithoutContext (
   Ptr<const Packet> p,
   double snr,
   WifiMode mode,
-  enum WifiPreamble preamble)
+  WifiPreamble preamble)
 {
   NS_LOG_FUNCTION (stream << p << snr << mode << preamble);
   *stream->GetStream () << "r " << Simulator::Now ().GetSeconds () << " " << *p << std::endl;
@@ -550,7 +550,7 @@ WifiPhyHelper::PcapSniffRxEvent (
 }
 
 void
-WifiPhyHelper::SetPcapDataLinkType (enum SupportedPcapDataLinkTypes dlt)
+WifiPhyHelper::SetPcapDataLinkType (SupportedPcapDataLinkTypes dlt)
 {
   switch (dlt)
     {
@@ -718,7 +718,7 @@ WifiHelper::SetRemoteStationManager (std::string type,
 }
 
 void
-WifiHelper::SetStandard (enum WifiPhyStandard standard)
+WifiHelper::SetStandard (WifiPhyStandard standard)
 {
   m_standard = standard;
 }
