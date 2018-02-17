@@ -920,7 +920,7 @@ protected:
    *
    * \return WifiMode at the given index of the specified station
    */
-  WifiMode GetSupported (const WifiRemoteStation *station, uint32_t i) const;
+  WifiMode GetSupported (const WifiRemoteStation *station, uint8_t i) const;
   /**
    * Return the number of modes supported by the given station.
    *
@@ -928,7 +928,7 @@ protected:
    *
    * \return the number of modes supported by the given station
    */
-  uint32_t GetNSupported (const WifiRemoteStation *station) const;
+  uint8_t GetNSupported (const WifiRemoteStation *station) const;
   /**
    * Return whether the given station is QoS capable.
    *
@@ -974,7 +974,7 @@ protected:
    * \return the WifiMode at the given index of the specified station
    */
 
-  WifiMode GetMcsSupported (const WifiRemoteStation *station, uint32_t i) const;
+  WifiMode GetMcsSupported (const WifiRemoteStation *station, uint8_t i) const;
   /**
    * Return the number of MCS supported by the given station.
    *
@@ -991,7 +991,7 @@ protected:
    *
    * \return WifiMode at the given index of the specified station
    */
-  WifiMode GetNonErpSupported (const WifiRemoteStation *station, uint32_t i) const;
+  WifiMode GetNonErpSupported (const WifiRemoteStation *station, uint8_t i) const;
   /**
    * Return the number of non-ERP modes supported by the given station.
    *

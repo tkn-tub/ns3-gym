@@ -2004,21 +2004,21 @@ WifiRemoteStationManager::DoReportAmpduTxStatus (WifiRemoteStation *station, uin
 }
 
 WifiMode
-WifiRemoteStationManager::GetSupported (const WifiRemoteStation *station, uint32_t i) const
+WifiRemoteStationManager::GetSupported (const WifiRemoteStation *station, uint8_t i) const
 {
   NS_ASSERT (i < GetNSupported (station));
   return station->m_state->m_operationalRateSet[i];
 }
 
 WifiMode
-WifiRemoteStationManager::GetMcsSupported (const WifiRemoteStation *station, uint32_t i) const
+WifiRemoteStationManager::GetMcsSupported (const WifiRemoteStation *station, uint8_t i) const
 {
   NS_ASSERT (i < GetNMcsSupported (station));
   return station->m_state->m_operationalMcsSet[i];
 }
 
 WifiMode
-WifiRemoteStationManager::GetNonErpSupported (const WifiRemoteStation *station, uint32_t i) const
+WifiRemoteStationManager::GetNonErpSupported (const WifiRemoteStation *station, uint8_t i) const
 {
   NS_ASSERT (i < GetNNonErpSupported (station));
   //IEEE 802.11g standard defines that if the protection mechanism is enabled, Rts, Cts and Cts-To-Self
@@ -2117,7 +2117,7 @@ WifiRemoteStationManager::GetLongRetryCount (const WifiRemoteStation *station) c
   return station->m_slrc;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetNSupported (const WifiRemoteStation *station) const
 {
   return station->m_state->m_operationalRateSet.size ();

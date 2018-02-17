@@ -327,7 +327,6 @@ Time
 MinstrelHtWifiManager::CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode)
 {
   NS_LOG_FUNCTION (this << phy << static_cast<uint16_t> (streams) << static_cast<uint16_t> (sgi) << static_cast<uint16_t> (chWidth) << mode);
-
   WifiTxVector txvector;
   txvector.SetNss (streams);
   txvector.SetGuardInterval (sgi ? 400 : 800);
@@ -343,7 +342,6 @@ Time
 MinstrelHtWifiManager::CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode)
 {
   NS_LOG_FUNCTION (this << phy << static_cast<uint16_t> (streams) << static_cast<uint16_t> (sgi) << static_cast<uint16_t> (chWidth) << mode);
-
   WifiTxVector txvector;
   txvector.SetNss (streams);
   txvector.SetGuardInterval (sgi ? 400 : 800);
@@ -359,7 +357,6 @@ Time
 MinstrelHtWifiManager::GetFirstMpduTxTime (uint32_t groupId, WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << groupId << mode);
-
   for (TxTime::const_iterator i = m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.begin (); i != m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.end (); i++)
     {
       if (mode == i->second)
@@ -375,7 +372,6 @@ void
 MinstrelHtWifiManager::AddFirstMpduTxTime (uint32_t groupId, WifiMode mode, Time t)
 {
   NS_LOG_FUNCTION (this << groupId << mode << t);
-
   m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.push_back (std::make_pair (t, mode));
 }
 
@@ -383,7 +379,6 @@ Time
 MinstrelHtWifiManager::GetMpduTxTime (uint32_t groupId, WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << groupId << mode);
-
   for (TxTime::const_iterator i = m_minstrelGroups[groupId].ratesTxTimeTable.begin (); i != m_minstrelGroups[groupId].ratesTxTimeTable.end (); i++)
     {
       if (mode == i->second)
@@ -399,7 +394,6 @@ void
 MinstrelHtWifiManager::AddMpduTxTime (uint32_t groupId, WifiMode mode, Time t)
 {
   NS_LOG_FUNCTION (this << groupId << mode << t);
-
   m_minstrelGroups[groupId].ratesTxTimeTable.push_back (std::make_pair (t, mode));
 }
 
@@ -407,7 +401,6 @@ WifiRemoteStation *
 MinstrelHtWifiManager::DoCreateStation (void) const
 {
   NS_LOG_FUNCTION (this);
-
   MinstrelHtWifiRemoteStation *station = new MinstrelHtWifiRemoteStation ();
 
   // Initialize variables common to both stations.
@@ -461,7 +454,6 @@ void
 MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-
   // Note: we appear to be doing late initialization of the table
   // to make sure that the set of supported rates has been initialized
   // before we perform our own initialization.
@@ -503,11 +495,9 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
 }
 
 void
-MinstrelHtWifiManager::DoReportRxOk (WifiRemoteStation *st,
-                                     double rxSnr, WifiMode txMode)
+MinstrelHtWifiManager::DoReportRxOk (WifiRemoteStation *st, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << st);
-
   NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << ((MinstrelHtWifiRemoteStation *)st)->m_txrate);
 }
 
@@ -515,15 +505,12 @@ void
 MinstrelHtWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-
   MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
-
   CheckInit (station);
   if (!station->m_initialized)
     {
       return;
     }
-
   NS_LOG_DEBUG ("DoReportRtsFailed m_txrate=" << station->m_txrate);
   station->m_shortRetry++;
 }
@@ -532,7 +519,6 @@ void
 MinstrelHtWifiManager::DoReportRtsOk (WifiRemoteStation *st, double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st);
-
   NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
 
@@ -540,16 +526,13 @@ void
 MinstrelHtWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-
   MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
   NS_LOG_DEBUG ("Final RTS failed");
-
   CheckInit (station);
   if (!station->m_initialized)
     {
       return;
     }
-
   UpdateRetry (station);
 }
 
@@ -557,7 +540,6 @@ void
 MinstrelHtWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-
   MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *)st;
 
   CheckInit (station);
@@ -577,14 +559,12 @@ MinstrelHtWifiManager::DoReportDataFailed (WifiRemoteStation *st)
       uint32_t rateId = GetRateId (station->m_txrate);
       uint32_t groupId = GetGroupId (station->m_txrate);
       station->m_groupsTable[groupId].m_ratesTable[rateId].numRateAttempt++; // Increment the attempts counter for the rate used.
-
       UpdateRate (station);
     }
 }
 
 void
-MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                       double ackSnr, WifiMode ackMode, double dataSnr)
+MinstrelHtWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode, double dataSnr)
 {
   NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
   MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
@@ -851,7 +831,6 @@ MinstrelHtWifiManager::UpdateRetry (MinstrelHtWifiRemoteStation *station)
   NS_LOG_FUNCTION (this << station);
   station->m_shortRetry = 0;
   station->m_longRetry = 0;
-
 }
 
 void
@@ -876,8 +855,8 @@ MinstrelHtWifiManager::UpdatePacketCounters (MinstrelHtWifiRemoteStation *statio
       station->m_sampleTries = 1;
       station->m_sampleCount--;
     }
-
 }
+
 void
 MinstrelHtWifiManager::DoDisposeStation (WifiRemoteStation *st)
 {
@@ -1816,7 +1795,6 @@ uint32_t
 MinstrelHtWifiManager::GetRateId (uint32_t index)
 {
   NS_LOG_FUNCTION (this << index);
-
   uint32_t id;
   id = index % m_numRates;
   return id;
@@ -1826,7 +1804,6 @@ uint32_t
 MinstrelHtWifiManager::GetGroupId (uint32_t index)
 {
   NS_LOG_FUNCTION (this << index);
-
   return index / m_numRates;
 }
 
@@ -1877,7 +1854,6 @@ MinstrelHtWifiManager::GetLowestIndex (MinstrelHtWifiRemoteStation *station, uin
   return GetIndex (groupId, rateId);
 }
 
-
 WifiModeList
 MinstrelHtWifiManager::GetVhtDeviceMcsList (void) const
 {
@@ -1921,8 +1897,3 @@ MinstrelHtWifiManager::SetHeSupported (bool enable)
 }
 
 } // namespace ns3
-
-
-
-
-

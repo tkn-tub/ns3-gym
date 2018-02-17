@@ -47,7 +47,7 @@ struct AarfcdWifiRemoteStation : public WifiRemoteStation
   uint32_t m_retry; ///< retry
   uint32_t m_successThreshold; ///< success threshold
   uint32_t m_timerTimeout; ///< timer timeout
-  uint32_t m_rate; ///< rate
+  uint8_t m_rate; ///< rate
   bool m_rtsOn; ///< RTS on
   uint32_t m_rtsWnd; ///< RTS window
   uint32_t m_rtsCounter; ///< RTS counter

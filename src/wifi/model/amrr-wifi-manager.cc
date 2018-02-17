@@ -43,7 +43,7 @@ struct AmrrWifiRemoteStation : public WifiRemoteStation
   uint32_t m_tx_err; ///< transmit error
   uint32_t m_tx_retr; ///< transmit retry
   uint32_t m_retry; ///< retry
-  uint32_t m_txrate; ///< transmit rate
+  uint8_t m_txrate; ///< transmit rate
   uint32_t m_successThreshold; ///< success threshold
   uint32_t m_success; ///< success
   bool m_recovery; ///< recovery
@@ -253,7 +253,7 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
       station->m_success++;
       NS_LOG_DEBUG ("++ success=" << station->m_success << " successThreshold=" << station->m_successThreshold <<
                     " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err << " tx_retr=" << station->m_tx_retr <<
-                    " rate=" << station->m_txrate << " n-supported-rates=" << GetNSupported (station));
+                    " rate=" << static_cast<uint16_t>(station->m_txrate) << " n-supported-rates=" << static_cast<uint16_t>(GetNSupported (station)));
       if (station->m_success >= station->m_successThreshold
           && !IsMaxRate (station))
         {
@@ -272,7 +272,7 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
       station->m_success = 0;
       NS_LOG_DEBUG ("-- success=" << station->m_success << " successThreshold=" << station->m_successThreshold <<
                     " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err << " tx_retr=" << station->m_tx_retr <<
-                    " rate=" << station->m_txrate << " n-supported-rates=" << GetNSupported (station));
+                    " rate=" << static_cast<uint16_t>(station->m_txrate) << " n-supported-rates=" << static_cast<uint16_t>(GetNSupported (station)));
       if (!IsMinRate (station))
         {
           if (station->m_recovery)
@@ -308,7 +308,7 @@ AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));
-  uint32_t rateIndex;
+  uint8_t rateIndex;
   if (station->m_retry < 1)
     {
       rateIndex = station->m_txrate;

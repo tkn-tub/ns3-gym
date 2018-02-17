@@ -48,9 +48,7 @@ struct RraaWifiRemoteStation : public WifiRemoteStation
   bool m_adaptiveRtsOn;          //!< Check if Adaptive RTS mechanism is on.
   bool m_lastFrameFail;          //!< Flag if the last frame sent has failed.
   bool m_initialized;            //!< For initializing variables.
-
   uint8_t m_nRate;              //!< Number of supported rates.
-
   uint8_t m_rateIndex;          //!< Current rate index.
 
   RraaThresholdsTable m_thresholds; //!< RRAA thresholds for this station.
@@ -452,10 +450,9 @@ RraaWifiManager::ARts (RraaWifiRemoteStation *station)
 }
 
 WifiRraaThresholds
-RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station,
-                                uint32_t rate) const
+RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, uint8_t rate) const
 {
-  NS_LOG_FUNCTION (this << station << rate);
+  NS_LOG_FUNCTION (this << station << static_cast<uint16_t>(rate));
   WifiMode mode = GetSupported (station, rate);
   return GetThresholds (station, mode);
 }

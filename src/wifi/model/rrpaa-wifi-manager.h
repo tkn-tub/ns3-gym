@@ -174,7 +174,7 @@ private:
    *
    * \return threshold
    */
-  WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, uint32_t rate) const;
+  WifiRrpaaThresholds GetThresholds (RrpaaWifiRemoteStation *station, uint8_t rate) const;
 
   /**
    * Get the estimated TxTime of a packet with a given mode.

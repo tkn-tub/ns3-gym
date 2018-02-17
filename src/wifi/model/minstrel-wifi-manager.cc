@@ -425,9 +425,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
       return 0;
     }
 
-
-  uint8_t idx;
-
+  uint32_t idx = 0;
   NS_LOG_DEBUG ("Total: " << station->m_totalPacketsCount << "  Sample: " << station->m_samplePacketsCount << "  Deferred: " << station->m_numSamplesDeferred);
 
   int delta = (station->m_totalPacketsCount * m_lookAroundRate / 100) - (station->m_samplePacketsCount + station->m_numSamplesDeferred / 2);

@@ -39,7 +39,7 @@ struct CaraWifiRemoteStation : public WifiRemoteStation
   uint32_t m_timer; ///< timer count
   uint32_t m_success; ///< success count
   uint32_t m_failed; ///< failed count
-  uint32_t m_rate; ///< rate
+  uint8_t m_rate; ///< rate
 };
 
 NS_OBJECT_ENSURE_REGISTERED (CaraWifiManager);
@@ -161,7 +161,7 @@ CaraWifiManager::DoReportDataOk (WifiRemoteStation *st,
         {
           station->m_rate++;
         }
-      NS_LOG_DEBUG ("self=" << station << " inc rate=" << station->m_rate);
+      NS_LOG_DEBUG ("self=" << station << " inc rate=" << static_cast<uint16_t>(station->m_rate));
       station->m_timer = 0;
       station->m_success = 0;
     }

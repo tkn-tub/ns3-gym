@@ -99,8 +99,8 @@ private:
   uint32_t m_powerMax;   //!< The maximum number of power changes.
   uint8_t m_powerInc;    //!< Step size for increment the power.
   uint8_t m_powerDec;    //!< Step size for decrement the power.
-  uint32_t m_rateInc;    //!< Step size for increment the rate.
-  uint32_t m_rateDec;    //!< Step size for decrement the rate.
+  uint8_t m_rateInc;    //!< Step size for increment the rate.
+  uint8_t m_rateDec;    //!< Step size for decrement the rate.
 
   /**
    * Minimal power level.

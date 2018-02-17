@@ -92,7 +92,7 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
   uint32_t m_maxTpRate;          ///< the current throughput rate
   uint32_t m_maxTpRate2;         ///< second highest throughput rate
   uint32_t m_maxProbRate;        ///< rate with highest prob of success
-  uint32_t m_nModes;             ///< number of modes supported
+  uint8_t m_nModes;              ///< number of modes supported
   int m_totalPacketsCount;       ///< total number of packets as of now
   int m_samplePacketsCount;      ///< how many packets we have sample so far
   int m_numSamplesDeferred;      ///< number samles deferred
