@@ -346,7 +346,7 @@ AmrrWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
           rateIndex = station->m_txrate;
         }
     }
-  uint32_t channelWidth = GetChannelWidth (station);
+  uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
@@ -366,7 +366,7 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   AmrrWifiRemoteStation *station = (AmrrWifiRemoteStation *)st;
-  uint32_t channelWidth = GetChannelWidth (station);
+  uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac

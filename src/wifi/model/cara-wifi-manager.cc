@@ -184,7 +184,7 @@ CaraWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
-  uint32_t channelWidth = GetChannelWidth (station);
+  uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
@@ -206,7 +206,7 @@ CaraWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   CaraWifiRemoteStation *station = (CaraWifiRemoteStation *) st;
   /// \todo we could/should implement the Arf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
-  uint32_t channelWidth = GetChannelWidth (station);
+  uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac

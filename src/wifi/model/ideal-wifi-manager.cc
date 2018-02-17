@@ -34,7 +34,7 @@ struct IdealWifiRemoteStation : public WifiRemoteStation
 {
   double m_lastSnrObserved;  //!< SNR of most recently reported packet sent to the remote station
   double m_lastSnrCached;    //!< SNR most recently used to select a rate
-  double m_nss;          //!< SNR most recently used to select a rate
+  uint8_t m_nss;             //!< SNR most recently used to select a rate
   WifiMode m_lastMode;       //!< Mode most recently used to the remote station
 };
 

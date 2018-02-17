@@ -238,7 +238,7 @@ AarfWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
-  uint32_t channelWidth = GetChannelWidth (station);
+  uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
@@ -260,7 +260,7 @@ AarfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
   /// \todo we could/should implement the Aarf algorithm for
   /// RTS only by picking a single rate within the BasicRateSet.
   AarfWifiRemoteStation *station = (AarfWifiRemoteStation *) st;
-  uint32_t channelWidth = GetChannelWidth (station);
+  uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
