@@ -86,12 +86,12 @@ AparfWifiManager::GetTypeId (void)
                    "Step size for decrement the power.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&AparfWifiManager::m_powerDec),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("PowerIncrementStep",
                    "Step size for increment the power.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&AparfWifiManager::m_powerInc),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("RateDecrementStep",
                    "Step size for decrement the rate.",
                    UintegerValue (1),

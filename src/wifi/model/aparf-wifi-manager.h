@@ -97,8 +97,8 @@ private:
   uint32_t m_succesMax2; //!< The minimum number of successful transmissions in \"Low\" state to try a new power or rate.
   uint32_t m_failMax;    //!< The minimum number of failed transmissions to try a new power or rate.
   uint32_t m_powerMax;   //!< The maximum number of power changes.
-  uint32_t m_powerInc;   //!< Step size for increment the power.
-  uint32_t m_powerDec;   //!< Step size for decrement the power.
+  uint8_t m_powerInc;    //!< Step size for increment the power.
+  uint8_t m_powerDec;    //!< Step size for decrement the power.
   uint32_t m_rateInc;    //!< Step size for increment the rate.
   uint32_t m_rateDec;    //!< Step size for decrement the rate.
 
@@ -107,12 +107,12 @@ private:
    * Differently form rate, power levels do not depend on the remote station.
    * The levels depend only on the physical layer of the device.
    */
-  uint32_t m_minPower;
+  uint8_t m_minPower;
 
   /**
    * Maximal power level.
    */
-  uint32_t m_maxPower;
+  uint8_t m_maxPower;
 
   /**
    * The trace source fired when the transmission power changes.

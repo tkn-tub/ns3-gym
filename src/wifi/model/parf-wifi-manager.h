@@ -89,12 +89,12 @@ private:
    * In contrast to rate, power levels do not depend on the remote station.
    * The levels depend only on the physical layer of the device.
    */
-  uint32_t m_minPower;
+  uint8_t m_minPower;
 
   /**
    * Maximal power level.
    */
-  uint32_t m_maxPower;
+  uint8_t m_maxPower;
 
   /**
    * The trace source fired when the transmission power changes.
