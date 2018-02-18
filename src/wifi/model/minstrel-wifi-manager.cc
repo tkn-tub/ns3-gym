@@ -894,7 +894,7 @@ MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
 
   //bookeeping for m_index and m_col variables
   NS_ABORT_MSG_IF (station->m_nModes < 2, "Integer overflow detected");
-  if (station->m_index > static_cast<uint32_t> (station->m_nModes - 2))
+  if (station->m_index > station->m_nModes - 2)
     {
       station->m_index = 0;
       station->m_col++;
