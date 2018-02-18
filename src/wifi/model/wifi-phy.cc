@@ -207,7 +207,7 @@ WifiPhy::GetTypeId (void)
                    "TxPowerStart and TxPowerEnd included.",
                    UintegerValue (1),
                    MakeUintegerAccessor (&WifiPhy::m_nTxPower),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("TxPowerEnd",
                    "Maximum available transmission level (dbm).",
                    DoubleValue (16.0206),
@@ -535,13 +535,13 @@ WifiPhy::GetTxPowerEnd (void) const
 }
 
 void
-WifiPhy::SetNTxPower (uint32_t n)
+WifiPhy::SetNTxPower (uint8_t n)
 {
-  NS_LOG_FUNCTION (this << n);
+  NS_LOG_FUNCTION (this << static_cast<uint16_t>(n));
   m_nTxPower = n;
 }
 
-uint32_t
+uint8_t
 WifiPhy::GetNTxPower (void) const
 {
   return m_nTxPower;

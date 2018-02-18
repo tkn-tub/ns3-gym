@@ -1431,13 +1431,13 @@ public:
    *
    * \param n the number of available levels
    */
-  void SetNTxPower (uint32_t n);
+  void SetNTxPower (uint8_t n);
   /**
    * Return the number of available transmission power levels.
    *
    * \return the number of available transmission power levels
    */
-  uint32_t GetNTxPower (void) const;
+  uint8_t GetNTxPower (void) const;
   /**
    * Sets the transmission gain (dB).
    *
@@ -1956,7 +1956,7 @@ private:
   double   m_rxGainDb;            //!< Reception gain (dB)
   double   m_txPowerBaseDbm;      //!< Minimum transmission power (dBm)
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
-  uint32_t m_nTxPower;            //!< Number of available transmission power levels
+  uint8_t  m_nTxPower;            //!< Number of available transmission power levels
 
   bool     m_ldpc;                  //!< Flag if LDPC is used
   bool     m_stbc;                  //!< Flag if STBC is used

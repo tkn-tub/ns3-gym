@@ -332,7 +332,7 @@ RegularWifiMac::GetHeCapabilities (void) const
 }
 
 void
-RegularWifiMac::SetVoMaxAmsduSize (uint32_t size)
+RegularWifiMac::SetVoMaxAmsduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_voMaxAmsduSize = size;
@@ -340,7 +340,7 @@ RegularWifiMac::SetVoMaxAmsduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetViMaxAmsduSize (uint32_t size)
+RegularWifiMac::SetViMaxAmsduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_viMaxAmsduSize = size;
@@ -348,7 +348,7 @@ RegularWifiMac::SetViMaxAmsduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetBeMaxAmsduSize (uint32_t size)
+RegularWifiMac::SetBeMaxAmsduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_beMaxAmsduSize = size;
@@ -356,7 +356,7 @@ RegularWifiMac::SetBeMaxAmsduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetBkMaxAmsduSize (uint32_t size)
+RegularWifiMac::SetBkMaxAmsduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_bkMaxAmsduSize = size;
@@ -364,7 +364,7 @@ RegularWifiMac::SetBkMaxAmsduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetVoMaxAmpduSize (uint32_t size)
+RegularWifiMac::SetVoMaxAmpduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_voMaxAmpduSize = size;
@@ -372,7 +372,7 @@ RegularWifiMac::SetVoMaxAmpduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetViMaxAmpduSize (uint32_t size)
+RegularWifiMac::SetViMaxAmpduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_viMaxAmpduSize = size;
@@ -380,7 +380,7 @@ RegularWifiMac::SetViMaxAmpduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetBeMaxAmpduSize (uint32_t size)
+RegularWifiMac::SetBeMaxAmpduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_beMaxAmpduSize = size;
@@ -388,7 +388,7 @@ RegularWifiMac::SetBeMaxAmpduSize (uint32_t size)
 }
 
 void
-RegularWifiMac::SetBkMaxAmpduSize (uint32_t size)
+RegularWifiMac::SetBkMaxAmpduSize (uint16_t size)
 {
   NS_LOG_FUNCTION (this << size);
   m_bkMaxAmpduSize = size;
@@ -1117,49 +1117,49 @@ RegularWifiMac::GetTypeId (void)
                    "Value 0 means A-MSDU is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmsduSize),
-                   MakeUintegerChecker<uint32_t> (0, 11426))
+                   MakeUintegerChecker<uint16_t> (0, 11426))
     .AddAttribute ("VI_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_VI access class."
                    "Value 0 means A-MSDU is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetViMaxAmsduSize),
-                   MakeUintegerChecker<uint32_t> (0, 11426))
+                   MakeUintegerChecker<uint16_t> (0, 11426))
     .AddAttribute ("BE_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_BE access class."
                    "Value 0 means A-MSDU is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBeMaxAmsduSize),
-                   MakeUintegerChecker<uint32_t> (0, 11426))
+                   MakeUintegerChecker<uint16_t> (0, 11426))
     .AddAttribute ("BK_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_BK access class."
                    "Value 0 means A-MSDU is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBkMaxAmsduSize),
-                   MakeUintegerChecker<uint32_t> (0, 11426))
+                   MakeUintegerChecker<uint16_t> (0, 11426))
     .AddAttribute ("VO_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_VO access class."
                    "Value 0 means A-MPDU is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetVoMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 65535))
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("VI_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_VI access class."
                    "Value 0 means A-MPDU is disabled for that AC.",
                    UintegerValue (65535),
                    MakeUintegerAccessor (&RegularWifiMac::SetViMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 65535))
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("BE_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_BE access class."
                    "Value 0 means A-MPDU is disabled for that AC.",
                    UintegerValue (65535),
                    MakeUintegerAccessor (&RegularWifiMac::SetBeMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 65535))
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("BK_MaxAmpduSize",
                    "Maximum length in bytes of an A-MPDU for AC_BK access class."
                    "Value 0 means A-MPDU is disabled for that AC.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&RegularWifiMac::SetBkMaxAmpduSize),
-                   MakeUintegerChecker<uint32_t> (0, 65535))
+                   MakeUintegerChecker<uint16_t> ())
     .AddAttribute ("VO_BlockAckThreshold",
                    "If number of packets in VO queue reaches this value, "
                    "block ack mechanism is used. If this value is 0, block ack is never used."

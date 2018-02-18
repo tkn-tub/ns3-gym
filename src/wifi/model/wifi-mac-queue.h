@@ -28,6 +28,7 @@
 #include "wifi-mac-header.h"
 
 namespace ns3 {
+
 class QosBlockedDestinations;
 
 /**

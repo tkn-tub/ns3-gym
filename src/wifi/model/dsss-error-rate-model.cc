@@ -40,7 +40,7 @@ DsssErrorRateModel::DqpskFunction (double x)
 }
 
 double
-DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint32_t nbits)
+DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint64_t nbits)
 {
   NS_LOG_FUNCTION_NOARGS ();
   double EbN0 = sinr * 22000000.0 / 1000000.0; //1 bit per symbol with 1 MSPS
@@ -49,7 +49,7 @@ DsssErrorRateModel::GetDsssDbpskSuccessRate (double sinr, uint32_t nbits)
 }
 
 double
-DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr, uint32_t nbits)
+DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr, uint64_t nbits)
 {
   NS_LOG_FUNCTION_NOARGS ();
   double EbN0 = sinr * 22000000.0 / 1000000.0 / 2.0; //2 bits per symbol, 1 MSPS
@@ -58,7 +58,7 @@ DsssErrorRateModel::GetDsssDqpskSuccessRate (double sinr, uint32_t nbits)
 }
 
 double
-DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr, uint32_t nbits)
+DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr, uint64_t nbits)
 {
   NS_LOG_FUNCTION_NOARGS ();
 #ifdef HAVE_GSL
@@ -92,7 +92,7 @@ DsssErrorRateModel::GetDsssDqpskCck5_5SuccessRate (double sinr, uint32_t nbits)
 }
 
 double
-DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr, uint32_t nbits)
+DsssErrorRateModel::GetDsssDqpskCck11SuccessRate (double sinr, uint64_t nbits)
 {
   NS_LOG_FUNCTION_NOARGS ();
 #ifdef HAVE_GSL

@@ -662,7 +662,7 @@ WifiMacHeader::GetSequenceNumber (void) const
   return m_seqSeq;
 }
 
-uint16_t
+uint8_t
 WifiMacHeader::GetFragmentNumber (void) const
 {
   return m_seqFrag;

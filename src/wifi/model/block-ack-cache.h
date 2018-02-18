@@ -77,7 +77,7 @@ private:
   void ResetPortionOfBitmap (uint16_t start, uint16_t end);
 
   uint16_t m_winStart; ///< window start
-  uint8_t m_winSize; ///< window size
+  uint16_t m_winSize; ///< window size
   uint16_t m_winEnd; ///< window end
 
   uint16_t m_bitmap[4096]; ///< bitmap

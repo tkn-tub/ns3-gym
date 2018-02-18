@@ -452,7 +452,7 @@ public:
    *
    * \return the fragment number of the header
    */
-  uint16_t GetFragmentNumber (void) const;
+  uint8_t GetFragmentNumber (void) const;
   /**
    * Return if the Retry bit is set.
    *

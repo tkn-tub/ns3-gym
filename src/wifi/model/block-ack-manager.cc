@@ -545,8 +545,8 @@ BlockAckManager::NotifyGotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac4
       if (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED))
         {
           bool foundFirstLost = false;
-          uint32_t nSuccessfulMpdus = 0;
-          uint32_t nFailedMpdus = 0;
+          uint8_t nSuccessfulMpdus = 0;
+          uint8_t nFailedMpdus = 0;
           AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
           PacketQueueI queueEnd = it->second.second.end ();
 
