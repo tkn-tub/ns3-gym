@@ -656,10 +656,9 @@ private:
   /**
    * Send DATA after receiving CTS.
    *
-   * \param source
    * \param duration
    */
-  void SendDataAfterCts (Mac48Address source, Time duration);
+  void SendDataAfterCts (Time duration);
 
   /**
    * Event handler that is usually scheduled to fired at the appropriate time

@@ -79,14 +79,14 @@ ErpInformation::GetNonErpPresent (void) const
 uint8_t
 ErpInformation::GetInformationFieldSize () const
 {
-  NS_ASSERT (m_erpSupported > 0);
+  NS_ASSERT (m_erpSupported);
   return 1;
 }
 
 Buffer::Iterator
 ErpInformation::Serialize (Buffer::Iterator i) const
 {
-  if (m_erpSupported < 1)
+  if (!m_erpSupported)
     {
       return i;
     }
@@ -96,7 +96,7 @@ ErpInformation::Serialize (Buffer::Iterator i) const
 uint16_t
 ErpInformation::GetSerializedSize () const
 {
-  if (m_erpSupported < 1)
+  if (!m_erpSupported)
     {
       return 0;
     }
@@ -106,7 +106,7 @@ ErpInformation::GetSerializedSize () const
 void
 ErpInformation::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_erpSupported == 1)
+  if (m_erpSupported)
     {
       start.WriteU8 (m_erpInformation);
     }

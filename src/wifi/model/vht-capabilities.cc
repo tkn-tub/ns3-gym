@@ -112,7 +112,7 @@ VhtCapabilities::DeserializeInformationField (Buffer::Iterator start,
                                               uint8_t length)
 {
   Buffer::Iterator i = start;
-  uint16_t vhtinfo = i.ReadLsbtohU32 ();
+  uint32_t vhtinfo = i.ReadLsbtohU32 ();
   uint64_t mcsset = i.ReadLsbtohU64 ();
   SetVhtCapabilitiesInfo (vhtinfo);
   SetSupportedMcsAndNssSet (mcsset);
@@ -181,7 +181,7 @@ VhtCapabilities::SetSupportedMcsAndNssSet (uint64_t ctrl)
   m_rxHighestSupportedLongGuardIntervalDataRate = (ctrl >> 16) & 0x1fff;
   for (uint8_t i = 0; i < 8; i++)
     {
-      uint16_t n = (i * 2) + 32;
+      n = (i * 2) + 32;
       m_txMcsMap[i] = (ctrl >> n) & 0x03;
     }
   m_txHighestSupportedLongGuardIntervalDataRate = (ctrl >> 48) & 0x1fff;

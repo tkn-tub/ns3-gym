@@ -378,7 +378,7 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
 uint32_t
 SpectrumWifiPhy::GetGuardBandwidth (void) const
 {
-  double guardBandwidth = 0;
+  uint32_t guardBandwidth = 0;
   switch (GetStandard ())
     {
     case WIFI_PHY_STANDARD_80211a:

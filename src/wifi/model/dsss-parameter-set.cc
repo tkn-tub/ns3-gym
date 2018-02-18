@@ -49,14 +49,14 @@ DsssParameterSet::SetCurrentChannel (uint8_t currentChannel)
 uint8_t
 DsssParameterSet::GetInformationFieldSize () const
 {
-  NS_ASSERT (m_dsssSupported > 0);
+  NS_ASSERT (m_dsssSupported);
   return 1;
 }
 
 Buffer::Iterator
 DsssParameterSet::Serialize (Buffer::Iterator i) const
 {
-  if (m_dsssSupported < 1)
+  if (!m_dsssSupported)
     {
       return i;
     }
@@ -66,7 +66,7 @@ DsssParameterSet::Serialize (Buffer::Iterator i) const
 uint16_t
 DsssParameterSet::GetSerializedSize () const
 {
-  if (m_dsssSupported < 1)
+  if (!m_dsssSupported)
     {
       return 0;
     }
@@ -76,7 +76,7 @@ DsssParameterSet::GetSerializedSize () const
 void
 DsssParameterSet::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_dsssSupported == 1)
+  if (m_dsssSupported)
     {
       start.WriteU8 (m_currentChannel);
     }

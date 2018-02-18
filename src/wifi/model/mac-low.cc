@@ -731,7 +731,6 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
       NS_ASSERT (m_sendDataEvent.IsExpired ());
       m_sendDataEvent = Simulator::Schedule (GetSifs (),
                                              &MacLow::SendDataAfterCts, this,
-                                             hdr.GetAddr1 (),
                                              hdr.GetDuration ());
     }
   else if (hdr.IsAck ()
@@ -1712,7 +1711,6 @@ MacLow::SendCtsToSelf (void)
 
   m_sendDataEvent = Simulator::Schedule (txDuration,
                                          &MacLow::SendDataAfterCts, this,
-                                         cts.GetAddr1 (),
                                          duration);
 }
 
@@ -1749,7 +1747,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiTxVector rtsTxV
 }
 
 void
-MacLow::SendDataAfterCts (Mac48Address source, Time duration)
+MacLow::SendDataAfterCts (Time duration)
 {
   NS_LOG_FUNCTION (this);
   /* send the third step in a

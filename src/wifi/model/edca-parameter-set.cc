@@ -371,14 +371,14 @@ EdcaParameterSet::GetVoTXOPLimit (void) const
 uint8_t
 EdcaParameterSet::GetInformationFieldSize () const
 {
-  NS_ASSERT (m_qosSupported > 0);
+  NS_ASSERT (m_qosSupported);
   return 18;
 }
 
 Buffer::Iterator
 EdcaParameterSet::Serialize (Buffer::Iterator i) const
 {
-  if (m_qosSupported < 1)
+  if (!m_qosSupported)
     {
       return i;
     }
@@ -388,7 +388,7 @@ EdcaParameterSet::Serialize (Buffer::Iterator i) const
 uint16_t
 EdcaParameterSet::GetSerializedSize () const
 {
-  if (m_qosSupported < 1)
+  if (!m_qosSupported)
     {
       return 0;
     }
@@ -398,7 +398,7 @@ EdcaParameterSet::GetSerializedSize () const
 void
 EdcaParameterSet::SerializeInformationField (Buffer::Iterator start) const
 {
-  if (m_qosSupported == 1)
+  if (m_qosSupported)
     {
       start.WriteU8 (m_qosInfo);
       start.WriteU8 (m_reserved);

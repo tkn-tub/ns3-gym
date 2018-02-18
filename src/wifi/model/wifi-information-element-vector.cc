@@ -103,6 +103,7 @@ WifiInformationElementVector::DeserializeSingleIe (Buffer::Iterator start)
   Ptr<WifiInformationElement> newElement;
   switch (id)
     {
+    case 0: // eliminate compiler warning
     default:
       NS_FATAL_ERROR ("Information element " << static_cast<uint16_t> (id) << " is not implemented");
       return 0;

@@ -286,8 +286,8 @@ public:
 
 private:
   //Capabilities Info fields
-  uint16_t m_maxMpduLength; ///< maximum MPDU length
-  uint16_t m_supportedChannelWidthSet; ///< supported channel width set
+  uint8_t m_maxMpduLength; ///< maximum MPDU length
+  uint8_t m_supportedChannelWidthSet; ///< supported channel width set
   uint8_t m_rxLdpc; ///< receive LDPC
   uint8_t m_shortGuardIntervalFor80Mhz; ///< short guard interval 80 MHz
   uint8_t m_shortGuardIntervalFor160Mhz;  ///< short guard interval 160 MHz

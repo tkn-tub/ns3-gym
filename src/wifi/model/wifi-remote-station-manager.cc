@@ -24,7 +24,6 @@
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
 #include "wifi-mac.h"
-#include "wifi-phy.h"
 #include "wifi-utils.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"

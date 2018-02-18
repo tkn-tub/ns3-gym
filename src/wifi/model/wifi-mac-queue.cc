@@ -97,7 +97,7 @@ WifiMacQueue::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddConstructor<WifiMacQueue> ()
     .AddAttribute ("MaxDelay", "If a packet stays longer than this delay in the queue, it is dropped.",
-                   TimeValue (MilliSeconds (500.0)),
+                   TimeValue (MilliSeconds (500)),
                    MakeTimeAccessor (&WifiMacQueue::m_maxDelay),
                    MakeTimeChecker ())
     .AddAttribute ("DropPolicy", "Upon enqueue with full queue, drop oldest (DropOldest) or newest (DropNewest) packet",
