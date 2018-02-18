@@ -222,7 +222,7 @@ AthstatsWifiTraceSink::PhyRxErrorTrace (std::string context, Ptr<const Packet> p
 void
 AthstatsWifiTraceSink::PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
 {
-  NS_LOG_FUNCTION (this << context << packet << "PHYTX mode=" << mode );
+  NS_LOG_FUNCTION (this << context << packet << "PHYTX mode=" << mode << "Preamble=" << preamble << "Power=" << txPower);
   ++m_phyTxCount;
 }
 
@@ -230,7 +230,6 @@ void
 AthstatsWifiTraceSink::PhyStateTrace (std::string context, Time start, Time duration, WifiPhy::State state)
 {
   NS_LOG_FUNCTION (this << context << start << duration << state);
-
 }
 
 void
