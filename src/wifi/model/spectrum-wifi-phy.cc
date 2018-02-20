@@ -25,6 +25,7 @@
 
 #include "spectrum-wifi-phy.h"
 #include "ns3/wifi-spectrum-value-helper.h"
+#include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "wifi-spectrum-signal-parameters.h"
@@ -296,6 +297,7 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t ch
       break;
     case WIFI_MOD_CLASS_DSSS:
     case WIFI_MOD_CLASS_HR_DSSS:
+      NS_ABORT_MSG_IF (channelWidth != 22, "Invalid channel width for DSSS");
       v = WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (centerFrequency, txPowerW, GetGuardBandwidth ());
       break;
     case WIFI_MOD_CLASS_HT:
@@ -354,14 +356,20 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
     case WIFI_PHY_STANDARD_holland:
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-    case WIFI_PHY_STANDARD_80211_5MHZ:
     case WIFI_PHY_STANDARD_80211b:
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
     case WIFI_PHY_STANDARD_80211n_5GHZ:
     case WIFI_PHY_STANDARD_80211ac:
       // Use OFDM subcarrier width of 312.5 KHz as band granularity
       bandBandwidth = 312500;
+      break;
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+      // Use OFDM subcarrier width of 156.25 KHz as band granularity
+      bandBandwidth = 156250;
+      break;
+    case WIFI_PHY_STANDARD_80211_5MHZ:
+      // Use OFDM subcarrier width of 78.125 KHz as band granularity
+      bandBandwidth = 78125;
       break;
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
@@ -375,25 +383,31 @@ SpectrumWifiPhy::GetBandBandwidth (void) const
   return bandBandwidth;
 }
 
-uint32_t
+double
 SpectrumWifiPhy::GetGuardBandwidth (void) const
 {
-  uint32_t guardBandwidth = 0;
+  double guardBandwidth = 0;
   switch (GetStandard ())
     {
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_80211g:
     case WIFI_PHY_STANDARD_holland:
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-    case WIFI_PHY_STANDARD_80211_5MHZ:
     case WIFI_PHY_STANDARD_80211b:
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
     case WIFI_PHY_STANDARD_80211n_5GHZ:
     case WIFI_PHY_STANDARD_80211ac:
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
-      // Use 10 MHZ
+      // Use 10 MHZ as per Table D-6 802.11-2016, class A, -10 dB f2 mask point 
       guardBandwidth = 10;
+      break;
+    case WIFI_PHY_STANDARD_80211_10MHZ:
+      // Use 5 MHz as per Table D-5 802.11-2016, class A, -10 dB f2 mask point
+      guardBandwidth = 5;
+      break;
+    case WIFI_PHY_STANDARD_80211_5MHZ:
+      // Use 2.5 MHz as per Table D-4 802.11-2016, class A, -10 dB f2 mask point
+      guardBandwidth = 2.5;
       break;
     default:
       NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());

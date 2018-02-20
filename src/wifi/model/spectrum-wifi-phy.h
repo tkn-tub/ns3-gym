@@ -155,7 +155,7 @@ public:
   /**
    * \return the width of the guard band (MHz)
    */
-  uint32_t GetGuardBandwidth (void) const;
+  double GetGuardBandwidth (void) const;
 
   /**
    * Callback invoked when the Phy model starts to process a signal

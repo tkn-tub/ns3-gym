@@ -74,9 +74,9 @@ operator < (const WifiSpectrumModelId& a, const WifiSpectrumModelId& b)
 static std::map<WifiSpectrumModelId, Ptr<SpectrumModel> > g_wifiSpectrumModelMap; ///< static initializer for the class
 
 Ptr<SpectrumModel>
-WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << bandBandwidth << (uint16_t)guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << bandBandwidth << guardBandwidth);
   Ptr<SpectrumModel> ret;
   WifiSpectrumModelId key (centerFrequency, channelWidth, bandBandwidth);
   std::map<WifiSpectrumModelId, Ptr<SpectrumModel> >::iterator it = g_wifiSpectrumModelMap.find (key);
@@ -96,10 +96,10 @@ WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint8_t cha
         {
           // round up to the nearest odd number of subbands so that bands
           // are symmetric around center frequency
-          NS_LOG_DEBUG ("Total bandwidth evenly divided by 312.5 KHz");
           numBands += 1;    
         }
       NS_ASSERT_MSG (numBands % 2 == 1, "Number of bands should be odd");
+      NS_LOG_DEBUG ("Num bands " << numBands << " band bandwidth " << bandBandwidth);
       // lay down numBands/2 bands symmetrically around center frequency
       // and place an additional band at center frequency
       double startingFrequencyHz = centerFrequencyHz - (numBands/2 * bandBandwidth) - bandBandwidth/2;
@@ -124,9 +124,9 @@ WifiSpectrumValueHelper::GetSpectrumModel (uint32_t centerFrequency, uint8_t cha
 
 // Power allocated to 71 center subbands out of 135 total subbands in the band 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, double guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << txPowerW << (uint16_t)guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << txPowerW << guardBandwidth);
   uint8_t channelWidth = 22;  // DSSS channels are 22 MHz wide
   double bandBandwidth = 312500;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
@@ -148,59 +148,40 @@ WifiSpectrumValueHelper::CreateDsssTxPowerSpectralDensity (uint32_t centerFreque
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, double guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << (uint16_t)guardBandwidth);
-  double bandBandwidth = 312500;
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << guardBandwidth);
+  double bandBandwidth = 0;
+  switch (channelWidth)
+    {
+    case 20:
+      bandBandwidth = 312500;
+      break;
+    case 10:
+      bandBandwidth = 156250;
+      break;
+    case 5:
+      bandBandwidth = 78125;
+      break;
+    default:
+      NS_FATAL_ERROR ("Channel width " << (uint16_t) channelWidth << " should be correctly set.");
+      return 0;
+    }
+
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   uint32_t nGuardBands = static_cast<uint32_t>(((2 * guardBandwidth * 1e6) / bandBandwidth) + 0.5);
   uint32_t nAllocatedBands = static_cast<uint32_t>(((channelWidth * 1e6) / bandBandwidth) + 0.5);
   NS_ASSERT_MSG (c->GetSpectrumModel ()->GetNumBands () == (nAllocatedBands + nGuardBands + 1), "Unexpected number of bands " << c->GetSpectrumModel ()->GetNumBands ());
-  double txPowerPerBand = 0;
-  uint32_t start1 = 0;
-  uint32_t stop1 = 0;
-  uint32_t start2 = 0;
-  uint32_t stop2 = 0;
-  switch (channelWidth)
-    {
-    case 20:
-      // 52 subcarriers (48 data + 4 pilot)
-      // skip guard band and 6 subbands, then place power in 26 subbands, then
-      // skip the center subband, then place power in 26 subbands, then skip
-      // the final 6 subbands and the guard band.
-      txPowerPerBand = txPowerW / 52;
-      start1 = (nGuardBands / 2) + 6;
-      stop1 = start1 + 26 - 1;
-      start2 = stop1 + 2;
-      stop2 = start2 + 26 - 1;
-      break;
-    case 10:
-      // 28 subcarriers (24 data + 4 pilot)
-      // skip guard band and 2 subbands, then place power in 14 subbands, then
-      // skip the center subband, then place power in 14 subbands, then skip
-      // the final 2 subbands and the guard band.
-      txPowerPerBand = txPowerW / 28;
-      start1 = (nGuardBands / 2) + 2;
-      stop1 = start1 + 14 - 1;
-      start2 = stop1 + 2;
-      stop2 = start2 + 14 - 1;
-      break;
-    case 5:
-      // 16 subcarriers (12 data + 4 pilot)
-      // skip guard band and 2 subbands, then place power in 8 subbands, then
-      // skip the center subband, then place power in 8 subbands, then skip
-      // the final 2 subbands and the guard.
-      txPowerPerBand = txPowerW / 16;
-      start1 = (nGuardBands / 2) + 2;
-      stop1 = start1 + 8 - 1;
-      start2 = stop1 + 2;
-      stop2 = start2 + 8 - 1;
-      break;
-    default:
-      NS_FATAL_ERROR ("Channel width should be correctly set.");
-      return 0;
-    }
+  // 52 subcarriers (48 data + 4 pilot)
+  // skip guard band and 6 subbands, then place power in 26 subbands, then
+  // skip the center subband, then place power in 26 subbands, then skip
+  // the final 6 subbands and the guard band.
+  double txPowerPerBand = txPowerW / 52;
   NS_LOG_DEBUG ("Power per band " << txPowerPerBand);
+  uint32_t start1 = (nGuardBands / 2) + 6;
+  uint32_t stop1 = start1 + 26 - 1;
+  uint32_t start2 = stop1 + 2;
+  uint32_t stop2 = start2 + 26 - 1;
   Values::iterator vit = c->ValuesBegin ();
   Bands::const_iterator bit = c->ConstBandsBegin ();
   for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
@@ -221,9 +202,9 @@ WifiSpectrumValueHelper::CreateOfdmTxPowerSpectralDensity (uint32_t centerFreque
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, double guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << (uint16_t)guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << guardBandwidth);
   double bandBandwidth = 312500;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   Values::iterator vit = c->ValuesBegin ();
@@ -389,9 +370,9 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, double guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << (uint16_t)guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << txPowerW << guardBandwidth);
   double bandBandwidth = 78125;
   Ptr<SpectrumValue> c = Create<SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth));
   Values::iterator vit = c->ValuesBegin ();
@@ -524,7 +505,7 @@ WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFreq
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double noiseFigure, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double noiseFigure, double guardBandwidth)
 {
   Ptr<SpectrumModel> model = GetSpectrumModel (centerFrequency, channelWidth, bandBandwidth, guardBandwidth);
   return CreateNoisePowerSpectralDensity (noiseFigure, model);
@@ -549,9 +530,9 @@ WifiSpectrumValueHelper::CreateNoisePowerSpectralDensity (double noiseFigureDb, 
 }
 
 Ptr<SpectrumValue>
-WifiSpectrumValueHelper::CreateRfFilter (uint32_t centerFrequency, uint8_t channelWidth, double bandGranularity, uint8_t guardBandwidth)
+WifiSpectrumValueHelper::CreateRfFilter (uint32_t centerFrequency, uint8_t channelWidth, double bandGranularity, double guardBandwidth)
 {
-  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << bandGranularity << (uint16_t)guardBandwidth);
+  NS_LOG_FUNCTION (centerFrequency << (uint16_t)channelWidth << bandGranularity << guardBandwidth);
   Ptr<SpectrumValue> c = Create <SpectrumValue> (GetSpectrumModel (centerFrequency, channelWidth, bandGranularity, guardBandwidth));
   size_t numBands = c->GetSpectrumModel ()->GetNumBands ();
   Bands::const_iterator bit = c->ConstBandsBegin ();
