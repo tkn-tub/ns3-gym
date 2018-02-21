@@ -418,16 +418,7 @@ WifiRemoteStationManager::~WifiRemoteStationManager ()
 void
 WifiRemoteStationManager::DoDispose (void)
 {
-  for (StationStates::const_iterator i = m_states.begin (); i != m_states.end (); i++)
-    {
-      delete (*i);
-    }
-  m_states.clear ();
-  for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
-    {
-      delete (*i);
-    }
-  m_stations.clear ();
+  Reset ();
 }
 
 void
@@ -1841,6 +1832,11 @@ void
 WifiRemoteStationManager::Reset (void)
 {
   NS_LOG_FUNCTION (this);
+  for (StationStates::const_iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      delete (*i);
+    }
+  m_states.clear ();
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
     {
       delete (*i);
