@@ -98,7 +98,7 @@ public:
   /**
    * \return number of NS3 channels in this bundle
    */
-  int GetSize (void) const;
+  std::size_t GetSize (void) const;
 
   /**
    * \param time 

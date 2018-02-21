@@ -56,7 +56,7 @@ public:
    * \return number of remote channel bundles
    * 
    */
-  static uint32_t Size (void);
+  static std::size_t Size (void);
 
   /**
    * Setup initial Null Message events for every RemoteChannelBundle.

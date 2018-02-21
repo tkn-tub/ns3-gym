@@ -59,7 +59,7 @@ RemoteChannelBundleManager::Add (uint32_t systemId)
   return remoteChannelBundle;
 }
 
-uint32_t 
+std::size_t
 RemoteChannelBundleManager::Size (void) 
 {
   return g_remoteChannelBundles.size();
