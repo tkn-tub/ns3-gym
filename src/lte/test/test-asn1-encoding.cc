@@ -737,7 +737,7 @@ HandoverPreparationInfoTestCase::DoRun (void)
   msg.asConfig.sourceDlCarrierFreq = 3;
   msg.asConfig.sourceUeIdentity = 11;
   msg.asConfig.sourceRadioResourceConfig = CreateRadioResourceConfigDedicated ();
-  msg.asConfig.sourceMasterInformationBlock.dlBandwidth = 3;
+  msg.asConfig.sourceMasterInformationBlock.dlBandwidth = 50;
   msg.asConfig.sourceMasterInformationBlock.systemFrameNumber = 1;
 
   msg.asConfig.sourceSystemInformationBlockType1.cellAccessRelatedInfo.csgIndication = true;

@@ -64,6 +64,24 @@ protected:
   uint32_t Deserialize (Buffer::Iterator bIterator) = 0;
   virtual void PreSerialize (void) const = 0;
 
+
+  // Auxiliary functions
+  /**
+   * Convert from bandwidth (in RBs) to ENUMERATED value
+   *
+   * \param bandwidth Bandwith in RBs: 6, 15, 25, 50, 75, 100
+   * \returns ENUMERATED value: 0, 1, 2, 3, 4, 5
+   */
+  int BandwidthToEnum (uint8_t bandwidth) const;
+  /**
+   * Convert from ENUMERATED value to bandwidth (in RBs)
+   *
+   * \param n ENUMERATED value: 0, 1, 2, 3, 4, 5
+   * \returns bandwidth Bandwith in RBs: 6, 15, 25, 50, 75, 100
+   */
+  uint8_t EnumToBandwidth (int n) const;
+
+
   // Serialization functions
   /**
    * Serialize SRB to add mod list function

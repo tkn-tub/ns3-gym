@@ -59,7 +59,7 @@ public:
   virtual ~LteRrcSap ();
 
   /// Constraint values
-  static const uint8_t MaxReportCells = 255;
+  static const uint8_t MaxReportCells = 8;
 
   // Information Elements
   /// PlmnIdentityInfo structure

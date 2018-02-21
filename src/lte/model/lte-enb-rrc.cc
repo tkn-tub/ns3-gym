@@ -235,7 +235,7 @@ UeManager::DoInitialize ()
     m_srb1->m_rlc = rlc;
     m_srb1->m_pdcp = pdcp;
     m_srb1->m_srbIdentity = 1;
-    m_srb1->m_logicalChannelConfig.priority = 0;
+    m_srb1->m_logicalChannelConfig.priority = 1;
     m_srb1->m_logicalChannelConfig.prioritizedBitRateKbps = 100;
     m_srb1->m_logicalChannelConfig.bucketSizeDurationMs = 100;
     m_srb1->m_logicalChannelConfig.logicalChannelGroup = 0;
@@ -1310,7 +1310,9 @@ UeManager::BuildRadioResourceConfigDedicated ()
 uint8_t 
 UeManager::GetNewRrcTransactionIdentifier ()
 {
-  return ++m_lastRrcTransactionIdentifier;
+  ++m_lastRrcTransactionIdentifier;
+  m_lastRrcTransactionIdentifier %= 4;
+  return m_lastRrcTransactionIdentifier;
 }
 
 uint8_t 

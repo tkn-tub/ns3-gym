@@ -38,6 +38,7 @@ Bugs fixed
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
 - Bug 2656 - wifi: Minstrel and MinstrelHt provide different results for 802.11a/b/g
 - Bug 2653 - tcp: Avoid saving smaller TS in case of packet reordering
+- Bug 2754 - lte: Incorrect arguments passed to Asn1Header::SerializeInteger
 - Bug 2764 - wifi: WifiSpectrumModelId doesn't distinguish 11ax from legacy
 - Bug 2766 - core: Modify logging for int64x64 to avoid stack overflow
 - Bug 2768 - lte: LteUeNetDevice has a null MAC address
