@@ -35,6 +35,7 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1745 - There can be only one Ipv6AddressHelper in a script
+- Bug 2277 - lte: EpcTftClassifier::Classify blindly assumes that a packet has a L4 header 
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
 - Bug 2656 - wifi: Minstrel and MinstrelHt provide different results for 802.11a/b/g
 - Bug 2653 - tcp: Avoid saving smaller TS in case of packet reordering

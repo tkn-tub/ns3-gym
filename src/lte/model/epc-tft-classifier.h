@@ -36,9 +36,20 @@ class EpcTft;
 class Packet;
 
 /**
- * \brief classifies IP packets accoding to Traffic Flow Templates (TFTs)
- * 
- * \note this implementation works with IPv4 only.
+ * \brief classifies IP packets according to Traffic Flow Templates (TFTs)
+ *
+ * \note this implementation works with IPv4 and IPv6.
+ * When there is fragmentation of IP packets, UDP/TCP ports maybe missing.
+ *
+ * The following actions are performed to use the port info present in the first segment with
+ * the next fragments:
+ *  - Port info is stored if it is available, i.e. it is the first fragment with UDP/TCP protocol
+ *    and there is enough data in the payload of the IP packet for the port numbers.
+ *  - Port info is used for the next fragments.
+ *  - Port info is deleted, when the last fragment is processed.
+ *
+ * When we cannot cache the port info, the TFT of the default bearer is used. This may happen
+ * if there is reordering or losses of IP packets.
  */
 class EpcTftClassifier : public SimpleRefCount<EpcTftClassifier>
 {
@@ -76,7 +87,16 @@ public:
 protected:
   
   std::map <uint32_t, Ptr<EpcTft> > m_tftMap; ///< TFT map
-  
+
+  std::map < std::tuple<uint32_t, uint32_t, uint8_t, uint16_t>,
+             std::pair<uint32_t, uint32_t> >
+      m_classifiedIpv4Fragments; ///< Map with already classified IPv4 Fragments
+                                 ///< An entry is added when the port info is available, i.e.
+                                 ///<   first fragment, UDP/TCP protocols and enough payload data
+                                 ///< An entry is used if port info is not available, i.e.
+                                 ///<   not first fragment or not enough payload data for TCP/UDP
+                                 ///< An entry is removed when the last fragment is classified
+                                 ///<   Note: If last fragment is lost, entry is not removed
 };
 
 

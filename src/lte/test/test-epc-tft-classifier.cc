@@ -116,14 +116,15 @@ EpcTftClassifierTestCase::EpcTftClassifierTestCase (Ptr<EpcTftClassifier> c,
     m_d (d),    
     m_tftId (tftId)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << c << d << sa << da << sp << dp << tos << tftId);
 
   m_ipHeader.SetSource (sa);
   m_ipHeader.SetDestination (da);
-  m_ipHeader.SetTos (tos);  
+  m_ipHeader.SetTos (tos);
+  m_ipHeader.SetPayloadSize (8); // Full UDP header
 
   m_udpHeader.SetSourcePort (sp);
-  m_udpHeader.SetDestinationPort (dp);  
+  m_udpHeader.SetDestinationPort (dp);
 }
 
 EpcTftClassifierTestCase::~EpcTftClassifierTestCase ()
@@ -163,7 +164,7 @@ EpcTftClassifierTestCase::DoRun (void)
   udpPacket->AddHeader (m_ipHeader);
   NS_LOG_LOGIC (this << *udpPacket);
   uint32_t obtainedTftId = m_c ->Classify (udpPacket, m_d);
-  NS_TEST_ASSERT_MSG_EQ (obtainedTftId, m_tftId, "bad classification of UDP packet");
+  NS_TEST_ASSERT_MSG_EQ (obtainedTftId, (uint16_t) m_tftId, "bad classification of UDP packet");
 }
 
 
