@@ -277,6 +277,7 @@ UanNetDevice::IsMulticast () const
 Address
 UanNetDevice::GetMulticast (Ipv4Address multicastGroup) const
 {
+  NS_UNUSED (multicastGroup);
   NS_FATAL_ERROR ("UanNetDevice does not support multicast");
   return m_mac->GetBroadcast ();
 }
@@ -308,6 +309,9 @@ UanNetDevice::Send (Ptr<Packet> packet, const Address &dest, uint16_t protocolNu
 bool
 UanNetDevice::SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
+  NS_UNUSED (source);
+  NS_UNUSED (dest);
+  NS_UNUSED (protocolNumber);
   // Not yet implemented
   NS_ASSERT_MSG (0, "Not yet implemented");
   return false;

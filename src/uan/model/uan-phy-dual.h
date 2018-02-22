@@ -31,7 +31,6 @@ namespace ns3 {
 class UanTxMode;
 class UanModesList;
 
-
 /**
  * Default SINR model for UanPhyDual
  *
@@ -138,6 +137,7 @@ public:
   virtual void Clear (void);
   virtual void SetSleepMode (bool sleep)
   {
+    NS_UNUSED (sleep);
     /// \todo This method has to be implemented
   }
   int64_t AssignStreams (int64_t stream);

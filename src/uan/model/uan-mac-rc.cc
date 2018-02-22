@@ -57,7 +57,7 @@ Reservation::Reservation (std::list<std::pair <Ptr<Packet>, UanAddress > > &list
     m_retryNo (0),
     m_transmitted (false)
 {
-  uint32_t numPkts = (maxPkts) ? maxPkts : list.size ();
+  uint32_t numPkts = (maxPkts) ? maxPkts : static_cast<uint32_t> (list.size ());
   uint32_t length = 0;
   UanHeaderRcData dh;
   UanHeaderCommon ch;
@@ -86,7 +86,7 @@ Reservation::~Reservation ()
 uint32_t
 Reservation::GetNoFrames () const
 {
-  return m_pktList.size ();
+  return static_cast<uint32_t> (m_pktList.size ());
 }
 
 uint32_t
@@ -146,6 +146,7 @@ Reservation::IncrementRetry ()
 void
 Reservation::SetTransmitted (bool t)
 {
+  NS_UNUSED (t);
   m_transmitted = true;
 }
 
@@ -345,7 +346,7 @@ UanMacRc::GetBroadcast (void) const
 void
 UanMacRc::ReceiveOkFromPhy (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 {
-
+  NS_UNUSED (sinr);
   UanHeaderCommon ch;
   pkt->RemoveHeader (ch);
   if (ch.GetDest () == m_address || ch.GetDest () == UanAddress::GetBroadcast ())
@@ -474,7 +475,7 @@ UanMacRc::ScheduleData (const UanHeaderRcCts &ctsh, const UanHeaderRcCtsGlobal &
 
 
 
-  for (uint32_t i = 0; i < it->GetNoFrames (); i++, pit++)
+  for (uint8_t i = 0; i < it->GetNoFrames (); i++, pit++)
     {
       Ptr<Packet> pkt = (*pit).first->Copy ();
 
@@ -611,8 +612,8 @@ UanMacRc::CreateRtsHeader (const Reservation &res)
 {
   UanHeaderRcRts rh = UanHeaderRcRts ();
 
-  rh.SetLength (res.GetLength ());
-  rh.SetNoFrames (res.GetNoFrames ());
+  rh.SetLength (static_cast<uint16_t> (res.GetLength ()));
+  rh.SetNoFrames (static_cast<uint8_t> (res.GetNoFrames ()));
   rh.SetTimeStamp (res.GetTimestamp (res.GetRetryNo ()));
   rh.SetFrameNo (res.GetFrameNo ());
   rh.SetRetryNo (res.GetRetryNo ());

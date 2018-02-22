@@ -258,7 +258,7 @@ UanModesList::operator[] (uint32_t i) const
 uint32_t
 UanModesList::GetNModes (void) const
 {
-  return m_modes.size ();
+  return static_cast<uint32_t> (m_modes.size ());
 }
 
 std::ostream &

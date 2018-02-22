@@ -187,7 +187,7 @@ UanPdp::GetEnd (void) const
 uint32_t
 UanPdp::GetNTaps (void) const
 {
-  return m_taps.size ();
+  return static_cast<uint32_t> (m_taps.size ());
 }
 
 Time

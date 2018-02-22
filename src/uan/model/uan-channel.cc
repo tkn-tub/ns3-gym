@@ -129,7 +129,7 @@ UanChannel::SetPropagationModel (Ptr<UanPropModel> prop)
 uint32_t
 UanChannel::GetNDevices () const
 {
-  return m_devList.size ();
+  return static_cast<uint32_t> (m_devList.size ());
 }
 
 Ptr<NetDevice>

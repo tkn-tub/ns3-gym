@@ -343,6 +343,7 @@ UanMacCw::GetSlotTime (void)
 void
 UanMacCw::PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode)
 {
+  NS_UNUSED (sinr);
   UanHeaderCommon header;
   packet->RemoveHeader (header);
 
@@ -354,7 +355,7 @@ UanMacCw::PhyRxPacketGood (Ptr<Packet> packet, double sinr, UanTxMode mode)
 void
 UanMacCw::PhyRxPacketError (Ptr<Packet> packet, double sinr)
 {
-
+  NS_UNUSED (sinr);
 }
 void
 UanMacCw::SaveTimer (void)

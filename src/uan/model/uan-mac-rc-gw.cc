@@ -185,6 +185,8 @@ UanMacRcGw::SetAddress (UanAddress addr)
 bool
 UanMacRcGw::Enqueue (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber)
 {
+  NS_UNUSED (dest);
+  NS_UNUSED (protocolNumber);
   NS_LOG_WARN ("RCMAC Gateway transmission to acoustic nodes is not yet implemented");
   return false;
 }
@@ -206,6 +208,7 @@ UanMacRcGw::AttachPhy (Ptr<UanPhy> phy)
 void
 UanMacRcGw::ReceiveError (Ptr<Packet> pkt, double sinr)
 {
+  NS_UNUSED (sinr);
 }
 
 Address
@@ -217,6 +220,7 @@ UanMacRcGw::GetBroadcast (void) const
 void
 UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 {
+  NS_UNUSED (sinr);
   UanHeaderCommon ch;
   pkt->PeekHeader (ch);
 
@@ -301,7 +305,7 @@ UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 void
 UanMacRcGw::StartCycle (void)
 {
-  uint32_t numRts = m_sortedRes.size ();
+  uint32_t numRts = static_cast<uint32_t> (m_sortedRes.size ());
 
   if (numRts)
     {
@@ -384,7 +388,7 @@ UanMacRcGw::StartCycle (void)
     {
       UanHeaderRcCtsGlobal ctsg;
       ctsg.SetWindowTime (Seconds (effWinSize));
-      ctsg.SetRateNum (m_currentRateNum);
+      ctsg.SetRateNum (static_cast<uint16_t> (m_currentRateNum));
       ctsg.SetRetryRate (m_currentRetryRate);
       ctsg.SetTxTimeStamp (Simulator::Now ());
 
@@ -440,7 +444,7 @@ UanMacRcGw::StartCycle (void)
     }
 
   UanHeaderRcCtsGlobal ctsg;
-  ctsg.SetRateNum (m_currentRateNum);
+  ctsg.SetRateNum (static_cast<uint16_t> (m_currentRateNum));
   ctsg.SetRetryRate (m_currentRetryRate);
   ctsg.SetWindowTime (Seconds (effWinSize));
   ctsg.SetTxTimeStamp (Simulator::Now ());
@@ -482,7 +486,7 @@ UanMacRcGw::EndCycle ()
       AckData &data = (*it).second;
 
       std::list<uint32_t> toNack;
-      for (uint32_t i = 0; i < data.expFrames; i++)
+      for (uint8_t i = 0; i < data.expFrames; i++)
         {
           if (data.rxFrames.find (i) == data.rxFrames.end ())
             {
@@ -498,7 +502,7 @@ UanMacRcGw::EndCycle ()
       std::list<uint32_t>::iterator nit = toNack.begin ();
       for (; nit != toNack.end (); nit++)
         {
-          ah.AddNackedFrame (*nit);
+          ah.AddNackedFrame (static_cast<uint8_t> (*nit));
         }
 
       Ptr<Packet> ack = Create<Packet> ();
@@ -546,7 +550,7 @@ UanMacRcGw::SendPacket (Ptr<Packet> pkt, uint32_t rate)
 double
 UanMacRcGw::ComputeAlpha (uint32_t totalFrames, uint32_t totalBytes, uint32_t n, uint32_t a, double deltaK)
 {
-
+  NS_UNUSED (n);
   double alpha;
   double lrae = m_rtsSize * 8.0 * a * std::exp (1.0);
   if (totalFrames == 0)
@@ -643,8 +647,8 @@ UanMacRcGw::CompExpMinIndex (uint32_t n, uint32_t k)
   double sum = 0;
   for (uint32_t i = 1; i <= n - k + 1; i++)
     {
-      double nChK = NchooseK (n, k);
-      double p = (nChK > 0) ? (NchooseK (n - i, k - 1) / nChK) : DBL_MAX;
+      double nChK = static_cast<double> (NchooseK (n, k));
+      double p = (nChK > 0) ? (static_cast<double> (NchooseK (n - i, k - 1)) / nChK) : DBL_MAX;
       sum += p * i;
     }
   return (uint32_t)(sum + 0.5);

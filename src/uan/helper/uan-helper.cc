@@ -57,6 +57,7 @@ NS_LOG_COMPONENT_DEFINE ("UanHelper");
 static void AsciiPhyTxEvent (std::ostream *os, std::string context,
                              Ptr<const Packet> packet, double txPowerDb, UanTxMode mode)
 {
+  NS_UNUSED (txPowerDb);
   *os << "+ " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
 }
 
@@ -72,6 +73,7 @@ static void AsciiPhyTxEvent (std::ostream *os, std::string context,
 static void AsciiPhyRxOkEvent (std::ostream *os, std::string context,
                                Ptr<const Packet> packet, double snr, UanTxMode mode)
 {
+  NS_UNUSED (snr);
   *os << "r " << Simulator::Now ().GetSeconds () << " " << context << " " << *packet << std::endl;
 }
 

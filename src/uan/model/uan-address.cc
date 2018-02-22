@@ -98,7 +98,7 @@ UanAddress::Allocate ()
 {
   static uint8_t nextAllocated = 0;
 
-  uint32_t address = nextAllocated++;
+  uint8_t address = nextAllocated++;
   if (nextAllocated == 255)
     {
       nextAllocated = 0;
@@ -134,7 +134,7 @@ operator<< (std::ostream& os, const UanAddress & address)
 std::istream&
 operator>> (std::istream& is, UanAddress & address)
 {
-  int x;
+  uint8_t x;
   is >> x;
   NS_ASSERT (0 <= x);
   NS_ASSERT (x <= 255);

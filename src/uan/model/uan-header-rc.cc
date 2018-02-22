@@ -574,7 +574,7 @@ UanHeaderRcAck::GetFrameNo (void) const
 uint8_t
 UanHeaderRcAck::GetNoNacks (void) const
 {
-  return m_nackedFrames.size ();
+  return static_cast<uint8_t> (m_nackedFrames.size ());
 }
 
 uint32_t

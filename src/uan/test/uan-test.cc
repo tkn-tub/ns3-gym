@@ -70,7 +70,7 @@ private:
    * \param mode2 the send mode for device 2
    * \returns number of bytes received
    */
-  uint32_t DoOnePhyTest (Time t1, Time t2, uint32_t r1, uint32_t r2, Ptr<UanPropModel> prop, uint32_t mode1 = 0, uint32_t mode2 = 0);
+  uint32_t DoOnePhyTest (Time t1, Time t2, uint32_t r1, uint32_t r2, Ptr<UanPropModel> prop, uint16_t mode1 = 0, uint16_t mode2 = 0);
   /**
    * Receive packet function
    * \param dev the device
@@ -85,7 +85,7 @@ private:
    * \param dev the device
    * \param mode the transmit mode
    */
-  void SendOnePacket (Ptr<UanNetDevice> dev, uint32_t mode);
+  void SendOnePacket (Ptr<UanNetDevice> dev, uint16_t mode);
   ObjectFactory m_phyFac; ///< Phy 
   uint32_t m_bytesRx; ///< byes received
 
@@ -100,11 +100,13 @@ UanTest::UanTest () : TestCase ("UAN")
 bool
 UanTest::RxPacket (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender)
 {
+  NS_UNUSED (mode);
+  NS_UNUSED (sender);
   m_bytesRx += pkt->GetSize ();
   return true;
 }
 void
-UanTest::SendOnePacket (Ptr<UanNetDevice> dev, uint32_t mode)
+UanTest::SendOnePacket (Ptr<UanNetDevice> dev, uint16_t mode)
 {
   Ptr<Packet> pkt = Create<Packet> (17);
   dev->Send (pkt, dev->GetBroadcast (), mode);
@@ -143,8 +145,8 @@ UanTest::DoOnePhyTest (Time txTime1,
                        uint32_t r1,
                        uint32_t r2,
                        Ptr<UanPropModel> prop,
-                       uint32_t mode1,
-                       uint32_t mode2)
+                       uint16_t mode1,
+                       uint16_t mode2)
 {
 
   Ptr<UanChannel> channel = CreateObject<UanChannel> ();
