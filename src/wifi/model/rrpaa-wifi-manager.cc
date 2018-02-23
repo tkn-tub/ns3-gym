@@ -148,7 +148,7 @@ RrpaaWifiManager::AssignStreams (int64_t stream)
 void
 RrpaaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << phy);
   m_nPowerLevels = phy->GetNTxPower ();
   m_maxPowerLevel = m_nPowerLevels  - 1;
   m_minPowerLevel = 0;
@@ -171,7 +171,7 @@ RrpaaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 void
 RrpaaWifiManager::SetupMac (const Ptr<WifiMac> mac)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << mac);
   m_sifs = mac->GetSifs ();
   m_difs = m_sifs + 2 * mac->GetSlot ();
   WifiRemoteStationManager::SetupMac (mac);
@@ -272,8 +272,6 @@ void
 RrpaaWifiManager::InitThresholds (RrpaaWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  NS_LOG_DEBUG ("InitThresholds = " << station);
-
   double nextCritical = 0;
   double nextMtl = 0;
   double mtl = 0;
@@ -348,7 +346,6 @@ RrpaaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                  double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
-  NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
 
 void
@@ -601,11 +598,8 @@ RrpaaWifiManager::GetThresholds (RrpaaWifiRemoteStation *station, uint8_t rate) 
 bool
 RrpaaWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
-
-
 
 void
 RrpaaWifiManager::SetHtSupported (bool enable)

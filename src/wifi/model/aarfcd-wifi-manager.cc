@@ -118,7 +118,6 @@ AarfcdWifiManager::GetTypeId (void)
 AarfcdWifiManager::AarfcdWifiManager ()
   : WifiRemoteStationManager (),
     m_currentRate (0)
-
 {
   NS_LOG_FUNCTION (this);
 }
@@ -363,7 +362,6 @@ AarfcdWifiManager::DoNeedRts (WifiRemoteStation *st,
 bool
 AarfcdWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

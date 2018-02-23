@@ -117,6 +117,7 @@ DcfManager::DcfManager ()
 
 DcfManager::~DcfManager ()
 {
+  NS_LOG_FUNCTION (this);
   delete m_phyListener;
   m_phyListener = 0;
 }

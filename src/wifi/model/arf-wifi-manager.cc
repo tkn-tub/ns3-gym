@@ -107,6 +107,7 @@ ArfWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
 }
+
 /**
  * It is important to realize that "recovery" mode starts after failure of
  * the first transmission after a rate increase and ends at the first successful
@@ -258,7 +259,6 @@ ArfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 bool
 ArfWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

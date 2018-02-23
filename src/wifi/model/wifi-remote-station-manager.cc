@@ -409,21 +409,25 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
     m_shortSlotTimeEnabled (false),
     m_rifsPermitted (false)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 WifiRemoteStationManager::~WifiRemoteStationManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 WifiRemoteStationManager::DoDispose (void)
 {
+  NS_LOG_FUNCTION (this);
   Reset ();
 }
 
 void
 WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
+  NS_LOG_FUNCTION (this << phy);
   //We need to track our PHY because it is the object that knows the
   //full set of transmit rates that are supported. We need to know
   //this in order to find the relevant mandatory rates when chosing a
@@ -442,6 +446,7 @@ WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
 void
 WifiRemoteStationManager::SetupMac (const Ptr<WifiMac> mac)
 {
+  NS_LOG_FUNCTION (this << mac);
   //We need to track our MAC because it is the object that knows the
   //full set of interframe spaces.
   m_wifiMac = mac;
@@ -451,36 +456,42 @@ WifiRemoteStationManager::SetupMac (const Ptr<WifiMac> mac)
 void
 WifiRemoteStationManager::SetQosSupported (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_qosSupported = enable;
 }
 
 void
 WifiRemoteStationManager::SetHtSupported (bool enable)
 {
+  NS_LOG_FUNCTION (this << enable);
   m_htSupported = enable;
 }
 
 void
 WifiRemoteStationManager::SetMaxSsrc (uint32_t maxSsrc)
 {
+  NS_LOG_FUNCTION (this << maxSsrc);
   m_maxSsrc = maxSsrc;
 }
 
 void
 WifiRemoteStationManager::SetMaxSlrc (uint32_t maxSlrc)
 {
+  NS_LOG_FUNCTION (this << maxSlrc);
   m_maxSlrc = maxSlrc;
 }
 
 void
 WifiRemoteStationManager::SetRtsCtsThreshold (uint32_t threshold)
 {
+  NS_LOG_FUNCTION (this << threshold);
   m_rtsCtsThreshold = threshold;
 }
 
 void
 WifiRemoteStationManager::SetFragmentationThreshold (uint32_t threshold)
 {
+  NS_LOG_FUNCTION (this << threshold);
   DoSetFragmentationThreshold (threshold);
 }
 
@@ -1438,7 +1449,6 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
               //mandatory rates before we can be sure we've got the right one.
               found = true;
             }
-
         }
     }
 
@@ -2261,6 +2271,7 @@ WifiRemoteStationInfo::WifiRemoteStationInfo ()
     m_lastUpdate (Seconds (0.0)),
     m_failAvg (0.0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 double

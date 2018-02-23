@@ -81,15 +81,18 @@ OnoeWifiManager::OnoeWifiManager ()
   : WifiRemoteStationManager (),
     m_currentRate (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 OnoeWifiManager::~OnoeWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 WifiRemoteStation *
 OnoeWifiManager::DoCreateStation (void) const
 {
+  NS_LOG_FUNCTION (this);
   OnoeWifiRemoteStation *station = new OnoeWifiRemoteStation ();
   station->m_nextModeUpdate = Simulator::Now () + m_updatePeriod;
   station->m_shortRetry = 0;
@@ -103,14 +106,15 @@ OnoeWifiManager::DoCreateStation (void) const
 }
 
 void
-OnoeWifiManager::DoReportRxOk (WifiRemoteStation *station,
-                               double rxSnr, WifiMode txMode)
+OnoeWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 
 void
 OnoeWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   station->m_shortRetry++;
 }
@@ -118,20 +122,21 @@ OnoeWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 void
 OnoeWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   station->m_longRetry++;
 }
 
 void
-OnoeWifiManager::DoReportRtsOk (WifiRemoteStation *station,
-                                double ctsSnr, WifiMode ctsMode, double rtsSnr)
+OnoeWifiManager::DoReportRtsOk (WifiRemoteStation *station, double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
+  NS_LOG_FUNCTION (this << station<< ctsSnr << ctsMode << rtsSnr);
 }
 
 void
-OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st,
-                                 double ackSnr, WifiMode ackMode, double dataSnr)
+OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateRetry (station);
   station->m_tx_ok++;
@@ -140,6 +145,7 @@ OnoeWifiManager::DoReportDataOk (WifiRemoteStation *st,
 void
 OnoeWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateRetry (station);
   station->m_tx_err++;
@@ -148,6 +154,7 @@ OnoeWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 void
 OnoeWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateRetry (station);
   station->m_tx_err++;
@@ -156,6 +163,7 @@ OnoeWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
 void
 OnoeWifiManager::UpdateRetry (OnoeWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   station->m_tx_retr += station->m_shortRetry + station->m_longRetry;
   station->m_shortRetry = 0;
   station->m_longRetry = 0;
@@ -164,6 +172,7 @@ OnoeWifiManager::UpdateRetry (OnoeWifiRemoteStation *station)
 void
 OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
   if (Simulator::Now () < station->m_nextModeUpdate)
     {
       return;
@@ -246,6 +255,7 @@ OnoeWifiManager::UpdateMode (OnoeWifiRemoteStation *station)
 WifiTxVector
 OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   UpdateMode (station);
   NS_ASSERT (station->m_txrate < GetNSupported (station));
@@ -305,6 +315,7 @@ OnoeWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 WifiTxVector
 OnoeWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
+  NS_LOG_FUNCTION (this << st);
   OnoeWifiRemoteStation *station = (OnoeWifiRemoteStation *)st;
   uint8_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)

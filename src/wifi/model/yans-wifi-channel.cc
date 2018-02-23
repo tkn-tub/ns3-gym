@@ -65,12 +65,14 @@ YansWifiChannel::~YansWifiChannel ()
 void
 YansWifiChannel::SetPropagationLossModel (const Ptr<PropagationLossModel> loss)
 {
+  NS_LOG_FUNCTION (this << loss);
   m_loss = loss;
 }
 
 void
 YansWifiChannel::SetPropagationDelayModel (const Ptr<PropagationDelayModel> delay)
 {
+  NS_LOG_FUNCTION (this << delay);
   m_delay = delay;
 }
 
@@ -136,6 +138,7 @@ YansWifiChannel::GetDevice (uint32_t i) const
 void
 YansWifiChannel::Add (Ptr<YansWifiPhy> phy)
 {
+  NS_LOG_FUNCTION (this << phy);
   m_phyList.push_back (phy);
 }
 

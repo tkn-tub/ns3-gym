@@ -95,6 +95,7 @@ ParfWifiManager::~ParfWifiManager ()
 void
 ParfWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
+  NS_LOG_FUNCTION (this << phy);
   m_minPower = phy->GetTxPowerStart ();
   m_maxPower = phy->GetTxPowerEnd ();
   WifiRemoteStationManager::SetupPhy (phy);
@@ -236,7 +237,6 @@ void ParfWifiManager::DoReportRtsOk (WifiRemoteStation *station,
                                      double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
-  NS_LOG_DEBUG ("station=" << station << " rts ok");
 }
 
 void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st,
@@ -348,7 +348,6 @@ ParfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 bool
 ParfWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

@@ -283,7 +283,6 @@ AarfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 bool
 AarfWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

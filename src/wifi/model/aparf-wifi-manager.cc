@@ -127,6 +127,7 @@ AparfWifiManager::~AparfWifiManager ()
 void
 AparfWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
+  NS_LOG_FUNCTION (this << phy);
   m_minPower = phy->GetTxPowerStart ();
   m_maxPower = phy->GetTxPowerEnd ();
   WifiRemoteStationManager::SetupPhy (phy);
@@ -232,7 +233,6 @@ AparfWifiManager::DoReportRtsOk (WifiRemoteStation *station, double ctsSnr,
                                  WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
-  NS_LOG_DEBUG ("station=" << station << " rts ok");
 }
 
 void
@@ -376,7 +376,6 @@ AparfWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 bool
 AparfWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

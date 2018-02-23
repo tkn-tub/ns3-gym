@@ -68,10 +68,12 @@ IdealWifiManager::GetTypeId (void)
 IdealWifiManager::IdealWifiManager ()
   : m_currentRate (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 IdealWifiManager::~IdealWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
@@ -215,19 +217,21 @@ IdealWifiManager::DoCreateStation (void) const
 
 
 void
-IdealWifiManager::DoReportRxOk (WifiRemoteStation *station,
-                                double rxSnr, WifiMode txMode)
+IdealWifiManager::DoReportRxOk (WifiRemoteStation *station, double rxSnr, WifiMode txMode)
 {
+  NS_LOG_FUNCTION (this << station << rxSnr << txMode);
 }
 
 void
 IdealWifiManager::DoReportRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 void
 IdealWifiManager::DoReportDataFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 void
@@ -270,11 +274,13 @@ IdealWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSuccess
 void
 IdealWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 void
 IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
+  NS_LOG_FUNCTION (this << station);
 }
 
 WifiTxVector

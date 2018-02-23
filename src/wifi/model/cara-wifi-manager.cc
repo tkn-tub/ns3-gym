@@ -141,7 +141,6 @@ CaraWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
-  NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
 
 void
@@ -238,7 +237,6 @@ CaraWifiManager::DoNeedRts (WifiRemoteStation *st,
 bool
 CaraWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

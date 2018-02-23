@@ -577,6 +577,8 @@ WifiPhyHelper::GetPcapDataLinkType (void) const
 void
 WifiPhyHelper::EnablePcapInternal (std::string prefix, Ptr<NetDevice> nd, bool promiscuous, bool explicitFilename)
 {
+  NS_LOG_FUNCTION (this << prefix << nd << promiscuous << explicitFilename);
+
   //All of the Pcap enable functions vector through here including the ones
   //that are wandering through all of devices on perhaps all of the nodes in
   //the system. We can only deal with devices of type WifiNetDevice.

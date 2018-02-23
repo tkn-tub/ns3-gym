@@ -130,7 +130,6 @@ ConstantRateWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 bool
 ConstantRateWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

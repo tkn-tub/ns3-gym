@@ -111,16 +111,18 @@ RraaWifiManager::RraaWifiManager ()
   : WifiRemoteStationManager (),
     m_currentRate (0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 RraaWifiManager::~RraaWifiManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
 RraaWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << phy);
   uint8_t nModes = phy->GetNModes ();
   for (uint8_t i = 0; i < nModes; i++)
     {
@@ -302,7 +304,6 @@ RraaWifiManager::DoReportRtsOk (WifiRemoteStation *st,
                                 double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
-  NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
 
 void

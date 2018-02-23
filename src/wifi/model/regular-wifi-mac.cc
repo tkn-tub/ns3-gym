@@ -1004,12 +1004,10 @@ RegularWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 }
 
 void
-RegularWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket,
-                                            const WifiMacHeader *hdr)
+RegularWifiMac::DeaggregateAmsduAndForward (Ptr<Packet> aggregatedPacket, const WifiMacHeader *hdr)
 {
-  MsduAggregator::DeaggregatedMsdus packets =
-    MsduAggregator::Deaggregate (aggregatedPacket);
-
+  NS_LOG_FUNCTION(this << aggregatedPacket << hdr);
+  MsduAggregator::DeaggregatedMsdus packets = MsduAggregator::Deaggregate (aggregatedPacket);
   for (MsduAggregator::DeaggregatedMsdusCI i = packets.begin ();
        i != packets.end (); ++i)
     {

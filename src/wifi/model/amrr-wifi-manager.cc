@@ -390,7 +390,6 @@ AmrrWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 bool
 AmrrWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 

@@ -519,7 +519,6 @@ void
 MinstrelHtWifiManager::DoReportRtsOk (WifiRemoteStation *st, double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
   NS_LOG_FUNCTION (this << st);
-  NS_LOG_DEBUG ("self=" << st << " rts ok");
 }
 
 void
@@ -1058,7 +1057,6 @@ MinstrelHtWifiManager::CountRetries (MinstrelHtWifiRemoteStation *station)
 bool
 MinstrelHtWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 
@@ -1117,7 +1115,7 @@ uint32_t
 MinstrelHtWifiManager::FindRate (MinstrelHtWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  NS_LOG_DEBUG ("FindRate " << "packet=" << station->m_totalPacketsCount );
+  NS_LOG_DEBUG ("FindRate packet=" << station->m_totalPacketsCount );
 
   if ((station->m_samplePacketsCount + station->m_totalPacketsCount) == 0)
     {
@@ -1222,8 +1220,6 @@ void
 MinstrelHtWifiManager::UpdateStats (MinstrelHtWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-
-  NS_LOG_DEBUG ("Updating stats=" << this);
 
   station->m_nextStatsUpdate = Simulator::Now () + m_updateStats;
 
@@ -1490,7 +1486,6 @@ void
 MinstrelHtWifiManager::RateInit (MinstrelHtWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  NS_LOG_DEBUG ("RateInit=" << station);
 
   station->m_groupsTable = McsGroupData (m_numGroups);
 

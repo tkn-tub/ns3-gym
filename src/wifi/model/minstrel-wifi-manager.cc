@@ -694,8 +694,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
 }
 
 void
-MinstrelWifiManager::DoReportRxOk (WifiRemoteStation *st,
-                                   double rxSnr, WifiMode txMode)
+MinstrelWifiManager::DoReportRxOk (WifiRemoteStation *st, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << st << rxSnr << txMode);
   NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << ((MinstrelWifiRemoteStation *)st)->m_txrate);
@@ -707,15 +706,13 @@ MinstrelWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
   NS_LOG_FUNCTION (this << st);
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
   NS_LOG_DEBUG ("DoReportRtsFailed m_txrate=" << station->m_txrate);
-
   station->m_shortRetry++;
 }
 
 void
 MinstrelWifiManager::DoReportRtsOk (WifiRemoteStation *st, double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  NS_LOG_FUNCTION (this << st);
-  NS_LOG_DEBUG ("self=" << st << " rts ok");
+  NS_LOG_FUNCTION (this << st << ctsSnr << ctsMode << rtsSnr);
 }
 
 void
@@ -723,7 +720,6 @@ MinstrelWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
-  NS_LOG_DEBUG ("Final RTS failed");
   UpdateRetry (station);
 }
 
@@ -746,7 +742,7 @@ void
 MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
                                      double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  NS_LOG_FUNCTION (st << ackSnr << ackMode << dataSnr);
+  NS_LOG_FUNCTION (this << st << ackSnr << ackMode << dataSnr);
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *) st;
 
   CheckInit (station);
@@ -880,7 +876,6 @@ MinstrelWifiManager::DoNeedDataRetransmission (WifiRemoteStation *st, Ptr<const 
 bool
 MinstrelWifiManager::IsLowLatency (void) const
 {
-  NS_LOG_FUNCTION (this);
   return true;
 }
 
@@ -909,8 +904,7 @@ MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
 void
 MinstrelWifiManager::RateInit (MinstrelWifiRemoteStation *station)
 {
-  NS_LOG_FUNCTION (station);
-
+  NS_LOG_FUNCTION (this << station);
   for (uint8_t i = 0; i < station->m_nModes; i++)
     {
       NS_LOG_DEBUG ("Initializing rate index " << static_cast<uint16_t>(i) << " " << GetSupported (station, i));
@@ -979,8 +973,7 @@ MinstrelWifiManager::CalculateTimeUnicastPacket (Time dataTransmissionTime, uint
 void
 MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
 {
-  NS_LOG_DEBUG ("InitSampleTable=" << this);
-
+  NS_LOG_FUNCTION (this << station);
   station->m_col = station->m_index = 0;
 
   //for off-setting to make rates fall between 0 and nModes
@@ -1012,8 +1005,7 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
 void
 MinstrelWifiManager::PrintSampleTable (MinstrelWifiRemoteStation *station)
 {
-  NS_LOG_DEBUG ("PrintSampleTable=" << station);
-
+  NS_LOG_FUNCTION (this << station);
   uint8_t numSampleRates = station->m_nModes;
   std::stringstream table;
   for (uint8_t i = 0; i < numSampleRates; i++)
