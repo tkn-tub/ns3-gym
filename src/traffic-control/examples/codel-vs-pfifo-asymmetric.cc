@@ -232,7 +232,7 @@ int main (int argc, char *argv[])
   uint32_t numOfDownLoadOnOffFlows = 1;   // # of download onoff flows
   bool isPcapEnabled = true;
 
-  float startTime = 0.1;
+  float startTime = 0.1f;
   float simDuration = 60;        //in seconds
 
   std::string fileNamePrefix = "codel-vs-pfifo-fast-asymmetric";

@@ -279,7 +279,7 @@ FqCoDelQueueDisc::DoDequeue (void)
         }
     } while (item == 0);
 
-  flow->IncreaseDeficit (-item->GetSize ());
+  flow->IncreaseDeficit (item->GetSize () * -1);
 
   return item;
 }

@@ -53,7 +53,7 @@ uint16_t
 QueueDiscFactory::AddQueueDiscClass (ObjectFactory factory)
 {
   m_queueDiscClassesFactory.push_back (factory);
-  return m_queueDiscClassesFactory.size () - 1;
+  return static_cast<uint16_t>(m_queueDiscClassesFactory.size () - 1);
 }
 
 void
@@ -85,7 +85,7 @@ QueueDiscFactory::CreateQueueDisc (const std::vector<Ptr<QueueDisc> > & queueDis
     }
 
   // create and add the queue disc classes
-  for (uint32_t i = 0; i < m_queueDiscClassesFactory.size (); i++)
+  for (uint16_t i = 0; i < m_queueDiscClassesFactory.size (); i++)
     {
       // the class ID is given by the index i of the vector
       NS_ABORT_MSG_IF (m_classIdChildHandleMap.find (i) == m_classIdChildHandleMap.end (),
@@ -293,7 +293,7 @@ TrafficControlHelper::AddChildQueueDisc (uint16_t handle, uint16_t classId, std:
   factory.Set (n14, v14);
   factory.Set (n15, v15);
 
-  uint16_t childHandle = m_queueDiscFactory.size ();
+  uint16_t childHandle = static_cast<uint16_t>(m_queueDiscFactory.size ());
   m_queueDiscFactory.push_back (QueueDiscFactory (factory));
   m_queueDiscFactory[handle].SetChildQueueDisc (classId, childHandle);
 
@@ -367,7 +367,7 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
   m_queueDiscs.resize (m_queueDiscFactory.size ());
 
   // Create queue discs (from leaves to root)
-  for (int i = m_queueDiscFactory.size () - 1; i >= 0; i--)
+  for (auto i = m_queueDiscFactory.size () - 1; i >= 0; i--)
     {
       Ptr<QueueDisc> q = m_queueDiscFactory[i].CreateQueueDisc (m_queueDiscs);
       q->SetNetDevice (d);

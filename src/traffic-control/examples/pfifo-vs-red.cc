@@ -166,7 +166,7 @@ int main (int argc, char *argv[])
   std::cout << "Running the simulation" << std::endl;
   Simulator::Run ();
 
-  uint32_t totalRxBytesCounter = 0;
+  uint64_t totalRxBytesCounter = 0;
   for (uint32_t i = 0; i < sinkApps.GetN (); i++)
     {
       Ptr <Application> app = sinkApps.Get (i);

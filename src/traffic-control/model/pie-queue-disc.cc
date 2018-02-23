@@ -217,7 +217,7 @@ PieQueueDisc::InitializeParams (void)
 {
   // Initially queue is empty so variables are initialize to zero except m_dqCount
   m_inMeasurement = false;
-  m_dqCount = -1;
+  m_dqCount = DQCOUNT_INVALID;
   m_dropProb = 0;
   m_avgDqRate = 0.0;
   m_dqStart = 0;
@@ -354,10 +354,10 @@ void PieQueueDisc::CalculateP ()
       m_burstAllowance -= m_tUpdate;
     }
 
-  uint32_t burstResetLimit = BURST_RESET_TIMEOUT / m_tUpdate.GetSeconds ();
+  uint32_t burstResetLimit = static_cast<uint32_t>(BURST_RESET_TIMEOUT / m_tUpdate.GetSeconds ());
   if ( (qDelay.GetSeconds () < 0.5 * m_qDelayRef.GetSeconds ()) && (m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb == 0) && !missingInitFlag )
     {
-      m_dqCount = -1;
+      m_dqCount = DQCOUNT_INVALID;
       m_avgDqRate = 0.0;
     }
   if ( (qDelay.GetSeconds () < 0.5 * m_qDelayRef.GetSeconds ()) && (m_qDelayOld.GetSeconds () < (0.5 * m_qDelayRef.GetSeconds ())) && (m_dropProb == 0) && (m_burstAllowance.GetSeconds () == 0))

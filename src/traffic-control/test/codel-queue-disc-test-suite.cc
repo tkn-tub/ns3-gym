@@ -45,7 +45,7 @@ static uint16_t _codel_Newton_step (uint32_t count, uint16_t rec_inv_sqrt)
 
   val >>= 2; /* avoid overflow in following multiply */
   val = (val * invsqrt) >> (32 - 2 + 1);
-  return (val >> REC_INV_SQRT_SHIFT_ns3);
+  return static_cast<uint16_t>(val >> REC_INV_SQRT_SHIFT_ns3);
 }
 
 static uint32_t _reciprocal_scale (uint32_t val, uint32_t ep_ro)
@@ -67,9 +67,8 @@ public:
    *
    * \param p packet
    * \param addr address
-   * \param protocol
    */
-  CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
+  CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~CodelQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark(void);
@@ -89,8 +88,8 @@ private:
   CodelQueueDiscTestItem &operator = (const CodelQueueDiscTestItem &);
 };
 
-CodelQueueDiscTestItem::CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol)
-  : QueueDiscItem (p, addr, protocol)
+CodelQueueDiscTestItem::CodelQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
+  : QueueDiscItem (p, addr, 0)
 {
 }
 
@@ -198,17 +197,17 @@ CoDelQueueDiscBasicEnqueueDequeue::DoRun (void)
   p6 = Create<Packet> (pktSize);
 
   QueueTestSize (queue, 0 * modeSize, "There should be no packets in queue");
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest));
   QueueTestSize (queue, 1 * modeSize, "There should be one packet in queue");
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest));
   QueueTestSize (queue, 2 * modeSize, "There should be two packets in queue");
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest));
   QueueTestSize (queue, 3 * modeSize, "There should be three packets in queue");
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p4, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p4, dest));
   QueueTestSize (queue, 4 * modeSize, "There should be four packets in queue");
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p5, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p5, dest));
   QueueTestSize (queue, 5 * modeSize, "There should be five packets in queue");
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p6, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p6, dest));
   QueueTestSize (queue, 6 * modeSize, "There should be six packets in queue");
 
   NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
@@ -343,9 +342,9 @@ CoDelQueueDiscBasicOverflow::DoRun (void)
   queue->Initialize ();
 
   Enqueue (queue, pktSize, 500);
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest, 0));
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest, 0));
-  queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest, 0));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p1, dest));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p2, dest));
+  queue->Enqueue (Create<CodelQueueDiscTestItem> (p3, dest));
 
   QueueTestSize (queue, 500 * modeSize, "There should be 500 packets in queue");
   NS_TEST_EXPECT_MSG_EQ (queue->GetStats ().GetNDroppedPackets (CoDelQueueDisc::OVERLIMIT_DROP),
@@ -358,7 +357,7 @@ CoDelQueueDiscBasicOverflow::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, 
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<CodelQueueDiscTestItem> (Create<Packet> (size), dest, 0));
+      queue->Enqueue (Create<CodelQueueDiscTestItem> (Create<Packet> (size), dest));
     }
 }
 
@@ -453,12 +452,10 @@ CoDelQueueDiscControlLawTest::DoRun (void)
 
   for (int i = 0; i < 4; ++i)
     {
-      uint32_t ns3Result = queue->ControlLaw (dropNextTestVals[i]);
-      uint32_t upperBound = ns3Result + 0.02 * ns3Result;
-      uint32_t lowerBound = ns3Result - 0.02 * ns3Result;
-      uint32_t linuxResult = _codel_control_law (queue, dropNextTestVals[i]);
-      NS_TEST_EXPECT_MSG_EQ ((lowerBound < linuxResult || linuxResult < upperBound), true,
-                             "Linux result should stay within 2% of ns-3 result");
+      uint32_t ns3Result = queue->ControlLaw(dropNextTestVals[i]); 
+      uint32_t linuxResult = _codel_control_law(queue, dropNextTestVals[i]); 
+      NS_TEST_EXPECT_MSG_EQ((0.98 * ns3Result < linuxResult && linuxResult < 1.02 * ns3Result), true, 
+        "Linux result should stay within 2% of ns-3 result"); 
     }
 }
 
@@ -532,6 +529,8 @@ CoDelQueueDiscBasicDrop::CoDelQueueDiscBasicDrop (std::string mode)
 void
 CoDelQueueDiscBasicDrop::DropNextTracer (uint32_t oldVal, uint32_t newVal)
 {
+  NS_UNUSED(oldVal);
+  NS_UNUSED(newVal);
   m_dropNextCount++;
 }
 
@@ -586,7 +585,7 @@ CoDelQueueDiscBasicDrop::Enqueue (Ptr<CoDelQueueDisc> queue, uint32_t size, uint
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<CodelQueueDiscTestItem> (Create<Packet> (size), dest, 0));
+      queue->Enqueue (Create<CodelQueueDiscTestItem> (Create<Packet> (size), dest));
     }
 }
 

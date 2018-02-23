@@ -87,7 +87,7 @@ int main (int argc, char *argv[])
   uint32_t queueDiscSize = 1000;  //in packets
   uint32_t queueSize = 10;        //in packets
   uint32_t pktSize = 1458;        //in bytes. 1458 to prevent fragments
-  float startTime = 0.1;
+  float startTime = 0.1f;
   float simDuration = 60;         //in seconds
 
   bool isPcapEnabled = true;

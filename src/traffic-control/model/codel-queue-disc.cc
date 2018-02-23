@@ -62,7 +62,7 @@ static uint32_t CoDelGetTime (void)
   Time time = Simulator::Now ();
   uint64_t ns = time.GetNanoSeconds ();
 
-  return ns >> CODEL_SHIFT;
+  return static_cast<uint32_t>(ns >> CODEL_SHIFT);
 }
 
 
@@ -158,7 +158,7 @@ CoDelQueueDisc::NewtonStep (void)
 
   val >>= 2; /* avoid overflow */
   val = (val * invsqrt) >> (32 - 2 + 1);
-  m_recInvSqrt = val >> REC_INV_SQRT_SHIFT;
+  m_recInvSqrt = static_cast<uint16_t>(val >> REC_INV_SQRT_SHIFT);
 }
 
 uint32_t
@@ -458,7 +458,7 @@ CoDelQueueDisc::CoDelTimeBeforeEq (uint32_t a, uint32_t b)
 uint32_t
 CoDelQueueDisc::Time2CoDel (Time t)
 {
-  return (t.GetNanoSeconds () >> CODEL_SHIFT);
+  return static_cast<uint32_t>(t.GetNanoSeconds () >> CODEL_SHIFT);
 }
 
 bool

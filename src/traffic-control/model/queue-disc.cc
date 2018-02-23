@@ -498,7 +498,7 @@ QueueDisc::GetInternalQueue (uint32_t i) const
 uint32_t
 QueueDisc::GetNInternalQueues (void) const
 {
-  return m_queues.size ();
+  return static_cast<uint32_t>(m_queues.size ());
 }
 
 void
@@ -518,7 +518,7 @@ QueueDisc::GetPacketFilter (uint32_t i) const
 uint32_t
 QueueDisc::GetNPacketFilters (void) const
 {
-  return m_filters.size ();
+  return static_cast<uint32_t>(m_filters.size ());
 }
 
 void
@@ -556,7 +556,7 @@ QueueDisc::GetQueueDiscClass (uint32_t i) const
 uint32_t
 QueueDisc::GetNQueueDiscClasses (void) const
 {
-  return m_classes.size ();
+  return static_cast<uint32_t>(m_classes.size ());
 }
 
 int32_t

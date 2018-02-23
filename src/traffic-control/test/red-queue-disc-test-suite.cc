@@ -44,10 +44,9 @@ public:
    *
    * \param p packet
    * \param addr address
-   * \param protocol protocol
    * \param ecnCapable ECN capable flag
    */
-  RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, bool ecnCapable);
+  RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable);
   virtual ~RedQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark(void);
@@ -68,8 +67,8 @@ private:
   bool m_ecnCapablePacket; ///< ECN capable packet?
 };
 
-RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol, bool ecnCapable)
-  : QueueDiscItem (p, addr, protocol),
+RedQueueDiscTestItem::RedQueueDiscTestItem (Ptr<Packet> p, const Address & addr, bool ecnCapable)
+  : QueueDiscItem (p, addr, 0),
     m_ecnCapablePacket (ecnCapable)
 {
 }
@@ -171,16 +170,16 @@ RedQueueDiscTestCase::RunRedTest (StringValue mode)
 
   queue->Initialize ();
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 0 * modeSize, "There should be no packets in there");
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p1, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p1, dest, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 1 * modeSize, "There should be one packet in there");
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p2, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p2, dest, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 2 * modeSize, "There should be two packets in there");
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p3, dest, 0, false));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p4, dest, 0, false));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p5, dest, 0, false));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p6, dest, 0, false));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p7, dest, 0, false));
-  queue->Enqueue (Create<RedQueueDiscTestItem> (p8, dest, 0, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p3, dest, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p4, dest, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p5, dest, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p6, dest, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p7, dest, false));
+  queue->Enqueue (Create<RedQueueDiscTestItem> (p8, dest, false));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 8 * modeSize, "There should be eight packets in there");
 
   Ptr<QueueDiscItem> item;
@@ -529,7 +528,7 @@ RedQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t 
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<RedQueueDiscTestItem> (Create<Packet> (size), dest, 0, ecnCapable));
+      queue->Enqueue (Create<RedQueueDiscTestItem> (Create<Packet> (size), dest, ecnCapable));
     }
 }
 

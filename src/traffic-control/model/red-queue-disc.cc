@@ -669,7 +669,7 @@ RedQueueDisc::Estimator (uint32_t nQueued, uint32_t m, double qAvg, double qW)
 {
   NS_LOG_FUNCTION (this << nQueued << m << qAvg << qW);
 
-  double newAve = qAvg * pow(1.0-qW, m);
+  double newAve = qAvg * std::pow (1.0 - qW, m);
   newAve += qW * nQueued;
 
   Time now = Simulator::Now ();

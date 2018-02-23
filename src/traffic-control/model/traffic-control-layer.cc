@@ -106,7 +106,7 @@ TrafficControlLayer::DoInitialize (void)
           // set the wake callbacks on netdevice queues
            if (ndi->second.m_rootQueueDisc->GetWakeMode () == QueueDisc::WAKE_ROOT)
             {
-              for (uint32_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
+              for (uint8_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
                 {
                   devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run, ndi->second.m_rootQueueDisc));
                   ndi->second.m_queueDiscsToWake.push_back (ndi->second.m_rootQueueDisc);
@@ -116,7 +116,7 @@ TrafficControlLayer::DoInitialize (void)
             {
               NS_ASSERT_MSG (ndi->second.m_rootQueueDisc->GetNQueueDiscClasses () == devQueueIface->GetNTxQueues (),
                              "The number of child queue discs does not match the number of netdevice queues");
-              for (uint32_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
+              for (uint8_t i = 0; i < devQueueIface->GetNTxQueues (); i++)
                 {
                   devQueueIface->GetTxQueue (i)->SetWakeCallback (MakeCallback (&QueueDisc::Run,
                                                                   ndi->second.m_rootQueueDisc->GetQueueDiscClass (i)->GetQueueDisc ()));

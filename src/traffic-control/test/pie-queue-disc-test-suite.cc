@@ -46,9 +46,8 @@ public:
    *
    * \param p the packet
    * \param addr the address
-   * \param protocol the protocol
    */
-  PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
+  PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~PieQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark (void);
@@ -68,8 +67,8 @@ private:
   PieQueueDiscTestItem &operator = (const PieQueueDiscTestItem &);
 };
 
-PieQueueDiscTestItem::PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol)
-  : QueueDiscItem (p, addr, protocol)
+PieQueueDiscTestItem::PieQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
+  : QueueDiscItem (p, addr, 0)
 {
 }
 
@@ -180,16 +179,16 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
 
   queue->Initialize ();
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 0 * modeSize, "There should be no packets in there");
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p1, dest, 0));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p1, dest));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 1 * modeSize, "There should be one packet in there");
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p2, dest, 0));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p2, dest));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 2 * modeSize, "There should be two packets in there");
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p3, dest, 0));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p4, dest, 0));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p5, dest, 0));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p6, dest, 0));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p7, dest, 0));
-  queue->Enqueue (Create<PieQueueDiscTestItem> (p8, dest, 0));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p3, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p4, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p5, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p6, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p7, dest));
+  queue->Enqueue (Create<PieQueueDiscTestItem> (p8, dest));
   NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 8 * modeSize, "There should be eight packets in there");
 
   Ptr<QueueDiscItem> item;
@@ -350,7 +349,7 @@ PieQueueDiscTestCase::Enqueue (Ptr<PieQueueDisc> queue, uint32_t size, uint32_t 
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest, 0));
+      queue->Enqueue (Create<PieQueueDiscTestItem> (Create<Packet> (size), dest));
     }
 }
 

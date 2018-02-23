@@ -46,7 +46,7 @@ QueueDiscContainer::End (void) const
 uint32_t
 QueueDiscContainer::GetN (void) const
 {
-  return m_queueDiscs.size ();
+  return static_cast<uint32_t>(m_queueDiscs.size ());
 }
 
 Ptr<QueueDisc>

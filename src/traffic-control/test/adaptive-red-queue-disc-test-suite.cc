@@ -49,9 +49,8 @@ public:
    *
    * \param p packet
    * \param addr address
-   * \param protocol protocol
    */
-  AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol);
+  AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr);
   virtual ~AredQueueDiscTestItem ();
   virtual void AddHeader (void);
   virtual bool Mark(void);
@@ -71,8 +70,8 @@ private:
   AredQueueDiscTestItem &operator = (const AredQueueDiscTestItem &);
 };
 
-AredQueueDiscTestItem::AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr, uint16_t protocol)
-  : QueueDiscItem (p, addr, protocol)
+AredQueueDiscTestItem::AredQueueDiscTestItem (Ptr<Packet> p, const Address & addr)
+  : QueueDiscItem (p, addr, 0)
 {
 }
 
@@ -356,7 +355,7 @@ AredQueueDiscTestCase::Enqueue (Ptr<RedQueueDisc> queue, uint32_t size, uint32_t
   Address dest;
   for (uint32_t i = 0; i < nPkt; i++)
     {
-      queue->Enqueue (Create<AredQueueDiscTestItem> (Create<Packet> (size), dest, 0));
+      queue->Enqueue (Create<AredQueueDiscTestItem> (Create<Packet> (size), dest));
     }
 }
 
