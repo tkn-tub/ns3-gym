@@ -25,6 +25,7 @@
 #include "ns3/packet.h"
 #include "wifi-tx-vector.h"
 #include "error-rate-model.h"
+#include <map>
 
 namespace ns3 {
 
@@ -177,7 +178,7 @@ private:
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculatePlcpPayloadSnrPer (Ptr<InterferenceHelper::Event> event);
+  struct InterferenceHelper::SnrPer CalculatePlcpPayloadSnrPer (Ptr<InterferenceHelper::Event> event) const;
   /**
    * Calculate the SNIR at the start of the plcp header and accumulate
    * all SNIR changes in the snir vector.
@@ -186,7 +187,7 @@ private:
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculatePlcpHeaderSnrPer (Ptr<InterferenceHelper::Event> event);
+  struct InterferenceHelper::SnrPer CalculatePlcpHeaderSnrPer (Ptr<InterferenceHelper::Event> event) const;
 
   /**
    * Notify that RX has started.
@@ -212,47 +213,39 @@ public:
     /**
      * Create a NiChange at the given time and the amount of NI change.
      *
-     * \param time time of the event
-     * \param delta the power
+     * \param power the power
      * \param event causes this NI change
      */
-    NiChange (Time time, double delta, Ptr<InterferenceHelper::Event> event);
-    /**
-     * Return the event time.
-     *
-     * \return the event time.
-     */
-    Time GetTime (void) const;
+    NiChange (double power, Ptr<InterferenceHelper::Event> event);
     /**
      * Return the power
      *
      * \return the power
      */
-    double GetDelta (void) const;
+    double GetPower (void) const;
+    /**
+     * Add a given amount of power.
+     *
+     * \param power the power to be added to the existing value
+     */
+    void AddPower (double power);
     /**
      * Return the event causes the corresponding NI change
      *
      * \return the event
      */
     Ptr<InterferenceHelper::Event> GetEvent (void) const;
-    /**
-     * Compare the event time of two NiChange objects (a < o).
-     *
-     * \param o
-     * \return true if a < o.time, false otherwise
-     */
-    bool operator < (const NiChange& o) const;
 
 
 private:
-    Time m_time; ///< time
-    double m_delta; ///< delta
+    double m_power; ///< power
     Ptr<InterferenceHelper::Event> m_event; ///< event
   };
+
   /**
-   * typedef for a vector of NiChanges
+   * typedef for a multimap of NiChanges
    */
-  typedef std::vector <NiChange> NiChanges;
+  typedef std::multimap<Time, NiChange> NiChanges;
 
   /**
    * Append the given Event.
@@ -322,18 +315,36 @@ private:
   bool m_rxing; ///< flag whether it is in receiving state
 
   /**
-   * Returns a const iterator to the first nichange, which is later than moment
+   * Returns an iterator to the first nichange that is later than moment
    *
    * \param moment time to check from
    * \returns an iterator to the list of NiChanges
    */
-  NiChanges::const_iterator GetPosition (Time moment);
+  NiChanges::const_iterator GetNextPosition (Time moment) const;
   /**
-   * Add NiChange to the list at the appropriate position.
+   * Returns an iterator to the first nichange that is later than moment
    *
-   * \param change
+   * \param moment time to check from
+   * \returns an iterator to the list of NiChanges
    */
-  void AddNiChangeEvent (NiChange change);
+  //NiChanges::iterator GetNextPosition (Time moment);
+  /**
+   * Returns an iterator to the last nichange that is before than moment
+   *
+   * \param moment time to check from
+   * \returns an iterator to the list of NiChanges
+   */
+  NiChanges::const_iterator GetPreviousPosition (Time moment) const;
+
+  /**
+   * Add NiChange to the list at the appropriate position and
+   * return the iterator of the new event.
+   *
+   * \param moment
+   * \param change
+   * \returns the iterator of the new event
+   */
+  NiChanges::iterator AddNiChangeEvent (Time moment, NiChange change);
 };
 
 } //namespace ns3

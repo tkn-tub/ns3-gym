@@ -43,6 +43,7 @@ Bugs fixed
 - Bug 2764 - wifi: WifiSpectrumModelId doesn't distinguish 11ax from legacy
 - Bug 2766 - core: Modify logging for int64x64 to avoid stack overflow
 - Bug 2768 - lte: LteUeNetDevice has a null MAC address
+- Bug 2791 - wifi: Interference Helper gives negative trace value for Interference Power
 - Bug 2807 - energy: GetTotalEnergyConsumption is not updated correctly
 - Bug 2809 - wifi: Wifi doesn't fully stop when energy is depleted
 - Bug 2813 - wifi: OFDM 10 MHz and 5 MHz PHYs do not have correct subcarrier frequency spacings
