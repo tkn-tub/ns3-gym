@@ -367,7 +367,7 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
   m_queueDiscs.resize (m_queueDiscFactory.size ());
 
   // Create queue discs (from leaves to root)
-  for (auto i = m_queueDiscFactory.size () - 1; i >= 0; i--)
+  for (int i = m_queueDiscFactory.size () - 1; i >= 0; i--)
     {
       Ptr<QueueDisc> q = m_queueDiscFactory[i].CreateQueueDisc (m_queueDiscs);
       q->SetNetDevice (d);
