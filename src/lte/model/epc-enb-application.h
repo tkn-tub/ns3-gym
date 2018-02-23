@@ -81,8 +81,6 @@ public:
    */
   EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId);
 
-  void SetLteSocket6(Ptr<Socket> lteSocket6);
-  Ptr<Socket> GetLteSocket6(); 
   /**
    * Destructor
    * 
