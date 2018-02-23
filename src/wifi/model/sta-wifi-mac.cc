@@ -929,7 +929,7 @@ StaWifiMac::SetState (MacState value)
 }
 
 void
-StaWifiMac::SetEdcaParameters (AcIndex ac, uint8_t cwMin, uint8_t cwMax, uint8_t aifsn, Time txopLimit)
+StaWifiMac::SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8_t aifsn, Time txopLimit)
 {
   Ptr<EdcaTxopN> edca = m_edca.find (ac)->second;
   edca->SetMinCw (cwMin);

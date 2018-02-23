@@ -156,7 +156,7 @@ private:
    * \param aifsn the number of slots that make up an AIFS
    * \param txopLimit the TXOP limit
    */
-  void SetEdcaParameters (AcIndex ac, uint8_t cwMin, uint8_t cwMax, uint8_t aifsn, Time txopLimit);
+  void SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8_t aifsn, Time txopLimit);
   /**
    * Return the Capability information of the current STA.
    *

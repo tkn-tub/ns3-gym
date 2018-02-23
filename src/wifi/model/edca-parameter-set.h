@@ -75,13 +75,13 @@ public:
    *
    * \param cwMin the AC_BE CWmin field in the EdcaParameterSet information element
    */
-  void SetBeCWmin (uint8_t cwMin);
+  void SetBeCWmin (uint32_t cwMin);
   /**
    * Set the AC_BE CWmax field in the EdcaParameterSet information element.
    *
    * \param cwMax the AC_BE CWmax field in the EdcaParameterSet information element
    */
-  void SetBeCWmax (uint8_t cwMax);
+  void SetBeCWmax (uint32_t cwMax);
   /**
    * Set the AC_BE TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -111,13 +111,13 @@ public:
    *
    * \param cwMin the AC_BK CWmin field in the EdcaParameterSet information element
    */
-  void SetBkCWmin (uint8_t cwMin);
+  void SetBkCWmin (uint32_t cwMin);
   /**
    * Set the AC_BK CWmax field in the EdcaParameterSet information element.
    *
    * \param cwMax the AC_BK CWmax field in the EdcaParameterSet information element
    */
-  void SetBkCWmax (uint8_t cwMax);
+  void SetBkCWmax (uint32_t cwMax);
   /**
    * Set the AC_BK TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -147,13 +147,13 @@ public:
    *
    * \param cwMin the AC_VI CWmin field in the EdcaParameterSet information element
    */
-  void SetViCWmin (uint8_t cwMin);
+  void SetViCWmin (uint32_t cwMin);
   /**
    * Set the AC_VI CWmax field in the EdcaParameterSet information element.
    *
    * \param cwMax the AC_VI CWmax field in the EdcaParameterSet information element
    */
-  void SetViCWmax (uint8_t cwMax);
+  void SetViCWmax (uint32_t cwMax);
   /**
    * Set the AC_VI TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -183,13 +183,13 @@ public:
    *
    * \param cwMin the AC_VO CWmin field in the EdcaParameterSet information element
    */
-  void SetVoCWmin (uint8_t cwMin);
+  void SetVoCWmin (uint32_t cwMin);
   /**
    * Set the AC_VO CWmax field in the EdcaParameterSet information element.
    *
    * \param cwMax the AC_VO CWmax field in the EdcaParameterSet information element
    */
-  void SetVoCWmax (uint8_t cwMax);
+  void SetVoCWmax (uint32_t cwMax);
   /**
    * Set the AC_VO TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -226,13 +226,13 @@ public:
    *
    * \return the AC_BE CWmin field in the EdcaParameterSet information element
    */
-  uint8_t GetBeCWmin (void) const;
+  uint32_t GetBeCWmin (void) const;
   /**
    * Return the AC_BE CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_BE CWmax field in the EdcaParameterSet information element
    */
-  uint8_t GetBeCWmax (void) const;
+  uint32_t GetBeCWmax (void) const;
   /**
    * Return the AC_BE TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -262,13 +262,13 @@ public:
    *
    * \return the AC_BK CWmin field in the EdcaParameterSet information element
    */
-  uint8_t GetBkCWmin (void) const;
+  uint32_t GetBkCWmin (void) const;
   /**
    * Return the AC_BK CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_BK CWmax field in the EdcaParameterSet information element
    */
-  uint8_t GetBkCWmax (void) const;
+  uint32_t GetBkCWmax (void) const;
   /**
    * Return the AC_BK TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -298,13 +298,13 @@ public:
    *
    * \return the AC_VI CWmin field in the EdcaParameterSet information element
    */
-  uint8_t GetViCWmin (void) const;
+  uint32_t GetViCWmin (void) const;
   /**
    * Return the AC_VI CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_VI CWmax field in the EdcaParameterSet information element
    */
-  uint8_t GetViCWmax (void) const;
+  uint32_t GetViCWmax (void) const;
   /**
    * Return the AC_VI TXOP Limit field in the EdcaParameterSet information element.
    *
@@ -334,13 +334,13 @@ public:
    *
    * \return the AC_VO CWmin field in the EdcaParameterSet information element
    */
-  uint8_t GetVoCWmin (void) const;
+  uint32_t GetVoCWmin (void) const;
   /**
    * Return the AC_VO CWmax field in the EdcaParameterSet information element.
    *
    * \return the AC_VO CWmax field in the EdcaParameterSet information element
    */
-  uint8_t GetVoCWmax (void) const;
+  uint32_t GetVoCWmax (void) const;
   /**
    * Return the AC_VO TXOP Limit field in the EdcaParameterSet information element.
    *
