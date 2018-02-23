@@ -53,7 +53,7 @@ class FrameCaptureModel;
  * WifiRadioEnergyModel class
  */
 class WifiRadioEnergyModel;
-    
+
 /**
  * This enumeration defines the type of an MPDU.
  */
@@ -258,6 +258,11 @@ public:
   void UnregisterListener (WifiPhyListener *listener);
 
   /**
+   * \param callback the callback to invoke when PHY capabilities have changed.
+   */
+  void SetCapabilitiesChangedCallback (Callback<void> callback);
+
+  /**
    * Starting receiving the plcp of a packet (i.e. the first bit of the preamble has arrived).
    *
    * \param packet the arriving packet
@@ -353,7 +358,7 @@ public:
   /**
    * \return true if the current state of the PHY layer is WifiPhy::OFF, false otherwise.
    */
-  bool IsStateOff (void) const ;
+  bool IsStateOff (void) const;
 
   /**
    * \return the amount of time since the current state has started.
@@ -1798,7 +1803,7 @@ private:
    * \return the FrequencyWidthPair found
    */
   FrequencyWidthPair GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiPhyStandard standard) const;
-  
+
   /**
    * Due to newly arrived signal, the current reception cannot be continued and has to be aborted
    *
@@ -1809,7 +1814,7 @@ private:
    * Eventually switch to CCA busy
    */
   void MaybeCcaBusyDuration (void);
-  
+
   /**
    * Starting receiving the packet after having detected the medium is idle or after a reception switch.
    *
@@ -1987,6 +1992,8 @@ private:
   Ptr<InterferenceHelper::Event> m_currentEvent; //!< Hold the current event
   Ptr<FrameCaptureModel> m_frameCaptureModel; //!< Frame capture model
   Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel; //!< Wifi radio energy model
+
+  Callback<void> m_capabilitiesChangedCallback; //!< Callback when PHY capabilities changed
 };
 
 /**

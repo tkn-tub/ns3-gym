@@ -1283,7 +1283,7 @@ Bug2483TestCase::DoRun (void)
   spectrumChannel->AddPropagationLossModel (lossModel);
 
   Ptr<ConstantSpeedPropagationDelayModel> delayModel
-  = CreateObject<ConstantSpeedPropagationDelayModel> ();
+    = CreateObject<ConstantSpeedPropagationDelayModel> ();
   spectrumChannel->SetPropagationDelayModel (delayModel);
 
   spectrumPhy.SetChannel (spectrumChannel);
@@ -1343,6 +1343,177 @@ Bug2483TestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_EQ (std::get<3> (m_distinctTuples[1]), WifiModulationClass::WIFI_MOD_CLASS_VHT, "Second tuple should be VHT_OFDM");
 }
 
+//-----------------------------------------------------------------------------
+/**
+ * Make sure that the channel width and the channel number can be changed at runtime.
+ *
+ * The scenario considers an access point and a station using a 20 MHz channel width.
+ * After 1s, we change the channel width and the channel number to use a 40 MHz channel.
+ * The tests checks the operational channel width sent in Beacon frames
+ * and verify that a reassociation procedure is executed.
+ *
+ * See \bugid{2831}
+ */
+
+class Bug2831TestCase : public TestCase
+{
+public:
+  Bug2831TestCase ();
+  virtual ~Bug2831TestCase ();
+  virtual void DoRun (void);
+
+private:
+  /**
+   * Function called to change the supported channel width at runtime
+   */
+  void ChangeSupportedChannelWidth (void);
+  /**
+   * Callback triggered when a packet is received by the PHYs
+   * \param context the context
+   * \param p the received packet
+   */
+  void RxCallback (std::string context, Ptr<const Packet> p);
+
+  Ptr<YansWifiPhy> m_apPhy; ///< AP PHY
+  Ptr<YansWifiPhy> m_staPhy; ///< STA PHY
+
+  uint8_t m_reassocReqCount; ///< count number of reassociation requests
+  uint8_t m_reassocRespCount; ///< count number of reassociation responses
+  uint8_t m_countOperationalChannelWidth20; ///< count number of beacon frames announcing a 20 MHz operating channel width
+  uint8_t m_countOperationalChannelWidth40; ///< count number of beacon frames announcing a 40 MHz operating channel width
+};
+
+Bug2831TestCase::Bug2831TestCase ()
+  : TestCase ("Test case for Bug 2831"),
+    m_reassocReqCount (0),
+    m_reassocRespCount (0),
+    m_countOperationalChannelWidth20 (0),
+    m_countOperationalChannelWidth40 (0)
+{
+}
+
+Bug2831TestCase::~Bug2831TestCase ()
+{
+}
+
+void
+Bug2831TestCase::ChangeSupportedChannelWidth ()
+{
+  m_apPhy->SetChannelNumber (38);
+  m_apPhy->SetChannelWidth (40);
+  m_staPhy->SetChannelNumber (38);
+  m_staPhy->SetChannelWidth (40);
+}
+
+void
+Bug2831TestCase::RxCallback (std::string context, Ptr<const Packet> p)
+{
+  Ptr<Packet> packet = p->Copy ();
+  WifiMacHeader hdr;
+  packet->RemoveHeader (hdr);
+  if (hdr.IsReassocReq ())
+    {
+      m_reassocReqCount++;
+    }
+  else if (hdr.IsReassocResp ())
+    {
+      m_reassocRespCount++;
+    }
+  else if (hdr.IsBeacon ())
+    {
+      MgtBeaconHeader beacon;
+      packet->RemoveHeader (beacon);
+      HtOperation htOperation = beacon.GetHtOperation ();
+      if (htOperation.GetStaChannelWidth () > 0)
+        {
+          m_countOperationalChannelWidth40++;
+        }
+      else
+        {
+          m_countOperationalChannelWidth20++;
+        }
+    }
+}
+
+void
+Bug2831TestCase::DoRun (void)
+{
+  Ptr<YansWifiChannel> channel = CreateObject<YansWifiChannel> ();
+  ObjectFactory propDelay;
+  propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
+  Ptr<PropagationDelayModel> propagationDelay = propDelay.Create<PropagationDelayModel> ();
+  Ptr<PropagationLossModel> propagationLoss = CreateObject<RandomPropagationLossModel> ();
+  channel->SetPropagationDelayModel (propagationDelay);
+  channel->SetPropagationLossModel (propagationLoss);
+
+  Ptr<Node> apNode = CreateObject<Node> ();
+  Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
+  ObjectFactory mac;
+  mac.SetTypeId ("ns3::ApWifiMac");
+  Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
+  apMac->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+
+  Ptr<Node> staNode = CreateObject<Node> ();
+  Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice> ();
+  mac.SetTypeId ("ns3::StaWifiMac");
+  Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
+  staMac->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+
+  Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
+  apMobility->SetPosition (Vector (0.0, 0.0, 0.0));
+  apNode->AggregateObject (apMobility);
+
+  Ptr<ErrorRateModel> error = CreateObject<YansErrorRateModel> ();
+  m_apPhy = CreateObject<YansWifiPhy> ();
+  m_apPhy->SetErrorRateModel (error);
+  m_apPhy->SetChannel (channel);
+  m_apPhy->SetMobility (apMobility);
+  m_apPhy->SetDevice (apDev);
+  m_apPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_apPhy->SetChannelNumber (36);
+  m_apPhy->SetChannelWidth (20);
+
+  Ptr<ConstantPositionMobilityModel> staMobility = CreateObject<ConstantPositionMobilityModel> ();
+  staMobility->SetPosition (Vector (1.0, 0.0, 0.0));
+  staNode->AggregateObject (staMobility);
+
+  m_staPhy = CreateObject<YansWifiPhy> ();
+  m_staPhy->SetErrorRateModel (error);
+  m_staPhy->SetChannel (channel);
+  m_staPhy->SetMobility (staMobility);
+  m_staPhy->SetDevice (apDev);
+  m_staPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_staPhy->SetChannelNumber (36);
+  m_staPhy->SetChannelWidth (20);
+
+  apMac->SetAddress (Mac48Address::Allocate ());
+  apDev->SetMac (apMac);
+  apDev->SetPhy (m_apPhy);
+  ObjectFactory manager;
+  manager.SetTypeId ("ns3::ConstantRateWifiManager");
+  apDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
+  apNode->AddDevice (apDev);
+
+  staMac->SetAddress (Mac48Address::Allocate ());
+  staDev->SetMac (staMac);
+  staDev->SetPhy (m_staPhy);
+  staDev->SetRemoteStationManager (manager.Create<WifiRemoteStationManager> ());
+  staNode->AddDevice (staDev);
+
+  Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/PhyRxBegin", MakeCallback (&Bug2831TestCase::RxCallback, this));
+
+  Simulator::Schedule (Seconds (1.0), &Bug2831TestCase::ChangeSupportedChannelWidth, this);
+
+  Simulator::Stop (Seconds (3.0));
+  Simulator::Run ();
+  Simulator::Destroy ();
+
+  NS_TEST_ASSERT_MSG_EQ (m_reassocReqCount, 1, "Reassociation request not received");
+  NS_TEST_ASSERT_MSG_EQ (m_reassocRespCount, 1, "Reassociation response not received");
+  NS_TEST_ASSERT_MSG_EQ (m_countOperationalChannelWidth20, 10, "Incorrect operational channel width before channel change");
+  NS_TEST_ASSERT_MSG_EQ (m_countOperationalChannelWidth40, 20, "Incorrect operational channel width after channel change");
+}
+
 /**
  * \ingroup wifi-test
  * \ingroup tests
@@ -1366,6 +1537,7 @@ WifiTestSuite::WifiTestSuite ()
   AddTestCase (new SetChannelFrequencyTest, TestCase::QUICK);
   AddTestCase (new Bug2222TestCase, TestCase::QUICK); //Bug 2222
   AddTestCase (new Bug2483TestCase, TestCase::QUICK); //Bug 2483
+  AddTestCase (new Bug2831TestCase, TestCase::QUICK); //Bug 2831
 }
 
 static WifiTestSuite g_wifiTestSuite; ///< the test suite

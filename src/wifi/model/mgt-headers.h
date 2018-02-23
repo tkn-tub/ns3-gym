@@ -37,6 +37,7 @@
 #include "edca-parameter-set.h"
 #include "he-capabilities.h"
 #include "he-operation.h"
+#include "ns3/address-utils.h"
 
 namespace ns3 {
 
@@ -173,7 +174,145 @@ private:
 
 /**
  * \ingroup wifi
- * Implement the header for management frames of type association response.
+ * Implement the header for management frames of type reassociation request.
+ */
+class MgtReassocRequestHeader : public Header
+{
+public:
+  MgtReassocRequestHeader ();
+  ~MgtReassocRequestHeader ();
+
+  /**
+   * Set the Service Set Identifier (SSID).
+   *
+   * \param ssid SSID
+   */
+  void SetSsid (Ssid ssid);
+  /**
+   * Set the supported rates.
+   *
+   * \param rates the supported rates
+   */
+  void SetSupportedRates (SupportedRates rates);
+  /**
+   * Set the listen interval.
+   *
+   * \param interval the listen interval
+   */
+  void SetListenInterval (uint16_t interval);
+  /**
+   * Set the Capability information.
+   *
+   * \param capabilities Capability information
+   */
+  void SetCapabilities (CapabilityInformation capabilities);
+  /**
+   * Set the Extended Capabilities.
+   *
+   * \param extendedcapabilities the Extended Capabilities
+   */
+  void SetExtendedCapabilities (ExtendedCapabilities extendedcapabilities);
+  /**
+   * Set the HT capabilities.
+   *
+   * \param htcapabilities HT capabilities
+   */
+  void SetHtCapabilities (HtCapabilities htcapabilities);
+  /**
+   * Set the VHT capabilities.
+   *
+   * \param vhtcapabilities VHT capabilities
+   */
+  void SetVhtCapabilities (VhtCapabilities vhtcapabilities);
+  /**
+   * Set the HE capabilities.
+   *
+   * \param hecapabilities HE capabilities
+   */
+  void SetHeCapabilities (HeCapabilities hecapabilities);
+  /**
+   * Return the Capability information.
+   *
+   * \return Capability information
+   */
+  CapabilityInformation GetCapabilities (void) const;
+  /**
+   * Return the extended capabilities.
+   *
+   * \return the extended capabilities
+   */
+  ExtendedCapabilities GetExtendedCapabilities (void) const;
+  /**
+   * Return the HT capabilities.
+   *
+   * \return HT capabilities
+   */
+  HtCapabilities GetHtCapabilities (void) const;
+  /**
+   * Return the VHT capabilities.
+   *
+   * \return VHT capabilities
+   */
+  VhtCapabilities GetVhtCapabilities (void) const;
+  /**
+   * Return the HE capabilities.
+   *
+   * \return HE capabilities
+   */
+  HeCapabilities GetHeCapabilities (void) const;
+  /**
+   * Return the Service Set Identifier (SSID).
+   *
+   * \return SSID
+   */
+  Ssid GetSsid (void) const;
+  /**
+   * Return the supported rates.
+   *
+   * \return the supported rates
+   */
+  SupportedRates GetSupportedRates (void) const;
+  /**
+   * Return the listen interval.
+   *
+   * \return the listen interval
+   */
+  uint16_t GetListenInterval (void) const;
+  /**
+   * Set the address of the current access point.
+   *
+   * \param currentApAddr address of the current access point
+   */
+  void SetCurrentApAddress (Mac48Address currentApAddr);
+
+  /**
+   * Register this type.
+   * \return The TypeId.
+   */
+  static TypeId GetTypeId (void);
+  TypeId GetInstanceTypeId (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+
+
+private:
+  Mac48Address m_currentApAddr;       //!< Address of the current access point
+  Ssid m_ssid;                        //!< Service Set ID (SSID)
+  SupportedRates m_rates;             //!< List of supported rates
+  CapabilityInformation m_capability; //!< Capability information
+  ExtendedCapabilities m_extendedCapability; //!< Extended capabilities
+  HtCapabilities m_htCapability;      //!< HT capabilities
+  VhtCapabilities m_vhtCapability;    //!< VHT capabilities
+  HeCapabilities m_heCapability;      //!< HE capabilities
+  uint16_t m_listenInterval;          //!< listen interval
+};
+
+
+/**
+ * \ingroup wifi
+ * Implement the header for management frames of type association and reassociation response.
  */
 class MgtAssocResponseHeader : public Header
 {

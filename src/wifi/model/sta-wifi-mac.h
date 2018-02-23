@@ -58,6 +58,11 @@ public:
    */
   void Enqueue (Ptr<const Packet> packet, Mac48Address to);
 
+  /**
+   * \param phy the physical layer attached to this MAC.
+   */
+  void SetWifiPhy (const Ptr<WifiPhy> phy);
+
 
 private:
   /**
@@ -93,10 +98,14 @@ private:
    */
   void SendProbeRequest (void);
   /**
-   * Forward an association request packet to the DCF. The standard is not clear on the correct
-   * queue for management frames if QoS is supported. We always use the DCF.
+   * Forward an association or reassociation request packet to the DCF.
+   * The standard is not clear on the correct queue for management frames if QoS is supported.
+   * We always use the DCF.
+   *
+   * \param isReassoc flag whether it is a reassociation request
+   *
    */
-  void SendAssociationRequest (void);
+  void SendAssociationRequest (bool isReassoc);
   /**
    * Try to ensure that we are associated with an AP by taking an appropriate action
    * depending on the current association status.
@@ -163,6 +172,11 @@ private:
    * \return the Capability information that we support
    */
   CapabilityInformation GetCapabilities (void) const;
+
+  /**
+   * Indicate that PHY capabilities have changed.
+   */
+  void PhyCapabilitiesChanged (void);
 
   MacState m_state;            ///< MAC state
   Time m_probeRequestTimeout;  ///< probe request timeout

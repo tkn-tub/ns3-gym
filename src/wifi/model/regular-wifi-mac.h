@@ -216,7 +216,7 @@ public:
   /**
    * \param phy the physical layer attached to this MAC.
    */
-  void SetWifiPhy (const Ptr<WifiPhy> phy);
+  virtual void SetWifiPhy (const Ptr<WifiPhy> phy);
   /**
    * \return the physical layer attached to this MAC.
    */

@@ -98,6 +98,7 @@ WifiNetDevice::DoDispose (void)
 void
 WifiNetDevice::DoInitialize (void)
 {
+  NS_LOG_FUNCTION_NOARGS ();
   m_phy->Initialize ();
   m_mac->Initialize ();
   m_stationManager->Initialize ();
@@ -140,7 +141,7 @@ WifiNetDevice::NotifyNewAggregate (void)
           // register the select queue callback
           m_queueInterface->SetSelectQueueCallback (MakeCallback (&WifiNetDevice::SelectQueue, this));
           m_queueInterface->SetLateTxQueuesCreation (true);
-	  FlowControlConfig ();
+          FlowControlConfig ();
         }
     }
   NetDevice::NotifyNewAggregate ();

@@ -435,6 +435,12 @@ WifiPhy::UnregisterListener (WifiPhyListener *listener)
 }
 
 void
+WifiPhy::SetCapabilitiesChangedCallback (Callback<void> callback)
+{
+  m_capabilitiesChangedCallback = callback;
+}
+
+void
 WifiPhy::InitializeFrequencyChannelNumber (void)
 {
   NS_LOG_FUNCTION (this);
@@ -537,7 +543,7 @@ WifiPhy::GetTxPowerEnd (void) const
 void
 WifiPhy::SetNTxPower (uint8_t n)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t>(n));
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (n));
   m_nTxPower = n;
 }
 
@@ -707,7 +713,7 @@ WifiPhy::GetFrameCaptureModel (void) const
 {
   return m_frameCaptureModel;
 }
-    
+
 void
 WifiPhy::SetWifiRadioEnergyModel (const Ptr<WifiRadioEnergyModel> wifiRadioEnergyModel)
 {
@@ -1267,9 +1273,15 @@ WifiPhy::GetFrequency (void) const
 void
 WifiPhy::SetChannelWidth (uint8_t channelwidth)
 {
+  NS_LOG_FUNCTION (this << static_cast<uint16_t> (channelwidth));
   NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
+  bool changed = (m_channelWidth == channelwidth);
   m_channelWidth = channelwidth;
   AddSupportedChannelWidth (channelwidth);
+  if (changed && !m_capabilitiesChangedCallback.IsNull ())
+    {
+      m_capabilitiesChangedCallback ();
+    }
 }
 
 uint8_t
@@ -1296,8 +1308,13 @@ void
 WifiPhy::SetMaxSupportedTxSpatialStreams (uint8_t streams)
 {
   NS_ASSERT (streams <= GetNumberOfAntennas ());
+  bool changed = (m_txSpatialStreams == streams);
   m_txSpatialStreams = streams;
   ConfigureHtDeviceMcsSet ();
+  if (changed && !m_capabilitiesChangedCallback.IsNull ())
+    {
+      m_capabilitiesChangedCallback ();
+    }
 }
 
 uint8_t
@@ -1310,7 +1327,12 @@ void
 WifiPhy::SetMaxSupportedRxSpatialStreams (uint8_t streams)
 {
   NS_ASSERT (streams <= GetNumberOfAntennas ());
+  bool changed = (m_rxSpatialStreams == streams);
   m_rxSpatialStreams = streams;
+  if (changed && !m_capabilitiesChangedCallback.IsNull ())
+    {
+      m_capabilitiesChangedCallback ();
+    }
 }
 
 uint8_t
@@ -2398,10 +2420,10 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
 
   if (tag.GetFrameComplete () == 0)
     {
-        NS_LOG_DEBUG ("drop packet because of incomplete frame");
-        NotifyRxDrop (packet);
-        m_plcpSuccess = false;
-        return;
+      NS_LOG_DEBUG ("drop packet because of incomplete frame");
+      NotifyRxDrop (packet);
+      m_plcpSuccess = false;
+      return;
     }
 
   WifiTxVector txVector = tag.GetWifiTxVector ();
