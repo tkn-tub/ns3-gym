@@ -14660,10 +14660,6 @@ def register_Ns3EpcEnbApplication_methods(root_module, cls):
     cls.add_constructor([param('ns3::EpcEnbApplication const &', 'arg0')])
     ## epc-enb-application.h (module 'lte'): ns3::EpcEnbApplication::EpcEnbApplication(ns3::Ptr<ns3::Socket> lteSocket, ns3::Ptr<ns3::Socket> lteSocket6, ns3::Ptr<ns3::Socket> s1uSocket, ns3::Ipv4Address enbS1uAddress, ns3::Ipv4Address sgwS1uAddress, uint16_t cellId) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::Socket >', 'lteSocket'), param('ns3::Ptr< ns3::Socket >', 'lteSocket6'), param('ns3::Ptr< ns3::Socket >', 's1uSocket'), param('ns3::Ipv4Address', 'enbS1uAddress'), param('ns3::Ipv4Address', 'sgwS1uAddress'), param('uint16_t', 'cellId')])
-    ## epc-enb-application.h (module 'lte'): ns3::Ptr<ns3::Socket> ns3::EpcEnbApplication::GetLteSocket6() [member function]
-    cls.add_method('GetLteSocket6', 
-                   'ns3::Ptr< ns3::Socket >', 
-                   [])
     ## epc-enb-application.h (module 'lte'): ns3::EpcEnbS1SapProvider * ns3::EpcEnbApplication::GetS1SapProvider() [member function]
     cls.add_method('GetS1SapProvider', 
                    'ns3::EpcEnbS1SapProvider *', 
@@ -14685,10 +14681,6 @@ def register_Ns3EpcEnbApplication_methods(root_module, cls):
     cls.add_method('RecvFromS1uSocket', 
                    'void', 
                    [param('ns3::Ptr< ns3::Socket >', 'socket')])
-    ## epc-enb-application.h (module 'lte'): void ns3::EpcEnbApplication::SetLteSocket6(ns3::Ptr<ns3::Socket> lteSocket6) [member function]
-    cls.add_method('SetLteSocket6', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::Socket >', 'lteSocket6')])
     ## epc-enb-application.h (module 'lte'): void ns3::EpcEnbApplication::SetS1SapUser(ns3::EpcEnbS1SapUser * s) [member function]
     cls.add_method('SetS1SapUser', 
                    'void', 
@@ -21710,6 +21702,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
     cls.add_method('GetMessageType', 
                    'int', 
                    [])
+    ## lte-rrc-header.h (module 'lte'): int ns3::RrcAsn1Header::BandwidthToEnum(uint8_t bandwidth) const [member function]
+    cls.add_method('BandwidthToEnum', 
+                   'int', 
+                   [param('uint8_t', 'bandwidth')], 
+                   is_const=True, visibility='protected')
     ## lte-rrc-header.h (module 'lte'): uint32_t ns3::RrcAsn1Header::Deserialize(ns3::Buffer::Iterator bIterator) [member function]
     cls.add_method('Deserialize', 
                    'uint32_t', 
@@ -21815,6 +21812,11 @@ def register_Ns3RrcAsn1Header_methods(root_module, cls):
                    'ns3::Buffer::Iterator', 
                    [param('ns3::LteRrcSap::ThresholdEutra *', 'thresholdEutra'), param('ns3::Buffer::Iterator', 'bIterator')], 
                    visibility='protected')
+    ## lte-rrc-header.h (module 'lte'): uint8_t ns3::RrcAsn1Header::EnumToBandwidth(int n) const [member function]
+    cls.add_method('EnumToBandwidth', 
+                   'uint8_t', 
+                   [param('int', 'n')], 
+                   is_const=True, visibility='protected')
     ## lte-rrc-header.h (module 'lte'): ns3::TypeId ns3::RrcAsn1Header::GetInstanceTypeId() const [member function]
     cls.add_method('GetInstanceTypeId', 
                    'ns3::TypeId', 
