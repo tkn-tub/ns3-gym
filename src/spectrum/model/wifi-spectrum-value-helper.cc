@@ -255,10 +255,6 @@ WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFreq
       // 56 subcarriers (52 data + 4 pilot)
       txPowerPerBand = txPowerW / 56;
       NS_LOG_DEBUG ("Power per band " << txPowerPerBand);
-      start1 = (nGuardBands / 2) + 4;
-      stop1 = start1 + 28 - 1;
-      start2 = stop1 + 2;
-      stop2 = start2 + 28 - 1;
       for (size_t i = 0; i < c->GetSpectrumModel ()->GetNumBands (); i++, vit++, bit++)
         {
           if ((i >= start1 && i <= stop1) || (i >= start2 && i <= stop2))
