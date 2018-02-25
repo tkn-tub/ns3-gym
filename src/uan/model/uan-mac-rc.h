@@ -22,7 +22,7 @@
 #define UAN_MAC_RC_H
 
 #include "uan-mac.h"
-#include "uan-address.h"
+#include "ns3/mac8-address.h"
 
 #include "ns3/nstime.h"
 #include "ns3/trace-source-accessor.h"
@@ -63,7 +63,7 @@ public:
    * \param maxPkts Maximum number of packets to assign to reservation
    *   from packet list (0 = no maximum).
    */
-  Reservation (std::list<std::pair <Ptr<Packet>, UanAddress > > &list, uint8_t frameNo, uint32_t maxPkts = 0);
+  Reservation (std::list<std::pair <Ptr<Packet>, Mac8Address > > &list, uint8_t frameNo, uint32_t maxPkts = 0);
   /** Destructor */
   ~Reservation ();
   /**
@@ -85,7 +85,7 @@ public:
    *
    * \return The list of packets.
    */
-  const std::list<std::pair <Ptr<Packet>, UanAddress > > &GetPktList (void) const;
+  const std::list<std::pair <Ptr<Packet>, Mac8Address > > &GetPktList (void) const;
   /**
    * Get the frame number.
    * 
@@ -131,7 +131,7 @@ public:
 
 private:
   /** Queued packets for each address. */
-  std::list<std::pair <Ptr<Packet>, UanAddress > > m_pktList;
+  std::list<std::pair <Ptr<Packet>, Mac8Address > > m_pktList;
   /** Total length of queued packets. */
   uint32_t m_length;
   /** Frame number. */
@@ -183,12 +183,9 @@ public:
   static TypeId GetTypeId (void);
 
   // Inherited methods
-  virtual Address GetAddress (void);
-  virtual void SetAddress (UanAddress addr);
-  virtual bool Enqueue (Ptr<Packet> pkt, const Address &dest, uint16_t protocolNumber);
-  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb);
+  virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
+  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual Address GetBroadcast (void) const;
   virtual void Clear (void);
   int64_t AssignStreams (int64_t stream);
 
@@ -215,9 +212,9 @@ private:
   bool m_rtsBlocked;       //!< RTS blocked while processing ACK.
 
   EventId m_startAgain;    //!< (Unused).
-  UanAddress m_address;    //!< My addrese.s
+  Mac8Address m_address;    //!< My addrese.s
   double m_retryRate;      //!< Number of retry attempts per second (of RTS/GWPING.
-  UanAddress m_assocAddr;  //!< Next hop address.
+  Mac8Address m_assocAddr;  //!< Next hop address.
   Ptr<UanPhy> m_phy;       //!< PHY layer attached to this MAC.
   uint32_t m_numRates;     //!< Number of rates per Phy layer.
   uint32_t m_currentRate;  //!< Rate number corresponding to data rate of current cycle.
@@ -236,12 +233,12 @@ private:
   bool m_cleared;          //!< Flag when we've been cleared.
 
   /** Pending packets. */
-  std::list<std::pair <Ptr<Packet>, UanAddress > > m_pktQueue;
+  std::list<std::pair <Ptr<Packet>, Mac8Address > > m_pktQueue;
   /** List of scheduled reservations. */
   std::list<Reservation> m_resList;
 
   /** The callback to forward a packet up to higher layer. */
-  Callback<void, Ptr<Packet>, const UanAddress& > m_forwardUpCb;
+  Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forwardUpCb;
 
   /** A packet was destined for and received at this MAC layer. */
   TracedCallback<Ptr<const Packet>, UanTxMode > m_rxLogger;

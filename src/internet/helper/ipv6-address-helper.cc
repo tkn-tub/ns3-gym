@@ -104,9 +104,15 @@ Ipv6Address Ipv6AddressHelper::NewAddress (Address addr)
       Ipv6AddressGenerator::AddAllocated (address);
       return address;
     }
+  else if (Mac8Address::IsMatchingType (addr))
+    {
+      Ipv6Address address = Ipv6Address::MakeAutoconfiguredAddress (Mac8Address::ConvertFrom (addr), m_network);
+      Ipv6AddressGenerator::AddAllocated (address);
+      return address;
+    }
   else
     {
-      NS_FATAL_ERROR ("Did not pass in a valid Mac Address (16, 48 or 64 bits)");
+      NS_FATAL_ERROR ("Did not pass in a valid Mac Address (8, 16, 48 or 64 bits)");
     }
   /* never reached */
   return Ipv6Address ("::");

@@ -20,7 +20,6 @@
 
 #include "uan-mac-aloha.h"
 #include "uan-tx-mode.h"
-#include "uan-address.h"
 #include "ns3/log.h"
 #include "uan-phy.h"
 #include "uan-header-common.h"
@@ -77,34 +76,24 @@ UanMacAloha::GetTypeId (void)
   return tid;
 }
 
-Address
-UanMacAloha::GetAddress (void)
-{
-  return m_address;
-}
-
-void
-UanMacAloha::SetAddress (UanAddress addr)
-{
-  m_address=addr;
-}
 bool
-UanMacAloha::Enqueue (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber)
+UanMacAloha::Enqueue (Ptr<Packet> packet, uint16_t protocolNumber, const Address &dest)
 {
-  NS_LOG_DEBUG ("" << Simulator::Now ().GetSeconds () << " MAC " << UanAddress::ConvertFrom (GetAddress ()) << " Queueing packet for " << UanAddress::ConvertFrom (dest));
+  NS_LOG_DEBUG ("" << Simulator::Now ().GetSeconds () << " MAC " << Mac8Address::ConvertFrom (GetAddress ()) << " Queueing packet for " << Mac8Address::ConvertFrom (dest));
 
   if (!m_phy->IsStateTx ())
     {
-      UanAddress src = UanAddress::ConvertFrom (GetAddress ());
-      UanAddress udest = UanAddress::ConvertFrom (dest);
+      Mac8Address src = Mac8Address::ConvertFrom (GetAddress ());
+      Mac8Address udest = Mac8Address::ConvertFrom (dest);
 
       UanHeaderCommon header;
       header.SetSrc (src);
       header.SetDest (udest);
       header.SetType (0);
+      header.SetProtocolNumber (protocolNumber);
 
       packet->AddHeader (header);
-      m_phy->SendPacket (packet, protocolNumber);
+      m_phy->SendPacket (packet, GetTxModeIndex ());
       return true;
     }
   else
@@ -112,7 +101,7 @@ UanMacAloha::Enqueue (Ptr<Packet> packet, const Address &dest, uint16_t protocol
 }
 
 void
-UanMacAloha::SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress& > cb)
+UanMacAloha::SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb)
 {
   m_forUpCb = cb;
 }
@@ -132,9 +121,9 @@ UanMacAloha::RxPacketGood (Ptr<Packet> pkt, double sinr, UanTxMode txMode)
   pkt->RemoveHeader (header);
   NS_LOG_DEBUG ("Receiving packet from " << header.GetSrc () << " For " << header.GetDest ());
 
-  if (header.GetDest () == GetAddress () || header.GetDest () == UanAddress::GetBroadcast ())
+  if (header.GetDest () == GetAddress () || header.GetDest () == Mac8Address::GetBroadcast ())
     {
-      m_forUpCb (pkt, header.GetSrc ());
+      m_forUpCb (pkt, header.GetProtocolNumber (), header.GetSrc ());
     }
 
 }
@@ -142,14 +131,7 @@ UanMacAloha::RxPacketGood (Ptr<Packet> pkt, double sinr, UanTxMode txMode)
 void
 UanMacAloha::RxPacketError (Ptr<Packet> pkt, double sinr)
 {
-  NS_LOG_DEBUG ("" << Simulator::Now () << " MAC " << UanAddress::ConvertFrom (GetAddress ()) << " Received packet in error with sinr " << sinr);
-}
-
-Address
-UanMacAloha::GetBroadcast (void) const
-{
-  UanAddress broadcast (255);
-  return broadcast;
+  NS_LOG_DEBUG ("" << Simulator::Now () << " MAC " << Mac8Address::ConvertFrom (GetAddress ()) << " Received packet in error with sinr " << sinr);
 }
 
 int64_t

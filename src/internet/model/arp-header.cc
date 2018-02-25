@@ -136,7 +136,7 @@ uint32_t
 ArpHeader::GetSerializedSize (void) const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT((m_macSource.GetLength () == 6) || (m_macSource.GetLength () == 8));
+  NS_ASSERT ((m_macSource.GetLength () == 6) || (m_macSource.GetLength () == 8) || (m_macSource.GetLength () == 1));
   NS_ASSERT (m_macSource.GetLength () == m_macDest.GetLength ());
 
   uint32_t length = 16;   // Length minus two hardware addresses

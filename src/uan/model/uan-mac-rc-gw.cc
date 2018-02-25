@@ -83,7 +83,7 @@ UanMacRcGw::Clear ()
       m_phy = 0;
     }
   m_propDelay.clear ();
-  std::map<UanAddress, AckData>::iterator it = m_ackData.begin ();
+  std::map<Mac8Address, AckData>::iterator it = m_ackData.begin ();
   for (; it != m_ackData.end (); it++)
     {
       it->second.rxFrames.clear ();
@@ -170,20 +170,8 @@ UanMacRcGw::GetTypeId (void)
   return tid;
 }
 
-Address
-UanMacRcGw::GetAddress (void)
-{
-  return m_address;
-}
-
-void
-UanMacRcGw::SetAddress (UanAddress addr)
-{
-  m_address = addr;
-}
-
 bool
-UanMacRcGw::Enqueue (Ptr<Packet> packet, const Address &dest, uint16_t protocolNumber)
+UanMacRcGw::Enqueue (Ptr<Packet> packet, uint16_t protocolNumber, const Address &dest)
 {
   NS_UNUSED (dest);
   NS_UNUSED (protocolNumber);
@@ -192,7 +180,7 @@ UanMacRcGw::Enqueue (Ptr<Packet> packet, const Address &dest, uint16_t protocolN
 }
 
 void
-UanMacRcGw::SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb)
+UanMacRcGw::SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb)
 {
   m_forwardUpCb = cb;
 }
@@ -211,12 +199,6 @@ UanMacRcGw::ReceiveError (Ptr<Packet> pkt, double sinr)
   NS_UNUSED (sinr);
 }
 
-Address
-UanMacRcGw::GetBroadcast (void) const
-{
-  return UanAddress::GetBroadcast ();
-}
-
 void
 UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
 {
@@ -224,7 +206,7 @@ UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
   UanHeaderCommon ch;
   pkt->PeekHeader (ch);
 
-  if (ch.GetDest () == m_address || ch.GetDest () == UanAddress::GetBroadcast ())
+  if (ch.GetDest () == m_address || ch.GetDest () == Mac8Address::GetBroadcast ())
     {
       m_rxLogger (pkt, mode);
     }
@@ -251,7 +233,7 @@ UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
             NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " GW Received data packet from " << ch.GetSrc () << " length = " << pkt->GetSize ());
             m_ackData[ch.GetSrc ()].rxFrames.insert (dh.GetFrameNo ());
           }
-        m_forwardUpCb (pkt, ch.GetSrc ());
+        m_forwardUpCb (pkt, ch.GetProtocolNumber (), ch.GetSrc ());
       }
       break;
     case UanMacRc::TYPE_GWPING:
@@ -275,7 +257,7 @@ UanMacRcGw::ReceivePacket (Ptr<Packet> pkt, double sinr, UanTxMode mode)
             req.length = rh.GetLength ();
             NS_LOG_DEBUG (Simulator::Now ().GetSeconds () << " GW storing reservation from " << ch.GetSrc () << " with length " << req.length);
             m_requests.insert (std::make_pair (ch.GetSrc (), req));
-            std::map<UanAddress, Time>::iterator it = m_propDelay.find (ch.GetSrc ());
+            std::map<Mac8Address, Time>::iterator it = m_propDelay.find (ch.GetSrc ());
             if (it == m_propDelay.end ())
               {
                 m_sortedRes.insert (std::make_pair (m_maxDelta, ch.GetSrc ()));
@@ -322,7 +304,7 @@ UanMacRcGw::StartCycle (void)
   double pDelay = 0;
   if (numRts > 0)
     {
-      std::map<UanAddress, Request>::iterator rit = m_requests.begin ();
+      std::map<Mac8Address, Request>::iterator rit = m_requests.begin ();
       for (; rit != m_requests.end (); rit++)
         {
           totalBytes += (*rit).second.length;
@@ -392,7 +374,7 @@ UanMacRcGw::StartCycle (void)
       ctsg.SetRetryRate (m_currentRetryRate);
       ctsg.SetTxTimeStamp (Simulator::Now ());
 
-      UanHeaderCommon ch (m_address, UanAddress::GetBroadcast (), UanMacRc::TYPE_CTS);
+      UanHeaderCommon ch (m_address, Mac8Address::GetBroadcast (), UanMacRc::TYPE_CTS, 0);
       Ptr<Packet> p = Create<Packet> ();
       p->AddHeader (ctsg);
       p->AddHeader (ch);
@@ -410,7 +392,7 @@ UanMacRcGw::StartCycle (void)
   m_state = CTSING;
   Simulator::Schedule (nextEarliest, &UanMacRcGw::CycleStarted, this);
 
-  std::set<std::pair<Time, UanAddress> >::iterator it = m_sortedRes.begin ();
+  std::set<std::pair<Time, Mac8Address> >::iterator it = m_sortedRes.begin ();
   Time minPdelay = (*it).first;
   Ptr<Packet> cts = Create<Packet> ();
 
@@ -422,7 +404,7 @@ UanMacRcGw::StartCycle (void)
       AckData newData;
       newData.expFrames = req.numFrames;
       newData.frameNo = req.frameNo;
-      UanAddress dest = (*it).second;
+      Mac8Address dest = (*it).second;
       m_ackData.insert (std::make_pair (dest, newData));
 
       Time earliestArr = ctsTxTimeTotal + pdelay + pdelay + m_sifs;
@@ -449,7 +431,7 @@ UanMacRcGw::StartCycle (void)
   ctsg.SetWindowTime (Seconds (effWinSize));
   ctsg.SetTxTimeStamp (Simulator::Now ());
   UanHeaderCommon ch;
-  ch.SetDest (UanAddress::GetBroadcast ());
+  ch.SetDest (Mac8Address::GetBroadcast ());
   ch.SetSrc (m_address);
   ch.SetType (UanMacRc::TYPE_CTS);
   cts->AddHeader (ctsg);
@@ -479,10 +461,10 @@ UanMacRcGw::EndCycle ()
 
   Time ackTime = Seconds (m_ackSize * 8.0 / m_phy->GetMode (m_currentRateNum).GetDataRateBps ());
 
-  std::map<UanAddress, AckData>::iterator it = m_ackData.begin ();
+  std::map<Mac8Address, AckData>::iterator it = m_ackData.begin ();
   for (; it != m_ackData.end (); it++)
     {
-      UanAddress dest = (*it).first;
+      Mac8Address dest = (*it).first;
       AckData &data = (*it).second;
 
       std::list<uint32_t> toNack;
@@ -583,7 +565,7 @@ UanMacRcGw::GetExpPdk (void)
 {
   uint32_t n = m_numNodes;
   std::vector<double> pds;
-  std::map<UanAddress, Time>::iterator pdit = m_propDelay.begin ();
+  std::map<Mac8Address, Time>::iterator pdit = m_propDelay.begin ();
 
   for (; pdit != m_propDelay.end (); pdit++)
     {

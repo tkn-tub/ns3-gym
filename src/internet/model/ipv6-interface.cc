@@ -113,6 +113,12 @@ void Ipv6Interface::DoSetup ()
           AddAddress (ifaddr);
           m_linkLocalAddress = ifaddr;
         }
+      else if (Mac8Address::IsMatchingType (addr))
+        {
+          Ipv6InterfaceAddress ifaddr = Ipv6InterfaceAddress (Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr)), Ipv6Prefix (64));
+          AddAddress (ifaddr);
+          m_linkLocalAddress = ifaddr;
+        }
       else
         {
           NS_FATAL_ERROR ("IPv6 autoconf for this kind of address not implemented.");

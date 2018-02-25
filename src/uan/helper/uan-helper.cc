@@ -244,7 +244,7 @@ UanHelper::Install (Ptr<Node> node, Ptr<UanChannel> channel) const
   Ptr<UanPhy> phy = m_phy.Create<UanPhy> ();
   Ptr<UanTransducer> trans = m_transducer.Create<UanTransducer> ();
 
-  mac->SetAddress (UanAddress::Allocate ());
+  mac->SetAddress (Mac8Address::Allocate ());
   device->SetMac (mac);
   device->SetPhy (phy);
   device->SetTransducer (trans);

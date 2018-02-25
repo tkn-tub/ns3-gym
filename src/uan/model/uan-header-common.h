@@ -24,19 +24,37 @@
 #include "ns3/header.h"
 #include "ns3/nstime.h"
 #include "ns3/simulator.h"
-#include "uan-address.h"
+#include "ns3/mac8-address.h"
 
 namespace ns3 {
+
+struct UanProtocolBits
+{
+  uint8_t  m_type : 4;
+  uint8_t  m_protocolNumber : 4;
+};
 
 /**
  * \ingroup uan
  *
  * Common packet header fields.
  *
- * Includes 1 byte src address, 1 byte dest address,
- * and a 1 byte type field.
+ *  1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8 1 2 3 4 5 6 7 8
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |    src addr   |    dst addr   | prtcl |  type |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- * The type field is protocol specific; see the relevant MAC protocol.
+ *
+ * src addr: The MAC8 source address
+ *
+ * dst addr: The MAC8 destination address
+ *
+ * prtcl: The layer 3 protocol
+ * prtcl=1 (IPv4)
+ * prtcl=2 (ARP)
+ * prtcl=3 (IPv6)
+ *
+ * type: The type field is MAC protocol specific
  */
 class UanHeaderCommon : public Header
 {
@@ -50,8 +68,9 @@ public:
    * \param src Source address defined in header.
    * \param dest Destination address defined in header.
    * \param type Header type.
+   * \param protocolNumber the layer 3 protocol number
    */
-  UanHeaderCommon (const UanAddress src, const UanAddress dest, uint8_t type);
+  UanHeaderCommon (const Mac8Address src, const Mac8Address dest, uint8_t type, uint8_t protocolNumber);
   /** Destructor */
   virtual ~UanHeaderCommon ();
 
@@ -66,13 +85,13 @@ public:
    *
    * \param dest Address of destination node.
    */
-  void SetDest (UanAddress dest);
+  void SetDest (Mac8Address dest);
   /**
    * Set the source address.
    *
    * \param src Address of packet source node.
    */
-  void SetSrc (UanAddress src);
+  void SetSrc (Mac8Address src);
   /**
    * Set the header type.
    *
@@ -80,26 +99,38 @@ public:
    * \param type The type value.
    */
   void SetType (uint8_t type);
+  /**
+   * Set the packet type.
+   *
+   * Used to indicate the layer 3 protocol
+   * \param protocolNumber The layer 3 protocol number value.
+   */
+  void SetProtocolNumber (uint16_t protocolNumber);
 
   /**
    * Get the destination address.
    *
-   * \return UanAddress in destination field.
+   * \return Mac8Address in destination field.
    */
-  UanAddress GetDest (void) const;
+  Mac8Address GetDest (void) const;
   /**
    * Get the source address
    *
-   * \return UanAddress in source field.
+   * \return Mac8Address in source field.
    */
-  UanAddress GetSrc (void) const;
+  Mac8Address GetSrc (void) const;
   /**
    * Get the header type value.
    *
    * \return value of type field.
    */
   uint8_t GetType (void) const;
-
+  /**
+   * Get the packet type value.
+   *
+   * \return value of protocolNumber field.
+   */
+  uint16_t GetProtocolNumber (void) const;
 
   // Inherited methods
   virtual uint32_t GetSerializedSize (void) const;
@@ -108,9 +139,9 @@ public:
   virtual void Print (std::ostream &os) const;
   virtual TypeId GetInstanceTypeId (void) const;
 private:
-  UanAddress m_dest;  //!< The destination address.
-  UanAddress m_src;   //!< The source address.
-  uint8_t m_type;     //!< The type field.
+  Mac8Address m_dest;  //!< The destination address.
+  Mac8Address m_src;   //!< The source address.
+  UanProtocolBits m_uanProtocolBits;  //!< The type and protocol bits
 
 };  // class UanHeaderCommon
 

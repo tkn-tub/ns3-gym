@@ -22,7 +22,7 @@
 #define UAN_MAC_ALOHA_H
 
 #include "uan-mac.h"
-#include "uan-address.h"
+#include "ns3/mac8-address.h"
 
 namespace ns3
 {
@@ -55,22 +55,19 @@ public:
 
 
   // Inherited methods
-  Address GetAddress (void);
-  virtual void SetAddress (UanAddress addr);
-  virtual bool Enqueue (Ptr<Packet> pkt, const Address &dest, uint16_t protocolNumber);
-  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress& > cb);
+  virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
+  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual Address GetBroadcast (void) const;
   virtual void Clear (void);
   int64_t AssignStreams (int64_t stream);
 
 private:
   /** The MAC address. */
-  UanAddress m_address;
+  Mac8Address m_address;
   /** PHY layer attached to this MAC. */
   Ptr<UanPhy> m_phy;
   /** Forwarding up callback. */
-  Callback<void, Ptr<Packet>, const UanAddress& > m_forUpCb;
+  Callback<void, Ptr<Packet>, uint16_t, const Mac8Address& > m_forUpCb;
   /** Flag when we've been cleared. */
   bool m_cleared;
 

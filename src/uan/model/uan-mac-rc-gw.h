@@ -22,7 +22,7 @@
 #define UAN_MAC_RC_GW_H
 
 #include "uan-mac.h"
-#include "uan-address.h"
+#include "ns3/mac8-address.h"
 
 #include "ns3/nstime.h"
 #include "ns3/traced-callback.h"
@@ -67,12 +67,9 @@ public:
   static TypeId GetTypeId (void);
 
   // Inherited methods
-  virtual Address GetAddress (void);
-  virtual void SetAddress (UanAddress addr);
-  virtual bool Enqueue (Ptr<Packet> pkt, const Address &dest, uint16_t protocolNumber);
-  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, const UanAddress&> cb);
+  virtual bool Enqueue (Ptr<Packet> pkt, uint16_t protocolNumber, const Address &dest);
+  virtual void SetForwardUpCb (Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
   virtual void AttachPhy (Ptr<UanPhy> phy);
-  virtual Address GetBroadcast (void) const;
   virtual void Clear (void);
   int64_t AssignStreams (int64_t stream);
 
@@ -126,10 +123,10 @@ private:
     uint8_t expFrames;  //!< Expected number of frames.
   };
   /** Forwarding up callback. */
-  Callback<void, Ptr<Packet>, const UanAddress& > m_forwardUpCb;
+  Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forwardUpCb;
   
   Ptr<UanPhy> m_phy;            //!< PHY layer attached to this MAC.
-  UanAddress m_address;         //!< The MAC address.
+  Mac8Address m_address;         //!< The MAC address.
   Time m_maxDelta;              //!< Maximum propagation delay between gateway and non-gateway nodes .
   Time m_sifs;                  //!< Spacing between frames to account for timing error and processing delay.
   uint32_t m_maxRes;            //!< Maximum number of reservations to accept per cycle.
@@ -149,15 +146,15 @@ private:
   double m_retryStep;           //!< Retry rate increment.
 
   /** Propagation delay to each node. */
-  std::map<UanAddress, Time> m_propDelay;
+  std::map<Mac8Address, Time> m_propDelay;
 
   /** AckData for each node. */
-  std::map<UanAddress, AckData> m_ackData;
+  std::map<Mac8Address, AckData> m_ackData;
 
   /** Request for each node. */
-  std::map<UanAddress, Request> m_requests;
+  std::map<Mac8Address, Request> m_requests;
   /** Queued request times. */
-  std::set<std::pair<Time, UanAddress> > m_sortedRes;
+  std::set<std::pair<Time, Mac8Address> > m_sortedRes;
 
   /** Flag when we've been cleared. */
   bool m_cleared;

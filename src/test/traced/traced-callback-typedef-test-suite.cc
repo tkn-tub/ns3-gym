@@ -635,7 +635,7 @@ TracedCallbackTypedefTestCase::DoRun (void)
          empty, empty, empty);
 
   CHECK (UanNetDevice::RxTxTracedCallback,
-         Ptr<const Packet>, UanAddress,
+         Ptr<const Packet>, Mac8Address,
          empty, empty, empty);
 
   CHECK (UanPhy::TracedCallback,

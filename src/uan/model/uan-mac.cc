@@ -24,6 +24,12 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (UanMac);
 
+UanMac::UanMac ()
+  : m_txModeIndex (0)
+{
+
+}
+
 TypeId UanMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UanMac")
@@ -31,6 +37,37 @@ TypeId UanMac::GetTypeId (void)
     .SetGroupName ("Uan")
   ;
   return tid;
+}
+
+void
+UanMac::SetTxModeIndex (uint32_t txModeIndex)
+{
+  m_txModeIndex = txModeIndex;
+}
+
+uint32_t
+UanMac::GetTxModeIndex ()
+{
+  return m_txModeIndex;
+}
+
+Address
+UanMac::GetAddress (void)
+{
+  return m_address;
+}
+
+void
+UanMac::SetAddress (Mac8Address addr)
+{
+  m_address=addr;
+}
+
+Address
+UanMac::GetBroadcast (void) const
+{
+  Mac8Address broadcast = Mac8Address (255);
+  return broadcast;
 }
 
 } // namespace ns3

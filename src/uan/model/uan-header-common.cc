@@ -19,7 +19,11 @@
  */
 
 #include "uan-header-common.h"
-#include "uan-address.h"
+#include "ns3/mac8-address.h"
+
+static const uint16_t ARP_PROT_NUMBER = 0x0806;
+static const uint16_t IPV4_PROT_NUMBER = 0x0800;
+static const uint16_t IPV6_PROT_NUMBER = 0x86DD;
 
 namespace ns3 {
 
@@ -29,13 +33,13 @@ UanHeaderCommon::UanHeaderCommon ()
 {
 }
 
-UanHeaderCommon::UanHeaderCommon (const UanAddress src, const UanAddress dest, uint8_t type)
+UanHeaderCommon::UanHeaderCommon (const Mac8Address src, const Mac8Address dest, uint8_t type, uint8_t protocolNumber)
   : Header (),
-    m_dest (dest),
-    m_src (src),
-    m_type (type)
+  m_dest (dest),
+  m_src (src)
 {
-
+  SetProtocolNumber (protocolNumber);
+  m_uanProtocolBits.m_type = type;
 }
 
 TypeId
@@ -60,12 +64,12 @@ UanHeaderCommon::~UanHeaderCommon ()
 
 
 void
-UanHeaderCommon::SetDest (UanAddress dest)
+UanHeaderCommon::SetDest (Mac8Address dest)
 {
   m_dest = dest;
 }
 void
-UanHeaderCommon::SetSrc (UanAddress src)
+UanHeaderCommon::SetSrc (Mac8Address src)
 {
   m_src = src;
 }
@@ -73,15 +77,30 @@ UanHeaderCommon::SetSrc (UanAddress src)
 void
 UanHeaderCommon::SetType (uint8_t type)
 {
-  m_type = type;
+  m_uanProtocolBits.m_type = type;
 }
 
-UanAddress
+void
+UanHeaderCommon::SetProtocolNumber (uint16_t protocolNumber)
+{
+  if (protocolNumber == 0)
+    m_uanProtocolBits.m_protocolNumber = 0;
+  else if (protocolNumber == IPV4_PROT_NUMBER)
+    m_uanProtocolBits.m_protocolNumber = 1;
+  else if (protocolNumber == ARP_PROT_NUMBER)
+    m_uanProtocolBits.m_protocolNumber = 2;
+  else if (protocolNumber == IPV6_PROT_NUMBER)
+    m_uanProtocolBits.m_protocolNumber = 3;
+  else
+    NS_ASSERT_MSG (false, "UanHeaderCommon::SetProtocolNumber(): Protocol not supported");
+}
+
+Mac8Address
 UanHeaderCommon::GetDest (void) const
 {
   return m_dest;
 }
-UanAddress
+Mac8Address
 UanHeaderCommon::GetSrc (void) const
 {
   return m_src;
@@ -89,7 +108,19 @@ UanHeaderCommon::GetSrc (void) const
 uint8_t
 UanHeaderCommon::GetType (void) const
 {
-  return m_type;
+  return m_uanProtocolBits.m_type;
+}
+
+uint16_t
+UanHeaderCommon::GetProtocolNumber (void) const
+{
+  if (m_uanProtocolBits.m_protocolNumber == 1)
+    return IPV4_PROT_NUMBER;
+  if (m_uanProtocolBits.m_protocolNumber == 2)
+    return ARP_PROT_NUMBER;
+  if (m_uanProtocolBits.m_protocolNumber == 3)
+    return IPV6_PROT_NUMBER;
+  return 0;
 }
 
 // Inherrited methods
@@ -103,9 +134,15 @@ UanHeaderCommon::GetSerializedSize (void) const
 void
 UanHeaderCommon::Serialize (Buffer::Iterator start) const
 {
-  start.WriteU8 (m_src.GetAsInt ());
-  start.WriteU8 (m_dest.GetAsInt ());
-  start.WriteU8 (m_type);
+  uint8_t address = 0;
+  m_src.CopyTo (&address);
+  start.WriteU8 (address);
+  m_dest.CopyTo (&address);
+  start.WriteU8 (address);
+  char tmp = m_uanProtocolBits.m_type;
+  tmp = tmp << 4;
+  tmp += m_uanProtocolBits.m_protocolNumber;
+  start.WriteU8 (tmp);
 }
 
 uint32_t
@@ -113,9 +150,11 @@ UanHeaderCommon::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator rbuf = start;
 
-  m_src = UanAddress (rbuf.ReadU8 ());
-  m_dest = UanAddress (rbuf.ReadU8 ());
-  m_type = rbuf.ReadU8 ();
+  m_src = Mac8Address (rbuf.ReadU8 ());
+  m_dest = Mac8Address (rbuf.ReadU8 ());
+  char tmp = rbuf.ReadU8 ();
+  m_uanProtocolBits.m_type = tmp >> 4;
+  m_uanProtocolBits.m_protocolNumber = tmp;
 
   return rbuf.GetDistanceFrom (start);
 }
@@ -123,7 +162,7 @@ UanHeaderCommon::Deserialize (Buffer::Iterator start)
 void
 UanHeaderCommon::Print (std::ostream &os) const
 {
-  os << "UAN src=" << m_src << " dest=" << m_dest << " type=" << (uint32_t) m_type;
+  os << "UAN src=" << m_src << " dest=" << m_dest << " type=" << (uint32_t) m_uanProtocolBits.m_type << "Protocol Number=" << (uint32_t) m_uanProtocolBits.m_protocolNumber;
 }
 
 

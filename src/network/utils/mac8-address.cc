@@ -18,83 +18,78 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#include "uan-address.h"
+#include "mac8-address.h"
 #include "ns3/address.h"
 
 namespace ns3 {
 
-UanAddress::UanAddress ()
+Mac8Address::Mac8Address ()
 {
   m_address = 255;
 }
 
-UanAddress::UanAddress (uint8_t addr)
+Mac8Address::Mac8Address (uint8_t addr)
   : m_address (addr)
 {
 }
 
-UanAddress::~UanAddress ()
+Mac8Address::~Mac8Address ()
 {
 }
 
 uint8_t
-UanAddress::GetType (void)
+Mac8Address::GetType (void)
 {
   static uint8_t type = Address::Register ();
   return type;
 }
 
 Address
-UanAddress::ConvertTo (void) const
+Mac8Address::ConvertTo (void) const
 {
   return Address (GetType (), &m_address, 1);
 }
 
-UanAddress
-UanAddress::ConvertFrom (const Address &address)
+Mac8Address
+Mac8Address::ConvertFrom (const Address &address)
 {
   NS_ASSERT (IsMatchingType (address));
-  UanAddress uAddr;
+  Mac8Address uAddr;
   address.CopyTo (&uAddr.m_address);
   return uAddr;
 }
 
-uint8_t
-UanAddress::GetAsInt (void) const
-{
-  return m_address;
-}
 bool
-UanAddress::IsMatchingType (const Address &address)
+Mac8Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 1);
 }
 
-UanAddress::operator Address () const
+Mac8Address::operator Address () const
 {
   return ConvertTo ();
 }
 
 void
-UanAddress::CopyFrom (const uint8_t *pBuffer)
+Mac8Address::CopyFrom (const uint8_t *pBuffer)
 {
   m_address = *pBuffer;
 }
 
 void
-UanAddress::CopyTo (uint8_t *pBuffer)
+Mac8Address::CopyTo (uint8_t *pBuffer) const
 {
   *pBuffer = m_address;
 
 }
 
-UanAddress
-UanAddress::GetBroadcast ()
+Mac8Address
+Mac8Address::GetBroadcast ()
 {
-  return UanAddress (255);
+  return Mac8Address (255);
 }
-UanAddress
-UanAddress::Allocate ()
+Mac8Address
+Mac8Address::Allocate ()
 {
   static uint8_t nextAllocated = 0;
 
@@ -104,35 +99,35 @@ UanAddress::Allocate ()
       nextAllocated = 0;
     }
 
-  return UanAddress (address);
+  return Mac8Address (address);
 }
 
 bool
-operator < (const UanAddress &a, const UanAddress &b)
+operator < (const Mac8Address &a, const Mac8Address &b)
 {
   return a.m_address < b.m_address;
 }
 
 bool
-operator == (const UanAddress &a, const UanAddress &b)
+operator == (const Mac8Address &a, const Mac8Address &b)
 {
   return a.m_address == b.m_address;
 }
 
 bool
-operator != (const UanAddress &a, const UanAddress &b)
+operator != (const Mac8Address &a, const Mac8Address &b)
 {
   return !(a == b);
 }
 
 std::ostream&
-operator<< (std::ostream& os, const UanAddress & address)
+operator<< (std::ostream& os, const Mac8Address & address)
 {
   os << (int) address.m_address;
   return os;
 }
 std::istream&
-operator>> (std::istream& is, UanAddress & address)
+operator>> (std::istream& is, Mac8Address & address)
 {
   uint8_t x;
   is >> x;

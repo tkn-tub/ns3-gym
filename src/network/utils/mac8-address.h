@@ -18,18 +18,20 @@
  * Author: Leonard Tracy <lentracy@gmail.com>
  */
 
-#ifndef UAN_ADDRESS_H
-#define UAN_ADDRESS_H
+#ifndef MAC8_ADDRESS_H
+#define MAC8_ADDRESS_H
 
 #include "ns3/address.h"
 #include <iostream>
 
 namespace ns3 {
 
+class Address;
+
 /**
- * \ingroup uan
+ * \ingroup network
  *
- * A class used for addressing UAN MAC's.
+ * A class used for addressing MAC8 MAC's.
  *
  * This implementation uses a simple 8 bit flat addressing scheme.
  * It is unlikely that perceived underwater networks will soon
@@ -37,33 +39,33 @@ namespace ns3 {
  * - the ocean is big), so this should provide adequate addressing
  * for most applications.
  */
-class UanAddress
+class Mac8Address
 {
 public:
   /** Constructor */
-  UanAddress ();
+  Mac8Address ();
   /**
-   * Create UanAddress object with address addr.
+   * Create Mac8Address object with address addr.
    *
    * \param addr Byte address to assign to this address.
    */
-  UanAddress (uint8_t addr);
+  Mac8Address (uint8_t addr);
   /** Destructor */
-  virtual ~UanAddress ();
+  virtual ~Mac8Address ();
 
   /**
-   * Convert a generic address to a UanAddress.
+   * Convert a generic address to a Mac8Address.
    *
-   * \param address  Address to convert to UAN address.
-   * \return UanAddress from Address.
+   * \param address  Address to convert to Mac8Address address.
+   * \return Mac8Address from Address.
    */
-  static UanAddress ConvertFrom (const Address &address);
+  static Mac8Address ConvertFrom (const Address &address);
 
   /**
-   * Check that a generic Address is compatible with UanAddress.
+   * Check that a generic Address is compatible with Mac8Address.
    *
    * \param address  Address to test.
-   * \return True if address given is consistant with UanAddress.
+   * \return True if address given is consistant with Mac8Address.
    */
   static bool IsMatchingType  (const Address &address);
 
@@ -86,38 +88,31 @@ public:
    *
    * \param pBuffer
    */
-  void CopyTo (uint8_t *pBuffer);
-
-  /**
-   * Convert to integer.
-   *
-   * \return 8 bit integer version of address.
-   */
-  uint8_t GetAsInt (void) const;
+  void CopyTo (uint8_t *pBuffer) const;
 
   /**
    * Get the broadcast address (255).
    *
    * \return Broadcast address.
    */
-  static UanAddress GetBroadcast (void);
+  static Mac8Address GetBroadcast (void);
 
   /**
-   * Allocates UanAddress from 0-254
+   * Allocates Mac8Address from 0-254
    *
    * Will wrap back to 0 if more than 254 are allocated.
    * Excludes the broadcast address.
    *
-   * \return The next sequential UanAddress.
+   * \return The next sequential Mac8Address.
    */
-  static UanAddress Allocate ();
+  static Mac8Address Allocate ();
 
 
 private:
   uint8_t m_address;  //!< The address.
 
   /**
-   * Get the UanAddress type.
+   * Get the Mac8Address type.
    *
    * \return The type value.
    */
@@ -129,13 +124,13 @@ private:
    */
   Address ConvertTo (void) const;
 
-  friend bool operator <  (const UanAddress &a, const UanAddress &b);
-  friend bool operator == (const UanAddress &a, const UanAddress &b);
-  friend bool operator != (const UanAddress &a, const UanAddress &b);
-  friend std::ostream& operator<< (std::ostream& os, const UanAddress & address);
-  friend std::istream& operator>> (std::istream& is, UanAddress & address);
+  friend bool operator <  (const Mac8Address &a, const Mac8Address &b);
+  friend bool operator == (const Mac8Address &a, const Mac8Address &b);
+  friend bool operator != (const Mac8Address &a, const Mac8Address &b);
+  friend std::ostream& operator<< (std::ostream& os, const Mac8Address & address);
+  friend std::istream& operator>> (std::istream& is, Mac8Address & address);
 
-};  // class UanAddress
+};  // class Mac8Address
 
 
 /**
@@ -145,7 +140,7 @@ private:
  * \param b Second address to compare.
  * \return True if a < b.
  */
-bool operator < (const UanAddress &a, const UanAddress &b);
+bool operator < (const Mac8Address &a, const Mac8Address &b);
 
 /**
  * Address comparison, equalit.
@@ -154,7 +149,7 @@ bool operator < (const UanAddress &a, const UanAddress &b);
  * \param b Second address to compare.
  * \return True if a == b.
  */
-bool operator == (const UanAddress &a, const UanAddress &b);
+bool operator == (const Mac8Address &a, const Mac8Address &b);
 
 /**
  * Address comparison, unequal.
@@ -163,7 +158,7 @@ bool operator == (const UanAddress &a, const UanAddress &b);
  * \param b Second address to compare.
  * \return True if a != b.
  */
-bool operator != (const UanAddress &a, const UanAddress &b);
+bool operator != (const Mac8Address &a, const Mac8Address &b);
 
 /**
  * Write \pname{address} to stream \pname{os} as 8 bit integer.
@@ -172,7 +167,7 @@ bool operator != (const UanAddress &a, const UanAddress &b);
  * \param address The address
  * \return The output stream.
  */
-std::ostream& operator<< (std::ostream& os, const UanAddress & address);
+std::ostream& operator<< (std::ostream& os, const Mac8Address & address);
 
 /**
  * Read \pname{address} from stream \pname{is} as 8 bit integer.
@@ -181,8 +176,8 @@ std::ostream& operator<< (std::ostream& os, const UanAddress & address);
  * \param address The address variable to set.
  * \return The input stream.
  */
-std::istream& operator>> (std::istream& is, UanAddress & address);
+std::istream& operator>> (std::istream& is, Mac8Address & address);
 
 } // namespace ns3
 
-#endif /* UAN_ADDRESS_H */
+#endif /* MAC8_ADDRESS_H */

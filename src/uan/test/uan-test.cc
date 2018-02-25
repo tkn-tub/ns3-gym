@@ -109,7 +109,8 @@ void
 UanTest::SendOnePacket (Ptr<UanNetDevice> dev, uint16_t mode)
 {
   Ptr<Packet> pkt = Create<Packet> (17);
-  dev->Send (pkt, dev->GetBroadcast (), mode);
+  dev->SetTxModeIndex (mode);
+  dev->Send (pkt, dev->GetBroadcast (), 0);
 
 }
 Ptr<UanNetDevice>
@@ -127,7 +128,7 @@ UanTest::CreateNode (Vector pos, Ptr<UanChannel> chan)
 
   mobility->SetPosition (pos);
   node->AggregateObject (mobility);
-  mac->SetAddress (UanAddress::Allocate ());
+  mac->SetAddress (Mac8Address::Allocate ());
 
   dev->SetPhy (phy);
   dev->SetMac (mac);

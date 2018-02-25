@@ -2099,6 +2099,10 @@ Ipv6Address SixLowPanNetDevice::MakeLinkLocalAddressFromMac (Address const &addr
         {
           ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address::ConvertFrom (addr));
         }
+      else if (Mac8Address::IsMatchingType (addr))
+        {
+          ipv6Addr = Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address::ConvertFrom (addr));
+        }
     }
   if (ipv6Addr.IsAny ())
     {

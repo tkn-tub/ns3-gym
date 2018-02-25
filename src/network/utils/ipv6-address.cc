@@ -415,6 +415,25 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac64Address addr, Ipv6Addre
   return ret;
 }
 
+Ipv6Address Ipv6Address::MakeAutoconfiguredAddress (Mac8Address addr, Ipv6Address prefix)
+{
+  NS_LOG_FUNCTION (addr << prefix);
+  Ipv6Address ret;
+  uint8_t buf[2];
+  uint8_t buf2[16];
+
+  buf[0] = 0;
+  addr.CopyTo (&buf[1]);
+  prefix.GetBytes (buf2);
+
+  memcpy (buf2 + 14, buf, 2);
+  buf2[11] = 0xff;
+  buf2[12] = 0xfe;
+
+  ret.Set (buf2);
+  return ret;
+}
+
 Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac16Address addr)
 {
   NS_LOG_FUNCTION (addr);
@@ -470,6 +489,27 @@ Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac64Address addr)
   buf2[0] = 0xfe;
   buf2[1] = 0x80;
   memcpy (buf2 + 8, buf, 8);
+
+  ret.Set (buf2);
+  return ret;
+}
+
+Ipv6Address Ipv6Address::MakeAutoconfiguredLinkLocalAddress (Mac8Address addr)
+{
+  NS_LOG_FUNCTION (addr);
+  Ipv6Address ret;
+  uint8_t buf[2];
+  uint8_t buf2[16];
+
+  buf[0] = 0;
+  addr.CopyTo (&buf[1]);
+
+  memset (buf2, 0x00, sizeof (buf2));
+  buf2[0] = 0xfe;
+  buf2[1] = 0x80;
+  memcpy (buf2 + 14, buf, 2);
+  buf2[11] = 0xff;
+  buf2[12] = 0xfe;
 
   ret.Set (buf2);
   return ret;

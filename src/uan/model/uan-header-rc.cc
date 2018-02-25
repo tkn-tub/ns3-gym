@@ -20,6 +20,7 @@
 
 
 #include "uan-header-rc.h"
+#include "ns3/mac8-address.h"
 
 #include <set>
 
@@ -391,12 +392,12 @@ UanHeaderRcCts::UanHeaderRcCts ()
     m_timeStampRts (Seconds (0)),
     m_retryNo (0),
     m_delay (Seconds (0)),
-    m_address (UanAddress::GetBroadcast ())
+    m_address (Mac8Address::GetBroadcast ())
 {
 
 }
 
-UanHeaderRcCts::UanHeaderRcCts (uint8_t frameNo, uint8_t retryNo, Time ts, Time delay, UanAddress addr)
+UanHeaderRcCts::UanHeaderRcCts (uint8_t frameNo, uint8_t retryNo, Time ts, Time delay, Mac8Address addr)
   : Header (),
     m_frameNo (frameNo),
     m_timeStampRts (ts),
@@ -450,7 +451,7 @@ UanHeaderRcCts::SetRetryNo (uint8_t no)
 }
 
 void
-UanHeaderRcCts::SetAddress (UanAddress addr)
+UanHeaderRcCts::SetAddress (Mac8Address addr)
 {
   m_address = addr;
 }
@@ -478,7 +479,7 @@ UanHeaderRcCts::GetRetryNo () const
   return m_retryNo;
 }
 
-UanAddress
+Mac8Address
 UanHeaderRcCts::GetAddress () const
 {
   return m_address;
@@ -494,7 +495,9 @@ UanHeaderRcCts::GetSerializedSize (void) const
 void
 UanHeaderRcCts::Serialize (Buffer::Iterator start) const
 {
-  start.WriteU8 (m_address.GetAsInt ());
+  uint8_t address = 0;
+  m_address.CopyTo (&address);
+  start.WriteU8 (address);
   start.WriteU8 (m_frameNo);
   start.WriteU8 (m_retryNo);
   start.WriteU32 ((uint32_t)(m_timeStampRts.GetSeconds () * 1000.0 + 0.5));
@@ -505,7 +508,7 @@ uint32_t
 UanHeaderRcCts::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator rbuf = start;
-  m_address = UanAddress (rbuf.ReadU8 ());
+  m_address = Mac8Address (rbuf.ReadU8 ());
   m_frameNo = rbuf.ReadU8 ();
   m_retryNo = rbuf.ReadU8 ();
   m_timeStampRts = Seconds ( ( (double) rbuf.ReadU32 ()) / 1000.0 );
