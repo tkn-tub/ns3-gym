@@ -350,6 +350,98 @@ TcpAdvertisedWindowTest::InvalidAwndCb (uint16_t oldAwnd, uint16_t newAwnd)
   NS_TEST_ASSERT_MSG_EQ (oldAwnd, newAwnd,
                          "Old and new AWND calculations do not match.");
 }
+//-----------------------------------------------------------------------------
+
+class TcpAdvWindowOnLossTest : public TcpGeneralTest
+{
+public:
+  /**
+   * \brief Constructor
+   * \param desc description
+   * \param size segment size
+   * \param packets number of packets to send
+   * \param lossRatio error ratio
+   */
+  TcpAdvWindowOnLossTest (const std::string &desc, uint32_t size, uint32_t packets,
+                          std::vector<uint32_t> &toDrop);
+
+protected:
+  virtual void ConfigureEnvironment ();
+  virtual Ptr<TcpSocketMsgBase> CreateReceiverSocket (Ptr<Node> node);
+  virtual Ptr<TcpSocketMsgBase> CreateSenderSocket (Ptr<Node> node);
+  virtual Ptr<ErrorModel> CreateReceiverErrorModel ();
+
+private:
+  /** \brief Callback called for the update of the awnd
+   * \param oldAwnd Old advertised window
+   * \param newAwnd new value
+   */
+  void InvalidAwndCb (uint16_t oldAwnd, uint16_t newAwnd);
+  uint32_t m_pktSize; //!< Packet size
+  uint32_t m_pktCount; //!< Pkt count
+  std::vector<uint32_t> m_toDrop; //!< Sequences to drop
+};
+
+TcpAdvWindowOnLossTest::TcpAdvWindowOnLossTest (const std::string &desc,
+                                                uint32_t size, uint32_t packets,
+                                                std::vector<uint32_t> &toDrop)
+  : TcpGeneralTest (desc),
+    m_pktSize (size),
+    m_pktCount (packets),
+    m_toDrop (toDrop)
+{
+}
+
+void
+TcpAdvWindowOnLossTest::ConfigureEnvironment ()
+{
+  TcpGeneralTest::ConfigureEnvironment ();
+  SetAppPktCount (m_pktCount);
+  SetPropagationDelay (MilliSeconds (50));
+  SetTransmitStart (Seconds (2.0));
+  SetAppPktSize (m_pktSize);
+}
+
+Ptr<TcpSocketMsgBase>
+TcpAdvWindowOnLossTest::CreateReceiverSocket (Ptr<Node> node)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<TcpSocketMsgBase> sock = CreateSocket (node, TcpSocketAdvertisedWindowProxy::GetTypeId (), m_congControlTypeId);
+  DynamicCast<TcpSocketAdvertisedWindowProxy> (sock)->SetExpectedSegmentSize (500);
+  DynamicCast<TcpSocketAdvertisedWindowProxy> (sock)->SetInvalidAwndCb (
+        MakeCallback (&TcpAdvWindowOnLossTest::InvalidAwndCb, this));
+
+  return sock;
+}
+
+Ptr<TcpSocketMsgBase>
+TcpAdvWindowOnLossTest::CreateSenderSocket (Ptr<Node> node)
+{
+  auto socket = TcpGeneralTest::CreateSenderSocket (node);
+  socket->SetAttribute("InitialCwnd", UintegerValue (10*m_pktSize));
+
+  return socket;
+}
+
+Ptr<ErrorModel>
+TcpAdvWindowOnLossTest::CreateReceiverErrorModel ()
+{
+  Ptr<TcpSeqErrorModel> m_errorModel = CreateObject<TcpSeqErrorModel> ();
+  for (std::vector<uint32_t>::iterator it = m_toDrop.begin (); it != m_toDrop.end (); ++it)
+    {
+      m_errorModel->AddSeqToKill (SequenceNumber32 (*it));
+    }
+
+  return m_errorModel;
+}
+
+void
+TcpAdvWindowOnLossTest::InvalidAwndCb (uint16_t oldAwnd, uint16_t newAwnd)
+{
+  NS_TEST_ASSERT_MSG_EQ (oldAwnd, newAwnd,
+                         "Old and new AWND calculations do not match.");
+}
 
 //-----------------------------------------------------------------------------
 
@@ -376,6 +468,11 @@ public:
                  TestCase::QUICK);
     AddTestCase (new TcpAdvertisedWindowTest ("TCP advertised window size, complete loss", 1000, 100, 1.0),
                  TestCase::QUICK);
+
+    std::vector<uint32_t> toDrop;
+    toDrop.push_back(8001);
+    toDrop.push_back(9001);
+    AddTestCase (new TcpAdvWindowOnLossTest ("TCP advertised window size, after FIN loss", 1000, 10, toDrop));
   }
 };
 

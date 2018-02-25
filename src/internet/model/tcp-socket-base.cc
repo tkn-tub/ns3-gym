@@ -2981,14 +2981,19 @@ uint16_t
 TcpSocketBase::AdvertisedWindowSize (bool scale) const
 {
   NS_LOG_FUNCTION (this << scale);
-  uint32_t w = (m_rxBuffer->MaxRxSequence () > m_rxBuffer->NextRxSequence ()) ?
-    m_rxBuffer->MaxRxSequence () - m_rxBuffer->NextRxSequence () : 0;
+  uint32_t w;
 
   // We don't want to advertise 0 after a FIN is received. So, we just use
   // the previous value of the advWnd.
-  if (m_rxBuffer->Finished ())
+  if (m_rxBuffer->GotFin ())
     {
       w = m_advWnd;
+    }
+  else
+    {
+      uint32_t max = m_rxBuffer->MaxRxSequence ().GetValue ();
+      uint32_t next = m_rxBuffer->NextRxSequence ().GetValue ();
+      w = ( max > next ) ? max - next : 0;
     }
 
   // Ugly, but we are not modifying the state, that variable

@@ -175,6 +175,12 @@ public:
    */
   uint32_t GetSackListSize () const;
 
+  /**
+   * \brief Says if a FIN bit has been received
+   * \return true if we received a FIN bit
+   */
+  bool GotFin () const { return m_gotFin; }
+
 private:
   /**
    * \brief Update the sack list, with the block seq starting at the beginning
