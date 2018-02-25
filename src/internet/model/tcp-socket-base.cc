@@ -41,6 +41,8 @@
 #include "ns3/double.h"
 #include "ns3/pointer.h"
 #include "ns3/trace-source-accessor.h"
+#include "ns3/data-rate.h"
+#include "ns3/object.h"
 #include "tcp-socket-base.h"
 #include "tcp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -51,7 +53,6 @@
 #include "tcp-option-ts.h"
 #include "tcp-option-sack-permitted.h"
 #include "tcp-option-sack.h"
-#include "rtt-estimator.h"
 #include "tcp-congestion-ops.h"
 
 #include <math.h>
@@ -246,27 +247,6 @@ TcpSocketState::GetTypeId (void)
   return tid;
 }
 
-TcpSocketState::TcpSocketState (void)
-  : Object (),
-    m_cWnd (0),
-    m_ssThresh (0),
-    m_initialCWnd (0),
-    m_initialSsThresh (0),
-    m_segmentSize (0),
-    m_lastAckedSeq (0),
-    m_congState (CA_OPEN),
-    m_highTxMark (0),
-    // Change m_nextTxSequence for non-zero initial sequence number
-    m_nextTxSequence (0),
-    m_rcvTimestampValue (0),
-    m_rcvTimestampEchoReply (0),
-    m_pacing (false),
-    m_maxPacingRate (0),
-    m_currentPacingRate (0),
-    m_minRtt (Time::Max ())
-{
-}
-
 TcpSocketState::TcpSocketState (const TcpSocketState &other)
   : Object (other),
     m_cWnd (other.m_cWnd),
@@ -294,63 +274,7 @@ TcpSocketState::TcpCongStateName[TcpSocketState::CA_LAST_STATE] =
 };
 
 TcpSocketBase::TcpSocketBase (void)
-  : TcpSocket (),
-    m_retxEvent (),
-    m_lastAckEvent (),
-    m_delAckEvent (),
-    m_persistEvent (),
-    m_timewaitEvent (),
-    m_dupAckCount (0),
-    m_delAckCount (0),
-    m_delAckMaxCount (0),
-    m_noDelay (false),
-    m_synCount (0),
-    m_synRetries (0),
-    m_dataRetrCount (0),
-    m_dataRetries (0),
-    m_rto (Seconds (0.0)),
-    m_minRto (Time::Max ()),
-    m_clockGranularity (Seconds (0.001)),
-    m_lastRtt (Seconds (0.0)),
-    m_delAckTimeout (Seconds (0.0)),
-    m_persistTimeout (Seconds (0.0)),
-    m_cnTimeout (Seconds (0.0)),
-    m_endPoint (0),
-    m_endPoint6 (0),
-    m_node (0),
-    m_tcp (0),
-    m_rtt (0),
-    m_rxBuffer (0),
-    m_txBuffer (0),
-    m_state (CLOSED),
-    m_errno (ERROR_NOTERROR),
-    m_closeNotified (false),
-    m_closeOnEmpty (false),
-    m_shutdownSend (false),
-    m_shutdownRecv (false),
-    m_connected (false),
-    m_msl (0),
-    m_maxWinSize (0),
-    m_rWnd (0),
-    m_highRxMark (0),
-    m_highTxAck (0),
-    m_highRxAckMark (0),
-    m_bytesAckedNotProcessed (0),
-    m_bytesInFlight (0),
-    m_sackEnabled (false),
-    m_winScalingEnabled (false),
-    m_rcvWindShift (0),
-    m_sndWindShift (0),
-    m_timestampEnabled (true),
-    m_timestampToEcho (0),
-    m_sendPendingDataEvent (),
-    // Set m_recover to the initial sequence number
-    m_recover (0),
-    m_retxThresh (3),
-    m_limitedTx (false),
-    m_congestionControl (0),
-    m_isFirstPartialAck (true),
-    m_pacingTimer (Timer::REMOVE_ON_DESTROY)
+  : TcpSocket ()
 {
   NS_LOG_FUNCTION (this);
   m_rxBuffer = CreateObject<TcpRxBuffer> ();
@@ -396,13 +320,13 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_dataRetries (sock.m_dataRetries),
     m_rto (sock.m_rto),
     m_minRto (sock.m_minRto),
-    m_clockGranularity (sock.m_clockGranularity),
     m_lastRtt (sock.m_lastRtt),
+    m_clockGranularity (sock.m_clockGranularity),
     m_delAckTimeout (sock.m_delAckTimeout),
     m_persistTimeout (sock.m_persistTimeout),
     m_cnTimeout (sock.m_cnTimeout),
-    m_endPoint (0),
-    m_endPoint6 (0),
+    m_endPoint (nullptr),
+    m_endPoint6 (nullptr),
     m_node (sock.m_node),
     m_tcp (sock.m_tcp),
     m_state (sock.m_state),
@@ -414,10 +338,10 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_connected (sock.m_connected),
     m_msl (sock.m_msl),
     m_maxWinSize (sock.m_maxWinSize),
+    m_bytesAckedNotProcessed (sock.m_bytesAckedNotProcessed),
     m_rWnd (sock.m_rWnd),
     m_highRxMark (sock.m_highRxMark),
     m_highRxAckMark (sock.m_highRxAckMark),
-    m_bytesAckedNotProcessed (sock.m_bytesAckedNotProcessed),
     m_bytesInFlight (sock.m_bytesInFlight),
     m_sackEnabled (sock.m_sackEnabled),
     m_winScalingEnabled (sock.m_winScalingEnabled),
@@ -487,9 +411,9 @@ TcpSocketBase::~TcpSocketBase (void)
 {
   NS_LOG_FUNCTION (this);
   m_node = 0;
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
-      NS_ASSERT (m_tcp != 0);
+      NS_ASSERT (m_tcp != nullptr);
       /*
        * Upon Bind, an Ipv4Endpoint is allocated and set to m_endPoint, and
        * DestroyCallback is set to TcpSocketBase::Destroy. If we called
@@ -497,14 +421,14 @@ TcpSocketBase::~TcpSocketBase (void)
        * which in turn destroys my m_endPoint, and in turn invokes
        * TcpSocketBase::Destroy to nullify m_node, m_endPoint, and m_tcp.
        */
-      NS_ASSERT (m_endPoint != 0);
+      NS_ASSERT (m_endPoint != nullptr);
       m_tcp->DeAllocate (m_endPoint);
       NS_ASSERT (m_endPoint == 0);
     }
-  if (m_endPoint6 != 0)
+  if (m_endPoint6 != nullptr)
     {
-      NS_ASSERT (m_tcp != 0);
-      NS_ASSERT (m_endPoint6 != 0);
+      NS_ASSERT (m_tcp != nullptr);
+      NS_ASSERT (m_endPoint6 != nullptr);
       m_tcp->DeAllocate (m_endPoint6);
       NS_ASSERT (m_endPoint6 == 0);
     }
@@ -707,7 +631,7 @@ TcpSocketBase::Connect (const Address & address)
               NS_ASSERT (m_endPoint == 0);
               return -1; // Bind() failed
             }
-          NS_ASSERT (m_endPoint != 0);
+          NS_ASSERT (m_endPoint != nullptr);
         }
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       m_endPoint->SetPeer (transport.GetIpv4 (), transport.GetPort ());
@@ -740,7 +664,7 @@ TcpSocketBase::Connect (const Address & address)
               NS_ASSERT (m_endPoint6 == 0);
               return -1; // Bind() failed
             }
-          NS_ASSERT (m_endPoint6 != 0);
+          NS_ASSERT (m_endPoint6 != nullptr);
         }
       m_endPoint6->SetPeer (v6Addr, transport.GetPort ());
       m_endPoint = 0;
@@ -926,13 +850,13 @@ TcpSocketBase::RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress)
   NS_LOG_FUNCTION (this << maxSize << flags);
   Ptr<Packet> packet = Recv (maxSize, flags);
   // Null packet means no data to read, and an empty packet indicates EOF
-  if (packet != 0 && packet->GetSize () != 0)
+  if (packet != nullptr && packet->GetSize () != 0)
     {
-      if (m_endPoint != 0)
+      if (m_endPoint != nullptr)
         {
           fromAddress = InetSocketAddress (m_endPoint->GetPeerAddress (), m_endPoint->GetPeerPort ());
         }
-      else if (m_endPoint6 != 0)
+      else if (m_endPoint6 != nullptr)
         {
           fromAddress = Inet6SocketAddress (m_endPoint6->GetPeerAddress (), m_endPoint6->GetPeerPort ());
         }
@@ -965,11 +889,11 @@ int
 TcpSocketBase::GetSockName (Address &address) const
 {
   NS_LOG_FUNCTION (this);
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       address = InetSocketAddress (m_endPoint->GetLocalAddress (), m_endPoint->GetLocalPort ());
     }
-  else if (m_endPoint6 != 0)
+  else if (m_endPoint6 != nullptr)
     {
       address = Inet6SocketAddress (m_endPoint6->GetLocalAddress (), m_endPoint6->GetLocalPort ());
     }
@@ -1017,12 +941,12 @@ TcpSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 {
   NS_LOG_FUNCTION (netdevice);
   Socket::BindToNetDevice (netdevice); // Includes sanity check
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       m_endPoint->BindToNetDevice (netdevice);
     }
 
-  if (m_endPoint6 != 0)
+  if (m_endPoint6 != nullptr)
     {
       m_endPoint6->BindToNetDevice (netdevice);
     }
@@ -1040,13 +964,13 @@ TcpSocketBase::SetupCallback (void)
     {
       return -1;
     }
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       m_endPoint->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp, Ptr<TcpSocketBase> (this)));
       m_endPoint->SetIcmpCallback (MakeCallback (&TcpSocketBase::ForwardIcmp, Ptr<TcpSocketBase> (this)));
       m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocketBase::Destroy, Ptr<TcpSocketBase> (this)));
     }
-  if (m_endPoint6 != 0)
+  if (m_endPoint6 != nullptr)
     {
       m_endPoint6->SetRxCallback (MakeCallback (&TcpSocketBase::ForwardUp6, Ptr<TcpSocketBase> (this)));
       m_endPoint6->SetIcmpCallback (MakeCallback (&TcpSocketBase::ForwardIcmp6, Ptr<TcpSocketBase> (this)));
@@ -2336,7 +2260,7 @@ TcpSocketBase::Destroy (void)
 {
   NS_LOG_FUNCTION (this);
   m_endPoint = 0;
-  if (m_tcp != 0)
+  if (m_tcp != nullptr)
     {
       m_tcp->RemoveSocket (this);
     }
@@ -2352,7 +2276,7 @@ TcpSocketBase::Destroy6 (void)
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = 0;
-  if (m_tcp != 0)
+  if (m_tcp != nullptr)
     {
       m_tcp->RemoveSocket (this);
     }
@@ -2429,7 +2353,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
   header.SetFlags (flags);
   header.SetSequenceNumber (s);
   header.SetAckNumber (m_rxBuffer->NextRxSequence ());
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       header.SetSourcePort (m_endPoint->GetLocalPort ());
       header.SetDestinationPort (m_endPoint->GetPeerPort ());
@@ -2503,7 +2427,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
 
   m_txTrace (p, header, this);
 
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
                          m_endPoint->GetPeerAddress (), m_boundnetdevice);
@@ -2538,7 +2462,7 @@ TcpSocketBase::SendRST (void)
 void
 TcpSocketBase::DeallocateEndPoint (void)
 {
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       CancelAllTimers ();
       m_endPoint->SetDestroyCallback (MakeNullCallback<void> ());
@@ -2546,7 +2470,7 @@ TcpSocketBase::DeallocateEndPoint (void)
       m_endPoint = 0;
       m_tcp->RemoveSocket (this);
     }
-  else if (m_endPoint6 != 0)
+  else if (m_endPoint6 != nullptr)
     {
       CancelAllTimers ();
       m_endPoint6->SetDestroyCallback (MakeNullCallback<void> ());
@@ -2562,7 +2486,7 @@ TcpSocketBase::SetupEndpoint ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
-  NS_ASSERT (ipv4 != 0);
+  NS_ASSERT (ipv4 != nullptr);
   if (ipv4->GetRoutingProtocol () == 0)
     {
       NS_FATAL_ERROR ("No Ipv4RoutingProtocol in the node");
@@ -2592,7 +2516,7 @@ TcpSocketBase::SetupEndpoint6 ()
 {
   NS_LOG_FUNCTION (this);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-  NS_ASSERT (ipv6 != 0);
+  NS_ASSERT (ipv6 != nullptr);
   if (ipv6->GetRoutingProtocol () == 0)
     {
       NS_FATAL_ERROR ("No Ipv6RoutingProtocol in the node");
@@ -2839,7 +2763,7 @@ TcpSocketBase::UpdateRttHistory (const SequenceNumber32 &seq, uint32_t sz,
     }
   else
     { // This is a retransmit, find in list and mark as re-tx
-      for (RttHistory_t::iterator i = m_history.begin (); i != m_history.end (); ++i)
+      for (std::deque<RttHistory>::iterator i = m_history.begin (); i != m_history.end (); ++i)
         {
           if ((seq >= i->seq) && (seq < (i->seq + SequenceNumber32 (i->count))))
             { // Found it
@@ -3414,7 +3338,7 @@ TcpSocketBase::PersistTimeout ()
   tcpHeader.SetSequenceNumber (m_tcb->m_nextTxSequence);
   tcpHeader.SetAckNumber (m_rxBuffer->NextRxSequence ());
   tcpHeader.SetWindowSize (AdvertisedWindowSize ());
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       tcpHeader.SetSourcePort (m_endPoint->GetLocalPort ());
       tcpHeader.SetDestinationPort (m_endPoint->GetPeerPort ());
@@ -3428,7 +3352,7 @@ TcpSocketBase::PersistTimeout ()
 
   m_txTrace (p, tcpHeader, this);
 
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       m_tcp->SendPacket (p, tcpHeader, m_endPoint->GetLocalAddress (),
                          m_endPoint->GetPeerAddress (), m_boundnetdevice);
