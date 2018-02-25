@@ -33,24 +33,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("TcpTxBuffer");
 
-TcpTxItem::TcpTxItem ()
-  : m_packet (0),
-    m_lost (false),
-    m_retrans (false),
-    m_lastSent (Time::Min ()),
-    m_sacked (false)
-{
-}
-
-TcpTxItem::TcpTxItem (const TcpTxItem &other)
-  : m_packet (other.m_packet),
-    m_lost (other.m_lost),
-    m_retrans (other.m_retrans),
-    m_lastSent (other.m_lastSent),
-    m_sacked (other.m_sacked)
-{
-}
-
 void
 TcpTxItem::Print (std::ostream &os) const
 {
@@ -215,7 +197,7 @@ TcpTxBuffer::SizeFromSequence (const SequenceNumber32& seq) const
 
   if (lastSeq >= seq)
     {
-      return lastSeq - seq;
+      return static_cast<uint32_t> (lastSeq - seq);
     }
 
   NS_LOG_ERROR ("Requested a sequence beyond our space (" << seq << " > " << lastSeq <<
@@ -228,11 +210,8 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
 {
   NS_LOG_FUNCTION (this << numBytes << seq);
 
-  if (m_firstByteSeq > seq)
-    {
-      NS_LOG_ERROR ("Requested a sequence number which is not in the buffer anymore");
-      return Create<Packet> ();
-    }
+  NS_ABORT_MSG_IF (m_firstByteSeq > seq,
+                   "Requested a sequence number which is not in the buffer anymore");
 
   // Real size to extract. Insure not beyond end of data
   uint32_t s = std::min (numBytes, SizeFromSequence (seq));
@@ -242,13 +221,13 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
       return Create<Packet> ();
     }
 
-  TcpTxItem *outItem = 0;
+  TcpTxItem *outItem = nullptr;
 
   if (m_firstByteSeq + m_sentSize >= seq + s)
     {
       // already sent this block completely
       outItem = GetTransmittedSegment (s, seq);
-      NS_ASSERT (outItem != 0);
+      NS_ASSERT (outItem != nullptr);
       outItem->m_retrans = true;
 
       NS_LOG_DEBUG ("Retransmitting [" << seq << ";" << seq + s << "|" << s <<
@@ -261,13 +240,14 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
 
       // this is the first time we transmit this block
       outItem = GetNewSegment (s);
-      NS_ASSERT (outItem != 0);
+      NS_ASSERT (outItem != nullptr);
       NS_ASSERT (outItem->m_retrans == false);
 
-      NS_LOG_DEBUG ("New segment [" << seq << ";" << seq + s << "|" << s <<
+      NS_LOG_DEBUG ("New segment [" << seq << ";" << seq.GetValue () + s << "|" << s <<
                     "] from " << *this);
     }
-  else if (m_firstByteSeq + m_sentSize > seq && m_firstByteSeq + m_sentSize < seq + s)
+  else if (m_firstByteSeq.Get ().GetValue () + m_sentSize > seq.GetValue ()
+           && m_firstByteSeq.Get ().GetValue () + m_sentSize < seq.GetValue () + s)
     {
       // Partial: a part is retransmission, the remaining data is new
 
@@ -278,7 +258,7 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
                     "] from " << *this);
 
       outItem = GetNewSegment (amount);
-      NS_ASSERT (outItem != 0);
+      NS_ASSERT (outItem != nullptr);
 
       // Now get outItem from the sent list (there will be a merge)
       return CopyFromSequence (numBytes, seq);
@@ -304,7 +284,7 @@ TcpTxBuffer::GetNewSegment (uint32_t numBytes)
   TcpTxItem *item = GetPacketFromList (m_appList, startOfAppList,
                                        numBytes, startOfAppList, &listEdited);
 
-  (void) listEdited;
+  NS_UNUSED (listEdited);
 
   // Move item from AppList to SentList (should be the first, not too complex)
   PacketList::iterator it = std::find (m_appList.begin (), m_appList.end (), item);
@@ -409,9 +389,9 @@ TcpTxBuffer::GetPacketFromList (PacketList &list, const SequenceNumber32 &listSt
    * while maxBytes is the end of some packet next in the list).
    */
 
-  Ptr<Packet> currentPacket = 0;
-  TcpTxItem *currentItem = 0;
-  TcpTxItem *outItem = 0;
+  Ptr<Packet> currentPacket = nullptr;
+  TcpTxItem *currentItem = nullptr;
+  TcpTxItem *outItem = nullptr;
   PacketList::iterator it = list.begin ();
   SequenceNumber32 beginOfCurrentPacket = listStartFrom;
 
@@ -464,7 +444,7 @@ TcpTxBuffer::GetPacketFromList (PacketList &list, const SequenceNumber32 &listSt
           continue;
         }
 
-      NS_ASSERT (outItem != 0);
+      NS_ASSERT (outItem != nullptr);
 
       // The objective of this snippet is to find (or to create) the packet
       // that ends after numBytes bytes. We are sure that outPacket starts
@@ -595,7 +575,7 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
       if (i == m_sentList.end ())
         {
           Ptr<Packet> p = CopyFromSequence (offset, m_firstByteSeq);
-          NS_ASSERT (p != 0);
+          NS_ASSERT (p != nullptr);
           i = m_sentList.begin ();
           NS_ASSERT (i != m_sentList.end ());
         }

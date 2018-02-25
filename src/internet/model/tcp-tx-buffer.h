@@ -39,16 +39,7 @@ class Packet;
 class TcpTxItem
 {
 public:
-  /**
-   * \brief Constructor
-   */
-  TcpTxItem ();
-
-  /**
-   * \brief Copy-constructor
-   * \param other TcpTxTag to copy values from
-   */
-  TcpTxItem (const TcpTxItem &other);
+  // Default constructor, copy-constructor, destructor
 
   /**
    * \brief Print the time
@@ -56,12 +47,11 @@ public:
    */
   void Print (std::ostream &os) const;
 
-  Ptr<Packet> m_packet; //!< Application packet
-  bool m_lost;          //!< Indicates if the segment has been lost (RTO)
-  bool m_retrans;       //!< Indicates if the segment is retransmitted
-  Time m_lastSent;      //!< Timestamp of the time at which the segment has
-                        //   been sent last time
-  bool m_sacked;        //!< Indicates if the segment has been SACKed
+  Ptr<Packet> m_packet {nullptr};    //!< Application packet (can be null)
+  bool m_lost          {false};      //!< Indicates if the segment has been lost (RTO)
+  bool m_retrans       {false};      //!< Indicates if the segment is retransmitted
+  Time m_lastSent      {Time::Min()};//!< Timestamp of the time at which the segment has been sent last time
+  bool m_sacked        {false};      //!< Indicates if the segment has been SACKed
 };
 
 /**
