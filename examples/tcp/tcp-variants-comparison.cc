@@ -55,19 +55,19 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpVariantsComparison");
 
-bool firstCwnd = true;
-bool firstSshThr = true;
-bool firstRtt = true;
-bool firstRto = true;
-Ptr<OutputStreamWrapper> cWndStream;
-Ptr<OutputStreamWrapper> ssThreshStream;
-Ptr<OutputStreamWrapper> rttStream;
-Ptr<OutputStreamWrapper> rtoStream;
-Ptr<OutputStreamWrapper> nextTxStream;
-Ptr<OutputStreamWrapper> nextRxStream;
-Ptr<OutputStreamWrapper> inFlightStream;
-uint32_t cWndValue;
-uint32_t ssThreshValue;
+static bool firstCwnd = true;
+static bool firstSshThr = true;
+static bool firstRtt = true;
+static bool firstRto = true;
+static Ptr<OutputStreamWrapper> cWndStream;
+static Ptr<OutputStreamWrapper> ssThreshStream;
+static Ptr<OutputStreamWrapper> rttStream;
+static Ptr<OutputStreamWrapper> rtoStream;
+static Ptr<OutputStreamWrapper> nextTxStream;
+static Ptr<OutputStreamWrapper> nextRxStream;
+static Ptr<OutputStreamWrapper> inFlightStream;
+static uint32_t cWndValue;
+static uint32_t ssThreshValue;
 
 
 static void
@@ -129,18 +129,21 @@ RtoTracer (Time oldval, Time newval)
 static void
 NextTxTracer (SequenceNumber32 old, SequenceNumber32 nextTx)
 {
+  NS_UNUSED (old);
   *nextTxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextTx << std::endl;
 }
 
 static void
 InFlightTracer (uint32_t old, uint32_t inFlight)
 {
+  NS_UNUSED (old);
   *inFlightStream->GetStream () << Simulator::Now ().GetSeconds () << " " << inFlight << std::endl;
 }
 
 static void
 NextRxTracer (SequenceNumber32 old, SequenceNumber32 nextRx)
 {
+  NS_UNUSED (old);
   *nextRxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextRx << std::endl;
 }
 
@@ -211,10 +214,10 @@ int main (int argc, char *argv[])
   std::string access_delay = "45ms";
   bool tracing = false;
   std::string prefix_file_name = "TcpVariantsComparison";
-  double data_mbytes = 0;
+  uint64_t data_mbytes = 0;
   uint32_t mtu_bytes = 400;
   uint16_t num_flows = 1;
-  float duration = 100;
+  double duration = 100.0;
   uint32_t run = 0;
   bool flow_monitor = false;
   bool pcap = false;
@@ -268,8 +271,8 @@ int main (int argc, char *argv[])
   NS_LOG_LOGIC ("TCP ADU size is: " << tcp_adu_size);
 
   // Set the simulation start and stop time
-  float start_time = 0.1;
-  float stop_time = start_time + duration;
+  double start_time = 0.1;
+  double stop_time = start_time + duration;
 
   // 4 MB of TCP buffer
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
@@ -341,13 +344,13 @@ int main (int argc, char *argv[])
 
   Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (CoDelQueueDisc::QUEUE_DISC_MODE_BYTES));
 
-  uint32_t size = (std::min (access_b, bottle_b).GetBitRate () / 8) *
-    ((access_d + bottle_d) * 2).GetSeconds ();
+  uint32_t size = static_cast<uint32_t>((std::min (access_b, bottle_b).GetBitRate () / 8) *
+    ((access_d + bottle_d) * 2).GetSeconds ());
 
   Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (size / mtu_bytes));
   Config::SetDefault ("ns3::CoDelQueueDisc::MaxBytes", UintegerValue (size));
 
-  for (int i = 0; i < num_flows; i++)
+  for (uint32_t i = 0; i < num_flows; i++)
     {
       NetDeviceContainer devices;
       devices = LocalLink.Install (sources.Get (i), gateways.Get (0));
@@ -387,7 +390,7 @@ int main (int argc, char *argv[])
       BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
       ftp.SetAttribute ("Remote", remoteAddress);
       ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
-      ftp.SetAttribute ("MaxBytes", UintegerValue (int(data_mbytes * 1000000)));
+      ftp.SetAttribute ("MaxBytes", UintegerValue (data_mbytes * 1000000));
 
       ApplicationContainer sourceApp = ftp.Install (sources.Get (i));
       sourceApp.Start (Seconds (start_time * i));
