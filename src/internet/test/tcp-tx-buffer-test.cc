@@ -41,6 +41,8 @@ private:
   virtual void DoRun (void);
   virtual void DoTeardown (void);
 
+  /** \brief Test if a segment is really set as lost */
+  void TestIsLost ();
   /** \brief Test the generation of an unsent block */
   void TestNewBlock ();
   /** \brief Test the generation of a previously sent block */
@@ -57,6 +59,7 @@ TcpTxBufferTestCase::TcpTxBufferTestCase ()
 void
 TcpTxBufferTestCase::DoRun ()
 {
+  Simulator::Schedule (Seconds (0.0), &TcpTxBufferTestCase::TestIsLost, this);
   /*
    * Cases for new block:
    * -> is exactly the same as stored
@@ -81,6 +84,51 @@ TcpTxBufferTestCase::DoRun ()
 
   Simulator::Run ();
   Simulator::Destroy ();
+}
+
+void
+TcpTxBufferTestCase::TestIsLost ()
+{
+  TcpTxBuffer txBuf;
+  SequenceNumber32 head (1);
+  txBuf.SetHeadSequence (head);
+  SequenceNumber32 ret;
+  Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack> ();
+
+  txBuf.Add(Create<Packet> (10000));
+
+  for (uint8_t i = 0; i <10 ; ++i)
+    txBuf.CopyFromSequence (1000, SequenceNumber32((i*1000)+1));
+
+  for (uint8_t i = 0; i < 10 ; ++i)
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+                           "Lost is true, but it's not");
+
+  sack->AddSackBlock (TcpOptionSack::SackBlock (1001, 2000));
+  txBuf.Update(sack->GetSackList());
+
+  for (uint8_t i = 0; i < 10 ; ++i)
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+                           "Lost is true, but it's not");
+
+  sack->AddSackBlock (TcpOptionSack::SackBlock (2001, 3000));
+  txBuf.Update(sack->GetSackList());
+
+  for (uint8_t i = 0; i < 10 ; ++i)
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+                           "Lost is true, but it's not");
+
+  sack->AddSackBlock (TcpOptionSack::SackBlock (3001, 4000));
+  txBuf.Update(sack->GetSackList());
+
+  NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32(1), 3, 1000), true,
+                         "Lost is true, but it's not");
+
+  for (uint8_t i = 1; i < 10 ; ++i)
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+                           "Lost is true, but it's not");
+
+
 }
 
 void
