@@ -326,7 +326,7 @@ TcpYeah::GetSsThresh (Ptr<const TcpSocketState> tcb,
       NS_LOG_LOGIC ("Not competing with Reno flows upon loss");
       reduction = m_lastQ;
       reduction = std::max (reduction, segBytesInFlight >> m_delta);
-      reduction = std::min (reduction, std::max (segBytesInFlight >> 1, (uint32_t) 2));
+      reduction = std::min (reduction, std::max (segBytesInFlight >> 1, 2U));
     }
   else
     { // Competing with Reno flows
@@ -339,7 +339,10 @@ TcpYeah::GetSsThresh (Ptr<const TcpSocketState> tcb,
   m_fastCount = 0;
   m_renoCount = std::max (m_renoCount >> 1, (uint32_t) 2);
 
-  return (bytesInFlight - (reduction * tcb->m_segmentSize));
+  // Allow, at least, 2 segment to go out
+  uint32_t ret = std::max (bytesInFlight - (reduction * tcb->m_segmentSize),
+                           2U * tcb->m_segmentSize);
+  return ret;
 }
 
 } // namespace ns3

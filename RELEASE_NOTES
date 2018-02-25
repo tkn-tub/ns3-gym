@@ -59,6 +59,7 @@ Bugs fixed
 - Bug 2848 - wifi: Association ID not correctly set upon association
 - Bug 2849 - lte: Received RLC and PDCP PDUs are missing in the stats files
 - Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
+- Bug 2873 - tcp: Potential SIGFPE in TcpYeah
 - Bug 2877 - wifi: Wrong data types for CWmin and CWmax
 
 Known issues
