@@ -2794,8 +2794,9 @@ TcpSocketBase::SendPendingData (bool withAck)
       //       failure (no data to send), return without sending anything
       //       (i.e., terminate steps C.1 -- C.5).
       SequenceNumber32 next;
+      bool enableRule3 = m_sackEnabled && m_tcb->m_congState == TcpSocketState::CA_RECOVERY;
       if (!m_txBuffer->NextSeg (&next, m_retxThresh, m_tcb->m_segmentSize,
-                                m_tcb->m_congState == TcpSocketState::CA_RECOVERY))
+                                enableRule3))
         {
           NS_LOG_INFO ("no valid seq to transmit, or no data available");
           break;

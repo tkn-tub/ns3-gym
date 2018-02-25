@@ -26,6 +26,7 @@ This release has been tested on the following platforms:
 New user-visible features
 -------------------------
 - (tcp) Added TCP-LP as congestion control module
+- (tcp) RFC 6675 third rule for generating next sequence to transmit is used only when SACK is enabled
 - (lr-wpan) Extended addressing mode is now supported.
 - (tcp) Implemented the core functionality of TCP Pacing.
 - (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.
@@ -61,6 +62,7 @@ Bugs fixed
 - Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
 - Bug 2873 - tcp: Potential SIGFPE in TcpYeah
 - Bug 2874 - tcp: Corrected interpretation of RFC 6675 for IsLost check
+- Bug 2875 - tcp: Use Rule3 of RFC6675 only with SACK enabled
 - Bug 2877 - wifi: Wrong data types for CWmin and CWmax
 
 Known issues
