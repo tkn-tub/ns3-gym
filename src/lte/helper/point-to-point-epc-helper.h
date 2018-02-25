@@ -151,11 +151,11 @@ private:
    * Map storing for each IMSI the corresponding eNB NetDevice
    */
   std::map<uint64_t, Ptr<NetDevice> > m_imsiEnbDeviceMap;
-  
-  /** 
-   * helper to assign addresses to X2 NetDevices 
+
+  /**
+   * helper to assign addresses to X2 NetDevices
    */
-  Ipv4AddressHelper m_x2Ipv4AddressHelper;   
+  Ipv4AddressHelper m_x2Ipv4AddressHelper;
 
   /**
    * The data rate to be used for the next X2 link to be created
@@ -172,6 +172,25 @@ private:
    * because of some big X2 messages, you need a big MTU.
    */
   uint16_t m_x2LinkMtu;
+
+  /**
+   * Enable PCAP generation for X2 link
+   */
+  bool        m_enablePcapOverX2;
+  /**
+   * Prefix for the PCAP file for the X2 link
+   */
+  std::string m_x2LinkPcapPrefix;
+
+  /**
+   * Enable PCAP generation for S1U link
+   */
+  bool        m_enablePcapOverS1U;
+
+  /**
+   * Prefix for the PCAP file for the S1 link
+   */
+  std::string m_s1uLinkPcapPrefix;
 };
 
 
