@@ -233,7 +233,7 @@ TcpOptionMSS::Deserialize (Buffer::Iterator start)
 
   uint8_t size = i.ReadU8 ();
 
-  NS_ASSERT (size == 4);
+  NS_ABORT_IF (size != 4);
   m_mss = i.ReadNtohU16 ();
 
   return GetSerializedSize ();

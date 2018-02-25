@@ -25,17 +25,7 @@
  */
 
 #include "tcp-htcp.h"
-
 #include "ns3/log.h"
-#include "ns3/trace-source-accessor.h"
-#include "ns3/simulator.h"
-#include "ns3/abort.h"
-#include "ns3/node.h"
-#include "math.h"
-#include "ns3/tcp-socket-base.h"
-#include "ns3/sequence-number.h"
-#include "ns3/double.h"
-#include "ns3/nstime.h"
 
 namespace ns3 {
 
@@ -186,7 +176,7 @@ uint32_t TcpHtcp::GetSsThresh (Ptr<const TcpSocketState> tcb,
   UpdateAlpha ();
 
   uint32_t segWin = 2 * tcb->m_segmentSize;
-  uint32_t bFlight = bytesInFlight * m_beta;
+  uint32_t bFlight = static_cast<uint32_t> (bytesInFlight * m_beta);
   uint32_t ssThresh = std::max (segWin, bFlight);
   m_minRtt = Time::Max ();
   m_maxRtt = Time::Min ();
@@ -208,8 +198,8 @@ void TcpHtcp::PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
       m_dataSent += segmentsAcked * tcb->m_segmentSize;
     }
 
-  m_throughput = m_dataSent
-    / (Simulator::Now ().GetSeconds () - m_lastCon.GetSeconds ());
+  m_throughput = static_cast<uint32_t> (m_dataSent
+                                        / (Simulator::Now ().GetSeconds () - m_lastCon.GetSeconds ()));
 
   UpdateAlpha ();
   if (rtt < m_minRtt)

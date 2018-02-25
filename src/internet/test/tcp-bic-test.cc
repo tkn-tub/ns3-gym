@@ -132,7 +132,7 @@ TcpBicIncrementTest::Update (Ptr<TcpSocketState> tcb)
   Ptr<TcpBic> cong = CreateObject <TcpBic> ();
   cong->m_lastMaxCwnd = m_lastMaxCwnd;
   UintegerValue lowWindow, bsCoeff, wMax;
-  IntegerValue smoothPart;
+  UintegerValue smoothPart;
   cong->GetAttribute ("LowWnd", lowWindow);
   cong->GetAttribute ("BinarySearchCoefficient", bsCoeff);
   cong->GetAttribute ("MaxIncr", wMax);

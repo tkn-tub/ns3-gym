@@ -25,7 +25,6 @@
  */
 
 #include "tcp-vegas.h"
-#include "ns3/tcp-socket-base.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -203,7 +202,7 @@ TcpVegas::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
            * target cwnd is throughput / minRtt
            */
           double tmp = m_baseRtt.GetSeconds () / m_minRtt.GetSeconds ();
-          targetCwnd = segCwnd * tmp;
+          targetCwnd = static_cast<uint32_t> (segCwnd * tmp);
           NS_LOG_DEBUG ("Calculated targetCwnd = " << targetCwnd);
           NS_ASSERT (segCwnd >= targetCwnd); // implies baseRtt <= minRtt
 

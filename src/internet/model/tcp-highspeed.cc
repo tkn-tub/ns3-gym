@@ -18,7 +18,6 @@
  */
 
 #include "tcp-highspeed.h"
-#include "ns3/tcp-socket-base.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -39,14 +38,14 @@ TcpHighSpeed::GetTypeId (void)
 
 TcpHighSpeed::TcpHighSpeed (void)
   : TcpNewReno (),
-  m_ackCnt (0)
+    m_ackCnt (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
 TcpHighSpeed::TcpHighSpeed (const TcpHighSpeed& sock)
   : TcpNewReno (sock),
-  m_ackCnt (sock.m_ackCnt)
+    m_ackCnt (sock.m_ackCnt)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -145,7 +144,7 @@ TcpHighSpeed::GetSsThresh (Ptr<const TcpSocketState> tcb,
   uint32_t segCwnd = bytesInFlight / tcb->m_segmentSize;
 
   double b = 1.0 - TableLookupB (segCwnd);
-  uint32_t ssThresh = std::max (2.0, segCwnd * b);
+  uint32_t ssThresh = static_cast<uint32_t> (std::max (2.0, segCwnd * b));
 
   NS_LOG_DEBUG ("Calculated b(w) = " << b <<
                 " resulting (in segment) ssThresh=" << ssThresh);

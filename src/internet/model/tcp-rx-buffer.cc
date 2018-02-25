@@ -19,7 +19,6 @@
  */
 
 #include "ns3/packet.h"
-#include "ns3/fatal-error.h"
 #include "ns3/log.h"
 #include "tcp-rx-buffer.h"
 
@@ -188,8 +187,8 @@ TcpRxBuffer::Add (Ptr<Packet> p, TcpHeader const& tcph)
     }
   else
     {
-      uint32_t start = headSeq - tcph.GetSequenceNumber ();
-      uint32_t length = tailSeq - headSeq;
+      uint32_t start = static_cast<uint32_t> (headSeq - tcph.GetSequenceNumber ());
+      uint32_t length = static_cast<uint32_t> (tailSeq - headSeq);
       p = p->CreateFragment (start, length);
       NS_ASSERT (length == p->GetSize ());
     }
@@ -233,7 +232,7 @@ TcpRxBuffer::GetSackListSize () const
 {
   NS_LOG_FUNCTION (this);
 
-  return m_sackList.size ();
+  return static_cast<uint32_t> (m_sackList.size ());
 }
 
 void
@@ -349,7 +348,7 @@ TcpRxBuffer::ClearSackList (const SequenceNumber32 &seq)
           it = m_sackList.erase (it);
         }
       else
-	{
+        {
           it++;
         }
     }
@@ -368,7 +367,7 @@ TcpRxBuffer::Extract (uint32_t maxSize)
 
   uint32_t extractSize = std::min (maxSize, m_availBytes);
   NS_LOG_LOGIC ("Requested to extract " << extractSize << " bytes from TcpRxBuffer of size=" << m_size);
-  if (extractSize == 0) return 0;  // No contiguous block to return
+  if (extractSize == 0) return nullptr;  // No contiguous block to return
   NS_ASSERT (m_data.size ()); // At least we have something to extract
   Ptr<Packet> outPkt = Create<Packet> (); // The packet that contains all the data to return
   BufIterator i;
@@ -399,7 +398,7 @@ TcpRxBuffer::Extract (uint32_t maxSize)
   if (outPkt->GetSize () == 0)
     {
       NS_LOG_LOGIC ("Nothing extracted.");
-      return 0;
+      return nullptr;
     }
   NS_LOG_LOGIC ("Extracted " << outPkt->GetSize ( ) << " bytes, bufsize=" << m_size
                              << ", num pkts in buffer=" << m_data.size ());

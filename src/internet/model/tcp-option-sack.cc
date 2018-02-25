@@ -82,7 +82,7 @@ TcpOptionSack::Serialize (Buffer::Iterator start) const
   NS_LOG_FUNCTION (this);
   Buffer::Iterator i = start;
   i.WriteU8 (GetKind ()); // Kind
-  uint8_t length = GetNumSackBlocks () * 8 + 2;
+  uint8_t length = static_cast<uint8_t> (GetNumSackBlocks () * 8 + 2);
   i.WriteU8 (length); // Length
 
   for (SackList::const_iterator it = m_sackList.begin (); it != m_sackList.end (); ++it)
@@ -107,7 +107,7 @@ TcpOptionSack::Deserialize (Buffer::Iterator start)
     }
 
   uint8_t size = i.ReadU8 ();
-  NS_LOG_LOGIC ("Size: " << (uint32_t)size);
+  NS_LOG_LOGIC ("Size: " << static_cast<uint32_t> (size));
   m_sackList.empty ();
   uint8_t sackCount = (size - 2) / 8;
   while (sackCount)
@@ -140,7 +140,7 @@ TcpOptionSack::GetNumSackBlocks (void) const
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_LOGIC ("Number of SACK blocks appended: " << m_sackList.size ());
-  return m_sackList.size ();
+  return static_cast<uint32_t> (m_sackList.size ());
 }
 
 void

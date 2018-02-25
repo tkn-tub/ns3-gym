@@ -19,8 +19,6 @@
 #ifndef TCPCONGESTIONOPS_H
 #define TCPCONGESTIONOPS_H
 
-#include "ns3/object.h"
-#include "ns3/timer.h"
 #include "ns3/tcp-socket-base.h"
 
 namespace ns3 {
@@ -120,6 +118,9 @@ public:
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
                           const Time& rtt)
   {
+    NS_UNUSED (tcb);
+    NS_UNUSED (segmentsAcked);
+    NS_UNUSED (rtt);
   }
 
   /**
@@ -134,6 +135,8 @@ public:
   virtual void CongestionStateSet (Ptr<TcpSocketState> tcb,
                                    const TcpSocketState::TcpCongState_t newState)
   {
+    NS_UNUSED (tcb);
+    NS_UNUSED (newState);
   }
 
   /**
@@ -148,6 +151,8 @@ public:
   virtual void CwndEvent (Ptr<TcpSocketState> tcb,
                           const TcpSocketState::TcpCAEvent_t event)
   {
+    NS_UNUSED (tcb);
+    NS_UNUSED (event);
   }
   // Present in Linux but not in ns-3 yet:
   /* call when ack arrives (optional) */

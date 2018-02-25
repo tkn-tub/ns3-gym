@@ -410,7 +410,7 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
 TcpSocketBase::~TcpSocketBase (void)
 {
   NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_node = nullptr;
   if (m_endPoint != nullptr)
     {
       NS_ASSERT (m_tcp != nullptr);
@@ -423,14 +423,14 @@ TcpSocketBase::~TcpSocketBase (void)
        */
       NS_ASSERT (m_endPoint != nullptr);
       m_tcp->DeAllocate (m_endPoint);
-      NS_ASSERT (m_endPoint == 0);
+      NS_ASSERT (m_endPoint == nullptr);
     }
   if (m_endPoint6 != nullptr)
     {
       NS_ASSERT (m_tcp != nullptr);
       NS_ASSERT (m_endPoint6 != nullptr);
       m_tcp->DeAllocate (m_endPoint6);
-      NS_ASSERT (m_endPoint6 == 0);
+      NS_ASSERT (m_endPoint6 == nullptr);
     }
   m_tcp = 0;
   CancelAllTimers ();
@@ -624,11 +624,11 @@ TcpSocketBase::Connect (const Address & address)
   // If haven't do so, Bind() this socket first
   if (InetSocketAddress::IsMatchingType (address))
     {
-      if (m_endPoint == 0)
+      if (m_endPoint == nullptr)
         {
           if (Bind () == -1)
             {
-              NS_ASSERT (m_endPoint == 0);
+              NS_ASSERT (m_endPoint == nullptr);
               return -1; // Bind() failed
             }
           NS_ASSERT (m_endPoint != nullptr);
@@ -636,7 +636,7 @@ TcpSocketBase::Connect (const Address & address)
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       m_endPoint->SetPeer (transport.GetIpv4 (), transport.GetPort ());
       SetIpTos (transport.GetTos ());
-      m_endPoint6 = 0;
+      m_endPoint6 = nullptr;
 
       // Get the appropriate local address and port number from the routing protocol and set up endpoint
       if (SetupEndpoint () != 0)
@@ -657,17 +657,17 @@ TcpSocketBase::Connect (const Address & address)
           return Connect (InetSocketAddress (v4Addr, transport.GetPort ()));
         }
 
-      if (m_endPoint6 == 0)
+      if (m_endPoint6 == nullptr)
         {
           if (Bind6 () == -1)
             {
-              NS_ASSERT (m_endPoint6 == 0);
+              NS_ASSERT (m_endPoint6 == nullptr);
               return -1; // Bind() failed
             }
           NS_ASSERT (m_endPoint6 != nullptr);
         }
       m_endPoint6->SetPeer (v6Addr, transport.GetPort ());
-      m_endPoint = 0;
+      m_endPoint = nullptr;
 
       // Get the appropriate local address and port number from the routing protocol and set up endpoint
       if (SetupEndpoint6 () != 0)
@@ -825,6 +825,7 @@ TcpSocketBase::Send (Ptr<Packet> p, uint32_t flags)
 int
 TcpSocketBase::SendTo (Ptr<Packet> p, uint32_t flags, const Address &address)
 {
+  NS_UNUSED (address);
   return Send (p, flags); // SendTo() and Send() are the same
 }
 
@@ -960,7 +961,7 @@ TcpSocketBase::SetupCallback (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_endPoint == 0 && m_endPoint6 == 0)
+  if (m_endPoint == nullptr && m_endPoint6 == nullptr)
     {
       return -1;
     }
@@ -1124,8 +1125,9 @@ TcpSocketBase::ForwardIcmp (Ipv4Address icmpSource, uint8_t icmpTtl,
                             uint8_t icmpType, uint8_t icmpCode,
                             uint32_t icmpInfo)
 {
-  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
-                   (uint32_t)icmpCode << icmpInfo);
+  NS_LOG_FUNCTION (this << icmpSource << static_cast<uint32_t> (icmpTtl) <<
+                   static_cast<uint32_t> (icmpType) <<
+                   static_cast<uint32_t> (icmpCode) << icmpInfo);
   if (!m_icmpCallback.IsNull ())
     {
       m_icmpCallback (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
@@ -1137,8 +1139,9 @@ TcpSocketBase::ForwardIcmp6 (Ipv6Address icmpSource, uint8_t icmpTtl,
                              uint8_t icmpType, uint8_t icmpCode,
                              uint32_t icmpInfo)
 {
-  NS_LOG_FUNCTION (this << icmpSource << (uint32_t)icmpTtl << (uint32_t)icmpType <<
-                   (uint32_t)icmpCode << icmpInfo);
+  NS_LOG_FUNCTION (this << icmpSource << static_cast<uint32_t> (icmpTtl) <<
+                   static_cast<uint32_t> (icmpType) <<
+                   static_cast<uint32_t> (icmpCode) << icmpInfo);
   if (!m_icmpCallback6.IsNull ())
     {
       m_icmpCallback6 (icmpSource, icmpTtl, icmpType, icmpCode, icmpInfo);
@@ -1801,7 +1804,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
               // Recalculate the segs acked, that are from m_recover to ackNumber
               // (which are the ones we have not passed to PktsAcked and that
               // can increase cWnd)
-              segsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
+              segsAcked = static_cast<uint32_t>(ackNumber - m_recover) / m_tcb->m_segmentSize;
               m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
               m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
@@ -1949,6 +1952,7 @@ void
 TcpSocketBase::ProcessSynRcvd (Ptr<Packet> packet, const TcpHeader& tcpHeader,
                                const Address& fromAddress, const Address& toAddress)
 {
+  NS_UNUSED (toAddress);
   NS_LOG_FUNCTION (this << tcpHeader);
 
   // Extract the flags. PSH and URG are not honoured.
@@ -2259,7 +2263,7 @@ void
 TcpSocketBase::Destroy (void)
 {
   NS_LOG_FUNCTION (this);
-  m_endPoint = 0;
+  m_endPoint = nullptr;
   if (m_tcp != nullptr)
     {
       m_tcp->RemoveSocket (this);
@@ -2275,7 +2279,7 @@ void
 TcpSocketBase::Destroy6 (void)
 {
   NS_LOG_FUNCTION (this);
-  m_endPoint6 = 0;
+  m_endPoint6 = nullptr;
   if (m_tcp != nullptr)
     {
       m_tcp->RemoveSocket (this);
@@ -2336,7 +2340,7 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
       p->ReplacePacketTag (priorityTag);
     }
 
-  if (m_endPoint == 0 && m_endPoint6 == 0)
+  if (m_endPoint == nullptr && m_endPoint6 == nullptr)
     {
       NS_LOG_WARN ("Failed to send empty packet due to null endpoint");
       return;
@@ -2467,7 +2471,7 @@ TcpSocketBase::DeallocateEndPoint (void)
       CancelAllTimers ();
       m_endPoint->SetDestroyCallback (MakeNullCallback<void> ());
       m_tcp->DeAllocate (m_endPoint);
-      m_endPoint = 0;
+      m_endPoint = nullptr;
       m_tcp->RemoveSocket (this);
     }
   else if (m_endPoint6 != nullptr)
@@ -2475,7 +2479,7 @@ TcpSocketBase::DeallocateEndPoint (void)
       CancelAllTimers ();
       m_endPoint6->SetDestroyCallback (MakeNullCallback<void> ());
       m_tcp->DeAllocate (m_endPoint6);
-      m_endPoint6 = 0;
+      m_endPoint6 = nullptr;
       m_tcp->RemoveSocket (this);
     }
 }
@@ -2487,7 +2491,7 @@ TcpSocketBase::SetupEndpoint ()
   NS_LOG_FUNCTION (this);
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   NS_ASSERT (ipv4 != nullptr);
-  if (ipv4->GetRoutingProtocol () == 0)
+  if (ipv4->GetRoutingProtocol () == nullptr)
     {
       NS_FATAL_ERROR ("No Ipv4RoutingProtocol in the node");
     }
@@ -2517,7 +2521,7 @@ TcpSocketBase::SetupEndpoint6 ()
   NS_LOG_FUNCTION (this);
   Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
   NS_ASSERT (ipv6 != nullptr);
-  if (ipv6->GetRoutingProtocol () == 0)
+  if (ipv6->GetRoutingProtocol () == nullptr)
     {
       NS_FATAL_ERROR ("No Ipv6RoutingProtocol in the node");
     }
@@ -2529,7 +2533,7 @@ TcpSocketBase::SetupEndpoint6 ()
   Ptr<Ipv6Route> route;
   Ptr<NetDevice> oif = m_boundnetdevice;
   route = ipv6->GetRoutingProtocol ()->RouteOutput (Ptr<Packet> (), header, oif, errno_);
-  if (route == 0)
+  if (route == nullptr)
     {
       NS_LOG_LOGIC ("Route to " << m_endPoint6->GetPeerAddress () << " does not exist");
       NS_LOG_ERROR (errno_);
@@ -2548,6 +2552,7 @@ void
 TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
                              const Address& fromAddress, const Address& toAddress)
 {
+  NS_UNUSED (p);
   // Get port and address from peer (connecting host)
   if (InetSocketAddress::IsMatchingType (toAddress))
     {
@@ -2556,7 +2561,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
                                     InetSocketAddress::ConvertFrom (toAddress).GetPort (),
                                     InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 (),
                                     InetSocketAddress::ConvertFrom (fromAddress).GetPort ());
-      m_endPoint6 = 0;
+      m_endPoint6 = nullptr;
     }
   else if (Inet6SocketAddress::IsMatchingType (toAddress))
     {
@@ -2565,7 +2570,7 @@ TcpSocketBase::CompleteFork (Ptr<Packet> p, const TcpHeader& h,
                                       Inet6SocketAddress::ConvertFrom (toAddress).GetPort (),
                                       Inet6SocketAddress::ConvertFrom (fromAddress).GetIpv6 (),
                                       Inet6SocketAddress::ConvertFrom (fromAddress).GetPort ());
-      m_endPoint = 0;
+      m_endPoint = nullptr;
     }
   m_tcp->AddSocket (this);
 
@@ -2784,7 +2789,7 @@ TcpSocketBase::SendPendingData (bool withAck)
     {
       return false;                           // Nothing to send
     }
-  if (m_endPoint == 0 && m_endPoint6 == 0)
+  if (m_endPoint == nullptr && m_endPoint6 == nullptr)
     {
       NS_LOG_INFO ("TcpSocketBase::SendPendingData: No endpoint; m_shutdownSend=" << m_shutdownSend);
       return false; // Is this the right way to handle this condition?

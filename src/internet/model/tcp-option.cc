@@ -166,7 +166,7 @@ TcpOptionUnknown::Serialize (Buffer::Iterator i) const
     }
 
   i.WriteU8 (GetKind ());
-  i.WriteU8 (GetSerializedSize ());
+  i.WriteU8 (static_cast<uint8_t> (GetSerializedSize ()));
   i.Write (m_content, m_size - 2);
 }
 

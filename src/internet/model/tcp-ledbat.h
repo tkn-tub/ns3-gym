@@ -24,7 +24,6 @@
 
 #include <vector>
 #include "ns3/tcp-congestion-ops.h"
-#include "ns3/event-id.h"
 
 namespace ns3 {
 
@@ -50,7 +49,7 @@ private:
    * \brief The state of LEDBAT. If LEDBAT is not in VALID_OWD state, it falls to
    *        default congestion ops.
    */
-  enum State
+  enum State : uint32_t
   {
     LEDBAT_VALID_OWD  = (1 << 1),  //!< If valid timestamps are present
     LEDBAT_CAN_SS     = (1 << 3)   //!< If LEDBAT allows Slow Start
@@ -96,16 +95,7 @@ public:
   virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
                           const Time& rtt);
 
-  /**
-   * \brief Get the slow start threshold
-   *
-   * \param tcb internal congestion state
-   * \param bytesInFlight bytes in flight
-   *
-   * \return The slow start threshold
-   */
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
+  // Inherited
   virtual Ptr<TcpCongestionOps> Fork ();
 
   /**
@@ -198,8 +188,8 @@ private:
   uint32_t m_noiseFilterLen;         //!< Length of current delay buffer
   uint64_t m_lastRollover;           //!< Timestamp of last added delay
   int32_t m_sndCwndCnt;              //!< The congestion window addition parameter
-  struct OwdCircBuf m_baseHistory;   //!< Buffer to store the base delay
-  struct OwdCircBuf m_noiseFilter;   //!< Buffer to store the current delay
+  OwdCircBuf m_baseHistory;   //!< Buffer to store the base delay
+  OwdCircBuf m_noiseFilter;   //!< Buffer to store the current delay
   uint32_t m_flag;                   //!< LEDBAT Flag
 };
 

@@ -27,7 +27,6 @@
 
 
 #include "tcp-illinois.h"
-#include "ns3/tcp-socket-base.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -243,7 +242,7 @@ TcpIllinois::GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight)
   NS_LOG_FUNCTION (this << tcb << bytesInFlight);
 
   uint32_t segBytesInFlight = bytesInFlight / tcb->m_segmentSize;
-  uint32_t ssThresh = std::max (2.0, (1.0 - m_beta) * segBytesInFlight);
+  uint32_t ssThresh = static_cast<uint32_t> (std::max (2.0, (1.0 - m_beta) * segBytesInFlight));
 
   NS_LOG_DEBUG ("Calculated ssThresh (in segments) = " << ssThresh);
 

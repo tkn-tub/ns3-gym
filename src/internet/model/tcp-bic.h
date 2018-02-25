@@ -21,7 +21,6 @@
 #define TCPBIC_H
 
 #include "ns3/tcp-congestion-ops.h"
-#include "ns3/traced-value.h"
 
 class TcpBicIncrementTest;
 class TcpBicDecrementTest;
@@ -131,7 +130,7 @@ private:
   double   m_beta;             //!< Beta for cubic multiplicative increase
   uint32_t m_maxIncr;          //!< Maximum window increment
   uint32_t m_lowWnd;           //!< Lower bound on congestion window
-  int      m_smoothPart;       //!< Number of RTT needed to reach Wmax from Wmax-B
+  uint32_t m_smoothPart;       //!< Number of RTT needed to reach Wmax from Wmax-B
 
   // Bic parameters
   uint32_t     m_cWndCnt;         //!<  cWnd integer-to-float counter
