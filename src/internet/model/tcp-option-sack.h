@@ -96,6 +96,15 @@ protected:
   SackList m_sackList; //!< the list of SACK blocks
 };
 
+/**
+ * \brief Output operator.
+ * \param os The output stream.
+ * \param sackBlock the block to print.
+ * \returns The output stream.
+ */
+std::ostream & operator<< (std::ostream & os,
+                           TcpOptionSack::SackBlock const & sackBlock);
+
 } // namespace ns3
 
 #endif /* TCP_OPTION_SACK */
