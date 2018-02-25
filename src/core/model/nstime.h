@@ -124,7 +124,7 @@ public:
    *  Assignment operator
    * \param [in] o Time to assign.
    * \return The Time.
-   */      
+   */
   inline Time & operator = (const Time & o)
   {
     m_data = o.m_data;
@@ -136,20 +136,34 @@ public:
   {
     if (g_markingTimes)
       {
-	Mark (this);
+        Mark (this);
       }
   }
   /**
    *  Copy constructor
    *
    * \param [in] o Time to copy
-   */      
+   */
   inline Time(const Time & o)
     : m_data (o.m_data)
   {
     if (g_markingTimes)
       {
-	Mark (this);
+        Mark (this);
+      }
+  }
+
+  /**
+   * \brief Move constructor
+   *
+   * \param [in] o Time from which take the data
+   */
+  Time (Time &&o)
+    : m_data (o.m_data)
+  {
+    if (g_markingTimes)
+      {
+        Mark (this);
       }
   }
   /**
