@@ -1403,7 +1403,7 @@ TcpSocketBase::ProcessEstablished (Ptr<Packet> packet, const TcpHeader& tcpHeade
 bool
 TcpSocketBase::IsTcpOptionEnabled (uint8_t kind) const
 {
-  NS_LOG_FUNCTION (this << (int)kind);
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (kind));
 
   switch (kind)
     {
@@ -2293,58 +2293,18 @@ TcpSocketBase::Destroy6 (void)
 void
 TcpSocketBase::SendEmptyPacket (uint8_t flags)
 {
-  NS_LOG_FUNCTION (this << (uint32_t)flags);
-  Ptr<Packet> p = Create<Packet> ();
-  TcpHeader header;
-  SequenceNumber32 s = m_tcb->m_nextTxSequence;
-
-  /*
-   * Add tags for each socket option.
-   * Note that currently the socket adds both IPv4 tag and IPv6 tag
-   * if both options are set. Once the packet got to layer three, only
-   * the corresponding tags will be read.
-   */
-  if (GetIpTos ())
-    {
-      SocketIpTosTag ipTosTag;
-      ipTosTag.SetTos (GetIpTos ());
-      p->AddPacketTag (ipTosTag);
-    }
-
-  if (IsManualIpv6Tclass ())
-    {
-      SocketIpv6TclassTag ipTclassTag;
-      ipTclassTag.SetTclass (GetIpv6Tclass ());
-      p->AddPacketTag (ipTclassTag);
-    }
-
-  if (IsManualIpTtl ())
-    {
-      SocketIpTtlTag ipTtlTag;
-      ipTtlTag.SetTtl (GetIpTtl ());
-      p->AddPacketTag (ipTtlTag);
-    }
-
-  if (IsManualIpv6HopLimit ())
-    {
-      SocketIpv6HopLimitTag ipHopLimitTag;
-      ipHopLimitTag.SetHopLimit (GetIpv6HopLimit ());
-      p->AddPacketTag (ipHopLimitTag);
-    }
-
-  uint8_t priority = GetPriority ();
-  if (priority)
-    {
-      SocketPriorityTag priorityTag;
-      priorityTag.SetPriority (priority);
-      p->ReplacePacketTag (priorityTag);
-    }
+  NS_LOG_FUNCTION (this << static_cast<uint32_t> (flags));
 
   if (m_endPoint == nullptr && m_endPoint6 == nullptr)
     {
       NS_LOG_WARN ("Failed to send empty packet due to null endpoint");
       return;
     }
+
+  Ptr<Packet> p = Create<Packet> ();
+  TcpHeader header;
+  SequenceNumber32 s = m_tcb->m_nextTxSequence;
+
   if (flags & TcpHeader::FIN)
     {
       flags |= TcpHeader::ACK;
@@ -2353,6 +2313,8 @@ TcpSocketBase::SendEmptyPacket (uint8_t flags)
     {
       ++s;
     }
+
+  AddSocketTags (p);
 
   header.SetFlags (flags);
   header.SetSequenceNumber (s);
@@ -2600,46 +2562,9 @@ TcpSocketBase::ConnectionSucceeded ()
     }
 }
 
-/* Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
-    TCP header, and send to TcpL4Protocol */
-uint32_t
-TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck)
+void
+TcpSocketBase::AddSocketTags (const Ptr<Packet> &p) const
 {
-  NS_LOG_FUNCTION (this << seq << maxSize << withAck);
-
-  bool isRetransmission = false;
-  if (seq != m_tcb->m_highTxMark)
-    {
-      isRetransmission = true;
-    }
-
-  Ptr<Packet> p = m_txBuffer->CopyFromSequence (maxSize, seq);
-  uint32_t sz = p->GetSize (); // Size of packet
-  uint8_t flags = withAck ? TcpHeader::ACK : 0;
-  uint32_t remainingData = m_txBuffer->SizeFromSequence (seq + SequenceNumber32 (sz));
-
-  if (m_tcb->m_pacing)
-    {
-      NS_LOG_INFO ("Pacing is enabled");
-      if (m_pacingTimer.IsExpired ())
-        {
-          NS_LOG_DEBUG ("Current Pacing Rate " << m_tcb->m_currentPacingRate);
-          NS_LOG_DEBUG ("Timer is in expired state, activate it " << m_tcb->m_currentPacingRate.CalculateBytesTxTime (sz));
-          m_pacingTimer.Schedule (m_tcb->m_currentPacingRate.CalculateBytesTxTime (sz));
-        }
-      else
-        {
-          NS_LOG_INFO ("Timer is already in running state");
-        }
-    }
-
-
-  if (withAck)
-    {
-      m_delAckEvent.Cancel ();
-      m_delAckCount = 0;
-    }
-
   /*
    * Add tags for each socket option.
    * Note that currently the socket adds both IPv4 tag and IPv6 tag
@@ -2681,6 +2606,47 @@ TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool with
       priorityTag.SetPriority (priority);
       p->ReplacePacketTag (priorityTag);
     }
+}
+/* Extract at most maxSize bytes from the TxBuffer at sequence seq, add the
+    TCP header, and send to TcpL4Protocol */
+uint32_t
+TcpSocketBase::SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck)
+{
+  NS_LOG_FUNCTION (this << seq << maxSize << withAck);
+
+  bool isRetransmission = false;
+  if (seq != m_tcb->m_highTxMark)
+    {
+      isRetransmission = true;
+    }
+
+  Ptr<Packet> p = m_txBuffer->CopyFromSequence (maxSize, seq);
+  uint32_t sz = p->GetSize (); // Size of packet
+  uint8_t flags = withAck ? TcpHeader::ACK : 0;
+  uint32_t remainingData = m_txBuffer->SizeFromSequence (seq + SequenceNumber32 (sz));
+
+  if (m_tcb->m_pacing)
+    {
+      NS_LOG_INFO ("Pacing is enabled");
+      if (m_pacingTimer.IsExpired ())
+        {
+          NS_LOG_DEBUG ("Current Pacing Rate " << m_tcb->m_currentPacingRate);
+          NS_LOG_DEBUG ("Timer is in expired state, activate it " << m_tcb->m_currentPacingRate.CalculateBytesTxTime (sz));
+          m_pacingTimer.Schedule (m_tcb->m_currentPacingRate.CalculateBytesTxTime (sz));
+        }
+      else
+        {
+          NS_LOG_INFO ("Timer is already in running state");
+        }
+    }
+
+  if (withAck)
+    {
+      m_delAckEvent.Cancel ();
+      m_delAckCount = 0;
+    }
+
+  AddSocketTags (p);
 
   if (m_closeOnEmpty && (remainingData == 0))
     {

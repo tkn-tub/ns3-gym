@@ -1102,6 +1102,12 @@ protected:
    */
   void NotifyPacingPerformed (void);
 
+  /**
+   * \brief Add Tags for the Socket
+   * \param p Packet
+   */
+  void AddSocketTags (const Ptr<Packet> &p) const;
+
 protected:
   // Counters and events
   EventId           m_retxEvent     {}; //!< Retransmission event
