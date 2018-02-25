@@ -60,6 +60,7 @@ Bugs fixed
 - Bug 2849 - lte: Received RLC and PDCP PDUs are missing in the stats files
 - Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
 - Bug 2873 - tcp: Potential SIGFPE in TcpYeah
+- Bug 2874 - tcp: Corrected interpretation of RFC 6675 for IsLost check
 - Bug 2877 - wifi: Wrong data types for CWmin and CWmax
 
 Known issues

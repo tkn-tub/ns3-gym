@@ -1552,7 +1552,7 @@ TcpSocketBase::DupAck ()
       // (indicating at least three segments have arrived above the current
       // cumulative acknowledgment point, which is taken to indicate loss)
       // go to step (4).
-      else if (m_txBuffer->IsLost (m_highRxAckMark + 1, m_retxThresh, m_tcb->m_segmentSize))
+      else if (m_txBuffer->IsLost (m_highRxAckMark + m_tcb->m_segmentSize, m_retxThresh, m_tcb->m_segmentSize))
         {
           EnterRecovery ();
           NS_ASSERT (m_tcb->m_congState == TcpSocketState::CA_RECOVERY);
