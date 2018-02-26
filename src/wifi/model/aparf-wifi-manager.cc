@@ -147,8 +147,8 @@ AparfWifiManager::DoCreateStation (void) const
   station->m_aparfState = AparfWifiManager::High;
   station->m_initialized = false;
 
-  NS_LOG_DEBUG ("create station=" << station << ", rate=" << static_cast<uint16_t>(station->m_rateIndex)
-                                  << ", power=" << static_cast<uint16_t>(station->m_powerLevel));
+  NS_LOG_DEBUG ("create station=" << station << ", rate=" << +station->m_rateIndex
+                                  << ", power=" << +station->m_powerLevel);
 
   return station;
 }
@@ -244,7 +244,7 @@ AparfWifiManager::DoReportDataOk (WifiRemoteStation *st, double ackSnr,
   CheckInit (station);
   station->m_nSuccess++;
   station->m_nFailed = 0;
-  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_nSuccess << ", rate=" << static_cast<uint16_t>(station->m_rateIndex) << ", power=" << static_cast<uint16_t>(station->m_powerLevel));
+  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_nSuccess << ", rate=" << +station->m_rateIndex << ", power=" << +station->m_powerLevel);
 
   if ((station->m_aparfState == AparfWifiManager::High) && (station->m_nSuccess >= station->m_successThreshold))
     {

@@ -253,7 +253,7 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
       station->m_success++;
       NS_LOG_DEBUG ("++ success=" << station->m_success << " successThreshold=" << station->m_successThreshold <<
                     " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err << " tx_retr=" << station->m_tx_retr <<
-                    " rate=" << static_cast<uint16_t>(station->m_txrate) << " n-supported-rates=" << static_cast<uint16_t>(GetNSupported (station)));
+                    " rate=" << +station->m_txrate << " n-supported-rates=" << +GetNSupported (station));
       if (station->m_success >= station->m_successThreshold
           && !IsMaxRate (station))
         {
@@ -272,7 +272,7 @@ AmrrWifiManager::UpdateMode (AmrrWifiRemoteStation *station)
       station->m_success = 0;
       NS_LOG_DEBUG ("-- success=" << station->m_success << " successThreshold=" << station->m_successThreshold <<
                     " tx_ok=" << station->m_tx_ok << " tx_err=" << station->m_tx_err << " tx_retr=" << station->m_tx_retr <<
-                    " rate=" << static_cast<uint16_t>(station->m_txrate) << " n-supported-rates=" << static_cast<uint16_t>(GetNSupported (station)));
+                    " rate=" << +station->m_txrate << " n-supported-rates=" << +GetNSupported (station));
       if (!IsMinRate (station))
         {
           if (station->m_recovery)

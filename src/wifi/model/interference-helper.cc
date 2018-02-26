@@ -234,7 +234,7 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint8
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
-  NS_LOG_DEBUG ("bandwidth(MHz)=" << static_cast<uint16_t> (channelWidth) << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
+  NS_LOG_DEBUG ("bandwidth(MHz)=" << +channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
   return snr;
 }
 
@@ -271,8 +271,8 @@ InterferenceHelper::CalculateChunkSuccessRate (double snir, Time duration, WifiM
     {
       nbits /= txVector.GetNss (); //divide effective number of bits by NSS to achieve same chunk error rate as SISO for AWGN
       double gain = (txVector.GetNTx () * m_numRxAntennas); //compute gain offered by MIMO, SIMO or MISO compared to SISO for AWGN
-      NS_LOG_DEBUG ("TX=" << static_cast<uint16_t> (txVector.GetNTx ()) <<
-                    ", RX=" << static_cast<uint16_t> (m_numRxAntennas) <<
+      NS_LOG_DEBUG ("TX=" << +txVector.GetNTx () <<
+                    ", RX=" << +m_numRxAntennas <<
                     ", SNIR improvement=+" << 10 * std::log10 (gain) << "dB");
       snir *= gain;
     }

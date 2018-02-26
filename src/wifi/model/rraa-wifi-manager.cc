@@ -453,7 +453,7 @@ RraaWifiManager::ARts (RraaWifiRemoteStation *station)
 WifiRraaThresholds
 RraaWifiManager::GetThresholds (RraaWifiRemoteStation *station, uint8_t rate) const
 {
-  NS_LOG_FUNCTION (this << station << static_cast<uint16_t>(rate));
+  NS_LOG_FUNCTION (this << station << +rate);
   WifiMode mode = GetSupported (station, rate);
   return GetThresholds (station, mode);
 }

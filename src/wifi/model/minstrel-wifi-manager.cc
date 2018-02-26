@@ -907,7 +907,7 @@ MinstrelWifiManager::RateInit (MinstrelWifiRemoteStation *station)
   NS_LOG_FUNCTION (this << station);
   for (uint8_t i = 0; i < station->m_nModes; i++)
     {
-      NS_LOG_DEBUG ("Initializing rate index " << static_cast<uint16_t>(i) << " " << GetSupported (station, i));
+      NS_LOG_DEBUG ("Initializing rate index " << +i << " " << GetSupported (station, i));
       station->m_minstrelTable[i].numRateAttempt = 0;
       station->m_minstrelTable[i].numRateSuccess = 0;
       station->m_minstrelTable[i].prevNumRateSuccess = 0;

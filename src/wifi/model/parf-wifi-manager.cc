@@ -116,7 +116,7 @@ ParfWifiManager::DoCreateStation (void) const
   station->m_nAttempt = 0;
 
   NS_LOG_DEBUG ("create station=" << station << ", timer=" << station->m_nAttempt
-                                  << ", rate=" << static_cast<uint16_t>(station->m_rateIndex) << ", power=" << static_cast<uint16_t>(station->m_powerLevel));
+                                  << ", rate=" << +station->m_rateIndex << ", power=" << +station->m_powerLevel);
 
   return station;
 }
@@ -168,7 +168,7 @@ ParfWifiManager::DoReportDataFailed (WifiRemoteStation *st)
   station->m_nSuccess = 0;
 
   NS_LOG_DEBUG ("station=" << station << " data fail retry=" << station->m_nRetry << ", timer=" << station->m_nAttempt
-                           << ", rate=" << static_cast<uint16_t>(station->m_rateIndex) << ", power=" << static_cast<uint16_t>(station->m_powerLevel));
+                           << ", rate=" << +station->m_rateIndex << ", power=" << +station->m_powerLevel);
   if (station->m_usingRecoveryRate)
     {
       NS_ASSERT (station->m_nRetry >= 1);
@@ -251,7 +251,7 @@ void ParfWifiManager::DoReportDataOk (WifiRemoteStation *st,
   station->m_usingRecoveryRate = false;
   station->m_usingRecoveryPower = false;
   station->m_nRetry = 0;
-  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_nSuccess << ", timer=" << station->m_nAttempt << ", rate=" << static_cast<uint16_t>(station->m_rateIndex) << ", power=" << static_cast<uint16_t>(station->m_powerLevel));
+  NS_LOG_DEBUG ("station=" << station << " data ok success=" << station->m_nSuccess << ", timer=" << station->m_nAttempt << ", rate=" << +station->m_rateIndex << ", power=" << +station->m_powerLevel);
   if ((station->m_nSuccess == m_successThreshold
        || station->m_nAttempt == m_attemptThreshold)
       && (station->m_rateIndex < (station->m_state->m_operationalRateSet.size () - 1)))

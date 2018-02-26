@@ -481,9 +481,9 @@ std::ostream &
 operator << (std::ostream &os, const HeCapabilities &HeCapabilities)
 {
   os << HeCapabilities.GetHeMacCapabilitiesInfo1 () << "|"
-     << static_cast<uint16_t> (HeCapabilities.GetHeMacCapabilitiesInfo2 ()) << "|"
+     << +HeCapabilities.GetHeMacCapabilitiesInfo2 () << "|"
      << HeCapabilities.GetHePhyCapabilitiesInfo1 () << "|"
-     << static_cast<uint16_t> (HeCapabilities.GetHePhyCapabilitiesInfo2 ()) << "|"
+     << +HeCapabilities.GetHePhyCapabilitiesInfo2 () << "|"
      << HeCapabilities.GetSupportedMcsAndNss ();
   return os;
 }

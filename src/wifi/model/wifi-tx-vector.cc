@@ -242,14 +242,14 @@ WifiTxVector::IsValid (void) const
 std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
   os << "mode: " << v.GetMode () <<
-    " txpwrlvl: " << static_cast<uint16_t> (v.GetTxPowerLevel ()) <<
-    " retries: " << static_cast<uint16_t> (v.GetRetries ()) <<
+    " txpwrlvl: " << +v.GetTxPowerLevel () <<
+    " retries: " << +v.GetRetries () <<
     " preamble: " << v.GetPreambleType () <<
-    " channel width: " << static_cast<uint16_t> (v.GetChannelWidth ()) <<
+    " channel width: " << +v.GetChannelWidth () <<
     " GI: " << v.GetGuardInterval () <<
-    " NTx: " << static_cast<uint16_t> (v.GetNTx ()) <<
-    " Nss: " << static_cast<uint16_t> (v.GetNss ()) <<
-    " Ness: " << static_cast<uint16_t> (v.GetNess ()) <<
+    " NTx: " << +v.GetNTx () <<
+    " Nss: " << +v.GetNss () <<
+    " Ness: " << +v.GetNess () <<
     " MPDU aggregation: " << v.IsAggregation () <<
     " STBC: " << v.IsStbc ();
   return os;

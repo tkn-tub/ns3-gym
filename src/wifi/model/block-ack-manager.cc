@@ -48,7 +48,7 @@ Bar::Bar (Ptr<const Packet> bar, Mac48Address recipient, uint8_t tid, bool immed
     tid (tid),
     immediate (immediate)
 {
-  NS_LOG_FUNCTION (this << bar << recipient << static_cast<uint16_t> (tid) << immediate);
+  NS_LOG_FUNCTION (this << bar << recipient << +tid << immediate);
 }
 
 NS_OBJECT_ENSURE_REGISTERED (BlockAckManager);
@@ -80,7 +80,7 @@ BlockAckManager::~BlockAckManager ()
 bool
 BlockAckManager::ExistsAgreement (Mac48Address recipient, uint8_t tid) const
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   return (m_agreements.find (std::make_pair (recipient, tid)) != m_agreements.end ());
 }
 
@@ -88,7 +88,7 @@ bool
 BlockAckManager::ExistsAgreementInState (Mac48Address recipient, uint8_t tid,
                                          OriginatorBlockAckAgreement::State state) const
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid) << state);
+  NS_LOG_FUNCTION (this << recipient << +tid << state);
   AgreementsCI it;
   it = m_agreements.find (std::make_pair (recipient, tid));
   if (it != m_agreements.end ())
@@ -142,7 +142,7 @@ BlockAckManager::CreateAgreement (const MgtAddBaRequestHeader *reqHdr, Mac48Addr
 void
 BlockAckManager::DestroyAgreement (Mac48Address recipient, uint8_t tid)
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   if (it != m_agreements.end ())
     {
@@ -413,7 +413,7 @@ BlockAckManager::RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seq
           i->second.second.erase ((*it));
 
           m_retryPackets.erase (it);
-          NS_LOG_DEBUG ("Removed Packet from retry queue = " << hdr.GetSequenceNumber () << " " << static_cast<uint16_t> (tid) << " " << recipient << " Buffer Size = " << m_retryPackets.size ());
+          NS_LOG_DEBUG ("Removed Packet from retry queue = " << hdr.GetSequenceNumber () << " " << +tid << " " << recipient << " Buffer Size = " << m_retryPackets.size ());
           return true;
         }
     }
@@ -443,7 +443,7 @@ BlockAckManager::HasPackets (void) const
 uint32_t
 BlockAckManager::GetNBufferedPackets (Mac48Address recipient, uint8_t tid) const
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   uint32_t nPackets = 0;
   if (ExistsAgreement (recipient, tid))
     {
@@ -468,7 +468,7 @@ BlockAckManager::GetNBufferedPackets (Mac48Address recipient, uint8_t tid) const
 uint32_t
 BlockAckManager::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) const
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   uint32_t nPackets = 0;
   uint16_t currentSeq = 0;
   if (ExistsAgreement (recipient, tid))
@@ -503,7 +503,7 @@ BlockAckManager::GetNRetryNeededPackets (Mac48Address recipient, uint8_t tid) co
 void
 BlockAckManager::SetBlockAckThreshold (uint8_t nPackets)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (nPackets));
+  NS_LOG_FUNCTION (this << +nPackets);
   m_blockAckThreshold = nPackets;
 }
 
@@ -661,7 +661,7 @@ BlockAckManager::ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t ti
      this number could be incorrect. In fact is possible that a block ack agreement exists for n
      packets but some of these packets are dropped due to MSDU lifetime expiration.
    */
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
 
@@ -697,14 +697,14 @@ BlockAckManager::ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t ti
 void
 BlockAckManager::InactivityTimeout (Mac48Address recipient, uint8_t tid)
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   m_blockAckInactivityTimeout (recipient, tid, true);
 }
 
 void
 BlockAckManager::NotifyAgreementEstablished (Mac48Address recipient, uint8_t tid, uint16_t startingSeq)
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid) << startingSeq);
+  NS_LOG_FUNCTION (this << recipient << +tid << startingSeq);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
   it->second.first.SetState (OriginatorBlockAckAgreement::ESTABLISHED);
@@ -714,7 +714,7 @@ BlockAckManager::NotifyAgreementEstablished (Mac48Address recipient, uint8_t tid
 void
 BlockAckManager::NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t tid)
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
   if (it != m_agreements.end ())
@@ -726,7 +726,7 @@ BlockAckManager::NotifyAgreementUnsuccessful (Mac48Address recipient, uint8_t ti
 void
 BlockAckManager::NotifyMpduTransmission (Mac48Address recipient, uint8_t tid, uint16_t nextSeqNumber, WifiMacHeader::QosAckPolicy policy)
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint32_t> (tid) << nextSeqNumber);
+  NS_LOG_FUNCTION (this << recipient << +tid << nextSeqNumber);
   Ptr<Packet> bar = 0;
   AgreementsI it = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (it != m_agreements.end ());
@@ -761,7 +761,7 @@ BlockAckManager::SetQueue (const Ptr<WifiMacQueue> queue)
 bool
 BlockAckManager::SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, uint16_t startingSeq)
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid) << startingSeq);
+  NS_LOG_FUNCTION (this << recipient << +tid << startingSeq);
   NS_ASSERT (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING));
   if (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::UNSUCCESSFUL) && ExistsAgreement (recipient, tid))
     {
@@ -881,7 +881,7 @@ BlockAckManager::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
 uint16_t
 BlockAckManager::GetSeqNumOfNextRetryPacket (Mac48Address recipient, uint8_t tid) const
 {
-  NS_LOG_FUNCTION (this << recipient << static_cast<uint16_t> (tid));
+  NS_LOG_FUNCTION (this << recipient << +tid);
   std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
   while (it != m_retryPackets.end ())
     {

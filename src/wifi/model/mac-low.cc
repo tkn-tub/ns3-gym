@@ -2190,7 +2190,7 @@ MacLow::SendBlockAckAfterAmpdu (uint8_t tid, Mac48Address originator, Time durat
   NS_LOG_FUNCTION (this);
   if (!m_phy->IsStateTx () && !m_phy->IsStateRx ())
     {
-      NS_LOG_FUNCTION (this << static_cast<uint16_t> (tid) << originator << duration.As (Time::S) << blockAckReqTxVector << rxSnr);
+      NS_LOG_FUNCTION (this << +tid << originator << duration.As (Time::S) << blockAckReqTxVector << rxSnr);
       CtrlBAckResponseHeader blockAck;
       uint16_t seqNumber = 0;
       BlockAckCachesI i = m_bAckCaches.find (std::make_pair (originator, tid));

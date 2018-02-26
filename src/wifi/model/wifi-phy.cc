@@ -463,7 +463,7 @@ WifiPhy::InitializeFrequencyChannelNumber (void)
     }
   else if (m_initialChannelNumber != 0 && GetStandard () == WIFI_PHY_STANDARD_UNSPECIFIED)
     {
-      NS_FATAL_ERROR ("Error, ChannelNumber " << static_cast<uint16_t> (GetChannelNumber ()) << " was set by user, but neither a standard nor a frequency");
+      NS_FATAL_ERROR ("Error, ChannelNumber " << +GetChannelNumber () << " was set by user, but neither a standard nor a frequency");
     }
   m_frequencyChannelNumberInitialized = true;
 }
@@ -543,7 +543,7 @@ WifiPhy::GetTxPowerEnd (void) const
 void
 WifiPhy::SetNTxPower (uint8_t n)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (n));
+  NS_LOG_FUNCTION (this << +n);
   m_nTxPower = n;
 }
 
@@ -1049,7 +1049,7 @@ WifiPhy::Configure80211ax (void)
 bool
 WifiPhy::DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint8_t channelWidth)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (channelNumber) << standard << frequency << static_cast<uint16_t> (channelWidth));
+  NS_LOG_FUNCTION (this << +channelNumber << standard << frequency << +channelWidth);
   ChannelNumberStandardPair p = std::make_pair (channelNumber, standard);
   ChannelToFrequencyWidthMap::const_iterator it;
   it = m_channelToFrequencyWidth.find (p);
@@ -1066,7 +1066,7 @@ WifiPhy::DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, u
 uint8_t
 WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) const
 {
-  NS_LOG_FUNCTION (this << frequency << static_cast<uint16_t> (width));
+  NS_LOG_FUNCTION (this << frequency << +width);
   bool found = false;
   FrequencyWidthPair f = std::make_pair (frequency, width);
   ChannelToFrequencyWidthMap::const_iterator it = m_channelToFrequencyWidth.begin ();
@@ -1081,7 +1081,7 @@ WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) 
     }
   if (found)
     {
-      NS_LOG_DEBUG ("Found, returning " << static_cast<uint16_t> (it->first.first));
+      NS_LOG_DEBUG ("Found, returning " << +it->first.first);
       return (it->first.first);
     }
   else
@@ -1106,7 +1106,7 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
       uint8_t channelNumberSearched = FindChannelNumberForFrequencyWidth (GetFrequency (), GetChannelWidth ());
       if (channelNumberSearched)
         {
-          NS_LOG_DEBUG ("Channel number found; setting to " << static_cast<uint16_t> (channelNumberSearched));
+          NS_LOG_DEBUG ("Channel number found; setting to " << +channelNumberSearched);
           SetChannelNumber (channelNumberSearched);
         }
       else
@@ -1120,7 +1120,7 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
       // If the channel number is known for this particular standard or for
       // the unspecified standard, configure using the known values;
       // otherwise, this is a configuration error
-      NS_LOG_DEBUG ("Configuring for channel number " << static_cast<uint16_t> (GetChannelNumber ()));
+      NS_LOG_DEBUG ("Configuring for channel number " << +GetChannelNumber ());
       FrequencyWidthPair f = GetFrequencyWidthForChannelNumberStandard (GetChannelNumber (), standard);
       if (f.first == 0)
         {
@@ -1130,11 +1130,11 @@ WifiPhy::ConfigureChannelForStandard (WifiPhyStandard standard)
         }
       if (f.first == 0)
         {
-          NS_FATAL_ERROR ("Error, ChannelNumber " << static_cast<uint16_t> (GetChannelNumber ()) << " is unknown for this standard");
+          NS_FATAL_ERROR ("Error, ChannelNumber " << +GetChannelNumber () << " is unknown for this standard");
         }
       else
         {
-          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << static_cast<uint16_t> (f.second));
+          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << +f.second);
           SetFrequency (f.first);
           SetChannelWidth (f.second);
         }
@@ -1236,10 +1236,10 @@ WifiPhy::SetFrequency (uint16_t frequency)
   uint8_t nch = FindChannelNumberForFrequencyWidth (frequency, GetChannelWidth ());
   if (nch != 0)
     {
-      NS_LOG_DEBUG ("Setting frequency " << frequency << " corresponds to channel " << static_cast<uint16_t> (nch));
+      NS_LOG_DEBUG ("Setting frequency " << frequency << " corresponds to channel " << +nch);
       if (DoFrequencySwitch (frequency))
         {
-          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number to " << static_cast<uint16_t> (nch));
+          NS_LOG_DEBUG ("Channel frequency switched to " << frequency << "; channel number to " << +nch);
           m_channelCenterFrequency = frequency;
           m_channelNumber = nch;
         }
@@ -1273,7 +1273,7 @@ WifiPhy::GetFrequency (void) const
 void
 WifiPhy::SetChannelWidth (uint8_t channelwidth)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (channelwidth));
+  NS_LOG_FUNCTION (this << +channelwidth);
   NS_ASSERT_MSG (channelwidth == 5 || channelwidth == 10 || channelwidth == 20 || channelwidth == 22 || channelwidth == 40 || channelwidth == 80 || channelwidth == 160, "wrong channel width value");
   bool changed = (m_channelWidth == channelwidth);
   m_channelWidth = channelwidth;
@@ -1406,7 +1406,7 @@ WifiPhy::GetMembershipSelectorModes (uint32_t selector)
 void
 WifiPhy::AddSupportedChannelWidth (uint8_t width)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (width));
+  NS_LOG_FUNCTION (this << +width);
   for (std::vector<uint32_t>::size_type i = 0; i != m_supportedChannelWidthSet.size (); i++)
     {
       if (m_supportedChannelWidthSet[i] == width)
@@ -1414,7 +1414,7 @@ WifiPhy::AddSupportedChannelWidth (uint8_t width)
           return;
         }
     }
-  NS_LOG_FUNCTION ("Adding " << static_cast<uint16_t> (width) << " to supported channel width set");
+  NS_LOG_FUNCTION ("Adding " << +width << " to supported channel width set");
   m_supportedChannelWidthSet.push_back (width);
 }
 
@@ -1435,7 +1435,7 @@ WifiPhy::GetFrequencyWidthForChannelNumberStandard (uint8_t channelNumber, WifiP
 void
 WifiPhy::SetChannelNumber (uint8_t nch)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (nch));
+  NS_LOG_FUNCTION (this << +nch);
   if (m_isConstructed == false)
     {
       NS_LOG_DEBUG ("Saving channel number configuration for initialization");
@@ -1469,7 +1469,7 @@ WifiPhy::SetChannelNumber (uint8_t nch)
     {
       if (DoChannelSwitch (nch))
         {
-          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << static_cast<uint16_t> (f.second));
+          NS_LOG_DEBUG ("Setting frequency to " << f.first << "; width to " << +f.second);
           m_channelCenterFrequency = f.first;
           SetChannelWidth (f.second);
           m_channelNumber = nch;
@@ -1498,7 +1498,7 @@ WifiPhy::DoChannelSwitch (uint8_t nch)
   if (!IsInitialized ())
     {
       //this is not channel switch, this is initialization
-      NS_LOG_DEBUG ("initialize to channel " << static_cast<uint16_t> (nch));
+      NS_LOG_DEBUG ("initialize to channel " << +nch);
       return true;
     }
 
@@ -1531,7 +1531,7 @@ WifiPhy::DoChannelSwitch (uint8_t nch)
 
 switchChannel:
 
-  NS_LOG_DEBUG ("switching channel " << static_cast<uint16_t> (GetChannelNumber ()) << " -> " << static_cast<uint16_t> (nch));
+  NS_LOG_DEBUG ("switching channel " << +GetChannelNumber () << " -> " << +nch);
   m_state->SwitchToChannelSwitching (GetChannelSwitchDelay ());
   m_interference.EraseEvents ();
   /*
@@ -2365,8 +2365,8 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
   NS_LOG_FUNCTION (this << packet << txVector.GetMode ()
                         << txVector.GetMode ().GetDataRate (txVector)
                         << txVector.GetPreambleType ()
-                        << static_cast<uint16_t> (txVector.GetTxPowerLevel ())
-                        << static_cast<uint16_t> (mpdutype));
+                        << +txVector.GetTxPowerLevel ()
+                        << +mpdutype);
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
    *    MAC layer to avoid doing this but the PHY does nothing to
@@ -2466,7 +2466,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
   if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
       && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
     {
-      NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << static_cast<uint16_t> (txVector.GetMode ().GetMcsValue ()) << ", NSS = " << static_cast<uint16_t> (txVector.GetNss ()));
+      NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << +txVector.GetMode ().GetMcsValue () << ", NSS = " << +txVector.GetNss ());
     }
 
   Time endRx = Simulator::Now () + rxDuration;
@@ -2578,7 +2578,7 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
                              MpduType mpdutype,
                              Ptr<InterferenceHelper::Event> event)
 {
-  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << static_cast<uint16_t> (mpdutype));
+  NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << +mpdutype);
   NS_ASSERT (IsStateRx ());
   NS_ASSERT (m_endPlcpRxEvent.IsExpired ());
   WifiMode txMode = txVector.GetMode ();
@@ -3702,7 +3702,7 @@ WifiPhy::AbortCurrentReception ()
 void
 WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, double rxPowerW, Time rxDuration, Ptr<InterferenceHelper::Event> event)
 {
-  NS_LOG_FUNCTION (this << packet << txVector << static_cast<uint16_t> (mpdutype) << rxPowerW << rxDuration);
+  NS_LOG_FUNCTION (this << packet << txVector << +mpdutype << rxPowerW << rxDuration);
   if (rxPowerW > GetEdThresholdW ()) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
     {
       AmpduTag ampduTag;

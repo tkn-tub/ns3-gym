@@ -292,7 +292,7 @@ void
 ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
                         Mac48Address to, uint8_t tid)
 {
-  NS_LOG_FUNCTION (this << packet << from << to << static_cast<uint32_t> (tid));
+  NS_LOG_FUNCTION (this << packet << from << to << +tid);
   WifiMacHeader hdr;
 
   //For now, an AP that supports QoS does not support non-QoS

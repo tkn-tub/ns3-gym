@@ -198,7 +198,7 @@ WifiMode::GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss
     {
       if (item->modClass == WIFI_MOD_CLASS_VHT)
         {
-          NS_ASSERT_MSG (IsAllowed (channelWidth, nss), "VHT MCS " << static_cast<uint16_t> (item->mcsValue) << " forbidden at " << static_cast<uint16_t> (channelWidth) << " MHz when NSS is " << static_cast<uint16_t> (nss));
+          NS_ASSERT_MSG (IsAllowed (channelWidth, nss), "VHT MCS " << +item->mcsValue << " forbidden at " << +channelWidth << " MHz when NSS is " << +nss);
         }
 
       NS_ASSERT (guardInterval == 800 || guardInterval == 400);
@@ -255,7 +255,7 @@ WifiMode::GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss
           break;
         case WIFI_CODE_RATE_UNDEFINED:
         default:
-          NS_FATAL_ERROR ("trying to get datarate for a mcs without any coding rate defined with nss: " << static_cast<uint16_t> (nss));
+          NS_FATAL_ERROR ("trying to get datarate for a mcs without any coding rate defined with nss: " << +nss);
           break;
         }
 
@@ -299,7 +299,7 @@ WifiMode::GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss
           break;
         case WIFI_CODE_RATE_UNDEFINED:
         default:
-          NS_FATAL_ERROR ("trying to get datarate for a mcs without any coding rate defined with nss: " << static_cast<uint16_t> (nss));
+          NS_FATAL_ERROR ("trying to get datarate for a mcs without any coding rate defined with nss: " << +nss);
           break;
         }
 

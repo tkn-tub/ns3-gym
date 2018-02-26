@@ -818,7 +818,7 @@ WifiRemoteStationManager::PrepareForQueue (Mac48Address address, const WifiMacHe
 uint8_t
 WifiRemoteStationManager::GetChannelWidthForTransmission (WifiMode mode, uint8_t maxSupportedChannelWidth)
 {
-  NS_LOG_FUNCTION (mode << static_cast<uint16_t> (maxSupportedChannelWidth));
+  NS_LOG_FUNCTION (mode << +maxSupportedChannelWidth);
   WifiModulationClass modulationClass = mode.GetModulationClass ();
   if (maxSupportedChannelWidth > 20
       && (modulationClass == WifiModulationClass::WIFI_MOD_CLASS_OFDM // all non-HT OFDM control and management frames
@@ -1024,7 +1024,7 @@ WifiRemoteStationManager::ReportAmpduTxStatus (Mac48Address address, uint8_t tid
                                                uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
                                                double rxSnr, double dataSnr)
 {
-  NS_LOG_FUNCTION (this << address << static_cast<uint16_t> (tid) << static_cast<uint16_t> (nSuccessfulMpdus) << static_cast<uint16_t> (nFailedMpdus) << rxSnr << dataSnr);
+  NS_LOG_FUNCTION (this << address << +tid << +nSuccessfulMpdus << +nFailedMpdus << rxSnr << dataSnr);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, tid);
   for (uint8_t i = 0; i < nFailedMpdus; i++)
@@ -1678,7 +1678,7 @@ WifiRemoteStationManager::Lookup (Mac48Address address, const WifiMacHeader *hea
 WifiRemoteStation *
 WifiRemoteStationManager::Lookup (Mac48Address address, uint8_t tid) const
 {
-  NS_LOG_FUNCTION (this << address << static_cast<uint16_t> (tid));
+  NS_LOG_FUNCTION (this << address << +tid);
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
     {
       if ((*i)->m_tid == tid
@@ -1930,7 +1930,7 @@ WifiRemoteStationManager::GetNonErpBasicMode (uint8_t i) const
 void
 WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint16_t> (mcs.GetMcsValue ()));
+  NS_LOG_FUNCTION (this << +mcs.GetMcsValue ());
   for (uint8_t i = 0; i < GetNBasicMcs (); i++)
     {
       if (GetBasicMcs (i) == mcs)
