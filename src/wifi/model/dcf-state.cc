@@ -248,6 +248,13 @@ DcfState::NotifyWakeUp (void)
   m_txop->NotifyWakeUp ();
 }
 
+void
+DcfState::NotifyOn (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_txop->NotifyOn ();
+}
+
 bool
 DcfState::IsEdca (void) const
 {

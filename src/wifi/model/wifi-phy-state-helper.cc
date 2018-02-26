@@ -324,6 +324,16 @@ WifiPhyStateHelper::NotifyWakeup (void)
 }
 
 void
+WifiPhyStateHelper::NotifyOn (void)
+{
+  NS_LOG_FUNCTION (this);
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++)
+    {
+      (*i)->NotifyOn ();
+    }
+}
+
+void
 WifiPhyStateHelper::LogPreviousIdleAndCcaBusyStates (void)
 {
   NS_LOG_FUNCTION (this);
@@ -616,6 +626,23 @@ WifiPhyStateHelper::SwitchToOff (void)
   m_isOff = true;
   NotifyOff ();
   NS_ASSERT (IsStateOff ());
+}
+
+void
+WifiPhyStateHelper::SwitchFromOff (Time duration)
+{
+  NS_LOG_FUNCTION (this << duration);
+  NS_ASSERT (IsStateOff ());
+  Time now = Simulator::Now ();
+  m_previousStateChangeTime = now;
+  m_isOff = false;
+  NotifyOn ();
+  //update m_endCcaBusy after the off period
+  m_endCcaBusy = std::max (m_endCcaBusy, now + duration);
+  if (m_endCcaBusy > now)
+    {
+      NotifyMaybeCcaBusyStart (m_endCcaBusy - now);
+    }
 }
 
 } //namespace ns3

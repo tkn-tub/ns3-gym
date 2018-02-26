@@ -1680,6 +1680,37 @@ WifiPhy::ResumeFromSleep (void)
     }
 }
 
+void
+WifiPhy::ResumeFromOff (void)
+{
+  NS_LOG_FUNCTION (this);
+  switch (m_state->GetState ())
+    {
+    case WifiPhy::TX:
+    case WifiPhy::RX:
+    case WifiPhy::IDLE:
+    case WifiPhy::CCA_BUSY:
+    case WifiPhy::SWITCHING:
+    case WifiPhy::SLEEP:
+      {
+        NS_LOG_DEBUG ("not in off mode, there is nothing to resume");
+        break;
+      }
+    case WifiPhy::OFF:
+      {
+        NS_LOG_DEBUG ("resuming from off mode");
+        Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
+        m_state->SwitchFromOff (delayUntilCcaEnd);
+        break;
+      }
+    default:
+      {
+        NS_ASSERT (false);
+        break;
+      }
+    }
+}
+
 WifiMode
 WifiPhy::GetHtPlcpHeaderMode ()
 {
@@ -2399,6 +2430,21 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
 void
 WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Time rxDuration)
 {
+  WifiPhyTag tag;
+  bool found = packet->RemovePacketTag (tag);
+  if (!found)
+    {
+      NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
+      return;
+    }
+
+  WifiTxVector txVector = tag.GetWifiTxVector ();
+  Ptr<InterferenceHelper::Event> event;
+  event = m_interference.Add (packet,
+                              txVector,
+                              rxDuration,
+                              rxPowerW);
+
   //This function should be later split to check separately whether plcp preamble and plcp header can be successfully received.
   //Note: plcp preamble reception is not yet modeled.
   if (m_state->GetState () == WifiPhy::OFF)
@@ -2408,15 +2454,6 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
     }
 
   NS_LOG_FUNCTION (this << packet << WToDbm (rxPowerW) << rxDuration);
-  Time endRx = Simulator::Now () + rxDuration;
-
-  WifiPhyTag tag;
-  bool found = packet->RemovePacketTag (tag);
-  if (!found)
-    {
-      NS_FATAL_ERROR ("Received Wi-Fi Signal with no WifiPhyTag");
-      return;
-    }
 
   if (tag.GetFrameComplete () == 0)
     {
@@ -2426,20 +2463,13 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
       return;
     }
 
-  WifiTxVector txVector = tag.GetWifiTxVector ();
-
   if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HT
       && (txVector.GetNss () != (1 + (txVector.GetMode ().GetMcsValue () / 8))))
     {
       NS_FATAL_ERROR ("MCS value does not match NSS value: MCS = " << static_cast<uint16_t> (txVector.GetMode ().GetMcsValue ()) << ", NSS = " << static_cast<uint16_t> (txVector.GetNss ()));
     }
 
-  Ptr<InterferenceHelper::Event> event;
-  event = m_interference.Add (packet,
-                              txVector,
-                              rxDuration,
-                              rxPowerW);
-
+  Time endRx = Simulator::Now () + rxDuration;
   if (txVector.GetNss () > GetMaxSupportedRxSpatialStreams ())
     {
       NS_LOG_DEBUG ("drop packet because not enough RX antennas");

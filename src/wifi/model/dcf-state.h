@@ -201,6 +201,10 @@ protected:
    * Notify that the device has started to wake up
    */
   void NotifyWakeUp (void);
+  /**
+   * Notify that the device has started to switch on.
+   */
+  void NotifyOn (void);
 
   uint32_t m_aifsn;        //!< the AIFSN
   uint32_t m_backoffSlots; //!< the backoff slots

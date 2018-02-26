@@ -246,6 +246,9 @@ public:
   virtual void NotifyWakeup (void)
   {
   }
+  virtual void NotifyOn (void)
+  {
+  }
   uint32_t m_notifyRxStart; ///< notify receive start
   uint32_t m_notifyRxEndOk; ///< notify receive end OK
   uint32_t m_notifyRxEndError; ///< notify receive end error

@@ -80,6 +80,10 @@ public:
   {
     m_dcf->NotifyWakeupNow ();
   }
+  void NotifyOn (void)
+  {
+    m_dcf->NotifyOnNow ();
+  }
 
 private:
   ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
@@ -719,6 +723,26 @@ DcfManager::NotifyWakeupNow (void)
       state->ResetCw ();
       state->m_accessRequested = false;
       state->NotifyWakeUp ();
+    }
+}
+
+void
+DcfManager::NotifyOnNow (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_off = false;
+  for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
+    {
+      Ptr<DcfState> state = *i;
+      uint32_t remainingSlots = state->GetBackoffSlots ();
+      if (remainingSlots > 0)
+        {
+          state->UpdateBackoffSlotsNow (remainingSlots, Simulator::Now ());
+          NS_ASSERT (state->GetBackoffSlots () == 0);
+        }
+      state->ResetCw ();
+      state->m_accessRequested = false;
+      state->NotifyOn ();
     }
 }
 

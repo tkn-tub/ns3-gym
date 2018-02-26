@@ -199,6 +199,12 @@ public:
    * Switch to off mode.
    */
   void SwitchToOff (void);
+  /**
+   * Switch from off mode.
+   *
+   * \param duration the duration of CCA busy state
+   */
+  void SwitchFromOff (Time duration);
 
   /**
    * TracedCallback signature for state changes.
@@ -305,6 +311,10 @@ private:
    * Switch the state from RX.
    */
   void DoSwitchFromRx (void);
+  /**
+   * Notify all WifiPhyListener that we are going to switch on
+   */
+  void NotifyOn (void);
 
   /**
    * The trace source fired when state is changed.

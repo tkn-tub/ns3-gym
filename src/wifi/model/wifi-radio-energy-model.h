@@ -130,6 +130,11 @@ public:
    */
   void NotifyWakeup (void);
 
+  /**
+   * Defined in ns3::WifiPhyListener
+   */
+  void NotifyOn (void);
+
 
 private:
   /**

@@ -466,6 +466,13 @@ DcaTxop::NotifyWakeUp (void)
 }
 
 void
+DcaTxop::NotifyOn (void)
+{
+  NS_LOG_FUNCTION (this);
+  StartAccessIfNeeded ();
+}
+
+void
 DcaTxop::MissedCts (void)
 {
   NS_LOG_FUNCTION (this);

@@ -174,6 +174,10 @@ public:
    */
   void NotifyWakeupNow (void);
   /**
+   * Notify the DCF that the device has been resumed from off mode.
+   */
+  void NotifyOnNow (void);
+  /**
    * \param duration the value of the received NAV.
    *
    * Called at end of rx

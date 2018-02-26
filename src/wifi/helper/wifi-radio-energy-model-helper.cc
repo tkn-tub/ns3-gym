@@ -115,9 +115,11 @@ WifiRadioEnergyModelHelper::DoInstall (Ptr<NetDevice> device,
     }
   // set energy recharged callback
   // if none is specified, make a callback to WifiPhy::ResumeFromOff
-  //TODO: ResumeFromOff not supported yet
-  //model->SetEnergyRechargedCallback (MakeCallback (&WifiPhy::ResumeFromOff, wifiPhy));
-  if (!m_rechargedCallback.IsNull ())
+  if (m_rechargedCallback.IsNull ())
+    {
+      model->SetEnergyRechargedCallback (MakeCallback (&WifiPhy::ResumeFromOff, wifiPhy));
+    }
+  else
     {
       model->SetEnergyRechargedCallback (m_rechargedCallback);
     }

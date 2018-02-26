@@ -162,6 +162,10 @@ public:
    * Notify listeners that we woke up
    */
   virtual void NotifyWakeup (void) = 0;
+  /**
+   * Notify listeners that we went to switch on
+   */
+  virtual void NotifyOn (void) = 0;
 };
 
 
@@ -326,6 +330,10 @@ public:
    * Put in off mode.
    */
   void SetOffMode (void);
+  /**
+   * Resume from off mode.
+   */
+  void ResumeFromOff (void);
 
   /**
    * \return true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.

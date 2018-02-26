@@ -85,6 +85,9 @@ public:
   void NotifyWakeup (void)
   {
   }
+  void NotifyOn (void)
+  {
+  }
 
 private:
   ns3::MacLow *m_macLow; ///< the MAC
