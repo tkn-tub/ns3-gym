@@ -104,21 +104,21 @@ TcpTxBufferTestCase::TestIsLost ()
     NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
                            "Lost is true, but it's not");
 
-  sack->AddSackBlock (TcpOptionSack::SackBlock (1001, 2001));
+  sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (1001), SequenceNumber32 (2001)));
   txBuf.Update(sack->GetSackList());
 
   for (uint8_t i = 0; i < 10 ; ++i)
     NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
                            "Lost is true, but it's not");
 
-  sack->AddSackBlock (TcpOptionSack::SackBlock (2001, 3001));
+  sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (2001), SequenceNumber32 (3001)));
   txBuf.Update(sack->GetSackList());
 
   for (uint8_t i = 0; i < 10 ; ++i)
     NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
                            "Lost is true, but it's not");
 
-  sack->AddSackBlock (TcpOptionSack::SackBlock (3001, 4001));
+  sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (3001), SequenceNumber32 (4001)));
   txBuf.Update(sack->GetSackList());
 
   NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32(1), 3, 1000), true,
