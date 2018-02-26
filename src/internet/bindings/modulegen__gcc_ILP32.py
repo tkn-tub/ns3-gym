@@ -190,6 +190,10 @@ def register_types(module):
     module.add_class('Mac48Address', import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
+    module.add_class('Mac8Address', import_from_module='ns.network')
+    ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
+    root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
@@ -912,9 +916,6 @@ def register_types(module):
     module.add_container('std::list< std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header > >', 'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >', container_type=u'list')
     module.add_container('std::list< ns3::NdiscCache::Entry * >', 'ns3::NdiscCache::Entry *', container_type=u'list')
     module.add_container('std::set< unsigned int >', 'unsigned int', container_type=u'set')
-    typehandlers.add_type_alias(u'std::deque< ns3::RttHistory, std::allocator< ns3::RttHistory > >', u'ns3::RttHistory_t')
-    typehandlers.add_type_alias(u'std::deque< ns3::RttHistory, std::allocator< ns3::RttHistory > >*', u'ns3::RttHistory_t*')
-    typehandlers.add_type_alias(u'std::deque< ns3::RttHistory, std::allocator< ns3::RttHistory > >&', u'ns3::RttHistory_t&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )', u'ns3::TcpCongStatesTracedValueCallback')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )*', u'ns3::TcpCongStatesTracedValueCallback*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )&', u'ns3::TcpCongStatesTracedValueCallback&')
@@ -1097,6 +1098,7 @@ def register_methods(root_module):
     register_Ns3Ipv6RoutingTableEntry_methods(root_module, root_module['ns3::Ipv6RoutingTableEntry'])
     register_Ns3Ipv6StaticRoutingHelper_methods(root_module, root_module['ns3::Ipv6StaticRoutingHelper'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
+    register_Ns3Mac8Address_methods(root_module, root_module['ns3::Mac8Address'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3NodeContainer_methods(root_module, root_module['ns3::NodeContainer'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
@@ -3578,6 +3580,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac64Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
                    is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac8Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
@@ -3592,6 +3599,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac64Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac8Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Mac8Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
     cls.add_method('MakeIpv4MappedAddress', 
@@ -4212,6 +4224,48 @@ def register_Ns3Mac48Address_methods(root_module, cls):
                    [], 
                    is_const=True)
     ## mac48-address.h (module 'network'): static bool ns3::Mac48Address::IsMatchingType(ns3::Address const & address) [member function]
+    cls.add_method('IsMatchingType', 
+                   'bool', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_static=True)
+    return
+
+def register_Ns3Mac8Address_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    cls.add_output_stream_operator()
+    ## mac8-address.h (module 'network'): ns3::Mac8Address::Mac8Address(ns3::Mac8Address const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Mac8Address const &', 'arg0')])
+    ## mac8-address.h (module 'network'): ns3::Mac8Address::Mac8Address() [constructor]
+    cls.add_constructor([])
+    ## mac8-address.h (module 'network'): ns3::Mac8Address::Mac8Address(uint8_t addr) [constructor]
+    cls.add_constructor([param('uint8_t', 'addr')])
+    ## mac8-address.h (module 'network'): static ns3::Mac8Address ns3::Mac8Address::Allocate() [member function]
+    cls.add_method('Allocate', 
+                   'ns3::Mac8Address', 
+                   [], 
+                   is_static=True)
+    ## mac8-address.h (module 'network'): static ns3::Mac8Address ns3::Mac8Address::ConvertFrom(ns3::Address const & address) [member function]
+    cls.add_method('ConvertFrom', 
+                   'ns3::Mac8Address', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_static=True)
+    ## mac8-address.h (module 'network'): void ns3::Mac8Address::CopyFrom(uint8_t const * pBuffer) [member function]
+    cls.add_method('CopyFrom', 
+                   'void', 
+                   [param('uint8_t const *', 'pBuffer')])
+    ## mac8-address.h (module 'network'): void ns3::Mac8Address::CopyTo(uint8_t * pBuffer) const [member function]
+    cls.add_method('CopyTo', 
+                   'void', 
+                   [param('uint8_t *', 'pBuffer')], 
+                   is_const=True)
+    ## mac8-address.h (module 'network'): static ns3::Mac8Address ns3::Mac8Address::GetBroadcast() [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Mac8Address', 
+                   [], 
+                   is_static=True)
+    ## mac8-address.h (module 'network'): static bool ns3::Mac8Address::IsMatchingType(ns3::Address const & address) [member function]
     cls.add_method('IsMatchingType', 
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
@@ -5392,8 +5446,8 @@ def register_Ns3TagBuffer_methods(root_module, cls):
 def register_Ns3TcpTxItem_methods(root_module, cls):
     ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::TcpTxItem() [constructor]
     cls.add_constructor([])
-    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::TcpTxItem(ns3::TcpTxItem const & other) [constructor]
-    cls.add_constructor([param('ns3::TcpTxItem const &', 'other')])
+    ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxItem::TcpTxItem(ns3::TcpTxItem const & arg0) [constructor]
+    cls.add_constructor([param('ns3::TcpTxItem const &', 'arg0')])
     ## tcp-tx-buffer.h (module 'internet'): void ns3::TcpTxItem::Print(std::ostream & os) const [member function]
     cls.add_method('Print', 
                    'void', 
@@ -5548,6 +5602,8 @@ def register_Ns3TracedValue__Ns3SequenceNumber__lt__unsigned_int__int__gt___meth
     cls.add_constructor([param('ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > > const &', 'other')])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::TracedValue(ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> > const & other) [constructor]
     cls.add_constructor([param('ns3::TracedValue< ns3::SequenceNumber< unsigned int, int > > const &', 'other')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::TracedValue(int const & other) [constructor]
+    cls.add_constructor([param('int const &', 'other')])
     ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::SequenceNumber<unsigned int, int> >::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
     cls.add_method('Connect', 
                    'void', 
@@ -5582,6 +5638,8 @@ def register_Ns3TracedValue__Ns3TcpSocketTcpStates_t_methods(root_module, cls):
     cls.add_constructor([param('ns3::TracedValue< ns3::TcpSocket::TcpStates_t > const &', 'o')])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocket::TcpStates_t>::TracedValue(ns3::TcpSocket::TcpStates_t const & v) [constructor]
     cls.add_constructor([param('ns3::TcpSocket::TcpStates_t const &', 'v')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocket::TcpStates_t>::TracedValue(ns3::TcpSocket::TcpStates_t const & other) [constructor]
+    cls.add_constructor([param('ns3::TcpSocket::TcpStates_t const &', 'other')])
     ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocket::TcpStates_t>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
     cls.add_method('Connect', 
                    'void', 
@@ -5616,6 +5674,8 @@ def register_Ns3TracedValue__Ns3TcpSocketStateTcpCongState_t_methods(root_module
     cls.add_constructor([param('ns3::TracedValue< ns3::TcpSocketState::TcpCongState_t > const &', 'o')])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::TcpCongState_t>::TracedValue(ns3::TcpSocketState::TcpCongState_t const & v) [constructor]
     cls.add_constructor([param('ns3::TcpSocketState::TcpCongState_t const &', 'v')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::TcpSocketState::TcpCongState_t>::TracedValue(ns3::TcpSocketState::TcpCongState_t const & other) [constructor]
+    cls.add_constructor([param('ns3::TcpSocketState::TcpCongState_t const &', 'other')])
     ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::TcpSocketState::TcpCongState_t>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
     cls.add_method('Connect', 
                    'void', 
@@ -5653,6 +5713,8 @@ def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
     cls.add_constructor([param('unsigned int const &', 'v')])
     ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(ns3::TracedValue<unsigned int> const & other) [constructor]
     cls.add_constructor([param('ns3::TracedValue< unsigned int > const &', 'other')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(int const & other) [constructor]
+    cls.add_constructor([param('int const &', 'other')])
     ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(unsigned int const & other) [constructor]
     cls.add_constructor([param('unsigned int const &', 'other')])
     ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(ns3::TracedValue<unsigned int> const & other) [constructor]
@@ -10292,6 +10354,11 @@ def register_Ns3TcpRxBuffer_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## tcp-rx-buffer.h (module 'internet'): bool ns3::TcpRxBuffer::GotFin() const [member function]
+    cls.add_method('GotFin', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## tcp-rx-buffer.h (module 'internet'): void ns3::TcpRxBuffer::IncNextRxSequence() [member function]
     cls.add_method('IncNextRxSequence', 
                    'void', 
@@ -10713,6 +10780,11 @@ def register_Ns3TcpSocketBase_methods(root_module, cls):
                    'void', 
                    [param('ns3::TcpHeader &', 'tcpHeader')], 
                    visibility='protected')
+    ## tcp-socket-base.h (module 'internet'): void ns3::TcpSocketBase::AddSocketTags(ns3::Ptr<ns3::Packet> const & p) const [member function]
+    cls.add_method('AddSocketTags', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet > const &', 'p')], 
+                   is_const=True, visibility='protected')
     ## tcp-socket-base.h (module 'internet'): uint16_t ns3::TcpSocketBase::AdvertisedWindowSize(bool scale=true) const [member function]
     cls.add_method('AdvertisedWindowSize', 
                    'uint16_t', 
@@ -11245,11 +11317,6 @@ def register_Ns3TcpTxBuffer_methods(root_module, cls):
     cls.add_method('CopyFromSequence', 
                    'ns3::Ptr< ns3::Packet >', 
                    [param('uint32_t', 'numBytes'), param('ns3::SequenceNumber32 const &', 'seq')])
-    ## tcp-tx-buffer.h (module 'internet'): ns3::Ptr<const ns3::TcpOptionSack> ns3::TcpTxBuffer::CraftSackOption(ns3::SequenceNumber32 const & seq, uint8_t available) const [member function]
-    cls.add_method('CraftSackOption', 
-                   'ns3::Ptr< ns3::TcpOptionSack const >', 
-                   [param('ns3::SequenceNumber32 const &', 'seq'), param('uint8_t', 'available')], 
-                   is_const=True)
     ## tcp-tx-buffer.h (module 'internet'): void ns3::TcpTxBuffer::DiscardUpTo(ns3::SequenceNumber32 const & seq) [member function]
     cls.add_method('DiscardUpTo', 
                    'void', 
@@ -11719,6 +11786,8 @@ def register_Ns3TracedValue__Ns3Time_methods(root_module, cls):
     cls.add_constructor([param('ns3::TracedValue< ns3::Time > const &', 'o')])
     ## traced-value.h (module 'core'): ns3::TracedValue<ns3::Time>::TracedValue(ns3::Time const & v) [constructor]
     cls.add_constructor([param('ns3::Time const &', 'v')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<ns3::Time>::TracedValue(ns3::Time const & other) [constructor]
+    cls.add_constructor([param('ns3::Time const &', 'other')])
     ## traced-value.h (module 'core'): void ns3::TracedValue<ns3::Time>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
     cls.add_method('Connect', 
                    'void', 
@@ -17826,11 +17895,6 @@ def register_Ns3TcpLedbat_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## tcp-ledbat.h (module 'internet'): uint32_t ns3::TcpLedbat::GetSsThresh(ns3::Ptr<const ns3::TcpSocketState> tcb, uint32_t bytesInFlight) [member function]
-    cls.add_method('GetSsThresh', 
-                   'uint32_t', 
-                   [param('ns3::Ptr< ns3::TcpSocketState const >', 'tcb'), param('uint32_t', 'bytesInFlight')], 
-                   is_virtual=True)
     ## tcp-ledbat.h (module 'internet'): static ns3::TypeId ns3::TcpLedbat::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
