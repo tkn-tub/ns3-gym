@@ -1482,7 +1482,7 @@ Bug2831TestCase::DoRun (void)
   m_staPhy->SetChannel (channel);
   m_staPhy->SetMobility (staMobility);
   m_staPhy->SetDevice (apDev);
-  m_staPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_staPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ac);
   m_staPhy->SetChannelNumber (36);
   m_staPhy->SetChannelWidth (20);
 
