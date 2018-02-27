@@ -253,8 +253,6 @@ InterferenceHelper::CalculateNoiseInterferenceW (Ptr<InterferenceHelper::Event> 
       ni->insert (*it);
     }
   ni->emplace (event->GetEndTime (), NiChange (0, event));
-  NS_ABORT_MSG_IF (noiseInterference < 0, "noiseInterference < 0: " <<
-                   noiseInterference);
   return noiseInterference;
 }
 
