@@ -1131,6 +1131,11 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                             }
                         }
                     }
+                  if (m_htSupported || m_vhtSupported)
+                    {
+                      ExtendedCapabilities extendedCapabilities = assocReq.GetExtendedCapabilities ();
+                      //TODO: to be completed
+                    }
                   if (m_heSupported)
                     {
                       HeCapabilities heCapabilities = assocReq.GetHeCapabilities ();
@@ -1311,6 +1316,11 @@ ApWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                                 }
                             }
                         }
+                    }
+                  if (m_htSupported || m_vhtSupported)
+                    {
+                      ExtendedCapabilities extendedCapabilities = reassocReq.GetExtendedCapabilities ();
+                      //TODO: to be completed
                     }
                   if (m_heSupported)
                     {

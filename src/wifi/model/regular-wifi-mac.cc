@@ -155,6 +155,7 @@ RegularWifiMac::GetExtendedCapabilities (void) const
           capabilities.SetVhtSupported (1);
         }
     }
+  //TODO: to be completed
   return capabilities;
 }
 

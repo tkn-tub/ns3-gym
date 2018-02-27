@@ -623,6 +623,11 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     }
                 }
             }
+          if (m_htSupported || m_vhtSupported)
+            {
+              ExtendedCapabilities extendedCapabilities = beacon.GetExtendedCapabilities ();
+              //TODO: to be completed
+            }
           if (m_heSupported)
             {
               HeCapabilities heCapabilities = beacon.GetHeCapabilities ();
@@ -894,6 +899,11 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                           //here should add a control to add basic MCS when it is implemented
                         }
                     }
+                }
+              if (m_htSupported || m_vhtSupported)
+                {
+                  ExtendedCapabilities extendedCapabilities = assocResp.GetExtendedCapabilities ();
+                  //TODO: to be completed
                 }
               if (m_heSupported)
                 {
