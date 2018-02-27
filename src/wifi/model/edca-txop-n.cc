@@ -747,12 +747,7 @@ EdcaTxopN::StartAccessIfNeeded (void)
     {
       Ptr<const Packet> packet;
       WifiMacHeader hdr;
-      if (m_currentPacket != 0)
-        {
-          packet = m_currentPacket;
-          hdr = m_currentHdr;
-        }
-      else if (m_baManager->HasPackets ())
+      if (m_baManager->HasPackets ())
         {
           packet = m_baManager->GetNextPacket (hdr, false);
         }
