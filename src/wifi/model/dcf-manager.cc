@@ -134,7 +134,7 @@ DcfManager::DoDispose (void)
     {
       i->Dispose ();
       i = 0;
-    } 
+    }
 }
 
 void

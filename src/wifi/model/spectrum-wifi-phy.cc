@@ -398,7 +398,7 @@ SpectrumWifiPhy::GetGuardBandwidth (void) const
     case WIFI_PHY_STANDARD_80211ac:
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
-      // Use 10 MHZ as per Table D-6 802.11-2016, class A, -10 dB f2 mask point 
+      // Use 10 MHZ as per Table D-6 802.11-2016, class A, -10 dB f2 mask point
       guardBandwidth = 10;
       break;
     case WIFI_PHY_STANDARD_80211_10MHZ:

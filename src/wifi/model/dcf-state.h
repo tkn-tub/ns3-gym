@@ -41,7 +41,6 @@ class DcaTxop;
 class DcfState : public Object
 {
 public:
-
   /**
    * \brief Get the type ID.
    * \return the object TypeId

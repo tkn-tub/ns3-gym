@@ -82,7 +82,7 @@ WifiRadioEnergyModel::GetTypeId (void)
                      "Total energy consumption of the radio device.",
                      MakeTraceSourceAccessor (&WifiRadioEnergyModel::m_totalEnergyConsumption),
                      "ns3::TracedValueCallback::Double")
-  ; 
+  ;
   return tid;
 }
 
@@ -296,7 +296,7 @@ Time
 WifiRadioEnergyModel::GetMaximumTimeInState (int state) const
 {
   Time remainingTime;
-  double remainingEnergy = m_source->GetRemainingEnergy();
+  double remainingEnergy = m_source->GetRemainingEnergy ();
   double supplyVoltage = m_source->GetSupplyVoltage ();
   switch (state)
     {
@@ -646,7 +646,7 @@ WifiRadioEnergyModelPhyListener::NotifySleep (void)
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyWakeup(void)
+WifiRadioEnergyModelPhyListener::NotifyWakeup (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_changeStateCallback.IsNull ())
@@ -669,7 +669,7 @@ WifiRadioEnergyModelPhyListener::NotifyOff (void)
 }
 
 void
-WifiRadioEnergyModelPhyListener::NotifyOn(void)
+WifiRadioEnergyModelPhyListener::NotifyOn (void)
 {
   NS_LOG_FUNCTION (this);
   if (m_changeStateCallback.IsNull ())

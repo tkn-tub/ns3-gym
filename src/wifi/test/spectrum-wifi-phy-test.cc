@@ -29,7 +29,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("SpectrumWifiPhyBasicTest");
+NS_LOG_COMPONENT_DEFINE ("SpectrumWifiPhyBasicTest");
 
 static const uint8_t CHANNEL_NUMBER = 36;
 static const uint32_t FREQUENCY = 5180; // MHz
@@ -137,14 +137,14 @@ SpectrumWifiPhyBasicTest::SendSignal (double txPowerWatts)
 void
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxSuccess (Ptr<Packet> p, double snr, WifiTxVector txVector)
 {
-  NS_LOG_FUNCTION(this << p << snr << txVector);
+  NS_LOG_FUNCTION (this << p << snr << txVector);
   m_count++;
 }
 
 void
 SpectrumWifiPhyBasicTest::SpectrumWifiPhyRxFailure (Ptr<Packet> p, double snr)
 {
-  NS_LOG_FUNCTION(this << p << snr);
+  NS_LOG_FUNCTION (this << p << snr);
   m_count++;
 }
 

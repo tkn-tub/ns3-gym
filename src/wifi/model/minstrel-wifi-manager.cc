@@ -989,7 +989,7 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
            * between 0 and the number of available rates
            */
           int uv = m_uniformRandomVariable->GetInteger (0, numSampleRates);
-          NS_LOG_DEBUG("InitSampleTable uv: " << uv);
+          NS_LOG_DEBUG ("InitSampleTable uv: " << uv);
           newIndex = (i + uv) % numSampleRates;
 
           //this loop is used for filling in other uninitialized places
