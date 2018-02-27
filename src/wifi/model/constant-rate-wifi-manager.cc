@@ -117,14 +117,14 @@ WifiTxVector
 ConstantRateWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetLongRetryCount (st), GetPreambleForTransmission (m_dataMode, GetAddress (st)), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardInterval (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), Min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)), 0, GetChannelWidthForTransmission (m_dataMode, GetChannelWidth (st)), GetAggregation (st), false);
+  return WifiTxVector (m_dataMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_dataMode, GetAddress (st)), ConvertGuardIntervalToNanoSeconds (m_dataMode, GetShortGuardInterval (st), NanoSeconds (GetGuardInterval (st))), GetNumberOfAntennas (), Min (GetMaxNumberOfTransmitStreams (), GetNumberOfSupportedStreams (st)), 0, GetChannelWidthForTransmission (m_dataMode, GetChannelWidth (st)), GetAggregation (st), false);
 }
 
 WifiTxVector
 ConstantRateWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
-  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetShortRetryCount (st), GetPreambleForTransmission (m_ctlMode, GetAddress (st)), ConvertGuardIntervalToNanoSeconds (m_ctlMode, GetShortGuardInterval (st), NanoSeconds (GetGuardInterval (st))), 1, 1, 0, GetChannelWidthForTransmission (m_ctlMode, GetChannelWidth (st)), GetAggregation (st), false);
+  return WifiTxVector (m_ctlMode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (m_ctlMode, GetAddress (st)), ConvertGuardIntervalToNanoSeconds (m_ctlMode, GetShortGuardInterval (st), NanoSeconds (GetGuardInterval (st))), 1, 1, 0, GetChannelWidthForTransmission (m_ctlMode, GetChannelWidth (st)), GetAggregation (st), false);
 }
 
 bool

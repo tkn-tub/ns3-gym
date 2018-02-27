@@ -1069,22 +1069,6 @@ protected:
    */
   uint32_t GetNess (const WifiRemoteStation *station) const;
   /**
-   * Return the long retry limit of the given station.
-   *
-   * \param station the station being queried
-   *
-   * \return the long retry limit of the the station
-   */
-  uint32_t GetLongRetryCount (const WifiRemoteStation *station) const;
-  /**
-   * Return the short retry limit of the given station.
-   *
-   * \param station the station being queried
-   *
-   * \return the short retry limit of the the station
-   */
-  uint32_t GetShortRetryCount (const WifiRemoteStation *station) const;
-  /**
    * Return the preamble to be used for the transmission.
    *
    * \param mode the mode selected for the transmission

@@ -24,8 +24,7 @@
 namespace ns3 {
 
 WifiTxVector::WifiTxVector ()
-  : m_retries (0),
-    m_preamble (WIFI_PREAMBLE_NONE),
+  : m_preamble (WIFI_PREAMBLE_NONE),
     m_channelWidth (20),
     m_guardInterval (800),
     m_nTx (1),
@@ -40,7 +39,6 @@ WifiTxVector::WifiTxVector ()
 
 WifiTxVector::WifiTxVector (WifiMode mode,
                             uint8_t powerLevel,
-                            uint8_t retries,
                             WifiPreamble preamble,
                             uint16_t guardInterval,
                             uint8_t nTx,
@@ -51,7 +49,6 @@ WifiTxVector::WifiTxVector (WifiMode mode,
                             bool stbc)
   : m_mode (mode),
     m_txPowerLevel (powerLevel),
-    m_retries (retries),
     m_preamble (preamble),
     m_channelWidth (channelWidth),
     m_guardInterval (guardInterval),
@@ -83,12 +80,6 @@ WifiTxVector::GetTxPowerLevel (void) const
       NS_FATAL_ERROR ("WifiTxVector txPowerLevel must be set before using");
     }
   return m_txPowerLevel;
-}
-
-uint8_t
-WifiTxVector::GetRetries (void) const
-{
-  return m_retries;
 }
 
 WifiPreamble
@@ -151,12 +142,6 @@ WifiTxVector::SetTxPowerLevel (uint8_t powerlevel)
 {
   m_txPowerLevel = powerlevel;
   m_txPowerLevelInitialized = true;
-}
-
-void
-WifiTxVector::SetRetries (uint8_t retries)
-{
-  m_retries = retries;
 }
 
 void
@@ -243,7 +228,6 @@ std::ostream & operator << ( std::ostream &os, const WifiTxVector &v)
 {
   os << "mode: " << v.GetMode () <<
     " txpwrlvl: " << +v.GetTxPowerLevel () <<
-    " retries: " << +v.GetRetries () <<
     " preamble: " << v.GetPreambleType () <<
     " channel width: " << +v.GetChannelWidth () <<
     " GI: " << v.GetGuardInterval () <<

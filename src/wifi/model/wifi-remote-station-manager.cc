@@ -905,7 +905,6 @@ WifiRemoteStationManager::DoGetCtsToSelfTxVector (void)
 
   return WifiTxVector (defaultMode,
                        GetDefaultTxPowerLevel (),
-                       0,
                        defaultPreamble,
                        ConvertGuardIntervalToNanoSeconds (defaultMode, m_wifiPhy->GetShortGuardInterval (), m_wifiPhy->GetGuardInterval ()),
                        GetNumberOfAntennas (),
@@ -2098,12 +2097,6 @@ WifiRemoteStationManager::GetNess (const WifiRemoteStation *station) const
   return station->m_state->m_ness;
 }
 
-uint32_t
-WifiRemoteStationManager::GetShortRetryCount (const WifiRemoteStation *station) const
-{
-  return station->m_ssrc;
-}
-
 Ptr<WifiPhy>
 WifiRemoteStationManager::GetPhy (void) const
 {
@@ -2114,12 +2107,6 @@ Ptr<WifiMac>
 WifiRemoteStationManager::GetMac (void) const
 {
   return m_wifiMac;
-}
-
-uint32_t
-WifiRemoteStationManager::GetLongRetryCount (const WifiRemoteStation *station) const
-{
-  return station->m_slrc;
 }
 
 uint8_t

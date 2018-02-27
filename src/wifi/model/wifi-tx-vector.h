@@ -67,7 +67,6 @@ public:
    *
    * \param mode WifiMode
    * \param powerLevel transmission power level
-   * \param retries retries
    * \param preamble preamble type
    * \param guardInterval the guard interval duration in nanoseconds
    * \param nTx the number of TX antennas
@@ -79,7 +78,6 @@ public:
    */
   WifiTxVector (WifiMode mode,
                 uint8_t powerLevel,
-                uint8_t retries,
                 WifiPreamble preamble,
                 uint16_t guardInterval,
                 uint8_t nTx,
@@ -108,16 +106,6 @@ public:
    * \param powerlevel
    */
   void SetTxPowerLevel (uint8_t powerlevel);
-  /**
-   * \returns the number of retries
-   */
-  uint8_t GetRetries (void) const;
-  /**
-   * Sets the number of retries
-   *
-   * \param retries
-   */
-  void SetRetries (uint8_t retries);
   /**
    * \returns the preamble type
    */
@@ -220,8 +208,6 @@ private:
   uint8_t  m_txPowerLevel;       /**< The TXPWR_LEVEL parameter in Table 15-4.
                                  It is the value that will be passed
                                  to PMD_TXPWRLVL.request */
-  uint8_t  m_retries;            /**< The DATA_RETRIES/RTS_RETRIES parameter
-                                 for Click radiotap information */
   WifiPreamble m_preamble;       /**< preamble */
   uint8_t m_channelWidth;        /**< channel width in MHz */
   uint16_t m_guardInterval;      /**< guard interval duration in nanoseconds */
