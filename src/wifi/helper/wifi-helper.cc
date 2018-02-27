@@ -205,7 +205,7 @@ WifiPhyHelper::PcapSniffTxEvent (
         if (txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT && txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_VHT && txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HE)
           {
             rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), 1) * txVector.GetNss () / 500000;
-            header.SetRate (rate);
+            header.SetRate (static_cast<uint8_t>(rate));
           }
 
         uint16_t channelFlags = 0;
@@ -399,7 +399,7 @@ WifiPhyHelper::PcapSniffRxEvent (
         if (txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HT && txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_VHT && txVector.GetMode ().GetModulationClass () != WIFI_MOD_CLASS_HE)
           {
             rate = txVector.GetMode ().GetDataRate (txVector.GetChannelWidth (), txVector.GetGuardInterval (), 1) * txVector.GetNss () / 500000;
-            header.SetRate (rate);
+            header.SetRate (static_cast<uint8_t>(rate));
           }
 
         uint16_t channelFlags = 0;

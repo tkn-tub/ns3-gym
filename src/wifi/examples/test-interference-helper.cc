@@ -248,7 +248,7 @@ int main (int argc, char *argv[])
   InterferenceExperiment::Input input;
   std::string str_standard = "WIFI_PHY_STANDARD_80211a";
   std::string str_preamble = "WIFI_PREAMBLE_LONG";
-  double delay = 0; //microseconds
+  uint64_t delay = 0; //microseconds
 
   CommandLine cmd;
   cmd.AddValue ("delay", "Delay in microseconds between frame transmission from sender A and frame transmission from sender B", delay);
@@ -268,11 +268,6 @@ int main (int argc, char *argv[])
   cmd.AddValue ("expectRxASuccessfull", "Indicate whether packet A is expected to be successfully received", expectRxASuccessfull);
   cmd.AddValue ("expectRxBSuccessfull", "Indicate whether packet B is expected to be successfully received", expectRxBSuccessfull);
   cmd.Parse (argc, argv);
-
-  LogComponentEnable ("WifiPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("YansWifiPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("InterferenceHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("SimpleFrameCaptureModel", LOG_LEVEL_ALL);
 
   input.interval = MicroSeconds (delay);
 

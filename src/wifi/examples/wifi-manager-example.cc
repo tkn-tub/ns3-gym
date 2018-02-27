@@ -103,7 +103,7 @@ struct StandardInfo
    * \param xMax x maximum
    * \param yMax y maximum
    */
-  StandardInfo (std::string name, WifiPhyStandard standard, uint16_t width, double snrLow, double snrHigh, double xMin, double xMax, double yMax)
+  StandardInfo (std::string name, WifiPhyStandard standard, uint8_t width, double snrLow, double snrHigh, double xMin, double xMax, double yMax)
     : m_name (name),
       m_standard (standard),
       m_width (width),
@@ -116,7 +116,7 @@ struct StandardInfo
   }
   std::string m_name; ///< name
   WifiPhyStandard m_standard; ///< standard
-  uint16_t m_width; ///< channel width
+  uint8_t m_width; ///< channel width
   double m_snrLow; ///< lowest SNR
   double m_snrHigh; ///< highest SNR
   double m_xMin;  ///< X minimum
@@ -317,7 +317,7 @@ int main (int argc, char *argv[])
   NS_ABORT_IF (clientSelectedStandard.m_name == "none");
   std::cout << "Testing " << serverSelectedStandard.m_name << " with " << wifiManager << " ..." << std::endl;
   NS_ABORT_MSG_IF (clientSelectedStandard.m_snrLow >= clientSelectedStandard.m_snrHigh, "SNR values in wrong order");
-  steps = std::abs ((int) (clientSelectedStandard.m_snrHigh - clientSelectedStandard.m_snrLow ) / stepSize) + 1;
+  steps = static_cast<uint32_t>(std::abs<double> ((clientSelectedStandard.m_snrHigh - clientSelectedStandard.m_snrLow ) / stepSize) + 1);
   NS_LOG_DEBUG ("Using " << steps << " steps for SNR range " << clientSelectedStandard.m_snrLow << ":" << clientSelectedStandard.m_snrHigh);
   Ptr<Node> clientNode = CreateObject<Node> ();
   Ptr<Node> serverNode = CreateObject<Node> ();
