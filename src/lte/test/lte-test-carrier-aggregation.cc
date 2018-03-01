@@ -272,8 +272,12 @@ CarrierAggregationTestCase::DoRun (void)
 {
   NS_LOG_FUNCTION (this << m_nUser << m_dist << m_dlBandwidth << m_ulBandwidth << m_numberOfComponentCarriers);
 
+  Config::SetDefault ("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue (100));
+  Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue (100 + 18000));
   Config::SetDefault ("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue (m_dlBandwidth));
   Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue (m_ulBandwidth));
+  Config::SetDefault ("ns3::LteUeNetDevice::DlEarfcn", UintegerValue (100));
+
   Config::SetDefault ("ns3::LteHelper::UseCa", BooleanValue (true));
   Config::SetDefault ("ns3::LteHelper::NumberOfComponentCarriers", UintegerValue (m_numberOfComponentCarriers));
   Config::SetDefault ("ns3::LteHelper::EnbComponentCarrierManager", StringValue ("ns3::RrComponentCarrierManager"));
@@ -288,14 +292,6 @@ CarrierAggregationTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
-
-  auto cch = CreateObject<CcHelper> ();
-  cch->SetDlEarfcn (100); // Same as default value for LteEnbNetDevice
-  cch->SetUlEarfcn (100 + 18000); // Same as default value for LteEnbNetDevice
-  cch->SetDlBandwidth (m_dlBandwidth);
-  cch->SetUlBandwidth (m_ulBandwidth);
-  cch->SetNumberOfComponentCarriers (m_numberOfComponentCarriers);
-  lteHelper->SetCcPhyParams (cch->EquallySpacedCcs ());
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;

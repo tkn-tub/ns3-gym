@@ -103,16 +103,6 @@ LteSecondaryCellSelectionTestCase::DoRun ()
   auto epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
 
-  auto cch = CreateObject<CcHelper> ();
-  cch->SetUlEarfcn (100 + 18000);
-  cch->SetDlEarfcn (100);
-  cch->SetUlBandwidth (25);
-  cch->SetDlBandwidth (25);
-  cch->SetNumberOfComponentCarriers (m_numberOfComponentCarriers);
-
-  const auto ccm = cch->EquallySpacedCcs ();
-  lteHelper->SetCcPhyParams (ccm);
-  
   // Create nodes.
   auto enbNode = CreateObject<Node> ();
   NodeContainer ueNodes;
@@ -132,10 +122,12 @@ LteSecondaryCellSelectionTestCase::DoRun ()
   internet.Install (ueNodes);
   epcHelper->AssignUeIpv4Address (ueDevs);
 
-  for (auto &it: ccm)
+  auto ueDev = DynamicCast<LteUeNetDevice> (ueDevs.Get (0));
+  std::map< uint8_t, Ptr<ComponentCarrierUe> > ueCcMap = ueDev->GetCcMap ();
+  for (auto it: ueCcMap)
     {
-      std::cerr << "Assign " << it.second.GetDlEarfcn () << std::endl;
-      DynamicCast<LteUeNetDevice> (ueDevs.Get (it.first))->SetDlEarfcn (it.second.GetDlEarfcn ());
+      std::cerr << "Assign " << it.second->GetDlEarfcn() << std::endl;
+      DynamicCast<LteUeNetDevice> (ueDevs.Get (it.first))->SetDlEarfcn (it.second->GetDlEarfcn());
     }
 
   // Enable Idle mode cell selection.

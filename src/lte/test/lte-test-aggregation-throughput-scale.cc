@@ -73,6 +73,12 @@ LteAggregationThroughputScaleTestCase::GetThroughput (uint8_t numberOfComponentC
 {
   NS_LOG_FUNCTION (this << GetName ());
 
+  Config::SetDefault ("ns3::LteEnbNetDevice::DlEarfcn", UintegerValue (100));
+  Config::SetDefault ("ns3::LteEnbNetDevice::UlEarfcn", UintegerValue (100 + 18000));
+  Config::SetDefault ("ns3::LteEnbNetDevice::DlBandwidth", UintegerValue (25));
+  Config::SetDefault ("ns3::LteEnbNetDevice::UlBandwidth", UintegerValue (25));
+  Config::SetDefault ("ns3::LteUeNetDevice::DlEarfcn", UintegerValue (100));
+
   auto lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel", TypeIdValue (ns3::FriisSpectrumPropagationLossModel::GetTypeId ()));
   lteHelper->SetAttribute ("NumberOfComponentCarriers", UintegerValue (numberOfComponentCarriers));
@@ -80,16 +86,6 @@ LteAggregationThroughputScaleTestCase::GetThroughput (uint8_t numberOfComponentC
 
   auto epcHelper = CreateObject<PointToPointEpcHelper> ();
   lteHelper->SetEpcHelper (epcHelper);
-
-  auto cch = CreateObject<CcHelper> ();
-  cch->SetUlEarfcn (100 + 18000);
-  cch->SetDlEarfcn (100);
-  cch->SetUlBandwidth (25);
-  cch->SetDlBandwidth (25);
-  cch->SetNumberOfComponentCarriers (numberOfComponentCarriers);
-
-  const auto ccm = cch->EquallySpacedCcs ();
-  lteHelper->SetCcPhyParams (ccm);
 
   auto enbNode = CreateObject<Node> ();
   auto ueNode = CreateObject<Node> ();
@@ -117,7 +113,8 @@ LteAggregationThroughputScaleTestCase::GetThroughput (uint8_t numberOfComponentC
   Ipv4InterfaceContainer ueIpIface = epcHelper->AssignUeIpv4Address (ueDevs);
 
   // Attach to last CC as primary
-  ueDev->SetDlEarfcn (ccm.at (numberOfComponentCarriers - 1).GetDlEarfcn ());
+  std::map< uint8_t, Ptr<ComponentCarrierUe> > ueCcMap = ueDev->GetCcMap ();
+  ueDev->SetDlEarfcn (ueCcMap.at (numberOfComponentCarriers - 1)->GetDlEarfcn ());
   lteHelper->Attach (ueDevs);
   m_expectedCellId = enbDev->GetCcMap ().at (numberOfComponentCarriers - 1)->GetCellId ();
 

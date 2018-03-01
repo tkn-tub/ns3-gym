@@ -473,13 +473,6 @@ LteHelper::SetSpectrumChannelAttribute (std::string n, const AttributeValue &v)
   m_channelFactory.Set (n, v);
 }
 
-void
-LteHelper::SetCcPhyParams ( std::map< uint8_t, ComponentCarrier> ccMapParams)
-{
-  NS_LOG_FUNCTION (this);
-  m_componentCarrierPhyParams = ccMapParams;
-}
-
 NetDeviceContainer
 LteHelper::InstallEnbDevice (NodeContainer c)
 {

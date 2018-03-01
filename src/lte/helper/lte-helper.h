@@ -270,14 +270,6 @@ public:
   void SetUeAntennaModelAttribute (std::string n, const AttributeValue &v);
 
   /**
-   * This method is used to send the ComponentCarrier map created with CcHelper
-   * to the helper, the structure will be used within InstallSingleEnbDevice
-   *
-   * \param ccmap the component carrier map
-   */
-   void SetCcPhyParams (std::map< uint8_t, ComponentCarrier> ccmap);
-
-  /**
    * Set the type of spectrum channel to be used in both DL and UL.
    *
    * \param type type of spectrum channel model, must be a type name of any
