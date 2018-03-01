@@ -277,6 +277,10 @@ LteUeRrc::GetTypeId (void)
                      "trace fired upon failure of a handover procedure",
                      MakeTraceSourceAccessor (&LteUeRrc::m_handoverEndErrorTrace),
                      "ns3::LteUeRrc::ImsiCidRntiTracedCallback")
+    .AddTraceSource ("SCarrierConfigured",
+                     "trace fired after configuring secondary carriers",
+                     MakeTraceSourceAccessor (&LteUeRrc::m_sCarrierConfiguredTrace),
+                     "ns3::LteUeRrc::SCellConfiguredCallback")
   ;
   return tid;
 }
@@ -1231,6 +1235,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
 {
   NS_LOG_FUNCTION (this);
 
+  m_sCellToAddModList = nonCec.sCellsToAddModList;
+
   for(std::list<LteRrcSap::SCellToAddMod>::iterator it = nonCec.sCellsToAddModList.begin(); it!=nonCec.sCellsToAddModList.end(); it++)
     {
       LteRrcSap::SCellToAddMod scell = *it;
@@ -1258,6 +1264,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicatedSecondaryCarrier (LteRrcSap::NonCriti
       m_cphySapProvider.at (ccId)->SetPa (paDouble);
       m_cphySapProvider.at (ccId)->SetSrsConfigurationIndex (srsIndex);
     }
+
+  m_sCarrierConfiguredTrace (this, m_sCellToAddModList);
 }
 
 void 

@@ -1601,4 +1601,28 @@ are configured to use the secondary carrier and the component carrier manager is
 split the data uniformly between primary and secondary carrier. The test consists of checking that 
 the throughput obtained over the different carriers are equal considering a given tolerance. For more 
 details about this test, see the section Carrier aggregation usage example.
- 
+
+
+Carrier aggregation test for eNB and UE configuration 
+------------------------------------------------------
+
+The test suite ``carrier-aggregation-config-test`` is a system test program, which verifies the
+following two cases:
+
+ * When carrier aggregation is enabled and UE carriers configuration is different than the default 
+   configuration done in LteHelper, we check that the UE(s) is configured properly once it receives
+   RRC Connection Reconfiguration message from eNB.
+
+ * A user can configure 2 or more eNBs and UEs with different configuration parameters, i.e.,
+   each eNB and UE can have different EARFCN and Bandwidths and a UE connects to an eNB with similar DL EARFCN.
+   In this test, we check with CA enabled but the end results will be the same if carrier aggregation is not 
+   enabled and we have more than one eNBs and UEs with different configurations.
+
+Since, we do not need EPC to test the configuration, this test only simulates the LTE radio access with RLC SM. 
+There are two test cases, Test 1 tests that the UE is configured properly after receiving RRC Connection Reconfiguration 
+message from the eNB, which will overwrite UE default configuration done in LteHelper for the sake of
+creating PHY and MAC instances equal to the number of component carriers. Test 2 tests that every eNB or UE in a 
+simulation scenario can be configured with different EARFCNs and Bandwidths. For both test cases, it also counts 
+the number of times the hooked trace source ``SCarrierConfigured`` get triggered. As, it reflects how many UEs 
+got attached to their respective eNB. If the count is not equal to the number of UEs in the scenario, the test fails, 
+which could be the result of improper UE configuration.

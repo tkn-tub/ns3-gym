@@ -685,12 +685,12 @@ protected:
 private:
 
   /**
-   * A private function used for component carrier configuration.
+   * Configure the component carriers
    *
-   * \param ulEarfcn uplink EARFCN - not control on the validity at this point
-   * \param dlEarfcn downlink EARFCN - not control on the validity at this point	
-   * \param ulbw uplink bandwidth for the current CC
-   * \param dlbw downlink bandwidth for the current CC
+   * \param ulEarfcn uplink EARFCN
+   * \param dlEarfcn downlink EARFCN
+   * \param ulbw uplink bandwidth for each CC
+   * \param dlbw downlink bandwidth for each CC
    */
   void DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint8_t ulbw, uint8_t dlbw);
   /**

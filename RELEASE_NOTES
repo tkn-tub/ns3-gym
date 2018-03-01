@@ -57,6 +57,7 @@ Bugs fixed
 - Bug 2831 - wifi: runtime channel width switch has no effect
 - Bug 2836 - wifi: Missing VHT information in radiotap header when A-MPDU is used
 - Bug 2838 - wifi: ht-wifi-network crashes with RTS/CTS enabled and frequency set to 2.4GHz
+- Bug 2840 - lte: Wrong configuration of eNBs and UEs
 - Bug 2843 - spectrum, wifi: Incorrect channel width and center frequency provided for non-HT PPDUs when building SpectralDensity
 - Bug 2848 - wifi: Association ID not correctly set upon association
 - Bug 2849 - lte: Received RLC and PDCP PDUs are missing in the stats files

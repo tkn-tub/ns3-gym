@@ -352,6 +352,15 @@ public:
     (uint64_t imsi, uint16_t cellId, uint16_t rnti,
      State oldState, State newState);
 
+  /**
+    * TracedCallback signature for secondary carrier configuration events.
+    *
+    * \param [in] Pointer to UE RRC
+    * \param [in] List of LteRrcSap::SCellToAddMod
+    */
+  typedef void (* SCarrierConfiguredCallback)
+    (Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod>);
+
 
 private:
 
@@ -768,6 +777,7 @@ private:
 
   uint32_t m_dlEarfcn;  /**< Downlink carrier frequency. */
   uint32_t m_ulEarfcn;  /**< Uplink carrier frequency. */
+  std::list<LteRrcSap::SCellToAddMod> m_sCellToAddModList; /**< Secondary carriers. */
 
   /**
    * The `MibReceived` trace source. Fired upon reception of Master Information
@@ -842,6 +852,12 @@ private:
    * procedure. Exporting IMSI, cell ID, and RNTI.
    */
   TracedCallback<uint64_t, uint16_t, uint16_t> m_handoverEndErrorTrace;
+  /**
+   * The `SCarrierConfigured` trace source. Fired after the configuration
+   * of secondary carriers received through RRC Connection Reconfiguration
+   * message.
+   */
+  TracedCallback<Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod> > m_sCarrierConfiguredTrace;
 
   /// True if a connection request by upper layers is pending.
   bool m_connectionPending;
