@@ -859,7 +859,25 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
       (void) found;
       return datatag.GetDataTxVector ();
     }
-  return DoGetDataTxVector (Lookup (address, header));
+  WifiTxVector txVector = DoGetDataTxVector (Lookup (address, header));
+  if (header->IsMgt ())
+    {
+      //Use the lowest basic rate for management frames
+      WifiMode mgtMode;
+      if (GetNBasicModes () > 0)
+        {
+          mgtMode = GetBasicMode (0);
+        }
+      else
+        {
+          mgtMode = GetDefaultMode ();
+        }
+      txVector.SetMode (mgtMode);
+      txVector.SetPreambleType (GetPreambleForTransmission (mgtMode, address));
+      txVector.SetChannelWidth (GetChannelWidthForTransmission (mgtMode, m_wifiPhy->GetChannelWidth ()));
+      txVector.SetGuardInterval (ConvertGuardIntervalToNanoSeconds (mgtMode, m_wifiPhy->GetShortGuardInterval (), m_wifiPhy->GetGuardInterval ()));
+    }
+  return txVector;
 }
 
 WifiTxVector

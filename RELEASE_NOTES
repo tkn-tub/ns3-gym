@@ -53,8 +53,9 @@ Bugs fixed
 - Bug 2813 - wifi: OFDM 10 MHz and 5 MHz PHYs do not have correct subcarrier frequency spacings
 - Bug 2820 - wifi: segmentation fault when Rrpaa wifi manager is used
 - Bug 2824 - ICMP opcode fr fragment timeout drop is wrong
-- Bug 2828 - OLSR simple P2P example produces wrong results
+- Bug 2826 - wifi: Management frames should be sent using the lowest basic rate
 - Bug 2827 - wifi: Active scanning not working with 802.11n/ac/ax
+- Bug 2828 - OLSR simple P2P example produces wrong results
 - Bug 2831 - wifi: runtime channel width switch has no effect
 - Bug 2836 - wifi: Missing VHT information in radiotap header when A-MPDU is used
 - Bug 2838 - wifi: ht-wifi-network crashes with RTS/CTS enabled and frequency set to 2.4GHz

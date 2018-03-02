@@ -176,15 +176,17 @@ The following details pertain to the physical layer and channel models:
 * PLCP preamble reception is not modeled
 * PHY_RXSTART is not supported
 * The current implementation assumes that secondary channels are always higher than primary channels
+* Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
 equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
-where some limitations in the models exist.Support for 802.11n and ac is evolving.
-Some additional details are as follows:
+where some limitations in the models exist. Support for 802.11n and ac is evolving.
+
+Some implementation choices that are not imposed by the standard are listed below:
 
 * BSSBasicRateSet for 802.11b has been assumed to be 1-2 Mbit/s
 * BSSBasicRateSet for 802.11a/g has been assumed to be 6-12-24 Mbit/s
-* cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
+* The wifi manager always selects the lowest basic rate for management frames.
 
 Design Details
 **************
