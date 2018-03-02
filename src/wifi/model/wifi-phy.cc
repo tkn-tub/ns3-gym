@@ -20,7 +20,6 @@
  */
 
 #include "wifi-phy.h"
-#include "wifi-phy-state-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
@@ -36,14 +35,6 @@
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhy");
-
-/****************************************************************
- *       This destructor is needed.
- ****************************************************************/
-
-WifiPhyListener::~WifiPhyListener ()
-{
-}
 
 /****************************************************************
  *       The actual WifiPhy class
@@ -1505,21 +1496,21 @@ WifiPhy::DoChannelSwitch (uint8_t nch)
   NS_ASSERT (!IsStateSwitching ());
   switch (m_state->GetState ())
     {
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       NS_LOG_DEBUG ("drop packet because of channel switching while reception");
       m_endPlcpRxEvent.Cancel ();
       m_endRxEvent.Cancel ();
       goto switchChannel;
       break;
-    case WifiPhy::TX:
+    case WifiPhyState::TX:
       NS_LOG_DEBUG ("channel switching postponed until end of current transmission");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetChannelNumber, this, nch);
       break;
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::IDLE:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::IDLE:
       goto switchChannel;
       break;
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("channel switching ignored in sleep mode");
       break;
     default:
@@ -1557,21 +1548,21 @@ WifiPhy::DoFrequencySwitch (uint16_t frequency)
   NS_ASSERT (!IsStateSwitching ());
   switch (m_state->GetState ())
     {
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       NS_LOG_DEBUG ("drop packet because of channel/frequency switching while reception");
       m_endPlcpRxEvent.Cancel ();
       m_endRxEvent.Cancel ();
       goto switchFrequency;
       break;
-    case WifiPhy::TX:
+    case WifiPhyState::TX:
       NS_LOG_DEBUG ("channel/frequency switching postponed until end of current transmission");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetFrequency, this, frequency);
       break;
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::IDLE:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::IDLE:
       goto switchFrequency;
       break;
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("frequency switching ignored in sleep mode");
       break;
     default:
@@ -1602,24 +1593,24 @@ WifiPhy::SetSleepMode (void)
   NS_LOG_FUNCTION (this);
   switch (m_state->GetState ())
     {
-    case WifiPhy::TX:
+    case WifiPhyState::TX:
       NS_LOG_DEBUG ("setting sleep mode postponed until end of current transmission");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetSleepMode, this);
       break;
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       NS_LOG_DEBUG ("setting sleep mode postponed until end of current reception");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetSleepMode, this);
       break;
-    case WifiPhy::SWITCHING:
+    case WifiPhyState::SWITCHING:
       NS_LOG_DEBUG ("setting sleep mode postponed until end of channel switching");
       Simulator::Schedule (GetDelayUntilIdle (), &WifiPhy::SetSleepMode, this);
       break;
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::IDLE:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::IDLE:
       NS_LOG_DEBUG ("setting sleep mode");
       m_state->SwitchToSleep ();
       break;
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("already in sleep mode");
       break;
     default:
@@ -1634,14 +1625,14 @@ WifiPhy::SetOffMode (void)
   NS_LOG_FUNCTION (this);
   switch (m_state->GetState ())
     {
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       m_endPlcpRxEvent.Cancel ();
       m_endRxEvent.Cancel ();
-    case WifiPhy::TX:
-    case WifiPhy::SWITCHING:
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::IDLE:
-    case WifiPhy::SLEEP:
+    case WifiPhyState::TX:
+    case WifiPhyState::SWITCHING:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::IDLE:
+    case WifiPhyState::SLEEP:
       m_state->SwitchToOff ();
       break;
     default:
@@ -1656,16 +1647,16 @@ WifiPhy::ResumeFromSleep (void)
   NS_LOG_FUNCTION (this);
   switch (m_state->GetState ())
     {
-    case WifiPhy::TX:
-    case WifiPhy::RX:
-    case WifiPhy::IDLE:
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::SWITCHING:
+    case WifiPhyState::TX:
+    case WifiPhyState::RX:
+    case WifiPhyState::IDLE:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::SWITCHING:
       {
         NS_LOG_DEBUG ("not in sleep mode, there is nothing to resume");
         break;
       }
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       {
         NS_LOG_DEBUG ("resuming from sleep mode");
         Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
@@ -1686,17 +1677,17 @@ WifiPhy::ResumeFromOff (void)
   NS_LOG_FUNCTION (this);
   switch (m_state->GetState ())
     {
-    case WifiPhy::TX:
-    case WifiPhy::RX:
-    case WifiPhy::IDLE:
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::SWITCHING:
-    case WifiPhy::SLEEP:
+    case WifiPhyState::TX:
+    case WifiPhyState::RX:
+    case WifiPhyState::IDLE:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::SWITCHING:
+    case WifiPhyState::SLEEP:
       {
         NS_LOG_DEBUG ("not in off mode, there is nothing to resume");
         break;
       }
-    case WifiPhy::OFF:
+    case WifiPhyState::OFF:
       {
         NS_LOG_DEBUG ("resuming from off mode");
         Time delayUntilCcaEnd = m_interference.GetEnergyDuration (DbmToW (GetCcaMode1Threshold ()));
@@ -2411,13 +2402,13 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
   Ptr<Packet> newPacket = packet->Copy (); // obtain non-const Packet
   WifiPhyTag oldtag;
   newPacket->RemovePacketTag (oldtag);
-  if (m_state->GetState () == WifiPhy::OFF)
+  if (m_state->GetState () == WifiPhyState::OFF)
     {
       NS_LOG_DEBUG ("Transmission canceled because device is OFF");
       return;
     }
   uint8_t isFrameComplete = 1;
-  if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhy::TX) < txDuration)
+  if (m_wifiRadioEnergyModel != 0 && m_wifiRadioEnergyModel->GetMaximumTimeInState (WifiPhyState::TX) < txDuration)
     {
       isFrameComplete = 0;
     }
@@ -2447,7 +2438,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
 
   //This function should be later split to check separately whether plcp preamble and plcp header can be successfully received.
   //Note: plcp preamble reception is not yet modeled.
-  if (m_state->GetState () == WifiPhy::OFF)
+  if (m_state->GetState () == WifiPhyState::OFF)
     {
       NS_LOG_DEBUG ("Cannot start RX because device is OFF");
       return;
@@ -2487,7 +2478,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
   MpduType mpdutype = tag.GetMpduType ();
   switch (m_state->GetState ())
     {
-    case WifiPhy::SWITCHING:
+    case WifiPhyState::SWITCHING:
       NS_LOG_DEBUG ("drop packet because of channel switching");
       NotifyRxDrop (packet);
       m_plcpSuccess = false;
@@ -2507,7 +2498,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
           return;
         }
       break;
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       NS_ASSERT (m_currentEvent != 0);
       if (m_frameCaptureModel != 0
           && m_frameCaptureModel->CaptureNewFrame (m_currentEvent, event))
@@ -2530,7 +2521,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
             }
         }
       break;
-    case WifiPhy::TX:
+    case WifiPhyState::TX:
       NS_LOG_DEBUG ("drop packet because already in Tx (power=" <<
                     rxPowerW << "W)");
       NotifyRxDrop (packet);
@@ -2542,11 +2533,11 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
           return;
         }
       break;
-    case WifiPhy::CCA_BUSY:
-    case WifiPhy::IDLE:
+    case WifiPhyState::CCA_BUSY:
+    case WifiPhyState::IDLE:
       StartRx (packet, txVector, mpdutype, rxPowerW, rxDuration, event);
       break;
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       NS_LOG_DEBUG ("drop packet because in sleep mode");
       NotifyRxDrop (packet);
       m_plcpSuccess = false;
@@ -3783,23 +3774,23 @@ WifiPhy::AssignStreams (int64_t stream)
   return 1;
 }
 
-std::ostream& operator<< (std::ostream& os, WifiPhy::State state)
+std::ostream& operator<< (std::ostream& os, WifiPhyState state)
 {
   switch (state)
     {
-    case WifiPhy::IDLE:
+    case WifiPhyState::IDLE:
       return (os << "IDLE");
-    case WifiPhy::CCA_BUSY:
+    case WifiPhyState::CCA_BUSY:
       return (os << "CCA_BUSY");
-    case WifiPhy::TX:
+    case WifiPhyState::TX:
       return (os << "TX");
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       return (os << "RX");
-    case WifiPhy::SWITCHING:
+    case WifiPhyState::SWITCHING:
       return (os << "SWITCHING");
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       return (os << "SLEEP");
-    case WifiPhy::OFF:
+    case WifiPhyState::OFF:
       return (os << "OFF");
     default:
       NS_FATAL_ERROR ("Invalid WifiPhy state");

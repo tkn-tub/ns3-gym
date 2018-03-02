@@ -61,7 +61,7 @@ private:
    * Runs simulation for a while, check if final state & remaining energy is
    * correctly updated.
    */
-  bool StateSwitchTest (WifiPhy::State state);
+  bool StateSwitchTest (WifiPhyState state);
 
 private:
   double m_timeS;     // in seconds
@@ -89,32 +89,32 @@ BasicEnergyUpdateTest::DoRun (void)
   m_deviceEnergyModel.SetTypeId ("ns3::WifiRadioEnergyModel");
 
   // run state switch tests
-  if (StateSwitchTest (WifiPhy::IDLE))
+  if (StateSwitchTest (WifiPhyState::IDLE))
     {
       return 1;
       std::cerr << "Problem with state switch test (WifiPhy idle)." << std::endl;
     }
-  if (StateSwitchTest (WifiPhy::CCA_BUSY))
+  if (StateSwitchTest (WifiPhyState::CCA_BUSY))
     {
       return 1;
       std::cerr << "Problem with state switch test (WifiPhy cca busy)." << std::endl;
     }
-  if (StateSwitchTest (WifiPhy::TX))
+  if (StateSwitchTest (WifiPhyState::TX))
     {
       return 1;
       std::cerr << "Problem with state switch test (WifiPhy tx)." << std::endl;
     }
-  if (StateSwitchTest (WifiPhy::RX))
+  if (StateSwitchTest (WifiPhyState::RX))
     {
       return 1;
       std::cerr << "Problem with state switch test (WifiPhy rx)." << std::endl;
     }
-  if (StateSwitchTest (WifiPhy::SWITCHING))
+  if (StateSwitchTest (WifiPhyState::SWITCHING))
     {
       return 1;
       std::cerr << "Problem with state switch test (WifiPhy switching)." << std::endl;
     }
-  if (StateSwitchTest (WifiPhy::SLEEP))
+  if (StateSwitchTest (WifiPhyState::SLEEP))
     {
       return 1;
       std::cerr << "Problem with state switch test (WifiPhy sleep)." << std::endl;
@@ -123,7 +123,7 @@ BasicEnergyUpdateTest::DoRun (void)
 }
 
 bool
-BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
+BasicEnergyUpdateTest::StateSwitchTest (WifiPhyState state)
 {
   // create node
   Ptr<Node> node = CreateObject<Node> ();
@@ -172,7 +172,7 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
                        &WifiRadioEnergyModel::ChangeState, devModel, state);
 
   // Calculate remaining energy at simulation stop time
-  Simulator::Schedule (Seconds (m_timeS * 2), 
+  Simulator::Schedule (Seconds (m_timeS * 2),
                        &BasicEnergySource::UpdateEnergySource, source);
 
   double timeDelta = 0.000000001; // 1 nanosecond
@@ -191,25 +191,25 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   double current = 0.0;
   switch (state)
     {
-    case WifiPhy::IDLE:
+    case WifiPhyState::IDLE:
       current = devModel->GetIdleCurrentA ();
       break;
-    case WifiPhy::CCA_BUSY:
+    case WifiPhyState::CCA_BUSY:
       current = devModel->GetCcaBusyCurrentA ();
       break;
-    case WifiPhy::TX:
+    case WifiPhyState::TX:
       current = devModel->GetTxCurrentA ();
       break;
-    case WifiPhy::RX:
+    case WifiPhyState::RX:
       current = devModel->GetRxCurrentA ();
       break;
-    case WifiPhy::SWITCHING:
+    case WifiPhyState::SWITCHING:
       current = devModel->GetSwitchingCurrentA ();
       break;
-    case WifiPhy::SLEEP:
+    case WifiPhyState::SLEEP:
       current = devModel->GetSleepCurrentA ();
       break;
-    case WifiPhy::OFF:
+    case WifiPhyState::OFF:
       current = 0;
       break;
     default:
@@ -217,7 +217,7 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
       break;
     }
   estRemainingEnergy -= current * voltage * m_timeS;
-  estRemainingEnergy = std::max(0.0, estRemainingEnergy);
+  estRemainingEnergy = std::max (0.0, estRemainingEnergy);
 
   // obtain remaining energy from source
   double remainingEnergy = source->GetRemainingEnergy ();
@@ -226,15 +226,15 @@ BasicEnergyUpdateTest::StateSwitchTest (WifiPhy::State state)
   NS_LOG_DEBUG ("Difference is " << estRemainingEnergy - remainingEnergy);
 
   // check remaining energy
-  if ((remainingEnergy > (estRemainingEnergy + m_tolerance)) ||
-      (remainingEnergy < (estRemainingEnergy - m_tolerance)))
+  if ((remainingEnergy > (estRemainingEnergy + m_tolerance))
+      || (remainingEnergy < (estRemainingEnergy - m_tolerance)))
     {
       std::cerr << "Incorrect remaining energy!" << std::endl;
       return true;
     }
 
   // obtain radio state
-  WifiPhy::State endState = devModel->GetCurrentState ();
+  WifiPhyState endState = devModel->GetCurrentState ();
   NS_LOG_DEBUG ("Radio state is " << endState);
   // check end state
   if (endState != state)

@@ -91,6 +91,7 @@ def build(bld):
         'helper/yans-wifi-helper.cc',
         'helper/spectrum-wifi-helper.cc',
         'helper/wifi-mac-helper.cc',
+        'model/wifi-mac-queue-item.cc',
         ]
 
     obj_test = bld.create_ns3_module_test_library('wifi')
@@ -198,6 +199,9 @@ def build(bld):
         'helper/yans-wifi-helper.h',
         'helper/spectrum-wifi-helper.h',
         'helper/wifi-mac-helper.h',
+        'model/wifi-mac-queue-item.h',
+        'model/wifi-phy-state.h',
+        'model/wifi-phy-listener.h',
         ]
 
     if bld.env['ENABLE_GSL']:

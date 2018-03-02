@@ -227,7 +227,7 @@ AthstatsWifiTraceSink::PhyTxTrace (std::string context, Ptr<const Packet> packet
 }
 
 void
-AthstatsWifiTraceSink::PhyStateTrace (std::string context, Time start, Time duration, WifiPhy::State state)
+AthstatsWifiTraceSink::PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState state)
 {
   NS_LOG_FUNCTION (this << context << start << duration << state);
 }

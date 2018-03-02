@@ -21,10 +21,31 @@
 #ifndef WIFI_PHY_STATE_HELPER_H
 #define WIFI_PHY_STATE_HELPER_H
 
-#include "wifi-phy.h"
 #include "ns3/object.h"
+#include "wifi-phy-state.h"
+#include "ns3/callback.h"
+#include "ns3/traced-callback.h"
+#include "wifi-preamble.h"
+#include "wifi-phy-listener.h"
 
 namespace ns3 {
+
+class WifiTxVector;
+class WifiMode;
+class Packet;
+
+/**
+ * arg1: packet received successfully
+ * arg2: snr of packet
+ * arg3: TXVECTOR of packet
+ * arg4: type of preamble used for packet.
+ */
+typedef Callback<void, Ptr<Packet>, double, WifiTxVector> RxOkCallback;
+/**
+ * arg1: packet received unsuccessfully
+ * arg2: snr of packet
+ */
+typedef Callback<void, Ptr<Packet>, double> RxErrorCallback;
 
 /**
  * \ingroup wifi
@@ -47,13 +68,13 @@ public:
    *
    * \param callback
    */
-  void SetReceiveOkCallback (WifiPhy::RxOkCallback callback);
+  void SetReceiveOkCallback (RxOkCallback callback);
   /**
    * Set a callback for a failed reception.
    *
    * \param callback
    */
-  void SetReceiveErrorCallback (WifiPhy::RxErrorCallback callback);
+  void SetReceiveErrorCallback (RxErrorCallback callback);
   /**
    * Register WifiPhyListener to this WifiPhyStateHelper.
    *
@@ -71,7 +92,7 @@ public:
    *
    * \return the current state of WifiPhy
    */
-  WifiPhy::State GetState (void) const;
+  WifiPhyState GetState (void) const;
   /**
    * Check whether the current state is CCA busy.
    *
@@ -214,7 +235,7 @@ public:
    *             the \p state.
    * \param [in] state The state.
    */
-  typedef void (* StateTracedCallback)(Time start, Time duration, WifiPhy::State state);
+  typedef void (* StateTracedCallback)(Time start, Time duration, WifiPhyState state);
 
   /**
    * TracedCallback signature for receive end ok event.
@@ -319,7 +340,7 @@ private:
   /**
    * The trace source fired when state is changed.
    */
-  TracedCallback<Time, Time, WifiPhy::State> m_stateLogger;
+  TracedCallback<Time, Time, WifiPhyState> m_stateLogger;
 
   bool m_rxing; ///< receiving
   bool m_sleeping; ///< sleeping
@@ -339,8 +360,8 @@ private:
   TracedCallback<Ptr<const Packet>, double, WifiMode, WifiPreamble> m_rxOkTrace; ///< receive OK trace callback
   TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace; ///< receive error trace callback
   TracedCallback<Ptr<const Packet>, WifiMode, WifiPreamble, uint8_t> m_txTrace; ///< transmit trace callback
-  WifiPhy::RxOkCallback m_rxOkCallback; ///< receive OK callback
-  WifiPhy::RxErrorCallback m_rxErrorCallback; ///< receive error callback
+  RxOkCallback m_rxOkCallback; ///< receive OK callback
+  RxErrorCallback m_rxErrorCallback; ///< receive error callback
 };
 
 } //namespace ns3

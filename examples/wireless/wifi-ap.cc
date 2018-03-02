@@ -46,7 +46,7 @@ DevRxTrace (std::string context, Ptr<const Packet> p)
     }
 }
 void
-PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
+PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble)
 {
   if (g_verbose)
     {
@@ -70,7 +70,7 @@ PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPr
     }
 }
 void
-PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state)
+PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState state)
 {
   if (g_verbose)
     {

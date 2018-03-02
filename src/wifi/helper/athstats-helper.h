@@ -197,7 +197,7 @@ public:
    * @param duration
    * @param state
    */
-  void PhyStateTrace (std::string context, Time start, Time duration, WifiPhy::State state);
+  void PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState state);
 
   /**
    * Open a file for output

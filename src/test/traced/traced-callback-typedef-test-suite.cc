@@ -658,7 +658,7 @@ TracedCallbackTypedefTestCase::DoRun (void)
          empty);
 
   CHECK (WifiPhyStateHelper::StateTracedCallback,
-         Time, Time, WifiPhy::State,
+         Time, Time, WifiPhyState,
          empty, empty);
 
   CHECK (WifiPhyStateHelper::TxTracedCallback,

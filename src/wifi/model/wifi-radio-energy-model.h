@@ -321,7 +321,7 @@ public:
   /**
    * \returns Current state.
    */
-  WifiPhy::State GetCurrentState (void) const;
+  WifiPhyState GetCurrentState (void) const;
 
   /**
    * \param callback Callback function.
@@ -409,7 +409,7 @@ private:
    * Sets current state. This function is private so that only the energy model
    * can change its own state.
    */
-  void SetWifiRadioState (const WifiPhy::State state);
+  void SetWifiRadioState (const WifiPhyState state);
 
   Ptr<EnergySource> m_source; ///< energy source
 
@@ -426,7 +426,7 @@ private:
   TracedValue<double> m_totalEnergyConsumption;
 
   // State variables.
-  WifiPhy::State m_currentState;  ///< current state the radio is in
+  WifiPhyState m_currentState;  ///< current state the radio is in
   Time m_lastUpdateTime;          ///< time stamp of previous energy update
 
   uint8_t m_nPendingChangeState; ///< pending state change

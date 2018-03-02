@@ -25,96 +25,12 @@
 #define WIFI_MAC_QUEUE_H
 
 #include "ns3/queue.h"
-#include "wifi-mac-header.h"
+#include "wifi-mac-queue-item.h"
+
 
 namespace ns3 {
 
 class QosBlockedDestinations;
-
-/**
- * \ingroup wifi
- *
- * WifiMacQueueItem stores (const) packets along with their Wifi MAC headers
- * and the time when they were enqueued.
- */
-class WifiMacQueueItem : public SimpleRefCount<WifiMacQueueItem>
-{
-public:
-  /**
-   * \brief Create a Wifi MAC queue item containing a packet and a Wifi MAC header.
-   * \param p the const packet included in the created item.
-   * \param header the Wifi Mac header included in the created item.
-   */
-  WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header);
-
-  virtual ~WifiMacQueueItem ();
-
-  /**
-   * \brief Get the packet stored in this item
-   * \return the packet stored in this item.
-   */
-  Ptr<const Packet> GetPacket (void) const;
-
-  /**
-   * \brief Get the header stored in this item
-   * \return the header stored in this item.
-   */
-  const WifiMacHeader & GetHeader (void) const;
-
-  /**
-   * \brief Return the requested address present in the header
-   * \param type the type of the address to return
-   * \return the address
-   */
-  Mac48Address GetAddress (WifiMacHeader::AddressType type) const;
-
-  /**
-   * \brief Get the timestamp included in this item
-   * \return the timestamp included in this item.
-   */
-  Time GetTimeStamp (void) const;
-
-  /**
-   * \brief Return the size of the packet included in this item
-   *
-   * \return the size of the packet included in this item.
-   */
-  uint32_t GetSize (void) const;
-
-private:
-  /**
-   * \brief Default constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  WifiMacQueueItem ();
-  /**
-   * \brief Copy constructor
-   *
-   * Defined and unimplemented to avoid misuse
-   */
-  WifiMacQueueItem (const WifiMacQueueItem &);
-  /**
-   * \brief Assignment operator
-   *
-   * Defined and unimplemented to avoid misuse
-   * \returns
-   */
-  WifiMacQueueItem &operator = (const WifiMacQueueItem &);
-
-  Ptr<const Packet> m_packet;  //!< The packet contained in this queue item
-  WifiMacHeader m_header;      //!< Wifi MAC header associated with the packet
-  Time m_tstamp;               //!< timestamp when the packet arrived at the queue
-};
-
-
-// The following explicit template instantiation declaration prevents modules
-// including this header file from implicitly instantiating Queue<WifiMacQueueItem>.
-// This would cause python examples using wifi to crash at runtime with the
-// following error message: "Trying to allocate twice the same uid:
-// ns3::Queue<WifiMacQueueItem>"
-extern template class Queue<WifiMacQueueItem>;
-
 
 /**
  * \ingroup wifi

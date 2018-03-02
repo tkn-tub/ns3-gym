@@ -68,7 +68,7 @@ void RemainingEnergyTrace (double oldValue, double newValue)
 }
 
 template <int node>
-void PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state)
+void PhyStateTrace (std::string context, Time start, Time duration, WifiPhyState state)
 {
   std::stringstream ss;
   ss << "state_" << node << ".log";

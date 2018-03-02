@@ -32,61 +32,6 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("WifiMacQueue");
 
-WifiMacQueueItem::WifiMacQueueItem (Ptr<const Packet> p, const WifiMacHeader & header)
-  : m_packet (p),
-    m_header (header),
-    m_tstamp (Simulator::Now ())
-{
-}
-
-WifiMacQueueItem::~WifiMacQueueItem ()
-{
-}
-
-Ptr<const Packet>
-WifiMacQueueItem::GetPacket (void) const
-{
-  return m_packet;
-}
-
-const WifiMacHeader&
-WifiMacQueueItem::GetHeader (void) const
-{
-  return m_header;
-}
-
-Mac48Address
-WifiMacQueueItem::GetAddress (WifiMacHeader::AddressType type) const
-{
-  if (type == WifiMacHeader::ADDR1)
-    {
-      return m_header.GetAddr1 ();
-    }
-  if (type == WifiMacHeader::ADDR2)
-    {
-      return m_header.GetAddr2 ();
-    }
-  if (type == WifiMacHeader::ADDR3)
-    {
-      return m_header.GetAddr3 ();
-    }
-  return 0;
-}
-
-Time
-WifiMacQueueItem::GetTimeStamp (void) const
-{
-  return m_tstamp;
-}
-
-uint32_t
-WifiMacQueueItem::GetSize (void) const
-{
-  return m_packet->GetSize () + m_header.GetSerializedSize ();
-}
-
-
-NS_OBJECT_TEMPLATE_CLASS_DEFINE (Queue,WifiMacQueueItem);
 NS_OBJECT_ENSURE_REGISTERED (WifiMacQueue);
 
 TypeId
@@ -231,8 +176,8 @@ WifiMacQueue::DequeueByTidAndAddress (uint8_t tid,
     {
       if (!TtlExceeded (it))
         {
-          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == dest &&
-              (*it)->GetHeader ().GetQosTid () == tid)
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == dest
+              && (*it)->GetHeader ().GetQosTid () == tid)
             {
               return DoDequeue (it);
             }
@@ -294,8 +239,8 @@ WifiMacQueue::PeekByTidAndAddress (uint8_t tid,
     {
       if (!TtlExceeded (it))
         {
-          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == dest &&
-              (*it)->GetHeader ().GetQosTid () == tid)
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == dest
+              && (*it)->GetHeader ().GetQosTid () == tid)
             {
               return DoPeek (it);
             }
@@ -379,8 +324,8 @@ WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressTyp
     {
       if (!TtlExceeded (it))
         {
-          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == addr &&
-              (*it)->GetHeader ().GetQosTid () == tid)
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == addr
+              && (*it)->GetHeader ().GetQosTid () == tid)
             {
               nPackets++;
             }

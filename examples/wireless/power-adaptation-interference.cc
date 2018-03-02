@@ -82,7 +82,7 @@ public:
   void RxCallback (std::string path, Ptr<const Packet> packet, const Address &from);
   void PowerCallback (std::string path, double oldPower, double newPower, Mac48Address dest);
   void RateCallback (std::string path, DataRate oldRate, DataRate newRate, Mac48Address dest);
-  void StateCallback (std::string path, Time init, Time duration, enum WifiPhy::State state);
+  void StateCallback (std::string path, Time init, Time duration, WifiPhyState state);
 
   Gnuplot2dDataset GetDatafile ();
   Gnuplot2dDataset GetPowerDatafile ();
@@ -216,24 +216,24 @@ NodeStatistics::RateCallback (std::string path, DataRate oldRate, DataRate newRa
 }
 
 void
-NodeStatistics::StateCallback (std::string path, Time init, Time duration, enum WifiPhy::State state)
+NodeStatistics::StateCallback (std::string path, Time init, Time duration, WifiPhyState state)
 {
-  if (state == WifiPhy::CCA_BUSY)
+  if (state == WifiPhyState::CCA_BUSY)
     {
       busyTime += duration.GetSeconds ();
       totalBusyTime += duration.GetSeconds ();
     }
-  else if (state == WifiPhy::IDLE)
+  else if (state == WifiPhyState::IDLE)
     {
       idleTime += duration.GetSeconds ();
       totalIdleTime += duration.GetSeconds ();
     }
-  else if (state == WifiPhy::TX)
+  else if (state == WifiPhyState::TX)
     {
       txTime += duration.GetSeconds ();
       totalTxTime += duration.GetSeconds ();
     }
-  else if (state == WifiPhy::RX)
+  else if (state == WifiPhyState::RX)
     {
       rxTime += duration.GetSeconds ();
       totalRxTime += duration.GetSeconds ();

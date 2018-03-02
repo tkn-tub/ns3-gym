@@ -23,7 +23,6 @@
 #define WIFI_PHY_H
 
 #include <map>
-#include "ns3/callback.h"
 #include "ns3/event-id.h"
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
@@ -32,6 +31,7 @@
 #include "interference-helper.h"
 #include "ns3/node.h"
 #include "ns3/string.h"
+#include "wifi-phy-state-helper.h"
 
 namespace ns3 {
 
@@ -83,93 +83,6 @@ struct MpduInfo
 };
 
 /**
- * \brief receive notifications about phy events.
- */
-class WifiPhyListener
-{
-public:
-  virtual ~WifiPhyListener ();
-
-  /**
-   * \param duration the expected duration of the packet reception.
-   *
-   * We have received the first bit of a packet. We decided
-   * that we could synchronize on this packet. It does not mean
-   * we will be able to successfully receive completely the
-   * whole packet. It means that we will report a BUSY status until
-   * one of the following happens:
-   *   - NotifyRxEndOk
-   *   - NotifyRxEndError
-   *   - NotifyTxStart
-   */
-  virtual void NotifyRxStart (Time duration) = 0;
-  /**
-   * We have received the last bit of a packet for which
-   * NotifyRxStart was invoked first and, the packet has
-   * been successfully received.
-   */
-  virtual void NotifyRxEndOk (void) = 0;
-  /**
-   * We have received the last bit of a packet for which
-   * NotifyRxStart was invoked first and, the packet has
-   * _not_ been successfully received.
-   */
-  virtual void NotifyRxEndError (void) = 0;
-  /**
-   * \param duration the expected transmission duration.
-   * \param txPowerDbm the nominal tx power in dBm
-   *
-   * We are about to send the first bit of the packet.
-   * We do not send any event to notify the end of
-   * transmission. Listeners should assume that the
-   * channel implicitely reverts to the idle state
-   * unless they have received a cca busy report.
-   */
-  virtual void NotifyTxStart (Time duration, double txPowerDbm) = 0;
-  /**
-   * \param duration the expected busy duration.
-   *
-   * This method does not really report a real state
-   * change as opposed to the other methods in this class.
-   * It merely reports that, unless the medium is reported
-   * busy through NotifyTxStart or NotifyRxStart/End,
-   * it will be busy as defined by the currently selected
-   * CCA mode.
-   *
-   * Typical client code which wants to have a clear picture
-   * of the CCA state will need to keep track of the time at
-   * which the last NotifyCcaBusyStart method is called and
-   * what duration it reported.
-   */
-  virtual void NotifyMaybeCcaBusyStart (Time duration) = 0;
-  /**
-   * \param duration the expected channel switching duration.
-   *
-   * We do not send any event to notify the end of
-   * channel switching. Listeners should assume that the
-   * channel implicitely reverts to the idle or busy states.
-   */
-  virtual void NotifySwitchingStart (Time duration) = 0;
-  /**
-   * Notify listeners that we went to sleep
-   */
-  virtual void NotifySleep (void) = 0;
-  /**
-   * Notify listeners that we went to switch off
-   */
-  virtual void NotifyOff (void) = 0;
-  /**
-   * Notify listeners that we woke up
-   */
-  virtual void NotifyWakeup (void) = 0;
-  /**
-   * Notify listeners that we went to switch on
-   */
-  virtual void NotifyOn (void) = 0;
-};
-
-
-/**
  * \brief 802.11 PHY layer model
  * \ingroup wifi
  *
@@ -177,55 +90,6 @@ public:
 class WifiPhy : public Object
 {
 public:
-  /**
-   * The state of the PHY layer.
-   */
-  /// State enumeration
-  enum State
-  {
-    /**
-     * The PHY layer is IDLE.
-     */
-    IDLE,
-    /**
-     * The PHY layer has sense the medium busy through the CCA mechanism
-     */
-    CCA_BUSY,
-    /**
-     * The PHY layer is sending a packet.
-     */
-    TX,
-    /**
-     * The PHY layer is receiving a packet.
-     */
-    RX,
-    /**
-     * The PHY layer is switching to other channel.
-     */
-    SWITCHING,
-    /**
-     * The PHY layer is sleeping.
-     */
-    SLEEP,
-    /**
-     * The PHY layer is switched off.
-     */
-    OFF
-  };
-
-  /**
-   * arg1: packet received successfully
-   * arg2: snr of packet
-   * arg3: TXVECTOR of packet
-   * arg4: type of preamble used for packet.
-   */
-  typedef Callback<void, Ptr<Packet>, double, WifiTxVector> RxOkCallback;
-  /**
-   * arg1: packet received unsuccessfully
-   * arg2: snr of packet
-   */
-  typedef Callback<void, Ptr<Packet>, double> RxErrorCallback;
-
   /**
    * \brief Get the type ID.
    * \return the object TypeId
@@ -2009,7 +1873,7 @@ private:
  * \param state       wifi state to stringify
  * \return output stream
  */
-std::ostream& operator<< (std::ostream& os, WifiPhy::State state);
+std::ostream& operator<< (std::ostream& os, WifiPhyState state);
 
 } //namespace ns3
 
