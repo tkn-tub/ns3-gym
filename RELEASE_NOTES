@@ -68,6 +68,7 @@ Bugs fixed
 - Bug 2875 - tcp: Use Rule3 of RFC6675 only with SACK enabled
 - Bug 2876 - tcp: Do not shrink adv window after we send the FIN
 - Bug 2877 - wifi: Wrong data types for CWmin and CWmax
+- Bug 2885 - lte: Tests fail for CQA and PSS testsuites
 
 Known issues
 ------------
