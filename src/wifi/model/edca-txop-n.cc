@@ -1510,10 +1510,12 @@ EdcaTxopN::SendDelbaFrame (Mac48Address addr, uint8_t tid, bool byOriginator)
   if (byOriginator)
     {
       delbaHdr.SetByOriginator ();
+      m_baManager->DestroyAgreement (addr, tid);
     }
   else
     {
       delbaHdr.SetByRecipient ();
+      m_low->DestroyBlockAckAgreement (addr, tid);
     }
 
   WifiActionHeader actionHdr;
