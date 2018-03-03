@@ -371,30 +371,22 @@ uint8_t
 ExtendedCapabilities::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
 {
   Buffer::Iterator i = start;
-  if (m_htSupported > 0 && m_vhtSupported == 0)
-    {
-        uint8_t byte1 = i.ReadU8 ();
-        SetExtendedCapabilitiesByte1 (byte1 & 0x7f);
-    }
-  else if (m_vhtSupported > 0)
-    {
-        uint8_t byte1 = i.ReadU8 ();
-        uint8_t byte2 = i.ReadU8 ();
-        uint8_t byte3 = i.ReadU8 ();
-        uint8_t byte4 = i.ReadU8 ();
-        uint8_t byte5 = i.ReadU8 ();
-        uint8_t byte6 = i.ReadU8 ();
-        uint8_t byte7 = i.ReadU8 ();
-        uint8_t byte8 = i.ReadU8 ();
-        SetExtendedCapabilitiesByte1 (byte1);
-        SetExtendedCapabilitiesByte2 (byte2);
-        SetExtendedCapabilitiesByte3 (byte3);
-        SetExtendedCapabilitiesByte4 (byte4);
-        SetExtendedCapabilitiesByte5 (byte5);
-        SetExtendedCapabilitiesByte6 (byte6);
-        SetExtendedCapabilitiesByte7 (byte7);
-        SetExtendedCapabilitiesByte8 (byte8);
-    }
+  uint8_t byte1 = i.ReadU8 ();
+  uint8_t byte2 = i.ReadU8 ();
+  uint8_t byte3 = i.ReadU8 ();
+  uint8_t byte4 = i.ReadU8 ();
+  uint8_t byte5 = i.ReadU8 ();
+  uint8_t byte6 = i.ReadU8 ();
+  uint8_t byte7 = i.ReadU8 ();
+  uint8_t byte8 = i.ReadU8 ();
+  SetExtendedCapabilitiesByte1 (byte1);
+  SetExtendedCapabilitiesByte2 (byte2);
+  SetExtendedCapabilitiesByte3 (byte3);
+  SetExtendedCapabilitiesByte4 (byte4);
+  SetExtendedCapabilitiesByte5 (byte5);
+  SetExtendedCapabilitiesByte6 (byte6);
+  SetExtendedCapabilitiesByte7 (byte7);
+  SetExtendedCapabilitiesByte8 (byte8);
   return length;
 }
 
