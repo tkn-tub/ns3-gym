@@ -1522,6 +1522,7 @@ a std::map of interface IDs and TTLs for the route.
 
 <h2>Changed behavior:</h2>
 <ul>
+  <li> If the data inside the TCP buffer is less than the available window, TCP tries to ask for more data to the application, in the hope of filling the usable transmission window. In some cases, this change allows sending bigger packets than the previous versions, optimizing the transmission.</li>
 </ul>
 
 <hr>

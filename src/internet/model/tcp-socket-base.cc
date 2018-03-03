@@ -2806,8 +2806,16 @@ TcpSocketBase::SendPendingData (bool withAck)
           // It's time to transmit, but before do silly window and Nagle's check
           uint32_t availableData = m_txBuffer->SizeFromSequence (next);
 
+          // If there's less app data than the full window, ask the app for more
+          // data before trying to send
+          if (availableData < availableWindow)
+            {
+              NotifySend (GetTxAvailable ());
+            }
+
           // Stop sending if we need to wait for a larger Tx window (prevent silly window syndrome)
-          if (availableWindow < m_tcb->m_segmentSize &&  availableData > availableWindow)
+          // but continue if we don't have data
+          if (availableWindow < m_tcb->m_segmentSize && availableData > availableWindow)
             {
               NS_LOG_LOGIC ("Preventing Silly Window Syndrome. Wait to send.");
               break; // No more
