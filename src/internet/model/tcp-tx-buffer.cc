@@ -713,14 +713,12 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
           NS_ASSERT (!head->m_lost);
           // It is not possible to have the UNA sacked; otherwise, it would
           // have been ACKed. This is, most likely, our wrong guessing
-          // when crafting the SACK option for a non-SACK receiver.
-          // Since it was not ACKed, but claimed as SACKed, is lost: the
-          // receiver is reneging.
+          // when adding Reno dupacks in the count.
           head->m_sacked = false;
           m_sackedOut -= head->m_packet->GetSize ();
-
-          head->m_lost = true;
-          m_lostOut += head->m_packet->GetSize ();
+          NS_LOG_INFO ("Moving the SACK flag from the HEAD to another segment");
+          AddRenoSack ();
+          MarkHeadAsLost ();
         }
 
       NS_ASSERT_MSG (head->m_startSeq == seq,
@@ -947,7 +945,6 @@ TcpTxBuffer::NextSeg (SequenceNumber32 *seq, bool isRecovery) const
       // Condition 1.a , 1.b , and 1.c
       if (item->m_retrans == false && item->m_sacked == false)
         {
-          NS_LOG_INFO ("Checking " << beginOfCurrentPkt);
           if (item->m_lost)
             {
               NS_LOG_INFO("IsLost, returning" << beginOfCurrentPkt);
@@ -1156,7 +1153,7 @@ TcpTxBuffer::IsLostRFC (const SequenceNumber32 &seq, const PacketList::const_ite
 }
 
 void
-TcpTxBuffer::ResetScoreboard ()
+TcpTxBuffer::ResetRenoSack ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1219,6 +1216,7 @@ TcpTxBuffer::SetSentListLost (bool resetSack)
     {
       m_sackedOut = 0;
       m_lostOut = m_sentSize;
+      m_highestSack = std::make_pair (m_sentList.end (), SequenceNumber32 (0));
     }
   else
     {
@@ -1265,6 +1263,66 @@ TcpTxBuffer::IsHeadRetransmitted () const
     }
 
   return m_sentList.front ()->m_retrans;
+}
+
+void
+TcpTxBuffer::MarkHeadAsLost ()
+{
+  if (m_sentList.size () > 0)
+    {
+      // If the head is sacked (reneging by the receiver the previously sent
+      // information) we revert the sacked flag.
+      // A sacked head means that we should advance SND.UNA.. so it's an error.
+      if (m_sentList.front ()->m_sacked)
+        {
+          m_sentList.front ()->m_sacked = false;
+          m_sackedOut -= m_sentList.front ()->m_packet->GetSize ();
+        }
+
+      if (m_sentList.front ()->m_retrans)
+        {
+          m_sentList.front ()->m_retrans = false;
+          m_retrans -= m_sentList.front ()->m_packet->GetSize ();
+        }
+
+      if (! m_sentList.front()->m_lost)
+        {
+          m_sentList.front()->m_lost = true;
+          m_lostOut += m_sentList.front ()->m_packet->GetSize ();
+        }
+    }
+}
+
+void
+TcpTxBuffer::AddRenoSack (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_sentList.size () > 1);
+
+  m_renoSack = true;
+
+  // We can _never_ SACK the head, so start from the second segment sent
+  auto it = ++m_sentList.begin ();
+
+  // Find the "highest sacked" point, that is SND.UNA + m_sackedOut
+  while (it != m_sentList.end () && (*it)->m_sacked)
+    {
+      ++it;
+    }
+
+  // Add to the sacked size the size of the first "not sacked" segment
+  if (it != m_sentList.end ())
+    {
+      (*it)->m_sacked = true;
+      m_sackedOut += (*it)->m_packet->GetSize ();
+      m_highestSack = std::make_pair (it, (*it)->m_startSeq);
+      NS_LOG_INFO ("Added a Reno SACK, status: " << *this);
+    }
+  else
+    {
+      NS_LOG_INFO ("Can't add a Reno SACK because we miss segments. This dupack"
+                   " should be arrived from spurious retransmissions");
+    }
 }
 
 std::ostream &

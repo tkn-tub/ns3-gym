@@ -345,11 +345,6 @@ public:
   void SetSentListLost (bool resetSack = false);
 
   /**
-   * \brief Reset the Scoreboard from all SACK informations
-   */
-  void ResetScoreboard ();
-
-  /**
    * \brief Check if the head is retransmitted
    *
    * \return true if the head is retransmitted, false in all other cases
@@ -368,6 +363,27 @@ public:
    * (at the beginning)
    */
   void ResetLastSegmentSent ();
+
+  /**
+   * \brief Mark the head of the sent list as lost.
+   */
+  void MarkHeadAsLost ();
+
+  /**
+   * \brief Emulate SACKs for SACKless connection: account for a new dupack.
+   *
+   * The method walk the list of the sent segment until it finds a segment
+   * that was not accounted in the sackedOut count. The head will never
+   * be included.
+   */
+  void AddRenoSack ();
+
+  /**
+   * \brief Reset the SACKs.
+   *
+   * Reset the Scoreboard from all SACK information
+   */
+  void ResetRenoSack ();
 
 private:
   friend std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
@@ -571,6 +587,7 @@ private:
 
   uint32_t m_dupAckThresh {0}; //!< Duplicate Ack threshold from TcpSocketBase
   uint32_t m_segmentSize {0}; //!< Segment size from TcpSocketBase
+  bool     m_renoSack {false}; //!< Indicates if AddRenoSack was called
 
 };
 
