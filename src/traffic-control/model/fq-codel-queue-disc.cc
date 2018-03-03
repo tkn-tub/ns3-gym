@@ -295,29 +295,11 @@ FqCoDelQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-FqCoDelQueueDisc::DoPeek (void) const
+FqCoDelQueueDisc::DoPeek (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<FqCoDelFlow> flow;
-
-  if (!m_newFlows.empty ())
-    {
-      flow = m_newFlows.front ();
-    }
-  else
-    {
-      if (!m_oldFlows.empty ())
-        {
-          flow = m_oldFlows.front ();
-        }
-      else
-        {
-          return 0;
-        }
-    }
-
-  return flow->GetQueueDisc ()->Peek ();
+  return PeekDequeued ();
 }
 
 void

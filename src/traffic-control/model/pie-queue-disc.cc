@@ -474,16 +474,17 @@ PieQueueDisc::DoDequeue ()
 }
 
 Ptr<const QueueDiscItem>
-PieQueueDisc::DoPeek () const
+PieQueueDisc::DoPeek ()
 {
   NS_LOG_FUNCTION (this);
-  if (GetInternalQueue (0)->IsEmpty ())
+
+  Ptr<const QueueDiscItem> item = PeekDequeued ();
+
+  if (!item)
     {
       NS_LOG_LOGIC ("Queue empty");
       return 0;
     }
-
-  Ptr<const QueueDiscItem> item = GetInternalQueue (0)->Peek ();
 
   NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
   NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());

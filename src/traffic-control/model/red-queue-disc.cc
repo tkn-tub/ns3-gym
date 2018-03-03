@@ -885,7 +885,7 @@ RedQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-RedQueueDisc::DoPeek (void) const
+RedQueueDisc::DoPeek (void)
 {
   NS_LOG_FUNCTION (this);
   if (GetInternalQueue (0)->IsEmpty ())

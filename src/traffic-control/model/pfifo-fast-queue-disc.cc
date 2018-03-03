@@ -128,7 +128,7 @@ PfifoFastQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-PfifoFastQueueDisc::DoPeek (void) const
+PfifoFastQueueDisc::DoPeek (void)
 {
   NS_LOG_FUNCTION (this);
 

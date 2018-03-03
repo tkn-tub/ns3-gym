@@ -870,10 +870,41 @@ QueueDisc::Dequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-QueueDisc::Peek (void) const
+QueueDisc::Peek (void)
 {
   NS_LOG_FUNCTION (this);
   return DoPeek ();
+}
+
+Ptr<const QueueDiscItem>
+QueueDisc::PeekDequeued (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (!m_requeued)
+    {
+      m_requeued = Dequeue ();
+    }
+  return m_requeued;
+}
+
+Ptr<QueueDiscItem>
+QueueDisc::DequeuePeeked (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  Ptr<QueueDiscItem> item = m_requeued;
+
+  if (item)
+    {
+      m_requeued = 0;
+    }
+  else
+    {
+      item = Dequeue ();
+    }
+
+  return item;
 }
 
 void

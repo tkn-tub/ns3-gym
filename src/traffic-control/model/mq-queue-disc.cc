@@ -68,7 +68,7 @@ MqQueueDisc::DoDequeue (void)
 }
 
 Ptr<const QueueDiscItem>
-MqQueueDisc::DoPeek (void) const
+MqQueueDisc::DoPeek (void)
 {
   NS_FATAL_ERROR ("MqQueueDisc: DoPeek should never be called");
 }

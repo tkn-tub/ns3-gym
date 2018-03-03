@@ -384,7 +384,15 @@ public:
    * DoPeek function, which must be implemented by derived classes.
    * \return 0 if the operation was not successful; the item otherwise.
    */
-  Ptr<const QueueDiscItem> Peek (void) const;
+  Ptr<const QueueDiscItem> Peek (void);
+
+  /**
+   * Extract from the queue disc the packet that has been dequeued by calling
+   * PeekDequeued.
+   *
+   * \return 0 if the operation was not successful; the item otherwise.
+   */
+  Ptr<QueueDiscItem> DequeuePeeked (void);
 
   /**
    * Modelled after the Linux function __qdisc_run (net/sched/sch_generic.c)
@@ -535,6 +543,21 @@ protected:
    */
   bool Mark (Ptr<QueueDiscItem> item, const char* reason);
 
+  /**
+   * Dequeue a packet and retain it in the queue disc as a requeued packet.
+   * The packet is not traced as requeued, nor is the total count of requeued
+   * packets increased. The dequeued packet is not counted in the backlog of
+   * the queue disc and is actually extracted from the queue disc by calling
+   * DequeuePeeked. Queue discs can point their DoPeek method to this one. This
+   * is recommended especially for queue discs for which it is not obvious what
+   * is the next packet that will be dequeued (e.g., queue discs having multiple
+   * internal queues or child queue discs or queue discs that drop packets
+   * after dequeue).
+   *
+   * \return 0 if the operation was not successful; the item otherwise.
+   */
+  Ptr<const QueueDiscItem> PeekDequeued (void);
+
 private:
   /**
    * \brief Copy constructor
@@ -570,7 +593,7 @@ private:
    * This function returns a copy of the next packet the queue disc will extract.
    * \return 0 if the operation was not successful; the packet otherwise.
    */
-  virtual Ptr<const QueueDiscItem> DoPeek (void) const = 0;
+  virtual Ptr<const QueueDiscItem> DoPeek (void) = 0;
 
   /**
    * Check whether the current configuration is correct. Default objects (such

@@ -152,7 +152,7 @@ protected:
 private:
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
   virtual Ptr<QueueDiscItem> DoDequeue (void);
-  virtual Ptr<const QueueDiscItem> DoPeek (void) const;
+  virtual Ptr<const QueueDiscItem> DoPeek (void);
   virtual bool CheckConfig (void);
 
   /**
