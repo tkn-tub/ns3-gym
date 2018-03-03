@@ -13,6 +13,7 @@ def build(bld):
       'model/packet-filter.cc',
       'model/queue-disc.cc',
       'model/pfifo-fast-queue-disc.cc',
+      'model/fifo-queue-disc.cc',
       'model/red-queue-disc.cc',
       'model/codel-queue-disc.cc',
       'model/fq-codel-queue-disc.cc',
@@ -28,6 +29,7 @@ def build(bld):
       'test/codel-queue-disc-test-suite.cc',
       'test/adaptive-red-queue-disc-test-suite.cc',
       'test/pie-queue-disc-test-suite.cc',
+      'test/fifo-queue-disc-test-suite.cc',
       'test/tc-flow-control-test-suite.cc'
         ]
 
@@ -38,6 +40,7 @@ def build(bld):
       'model/packet-filter.h',
       'model/queue-disc.h',
       'model/pfifo-fast-queue-disc.h',
+      'model/fifo-queue-disc.h',
       'model/red-queue-disc.h',
       'model/codel-queue-disc.h',
       'model/fq-codel-queue-disc.h',
