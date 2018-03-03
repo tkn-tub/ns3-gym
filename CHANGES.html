@@ -58,12 +58,14 @@ us a note on ns-developers mailing list.</p>
   <li> Ipv[4,6]AddressGenerator can now check if an address is allocated (<b>Ipv[4,6]AddressGenerator::IsAddressAllocated</b>) or a network has some allocated address (<b>Ipv[4,6]AddressGenerator::IsNetworkAllocated</b>).</li>
   <li> LTE UEs can now use IPv6 to send and receive traffic.</li>
   <li> UAN module now supports IP stack.</li>
+  <li> Class <b>TcpSocketBase</b> attribute <i>CongestionWindowInflated</i> shows the values with the in-recovery inflation and the post-recovery deflation.
   <li> Added a FIFO queue disc (FifoQueueDisc) and the Token Bucket Filter (TbfQueueDisc).</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
   <li> Class <b>LrWpanMac</b> now supports extended addressing mode. Both <b>McpsDataRequest</b> and <b>PdDataIndication</b> methods will now use extended addressing if <b>McpsDataRequestParams::m_srcAddrMode</b> or <b>McpsDataRequestParams::m_dstAddrMode</b> are set to <b>EXT_ADDR</b>.</li>
   <li> Class <b>LteUeNetDevice</b> MAC address is now a 64-bit address and it's set during construction.</li>
+  <li> Class <b>TcpSocketBase</b> attribute <i>CongestionWindow</i> shows the values without the in-recovery inflation and the post-recovery deflation.
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -1523,6 +1525,7 @@ a std::map of interface IDs and TTLs for the route.
 <h2>Changed behavior:</h2>
 <ul>
   <li> If the data inside the TCP buffer is less than the available window, TCP tries to ask for more data to the application, in the hope of filling the usable transmission window. In some cases, this change allows sending bigger packets than the previous versions, optimizing the transmission.</li>
+  <li> In TCP, the ACK is now processed before invoking any routine that deals with the segment sending, except in case of retransmissions.</li>
 </ul>
 
 <hr>

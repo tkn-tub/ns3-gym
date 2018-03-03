@@ -157,6 +157,20 @@ TcpOptionSack::GetSackList (void) const
 }
 
 std::ostream &
+operator<< (std::ostream & os, TcpOptionSack const & sackOption)
+{
+  std::stringstream ss;
+  ss << "{";
+  for (auto it = sackOption.m_sackList.begin (); it != sackOption.m_sackList.end (); ++it)
+    {
+      ss << *it;
+    }
+  ss << "}";
+  os << ss.str ();
+  return os;
+}
+
+std::ostream &
 operator<< (std::ostream & os, TcpOptionSack::SackBlock const & sackBlock)
 {
   std::stringstream ss;

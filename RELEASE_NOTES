@@ -27,6 +27,7 @@ New user-visible features
 -------------------------
 - (tcp) Added TCP-LP as congestion control module
 - (tcp) RFC 6675 third rule for generating next sequence to transmit is used only when SACK is enabled
+- (tcp) Added a CongestionWindowInflated trace which, in case of non-SACK connections, will show the congestion window values as they were on previous releases. 
 - (lr-wpan) Extended addressing mode is now supported.
 - (tcp) Implemented the core functionality of TCP Pacing.
 - (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.
@@ -37,7 +38,8 @@ New user-visible features
 Bugs fixed
 ----------
 - Bug 1745 - There can be only one Ipv6AddressHelper in a script
-- Bug 2107 - Enable PCAP for S1 and X2 point-to-point links
+- Bug 1783 - tcp: Experiencing drops during fast recovery causes TCP's congestion window to blow up. Not anymore.
+- Bug 2107 - lte: Enable PCAP for S1 and X2 point-to-point links
 - Bug 2277 - lte: EpcTftClassifier::Classify blindly assumes that a packet has a L4 header 
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
 - Bug 2656 - wifi: Minstrel and MinstrelHt provide different results for 802.11a/b/g
@@ -64,6 +66,7 @@ Bugs fixed
 - Bug 2848 - wifi: Association ID not correctly set upon association
 - Bug 2849 - lte: Received RLC and PDCP PDUs are missing in the stats files
 - Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
+- Bug 2859 - tcp: calculation of BytesInFlight during partial recovery is fixed 
 - Bug 2866 - tcp: Removed VS warnings on TcpSocketBase
 - Bug 2873 - tcp: Potential SIGFPE in TcpYeah
 - Bug 2874 - tcp: Corrected interpretation of RFC 6675 for IsLost check

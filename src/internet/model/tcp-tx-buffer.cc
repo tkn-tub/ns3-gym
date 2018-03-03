@@ -175,7 +175,7 @@ bool
 TcpTxBuffer::Add (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this << p);
-  NS_LOG_INFO ("Try to append " << p->GetSize () << " bytes to window starting at "
+  NS_LOG_LOGIC ("Try to append " << p->GetSize () << " bytes to window starting at "
                                 << m_firstByteSeq << ", availSize=" << Available ());
   if (p->GetSize () <= Available ())
     {
@@ -186,12 +186,12 @@ TcpTxBuffer::Add (Ptr<Packet> p)
           m_appList.insert (m_appList.end (), item);
           m_size += p->GetSize ();
 
-          NS_LOG_INFO ("Updated size=" << m_size << ", lastSeq=" <<
-                       m_firstByteSeq + SequenceNumber32 (m_size));
+          NS_LOG_LOGIC ("Updated size=" << m_size << ", lastSeq=" <<
+                        m_firstByteSeq + SequenceNumber32 (m_size));
         }
       return true;
     }
-  NS_LOG_WARN ("Rejected. Not enough room to buffer packet.");
+  NS_LOG_LOGIC ("Rejected. Not enough room to buffer packet.");
   return false;
 }
 
@@ -219,6 +219,7 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
 
   NS_ABORT_MSG_IF (m_firstByteSeq > seq,
                    "Requested a sequence number which is not in the buffer anymore");
+  ConsistencyCheck ();
 
   // Real size to extract. Insure not beyond end of data
   uint32_t s = std::min (numBytes, SizeFromSequence (seq));
@@ -270,7 +271,7 @@ TcpTxBuffer::CopyFromSequence (uint32_t numBytes, const SequenceNumber32& seq)
   NS_ASSERT_MSG (outItem->m_startSeq >= m_firstByteSeq,
                  "Returning an item " << *outItem << " with SND.UNA as " <<
                  m_firstByteSeq);
-
+  ConsistencyCheck ();
   return toRet;
 }
 
@@ -280,6 +281,10 @@ TcpTxBuffer::GetNewSegment (uint32_t numBytes)
   NS_LOG_FUNCTION (this << numBytes);
 
   SequenceNumber32 startOfAppList = m_firstByteSeq + m_sentSize;
+
+  NS_LOG_INFO ("AppList start at " << startOfAppList << ", sentSize = " <<
+               m_sentSize << " firstByte: " << m_firstByteSeq);
+
   TcpTxItem *item = GetPacketFromList (m_appList, startOfAppList,
                                        numBytes, startOfAppList);
   item->m_startSeq = startOfAppList;
@@ -386,6 +391,7 @@ TcpTxBuffer::SplitItems (TcpTxItem *t1, TcpTxItem *t2, uint32_t size) const
   t1->m_lost = t2->m_lost;
 
   t2->m_startSeq += size;
+
   NS_LOG_INFO ("Split of size " << size << " result: t1 " << *t1 << " t2 " << *t2);
 }
 
@@ -574,6 +580,11 @@ TcpTxBuffer::GetPacketFromList (PacketList &list, const SequenceNumber32 &listSt
   NS_FATAL_ERROR ("This point is not reachable");
 }
 
+static bool AreEquals (const bool &first, const bool &second)
+{
+  return first ? second : !second;
+}
+
 void
 TcpTxBuffer::MergeItems (TcpTxItem *t1, TcpTxItem *t2) const
 {
@@ -581,33 +592,38 @@ TcpTxBuffer::MergeItems (TcpTxItem *t1, TcpTxItem *t2) const
   NS_LOG_FUNCTION (this << *t1 << *t2);
   NS_LOG_INFO ("Merging " << *t2 << " into " << *t1);
 
-  if (t1->m_sacked == true && t2->m_sacked == true)
+  NS_ASSERT_MSG (AreEquals (t1->m_sacked, t2->m_sacked),
+                 "Merging one sacked and another not sacked. Impossible");
+  NS_ASSERT_MSG (AreEquals (t1->m_lost, t2->m_lost),
+                 "Merging one lost and another not lost. Impossible");
+
+  // If one is retrans and the other is not, cancel the retransmitted flag.
+  // We are merging this segment for the retransmit, so the count will
+  // be updated in GetTransmittedSegment.
+  if (! AreEquals (t1->m_retrans, t2->m_retrans))
     {
-      t1->m_sacked = true;
-    }
-  else
-    {
-      t1->m_sacked = false;
+      if (t1->m_retrans)
+        {
+          TcpTxBuffer *self = const_cast<TcpTxBuffer*> (this);
+          self->m_retrans -= t1->m_packet->GetSize ();
+          t1->m_retrans = false;
+        }
+      else
+        {
+          NS_ASSERT (t2->m_retrans);
+          TcpTxBuffer *self = const_cast<TcpTxBuffer*> (this);
+          self->m_retrans -= t2->m_packet->GetSize ();
+          t2->m_retrans = false;
+        }
     }
 
-  if (t2->m_retrans == true && t1->m_retrans == false)
-    {
-      t1->m_retrans = true;
-    }
   if (t1->m_lastSent < t2->m_lastSent)
     {
       t1->m_lastSent = t2->m_lastSent;
     }
-  if (t2->m_lost)
-    {
-      t1->m_lost = true;
-    }
-  else if ((t1->m_lost | t2->m_lost) != 0)
-    {
-      NS_FATAL_ERROR ("Can't merge one lost and another one not lost");
-    }
 
   t1->m_packet->AddAtEnd (t2->m_packet);
+
   NS_LOG_INFO ("Situation after the merge: " << *t1);
 }
 
@@ -643,6 +659,8 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
       NS_LOG_DEBUG ("Seq " << seq << " already discarded.");
       return;
     }
+  NS_LOG_DEBUG ("Remove up to " << seq << " lost: " << m_lostOut <<
+                " retrans: " << m_retrans << " sacked: " << m_sackedOut);
 
   // Scan the buffer and discard packets
   uint32_t offset = seq - m_firstByteSeq.Get ();  // Number of bytes to remove
@@ -676,8 +694,9 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
           RemoveFromCounts (item, pktSize);
 
           i = m_sentList.erase (i);
-          NS_LOG_INFO ("While removing up to " << seq <<
-                       ".Removed " << *item <<  ". Remaining data " << m_size);
+          NS_LOG_INFO ("Removed " << *item << " lost: " << m_lostOut <<
+                       " retrans: " << m_retrans << " sacked: " << m_sackedOut <<
+                       ". Remaining data " << m_size);
           delete item;
         }
       else if (offset > 0)
@@ -731,10 +750,12 @@ TcpTxBuffer::DiscardUpTo (const SequenceNumber32& seq)
       m_highestSack = std::make_pair (m_sentList.end (), SequenceNumber32 (0));
     }
 
-  NS_LOG_DEBUG ("Discarded up to " << seq);
+  NS_LOG_DEBUG ("Discarded up to " << seq << " lost: " << m_lostOut <<
+                " retrans: " << m_retrans << " sacked: " << m_sackedOut);
   NS_LOG_LOGIC ("Buffer status after discarding data " << *this);
   NS_ASSERT (m_firstByteSeq >= seq);
   NS_ASSERT (m_sentSize >= m_sackedOut + m_lostOut);
+  ConsistencyCheck ();
 }
 
 bool
@@ -823,7 +844,7 @@ TcpTxBuffer::Update (const TcpOptionSack::SackList &list)
   NS_ASSERT_MSG (m_sentSize >= m_sackedOut + m_lostOut, *this);
   //NS_ASSERT (list.size () == 0 || modified);   // Assert for duplicated SACK or
                                                  // impossiblity to map the option into the sent blocks
-
+  ConsistencyCheck ();
   return modified;
 }
 
@@ -873,6 +894,7 @@ TcpTxBuffer::UpdateLostCount ()
         }
     }
   NS_LOG_INFO ("Status after the update: " << *this);
+  ConsistencyCheck ();
 }
 
 bool
@@ -1204,6 +1226,7 @@ TcpTxBuffer::ResetLastSegmentSent ()
         }
       m_appList.insert (m_appList.begin (), item);
     }
+  ConsistencyCheck ();
 }
 
 void
@@ -1250,6 +1273,7 @@ TcpTxBuffer::SetSentListLost (bool resetSack)
 
   NS_LOG_INFO ("Set sent list lost, status: " << *this);
   NS_ASSERT_MSG (m_sentSize >= m_sackedOut + m_lostOut, *this);
+  ConsistencyCheck ();
 }
 
 bool
@@ -1263,6 +1287,24 @@ TcpTxBuffer::IsHeadRetransmitted () const
     }
 
   return m_sentList.front ()->m_retrans;
+}
+
+void
+TcpTxBuffer::DeleteRetransmittedFlagFromHead ()
+{
+  NS_LOG_FUNCTION (this);
+
+  if (m_sentSize == 0)
+    {
+      return;
+    }
+
+  if (m_sentList.front ()->m_retrans)
+    {
+      m_sentList.front ()->m_retrans = false;
+      m_retrans -= m_sentList.front ()->m_packet->GetSize ();
+    }
+  ConsistencyCheck ();
 }
 
 void
@@ -1291,6 +1333,7 @@ TcpTxBuffer::MarkHeadAsLost ()
           m_lostOut += m_sentList.front ()->m_packet->GetSize ();
         }
     }
+  ConsistencyCheck ();
 }
 
 void
@@ -1323,6 +1366,46 @@ TcpTxBuffer::AddRenoSack (void)
       NS_LOG_INFO ("Can't add a Reno SACK because we miss segments. This dupack"
                    " should be arrived from spurious retransmissions");
     }
+
+  ConsistencyCheck ();
+}
+
+void
+TcpTxBuffer::ConsistencyCheck () const
+{
+  static const bool enable = false;
+
+  if (!enable)
+    {
+      return;
+    }
+
+  uint32_t sacked = 0;
+  uint32_t lost = 0;
+  uint32_t retrans = 0;
+
+  for (auto it = m_sentList.begin (); it != m_sentList.end (); ++it)
+    {
+      if ((*it)->m_sacked)
+        {
+          sacked += (*it)->m_packet->GetSize ();
+        }
+      if ((*it)->m_lost)
+        {
+          lost += (*it)->m_packet->GetSize ();
+        }
+      if ((*it)->m_retrans)
+        {
+          retrans += (*it)->m_packet->GetSize ();
+        }
+    }
+
+  NS_ASSERT_MSG (sacked == m_sackedOut, "Counted SACK: " << sacked <<
+                 " stored SACK: " << m_sackedOut);
+  NS_ASSERT_MSG (lost == m_lostOut, " Counted lost: " << lost <<
+                 " stored lost: " << m_lostOut);
+  NS_ASSERT_MSG (retrans == m_retrans, " Counted retrans: " << retrans <<
+                 " stored retrans: " << m_retrans);
 }
 
 std::ostream &

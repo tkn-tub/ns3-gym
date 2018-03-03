@@ -276,36 +276,54 @@ public:
  * Fast retransmit
  * ----------------
  *
- * The fast retransmit enhancement is introduced in RFC 2581 and updated in
- * RFC 5681. It reduces the time a sender waits before retransmitting
- * a lost segment, through the assumption that if it receives a certain number
- * of duplicate ACKs, a segment has been lost and it can be retransmitted.
- * Usually, it is coupled with the Limited Transmit algorithm, defined in
- * RFC 3042.
+ * The fast retransmit enhancement is introduced in RFC 2581 and updated in RFC
+ * 5681. It reduces the time a sender waits before retransmitting a lost segment,
+ * through the assumption that if it receives a certain number of duplicate ACKs,
+ * a segment has been lost and it can be retransmitted. Usually, it is coupled
+ * with the Limited Transmit algorithm, defined in RFC 3042. These algorithms
+ * are included in this class, and they are implemented inside the ProcessAck
+ * method. With the SACK option enabled, the LimitedTransmit algorithm will be
+ * always on, as a consequence of how the information in the received SACK block
+ * is managed.
  *
- * In ns-3, these algorithms are included in this class, and it is implemented inside
- * the ProcessAck method. The attribute which manages the number of dup ACKs
- * necessary to start the fast retransmit algorithm is named "ReTxThreshold",
- * and its default value is 3, while the Limited Transmit one can be enabled
- * by setting the attribute "LimitedTransmit" to true. Before entering the
- * recovery phase, the method EnterRecovery is called.
+ * The attribute which manages the number of dup ACKs necessary to start the
+ * fast retransmit algorithm is named "ReTxThreshold", and by default is 3.
+ * The parameter is also used in TcpTxBuffer to determine if a packet is lost
+ * (please take a look at TcpTxBuffer documentation to see details) but,
+ * right now, it is assumed to be fixed. In future releases this parameter can
+ * be made dynamic, to reflect the reordering degree of the network. With SACK,
+ * the next sequence to transmit is given by the RFC 6675 algorithm. Without
+ * SACK option, the implementation adds "hints" to TcpTxBuffer to make sure it
+ * returns, as next transmittable sequence, the first lost (or presumed lost)
+ * segment.
  *
  * Fast recovery
  * -------------
  *
- * The fast recovery algorithm is introduced RFC 2001, and it
- * avoids to reset cWnd to 1 segment after sensing a loss on the channel. Instead,
- * the slow start threshold is halved, and the cWnd is set equal to such value,
- * plus segments for the cWnd inflation.
- *
- * The algorithm is implemented in the ProcessAck method.
+ * The fast recovery algorithm is introduced RFC 2001, and it avoids to reset
+ * cWnd to 1 segment after sensing a loss on the channel. Instead, a new slow
+ * start threshold value is asked to the congestion control (for instance,
+ * with NewReno the returned amount is half of the previous), and the cWnd is
+ * set equal to such value. Ns-3 does not implement any inflation/deflation to
+ * the congestion window since it uses an evolved method (borrowed from Linux
+ * operating system) to calculate the number of bytes in flight. The fundamental
+ * idea is to subtract from the total bytes in flight the lost/sacked amount
+ * (the segments that have left the network) and to add the retransmitted count.
+ * In this way, congestion window represents the exact number of bytes that
+ * should be in flight. The implementation then decides what to transmit, it
+ * there is space, between new or already transmitted data portion. If a value
+ * of the congestion window with inflation and deflation is needed, there is a
+ * traced source named "CongestionWindowInflated". However, the variable behind
+ * it is not used in the code, but maintained for backward compatibility.
  *
  * RTO expiration
  * --------------
  *
- * When the Retransmission Time Out expires, the TCP faces a big performance
- * drop. The expiration event is managed in ReTxTimeout method, that basically
- * set the cWnd to 1 segment and start "from scratch" again.
+ * When the Retransmission Time Out expires, the TCP faces a significant
+ * performance drop. The expiration event is managed in the ReTxTimeout method,
+ * which set the cWnd to 1 segment and starts "from scratch" again. The list
+ * of sent packet is set as lost entirely, and the transmission is re-started
+ * from the SND.UNA sequence number.
  *
  * Options management
  * ------------------
@@ -321,8 +339,13 @@ public:
  * ----
  *
  * The SACK generation/management is delegated to the buffer classes, namely
- * TcpTxBuffer and TcpRxBuffer. Please take a look on their documentation if
- * you need more informations.
+ * TcpTxBuffer and TcpRxBuffer. In TcpRxBuffer it is managed the creation
+ * of the SACK option from the receiver point of view. It must provide an
+ * accurate (and efficient) representation of the status of the receiver buffer.
+ * On the other side, inside TcpTxBuffer the received options (that contain
+ * the SACK block) are processed and a particular data structure, called Scoreboard,
+ * is filled. Please take a look at TcpTxBuffer and TcpRxBuffer documentation if
+ * you need more information.
  *
  */
 class TcpSocketBase : public TcpSocket
@@ -913,9 +936,11 @@ protected:
    * \brief Process a received ack
    * \param ackNumber ack number
    * \param scoreboardUpdated if true indicates that the scoreboard has been
+   * \param oldHeadSequence value of HeadSequence before ack
    * updated with SACK information
    */
-  virtual void ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpdated);
+  virtual void ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpdated,
+                           const SequenceNumber32 &oldHeadSequence);
 
   /**
    * \brief Recv of a data, put into buffer, call L7 to get it if necessary
@@ -954,11 +979,6 @@ protected:
   void DupAck ();
 
   /**
-   * \brief Limited transmit algorithm
-   */
-  void LimitedTransmit ();
-
-  /**
    * \brief Enter the CA_RECOVERY, and retransmit the head
    */
   void EnterRecovery ();
@@ -984,9 +1004,10 @@ protected:
   virtual void PersistTimeout (void);
 
   /**
-   * \brief Retransmit the oldest packet
+   * \brief Retransmit the first segment marked as lost, without considering
+   * available window nor pacing.
    */
-  virtual void DoRetransmit (void);
+  void DoRetransmit (void);
 
   /** \brief Add options to TcpHeader
    *
@@ -1219,6 +1240,11 @@ protected:
 
   // Pacing related variable
   Timer m_pacingTimer {Timer::REMOVE_ON_DESTROY}; //!< Pacing Event
+
+  /**
+   * \brief Inflated congestion window trace (not used in the real code, deprecated)
+   */
+  TracedValue<uint32_t> m_cWndInfl {0};
 };
 
 /**

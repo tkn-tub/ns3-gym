@@ -92,9 +92,20 @@ public:
    */
   SackList GetSackList (void) const;
 
+  friend std::ostream & operator<< (std::ostream & os, TcpOptionSack const & sackOption);
+
 protected:
   SackList m_sackList; //!< the list of SACK blocks
 };
+
+/**
+ * \brief Output operator.
+ * \param os The output stream.
+ * \param sackOption the option to print.
+ * \returns The output stream.
+ */
+std::ostream & operator<< (std::ostream & os,
+                           TcpOptionSack const & sackOption);
 
 /**
  * \brief Output operator.

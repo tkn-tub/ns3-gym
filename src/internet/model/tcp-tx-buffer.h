@@ -134,7 +134,17 @@ public:
  * consideration the RFCs (including RFC 4898) and the Linux operating
  * system. As a reference, we kept the older methods for calculating the
  * bytes in flight and if a segment is lost, renaming them as "RFC" version
- * of the methods.
+ * of the methods. To have a look how the calculations are made, please see
+ * BytesInFlight method.
+ *
+ * Lost segments
+ * -------------
+ *
+ * After the sender receives a new SACK block, it updates the amount of segment
+ * that it considers as lost, following the specifications made in RFC 6675
+ * (for more detail please see the method UpdateLostCount). In case of SACKless
+ * connection, the TcpSocketImplementation should provide hints through
+ * the MarkHeadAsLost and AddRenoSack methods.
  *
  * \see BytesInFlight
  * \see Size
@@ -353,6 +363,11 @@ public:
   bool IsHeadRetransmitted () const;
 
   /**
+   * \brief DeleteRetransmittedFlagFromHead
+   */
+  void DeleteRetransmittedFlagFromHead ();
+
+  /**
    * \brief Reset the sent list
    *
    */
@@ -374,14 +389,20 @@ public:
    *
    * The method walk the list of the sent segment until it finds a segment
    * that was not accounted in the sackedOut count. The head will never
-   * be included.
+   * be included. To reset the information added with this function (e.g.,
+   * after an RTO) please use ResetRenoSack.
+   *
+   * The method DiscardUpTo, when invoked, will make sure to properly clean any
+   * flag on the discarded item. As example, if the implementation discard an item
+   * that is marked as sacked, the sackedOut count is decreased accordingly.
    */
   void AddRenoSack ();
 
   /**
    * \brief Reset the SACKs.
    *
-   * Reset the Scoreboard from all SACK information
+   * Reset the Scoreboard from all SACK information. This method also works in
+   * case the SACKs are set by the Update method.
    */
   void ResetRenoSack ();
 
@@ -564,6 +585,12 @@ private:
    * \param size Size to split
    */
   void SplitItems (TcpTxItem *t1, TcpTxItem *t2, uint32_t size) const;
+
+  /**
+   * \brief Check if the values of sacked, lost, retrans, are in sync
+   * with the sent list.
+   */
+  void ConsistencyCheck () const;
 
   /**
    * \brief Find the highest SACK byte
