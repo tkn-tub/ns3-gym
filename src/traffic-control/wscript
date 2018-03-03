@@ -19,6 +19,7 @@ def build(bld):
       'model/fq-codel-queue-disc.cc',
       'model/pie-queue-disc.cc',
       'model/mq-queue-disc.cc',
+      'model/tbf-queue-disc.cc',
       'helper/traffic-control-helper.cc',
       'helper/queue-disc-container.cc'
         ]
@@ -30,6 +31,7 @@ def build(bld):
       'test/adaptive-red-queue-disc-test-suite.cc',
       'test/pie-queue-disc-test-suite.cc',
       'test/fifo-queue-disc-test-suite.cc',
+      'test/tbf-queue-disc-test-suite.cc',
       'test/tc-flow-control-test-suite.cc'
         ]
 
@@ -46,6 +48,7 @@ def build(bld):
       'model/fq-codel-queue-disc.h',
       'model/pie-queue-disc.h',
       'model/mq-queue-disc.h',
+      'model/tbf-queue-disc.h',
       'helper/traffic-control-helper.h',
       'helper/queue-disc-container.h'
         ]

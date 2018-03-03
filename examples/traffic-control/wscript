@@ -14,3 +14,7 @@ def build(bld):
 
     obj = bld.create_ns3_program('red-vs-nlred', ['point-to-point', 'point-to-point-layout', 'internet', 'applications', 'traffic-control'])
     obj.source = 'red-vs-nlred.cc'
+
+    obj = bld.create_ns3_program('tbf-example',
+                                 ['internet', 'point-to-point', 'applications', 'traffic-control'])
+    obj.source = 'tbf-example.cc'
