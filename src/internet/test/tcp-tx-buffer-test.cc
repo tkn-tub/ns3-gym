@@ -94,6 +94,8 @@ TcpTxBufferTestCase::TestIsLost ()
   txBuf.SetHeadSequence (head);
   SequenceNumber32 ret;
   Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack> ();
+  txBuf.SetSegmentSize (1000);
+  txBuf.SetDupAckThresh (3);
 
   txBuf.Add(Create<Packet> (10000));
 
@@ -101,31 +103,31 @@ TcpTxBufferTestCase::TestIsLost ()
     txBuf.CopyFromSequence (1000, SequenceNumber32((i*1000)+1));
 
   for (uint8_t i = 0; i < 10 ; ++i)
-    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1)), false,
                            "Lost is true, but it's not");
 
   sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (1001), SequenceNumber32 (2001)));
   txBuf.Update(sack->GetSackList());
 
   for (uint8_t i = 0; i < 10 ; ++i)
-    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1)), false,
                            "Lost is true, but it's not");
 
   sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (2001), SequenceNumber32 (3001)));
   txBuf.Update(sack->GetSackList());
 
   for (uint8_t i = 0; i < 10 ; ++i)
-    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1)), false,
                            "Lost is true, but it's not");
 
   sack->AddSackBlock (TcpOptionSack::SackBlock (SequenceNumber32 (3001), SequenceNumber32 (4001)));
   txBuf.Update(sack->GetSackList());
 
-  NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32(1), 3, 1000), true,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32(1)), true,
                          "Lost is true, but it's not");
 
   for (uint8_t i = 1; i < 10 ; ++i)
-    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1), 3, 1000), false,
+    NS_TEST_ASSERT_MSG_EQ (txBuf.IsLost(SequenceNumber32((i*1000)+1)), false,
                            "Lost is true, but it's not");
 
 
@@ -137,21 +139,23 @@ TcpTxBufferTestCase::TestNextSeg ()
   TcpTxBuffer txBuf;
   SequenceNumber32 head (1);
   SequenceNumber32 ret;
+  txBuf.SetSegmentSize (150);
+  txBuf.SetDupAckThresh (3);
   uint32_t dupThresh = 3;
   uint32_t segmentSize = 150;
   Ptr<TcpOptionSack> sack = CreateObject<TcpOptionSack> ();
 
   // At the beginning the values of dupThresh and segmentSize don't matter
-  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, 0, 0, false), false,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), false,
                          "NextSeq should not be returned at the beginning");
 
   txBuf.SetHeadSequence (head);
-  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, 0, 0, false), false,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), false,
                          "NextSeq should not be returned with no data");
 
   // Add a single, 30000-bytes long, packet
   txBuf.Add (Create<Packet> (30000));
-  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, 0, 0, false), true,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                          "No NextSeq with data at beginning");
   NS_TEST_ASSERT_MSG_EQ (ret.GetValue (), head.GetValue (),
                          "Different NextSeq than expected at the beginning");
@@ -159,7 +163,7 @@ TcpTxBufferTestCase::TestNextSeg ()
   // Simulate sending 100 packets, 150 bytes long each, from seq 1
   for (uint32_t i=0; i<100; ++i)
     {
-      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                              "No NextSeq with data while \"transmitting\"");
       NS_TEST_ASSERT_MSG_EQ (ret, head + (segmentSize * i),
                              "Different NextSeq than expected while \"transmitting\"");
@@ -177,7 +181,7 @@ TcpTxBufferTestCase::TestNextSeg ()
       txBuf.Update (sack->GetSackList ());
 
       // new data expected and sent
-      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                              "No NextSeq with SACK block while \"transmitting\"");
       NS_TEST_ASSERT_MSG_EQ (ret, lastRet + segmentSize,
                              "Different NextSeq than expected in limited transmit");
@@ -191,7 +195,7 @@ TcpTxBufferTestCase::TestNextSeg ()
   sack->AddSackBlock (TcpOptionSack::SackBlock (head + (segmentSize * (dupThresh)),
                                                 head + (segmentSize * (dupThresh)) + segmentSize));
   txBuf.Update (sack->GetSackList ());
-  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                          "No NextSeq with SACK block for Fast Recovery");
   NS_TEST_ASSERT_MSG_EQ (ret, head,
                          "Different NextSeq than expected for Fast Recovery");
@@ -204,7 +208,7 @@ TcpTxBufferTestCase::TestNextSeg ()
       sack->AddSackBlock (TcpOptionSack::SackBlock (head + (segmentSize * (dupThresh+i)),
                                                     head + (segmentSize * (dupThresh+i)) + segmentSize));
       txBuf.Update (sack->GetSackList ());
-      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                              "No NextSeq with SACK block after recv dupacks in FR");
       NS_TEST_ASSERT_MSG_EQ (ret, lastRet + segmentSize,
                              "Different NextSeq than expected after recv dupacks in FR");
@@ -227,17 +231,17 @@ TcpTxBufferTestCase::TestNextSeg ()
   head = head + segmentSize;
   txBuf.DiscardUpTo (head);
 
-  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                          "No NextSeq with SACK block after receiving partial ACK");
   NS_TEST_ASSERT_MSG_EQ (ret, head,
-                         "Different NextSeq than expected after receiving partial ACK");
+                         "Different NextSeq than expected after receiving partial ACK ");
   txBuf.CopyFromSequence (segmentSize, ret);
 
   // Now, check for one more dupack...
   sack->AddSackBlock (TcpOptionSack::SackBlock (head + (segmentSize * (dupThresh+6)),
                                                 head + (segmentSize * (dupThresh+6)) + segmentSize));
   txBuf.Update (sack->GetSackList ());
-  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                          "No NextSeq with SACK block after recv dupacks after partial ack");
   NS_TEST_ASSERT_MSG_EQ (ret, lastRet + segmentSize,
                          "Different NextSeq than expected after recv dupacks after partial ack");
@@ -251,7 +255,7 @@ TcpTxBufferTestCase::TestNextSeg ()
   // And continue normally until the end
   for (uint32_t i=0; i<93; ++i)
     {
-      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, dupThresh, segmentSize, false), true,
+      NS_TEST_ASSERT_MSG_EQ (txBuf.NextSeg (&ret, false), true,
                              "No NextSeq with data while \"transmitting\"");
       NS_TEST_ASSERT_MSG_EQ (ret, head + (segmentSize * i),
                              "Different NextSeq than expected while \"transmitting\"");
@@ -269,6 +273,7 @@ TcpTxBufferTestCase::TestNewBlock ()
   // Manually recreating all the conditions
   TcpTxBuffer txBuf;
   txBuf.SetHeadSequence (SequenceNumber32 (1));
+  txBuf.SetSegmentSize (100);
 
   // get a packet which is exactly the same stored
   Ptr<Packet> p1 = Create<Packet> (100);
@@ -276,7 +281,7 @@ TcpTxBufferTestCase::TestNewBlock ()
 
   NS_TEST_ASSERT_MSG_EQ (txBuf.SizeFromSequence (SequenceNumber32 (1)), 100,
                          "TxBuf miscalculates size");
-  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (3, 100), 0,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (), 0,
                          "TxBuf miscalculates size of in flight segments");
 
   Ptr<Packet> ret = txBuf.CopyFromSequence (100, SequenceNumber32 (1));
@@ -284,13 +289,13 @@ TcpTxBufferTestCase::TestNewBlock ()
                          "Returned packet has different size than requested");
   NS_TEST_ASSERT_MSG_EQ (txBuf.SizeFromSequence (SequenceNumber32 (1)), 100,
                          "TxBuf miscalculates size");
-  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (3, 100), 100,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (), 100,
                          "TxBuf miscalculates size of in flight segments");
 
   txBuf.DiscardUpTo (SequenceNumber32 (101));
   NS_TEST_ASSERT_MSG_EQ (txBuf.SizeFromSequence (SequenceNumber32 (101)), 0,
                          "TxBuf miscalculates size");
-  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (3, 100), 0,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (), 0,
                          "TxBuf miscalculates size of in flight segments");
 
   // starts over the boundary, but ends earlier
@@ -303,7 +308,7 @@ TcpTxBufferTestCase::TestNewBlock ()
                          "Returned packet has different size than requested");
   NS_TEST_ASSERT_MSG_EQ (txBuf.SizeFromSequence (SequenceNumber32 (151)), 50,
                          "TxBuf miscalculates size");
-  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (3, 100), 50,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (), 50,
                          "TxBuf miscalculates size of in flight segments");
 
   // starts over the boundary, but ends after
@@ -315,7 +320,7 @@ TcpTxBufferTestCase::TestNewBlock ()
                          "Returned packet has different size than requested");
   NS_TEST_ASSERT_MSG_EQ (txBuf.SizeFromSequence (SequenceNumber32 (221)), 80,
                          "TxBuf miscalculates size");
-  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (3, 100), 120,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (), 120,
                          "TxBuf miscalculates size of in flight segments");
 
   ret = txBuf.CopyFromSequence (3000, SequenceNumber32 (221));
@@ -323,7 +328,7 @@ TcpTxBufferTestCase::TestNewBlock ()
                          "Returned packet has different size than requested");
   NS_TEST_ASSERT_MSG_EQ (txBuf.SizeFromSequence (SequenceNumber32 (301)), 0,
                          "TxBuf miscalculates size");
-  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (3, 100), 200,
+  NS_TEST_ASSERT_MSG_EQ (txBuf.BytesInFlight (), 200,
                          "TxBuf miscalculates size of in flight segments");
 
   // Clear everything

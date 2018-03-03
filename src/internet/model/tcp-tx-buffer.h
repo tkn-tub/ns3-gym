@@ -27,6 +27,7 @@
 #include "ns3/sequence-number.h"
 #include "ns3/nstime.h"
 #include "ns3/tcp-option-sack.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 class Packet;
@@ -47,6 +48,14 @@ public:
    */
   void Print (std::ostream &os) const;
 
+  /**
+   * \brief Get the size in the sequence number space
+   *
+   * \return 1 if the packet size is 0 or there's no packet, otherwise the size of the packet
+   */
+  uint32_t GetSeqSize (void) const { return m_packet && m_packet->GetSize () > 0 ? m_packet->GetSize () : 1; }
+
+  SequenceNumber32 m_startSeq {0};     //!< Sequence number of the item (if transmitted)
   Ptr<Packet> m_packet {nullptr};    //!< Application packet (can be null)
   bool m_lost          {false};      //!< Indicates if the segment has been lost (RTO)
   bool m_retrans       {false};      //!< Indicates if the segment is retransmitted
@@ -96,19 +105,38 @@ public:
  * documentation) and maintaining the scoreboard is a matter of travelling the
  * list and set the SACK flag on the corresponding segment sent.
  *
- * Inefficiencies
- * --------------
+ * Item properties
+ * ---------------
  *
- * The algorithms outlined in RFC 6675 are full of inefficiencies. In
- * particular, traveling all the sent list each time it is needed to compute
- * the bytes in flight is expensive. We try to overcome the issue by
- * maintaining a pointer to the highest sequence SACKed; in this way, we can
- * avoid traveling all the list in some cases. Another option could be keeping
- * a count of each critical value (e.g., the number of packets sacked).
- * However, this would be different from the algorithms in RFC. There are some
- * other possible improvements; if you wish, take a look and try  to add some
- * earlier exit conditions in the loops.
+ * An item (that represent a segment in flight) is not considered in flight
+ * anymore when it is marked lost or sacked. A sacked item represents an
+ * item which is received by the other end, but it is still impossible
+ * to delete from the list because other pieces are missing at the other
+ * end. A lost item never reached the other end, and retransmission is probably
+ * needed. Other properties are retransmitted, that indicates if an item was
+ * retransmitted, and the sequence number of the first byte of the packet. When
+ * a segment is sent for the first time, only the sequence number is set, and
+ * all the remaining properties are set to false. If an item is explicitly
+ * sacked by the receiver, we mark it as such. Each time we receive updated
+ * sack information from the other end, we perform a check to evaluate the
+ * segments that can be lost (\see UpdateLostCount), and we set the flags
+ * accordingly.
  *
+ * Management of bytes in flight
+ * -----------------------------
+ *
+ * Since this class manages all the output segments and the scoreboard, we can
+ * do calculations about the number of bytes in flights. Earlier versions of
+ * this class used algorithms copied from RFC 6675. They were inefficient
+ * because they required a complete walk into the list of sent segments each
+ * time a simple question, such as "Is this sequence lost?" or "How many bytes
+ * are in flight?". Therefore, the class has been updated keeping in
+ * consideration the RFCs (including RFC 4898) and the Linux operating
+ * system. As a reference, we kept the older methods for calculating the
+ * bytes in flight and if a segment is lost, renaming them as "RFC" version
+ * of the methods.
+ *
+ * \see BytesInFlight
  * \see Size
  * \see SizeFromSequence
  * \see CopyFromSequence
@@ -165,6 +193,43 @@ public:
    * \returns available capacity in this Tx window
    */
   uint32_t Available (void) const;
+
+  /**
+   * \brief Set the DupAckThresh
+   * \param dupAckThresh the threshold
+   */
+  void SetDupAckThresh (uint32_t dupAckThresh) { m_dupAckThresh = dupAckThresh; }
+
+  /**
+   * \brief Set the segment size
+   * \param segmentSize the segment size
+   */
+  void SetSegmentSize (uint32_t segmentSize) { m_segmentSize = segmentSize; }
+
+  /**
+   * \brief Return the number of segments in the sent list that
+   * have been transmitted more than once, without acknowledgment.
+   *
+   * This method is to support the retransmits count for determining PipeSize
+   * in NewReno-style TCP.
+   *
+   * \returns number of segments that have been transmitted more than once, without acknowledgment
+   */
+  uint32_t GetRetransmitsCount (void) const { return m_retrans; }
+
+  /**
+   * \brief Get the number of segments that we believe are lost in the network
+   *
+   * It is calculated in UpdateLostCount.
+   * \return the number of lost segment
+   */
+  uint32_t GetLost (void) const { return m_lostOut; }
+
+  /**
+   * \brief Get the number of segments that have been explicitly sacked by the receiver.
+   * \return the number of sacked segment.
+   */
+  uint32_t GetSacked (void) const { return m_sackedOut; }
 
   /**
    * \brief Append a data packet to the end of the buffer
@@ -228,48 +293,44 @@ public:
   bool Update (const TcpOptionSack::SackList &list);
 
   /**
-   * \brief Check if a segment is lost per RFC 6675
+   * \brief Check if a segment is lost
+   *
+   * It does a check on the flags to determine if the segment has to be considered
+   * as lost for an external class
+   *
    * \param seq sequence to check
    * \param dupThresh dupAck threshold
    * \param segmentSize segment size
    * \return true if the sequence is supposed to be lost, false otherwise
    */
-  bool IsLost (const SequenceNumber32 &seq, uint32_t dupThresh, uint32_t segmentSize) const;
+  bool IsLost (const SequenceNumber32 &seq) const;
 
   /**
    * \brief Get the next sequence number to transmit, according to RFC 6675
    *
    * \param seq Next sequence number to transmit, based on the scoreboard information
-   * \param dupThresh dupAck threshold
-   * \param segmentSize segment size
    * \param isRecovery true if the socket congestion state is in recovery mode
    * \return true is seq is updated, false otherwise
    */
-  bool NextSeg (SequenceNumber32 *seq, uint32_t dupThresh, uint32_t segmentSize,
-                bool isRecovery) const;
-
-  /**
-   * \brief Return the number of segments in the sent list that
-   * have been transmitted more than once, without acknowledgment.
-   *
-   * This method is to support the retransmits count for determining PipeSize
-   * in NewReno-style TCP.
-   *
-   * \returns number of segments that have been transmitted more than once, without acknowledgment
-   */
-  uint32_t GetRetransmitsCount (void) const;
+  bool NextSeg (SequenceNumber32 *seq, bool isRecovery) const;
 
   /**
    * \brief Return total bytes in flight
    *
-   * The routine follows the "SetPipe" function in RFC 6675 and assumes that
-   * SACK is enabled for the session
+   * Counting packets in flight is pretty simple:
    *
-   * \param dupThresh duplicate ACK threshold
-   * \param segmentSize segment size
+   * \f$in_flight = sentSize - leftOut + retrans\f$
+   *
+   * sentsize is SND.NXT-SND.UNA, retrans is the number of retransmitted segments.
+   * leftOut is the number of segment that left the network without being ACKed:
+   *
+   * \f$leftOut = sacked_out + lost_out\f$
+   *
+   * To see how we define the lost packets, look at the method UpdateLostCount.
+   *
    * \returns total bytes in flight
    */
-  uint32_t BytesInFlight (uint32_t dupThresh, uint32_t segmentSize) const;
+  uint32_t BytesInFlight () const;
 
   /**
    * \brief Set the entire sent list as lost (typically after an RTO)
@@ -277,8 +338,11 @@ public:
    * Used to set all the sent list as lost, so the bytes in flight is not counting
    * them as in flight, but we will continue to use SACK informations for
    * recovering the timeout.
+   *
+   * Moreover, reset the retransmit flag for every item.
+   * \param resetSack True if the function should reset the SACK flags.
    */
-  void SetSentListLost ();
+  void SetSentListLost (bool resetSack = false);
 
   /**
    * \brief Reset the Scoreboard from all SACK informations
@@ -296,14 +360,8 @@ public:
   /**
    * \brief Reset the sent list
    *
-   * Move all but the first 'keepItems' packets from the sent list to the 
-   * appList.  By default, the HEAD of hte sent list is kept and all others
-   * moved to the appList.  All items kept on the sent list 
-   * are then marked as un-sacked, un-retransmitted, and lost.  
-   *
-   * \param keepItems Keep a number of items at the front of the sent list
    */
-  void ResetSentList (uint32_t keepItems = 1);
+  void ResetSentList ();
 
   /**
    * \brief Take the last segment sent and put it back into the un-sent list
@@ -317,15 +375,49 @@ private:
   typedef std::list<TcpTxItem*> PacketList; //!< container for data stored in the buffer
 
   /**
-   * \brief Check if a segment is lost per RFC 6675
-   * \param seq sequence to check
-   * \param segment Iterator pointing at seq
-   * \param dupThresh dupAck threshold
-   * \param segmentSize segment size
-   * \return true if the sequence is supposed to be lost, false otherwise
+   * \brief Update the lost count
+   *
+   * Reset lost to 0, then walk the sent list looking for lost segments.
+   * We have two possible algorithms for detecting lost packets:
+   *
+   * - RFC 6675 algorithm, which says that if more than "Dupack thresh" (e.g., 3)
+   * sacked segments above the sequence, then we can consider the sequence lost;
+   * - NewReno (RFC6582): in Recovery we assume that one segment is lost
+   * (classic Reno). While we are in Recovery and a partial ACK arrives,
+   * we assume that one more packet is lost (NewReno).
+   *
+   * The {New}Reno cases, for now, are managed in TcpSocketBase through the
+   * call to MarkHeadAsLost.
+   * This function is, therefore, called after a SACK option has been received,
+   * and updates the lost count. It can be probably optimized by not walking
+   * the entire list, but a subset.
+   *
    */
-  bool IsLost (const SequenceNumber32 &seq, const PacketList::const_iterator &segment, uint32_t dupThresh,
-               uint32_t segmentSize) const;
+  void UpdateLostCount ();
+
+  /**
+   * \brief Remove the size specified from the lostOut, retrans, sacked count
+   *
+   * Used only in DiscardUpTo
+   *
+   * \param item Item that will be discarded
+   * \param size size to remove (can be different from pktSize because of fragmentation)
+   */
+  void RemoveFromCounts (TcpTxItem *item, uint32_t size);
+
+  /**
+   * \brief Decide if a segment is lost based on RFC 6675 algorithm.
+   * \param seq Sequence
+   * \param segment Iterator to the sequence
+   * \return true if seq is lost per RFC 6675, false otherwise
+   */
+  bool IsLostRFC (const SequenceNumber32 &seq, const PacketList::const_iterator &segment) const;
+
+  /**
+   * \brief Calculate the number of bytes in flight per RFC 6675
+   * \return the number of bytes in flight
+   */
+  uint32_t BytesInFlightRFC () const;
 
   /**
    * \brief Get a block of data not transmitted yet and move it into SentList
@@ -431,7 +523,7 @@ private:
    */
   TcpTxItem* GetPacketFromList (PacketList &list, const SequenceNumber32 &startingSeq,
                                 uint32_t numBytes, const SequenceNumber32 &requestedSeq,
-                                bool *listEdited) const;
+                                bool *listEdited = nullptr) const;
 
   /**
    * \brief Merge two TcpTxItem
@@ -443,25 +535,26 @@ private:
    * \param t1 first item
    * \param t2 second item
    */
-  void MergeItems (TcpTxItem &t1, TcpTxItem &t2) const;
+  void MergeItems (TcpTxItem *t1, TcpTxItem *t2) const;
 
   /**
    * \brief Split one TcpTxItem
    *
    * Move "size" bytes from t2 into t1, copying all the fields.
+   * Adjust the starting sequence of each item.
    *
    * \param t1 first item
    * \param t2 second item
    * \param size Size to split
    */
-  void SplitItems (TcpTxItem &t1, TcpTxItem &t2, uint32_t size) const;
+  void SplitItems (TcpTxItem *t1, TcpTxItem *t2, uint32_t size) const;
 
   /**
    * \brief Find the highest SACK byte
    * \return a pair with the highest byte and an iterator inside m_sentList
    */
   std::pair <TcpTxBuffer::PacketList::const_iterator, SequenceNumber32>
-  GetHighestSacked () const;
+  FindHighestSacked () const;
 
   PacketList m_appList;  //!< Buffer for application data
   PacketList m_sentList; //!< Buffer for sent (but not acked) data
@@ -470,8 +563,14 @@ private:
   uint32_t m_sentSize;   //!< Size of sent (and not discarded) segments
 
   TracedValue<SequenceNumber32> m_firstByteSeq; //!< Sequence number of the first byte in data (SND.UNA)
-
   std::pair <PacketList::const_iterator, SequenceNumber32> m_highestSack; //!< Highest SACK byte
+
+  uint32_t m_lostOut   {0}; //!< Number of lost bytes
+  uint32_t m_sackedOut {0}; //!< Number of sacked bytes
+  uint32_t m_retrans   {0}; //!< Number of retransmitted bytes
+
+  uint32_t m_dupAckThresh {0}; //!< Duplicate Ack threshold from TcpSocketBase
+  uint32_t m_segmentSize {0}; //!< Segment size from TcpSocketBase
 
 };
 
@@ -482,6 +581,14 @@ private:
  * \returns The output stream.
  */
 std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
+
+/**
+ * \brief Output operator.
+ * \param os The output stream.
+ * \param item the item to print.
+ * \returns The output stream.
+ */
+std::ostream & operator<< (std::ostream & os, TcpTxItem const & item);
 
 } // namepsace ns3
 

@@ -417,6 +417,18 @@ public:
   Ptr<TcpRxBuffer> GetRxBuffer (void) const;
 
   /**
+   * \brief Set the retransmission threshold (dup ack threshold for a fast retransmit)
+   * \param retxThresh the threshold
+   */
+  void SetRetxThresh (uint32_t retxThresh);
+
+  /**
+   * \brief Get the retransmission threshold (dup ack threshold for a fast retransmit)
+   * \return the threshold
+   */
+  uint32_t GetRetxThresh (void) const { return m_retxThresh; }
+
+  /**
    * \brief Callback pointer for cWnd trace chaining
    */
   TracedCallback<uint32_t, uint32_t> m_cWndTrace;
