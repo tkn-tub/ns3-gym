@@ -39,7 +39,7 @@ namespace ns3 {
  * \brief Enumeration of the operating modes of queues.
  *
  */
-enum class QueueSizeUnit : uint8_t
+enum QueueSizeUnit
 {
   PACKETS,     /**< Use number of packets for queue size */
   BYTES,       /**< Use number of bytes for queue size */

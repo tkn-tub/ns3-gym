@@ -100,7 +100,7 @@ private:
  * internal queue/child queue disc because of lack of space, while the queue
  * disc limit is not exceeded.
  */
-enum class QueueDiscSizePolicy : uint8_t
+enum QueueDiscSizePolicy
 {
   SINGLE_INTERNAL_QUEUE,       /**< Used by queue discs with single internal queue */
   SINGLE_CHILD_QUEUE_DISC,     /**< Used by queue discs with single child queue disc */
