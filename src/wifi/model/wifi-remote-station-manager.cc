@@ -827,6 +827,12 @@ WifiRemoteStationManager::GetChannelWidthForTransmission (WifiMode mode, uint8_t
       NS_LOG_LOGIC ("Channel width reduced to 20 MHz");
       return 20;
     }
+  //at 2.4 GHz basic rate can be non-ERP DSSS
+  if (modulationClass == WifiModulationClass::WIFI_MOD_CLASS_DSSS
+      || modulationClass == WifiModulationClass::WIFI_MOD_CLASS_HR_DSSS)
+    {
+      return 22;
+    }
   return maxSupportedChannelWidth;
 }
 
