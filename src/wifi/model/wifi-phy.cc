@@ -3602,12 +3602,6 @@ WifiPhy::IsStateIdle (void) const
 }
 
 bool
-WifiPhy::IsStateBusy (void) const
-{
-  return m_state->IsStateBusy ();
-}
-
-bool
 WifiPhy::IsStateRx (void) const
 {
   return m_state->IsStateRx ();
@@ -3635,12 +3629,6 @@ bool
 WifiPhy::IsStateOff (void) const
 {
   return m_state->IsStateOff ();
-}
-
-Time
-WifiPhy::GetStateDuration (void)
-{
-  return m_state->GetStateDuration ();
 }
 
 Time

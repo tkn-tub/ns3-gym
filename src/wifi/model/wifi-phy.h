@@ -208,10 +208,6 @@ public:
    */
   bool IsStateCcaBusy (void) const;
   /**
-   * \return true of the current state of the PHY layer is not WifiPhy::IDLE, false otherwise.
-   */
-  bool IsStateBusy (void) const;
-  /**
    * \return true of the current state of the PHY layer is WifiPhy::RX, false otherwise.
    */
   bool IsStateRx (void) const;
@@ -232,10 +228,6 @@ public:
    */
   bool IsStateOff (void) const;
 
-  /**
-   * \return the amount of time since the current state has started.
-   */
-  Time GetStateDuration (void);
   /**
    * \return the predicted delay until this PHY can become WifiPhy::IDLE.
    *

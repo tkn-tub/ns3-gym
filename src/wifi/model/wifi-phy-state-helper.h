@@ -106,12 +106,6 @@ public:
    */
   bool IsStateIdle (void) const;
   /**
-   * Check whether the current state is not IDLE.
-   *
-   * \return true if the current state is not IDLE, false otherwise
-   */
-  bool IsStateBusy (void) const;
-  /**
    * Check whether the current state is RX.
    *
    * \return true if the current state is RX, false otherwise
@@ -141,12 +135,6 @@ public:
    * \return true if the current state is OFF, false otherwise
    */
   bool IsStateOff (void) const;
-  /**
-   * Return the elapsed time of the current state.
-   *
-   * \return the elapsed time of the current state
-   */
-  Time GetStateDuration (void) const;
   /**
    * Return the time before the state is back to IDLE.
    *

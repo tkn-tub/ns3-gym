@@ -110,12 +110,6 @@ WifiPhyStateHelper::IsStateIdle (void) const
 }
 
 bool
-WifiPhyStateHelper::IsStateBusy (void) const
-{
-  return (GetState () != WifiPhyState::IDLE);
-}
-
-bool
 WifiPhyStateHelper::IsStateCcaBusy (void) const
 {
   return (GetState () == WifiPhyState::CCA_BUSY);
@@ -149,12 +143,6 @@ bool
 WifiPhyStateHelper::IsStateOff (void) const
 {
   return (GetState () == WifiPhyState::OFF);
-}
-
-Time
-WifiPhyStateHelper::GetStateDuration (void) const
-{
-  return Simulator::Now () - m_previousStateChangeTime;
 }
 
 Time
