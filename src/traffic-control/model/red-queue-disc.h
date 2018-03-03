@@ -120,6 +120,7 @@ public:
 
   /**
    * \brief Enumeration of the modes supported in the class.
+   * \deprecated This enum will go away in future versions of ns-3.
    *
    */
   enum QueueDiscMode
@@ -132,6 +133,8 @@ public:
    * \brief Set the operating mode of this queue disc.
    *
    * \param mode The operating mode of this queue disc.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
    */
   void SetMode (QueueDiscMode mode);
 
@@ -139,8 +142,10 @@ public:
    * \brief Get the operating mode of this queue disc.
    *
    * \returns The operating mode of this queue disc.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead GetMaxSize()
    */
-  QueueDiscMode GetMode (void);
+  QueueDiscMode GetMode (void) const;
 
   /**
    * \brief Get the current value of the queue in bytes or packets.
@@ -209,6 +214,8 @@ public:
    * \brief Set the limit of the queue.
    *
    * \param lim The limit in bytes or packets.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
    */
   void SetQueueLimit (uint32_t lim);
 
@@ -298,7 +305,6 @@ private:
   double ModifyP (double p, uint32_t size);
 
   // ** Variables supplied by user
-  QueueDiscMode m_mode;     //!< Mode (Bytes or packets)
   uint32_t m_meanPktSize;   //!< Avg pkt size
   uint32_t m_idlePktSize;   //!< Avg pkt size used during idle times
   bool m_isWait;            //!< True for waiting between dropped packets
@@ -307,7 +313,6 @@ private:
   bool m_isAdaptMaxP;       //!< True to adapt m_curMaxP
   double m_minTh;           //!< Minimum threshold for m_qAvg (bytes or packets)
   double m_maxTh;           //!< Maximum threshold for m_qAvg (bytes or packets), should be >= 2 * m_minTh
-  uint32_t m_queueLimit;    //!< Queue limit in bytes / packets
   double m_qW;              //!< Queue weight given to cur queue size sample
   double m_lInterm;         //!< The max probability of dropping a packet
   Time m_targetDelay;       //!< Target average queuing delay in ARED

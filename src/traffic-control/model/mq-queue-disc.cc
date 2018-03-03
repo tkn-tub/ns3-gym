@@ -39,6 +39,7 @@ TypeId MqQueueDisc::GetTypeId (void)
 }
 
 MqQueueDisc::MqQueueDisc ()
+  : QueueDisc (QueueDiscSizePolicy::NO_LIMITS)
 {
   NS_LOG_FUNCTION (this);
 }

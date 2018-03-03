@@ -322,13 +322,16 @@ TypeId QueueDisc::GetTypeId (void)
   return tid;
 }
 
-QueueDisc::QueueDisc ()
+QueueDisc::QueueDisc (QueueDiscSizePolicy policy)
   :  m_nPackets (0),
      m_nBytes (0),
      m_sojourn (0),
-     m_running (false)
+     m_maxSize (QueueSize ("1p")),         // to avoid that setting the mode at construction time is ignored
+     m_running (false),
+     m_sizePolicy (policy),
+     m_prohibitChangeMode (false)
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << (uint16_t)policy);
 
   // These lambdas call the DropBeforeEnqueue or DropAfterDequeue methods of this
   // QueueDisc object. Given that a callback to the operator() of these lambdas
@@ -360,6 +363,13 @@ QueueDisc::QueueDisc ()
       return DropAfterDequeue (item,
                                m_childQueueDiscDropMsg.assign (CHILD_QUEUE_DISC_DROP).append (r).data ());
     };
+}
+
+QueueDisc::QueueDisc (QueueDiscSizePolicy policy, QueueSizeUnit unit)
+  : QueueDisc (policy)
+{
+  m_maxSize = QueueSize (unit, 0);
+  m_prohibitChangeMode = true;
 }
 
 QueueDisc::~QueueDisc ()
@@ -438,6 +448,91 @@ QueueDisc::GetNBytes (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_nBytes;
+}
+
+QueueSize
+QueueDisc::GetMaxSize (void) const
+{
+  NS_LOG_FUNCTION (this);
+
+  switch (m_sizePolicy)
+    {
+    case QueueDiscSizePolicy::NO_LIMITS:
+      NS_FATAL_ERROR ("The size of this queue disc is not limited");
+
+    case QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE:
+      if (GetNInternalQueues ())
+        {
+          return GetInternalQueue (0)->GetMaxSize ();
+        }
+
+    case QueueDiscSizePolicy::SINGLE_CHILD_QUEUE_DISC:
+      if (GetNQueueDiscClasses ())
+        {
+          return GetQueueDiscClass (0)->GetQueueDisc ()->GetMaxSize ();
+        }
+
+    case QueueDiscSizePolicy::MULTIPLE_QUEUES:
+    default:
+      return m_maxSize;
+    }
+}
+
+bool
+QueueDisc::SetMaxSize (QueueSize size)
+{
+  NS_LOG_FUNCTION (this << size);
+
+  // do nothing if the limit is null
+  if (!size.GetValue ())
+    {
+      return false;
+    }
+
+  if (m_prohibitChangeMode && size.GetUnit () != m_maxSize.GetUnit ())
+    {
+      NS_LOG_DEBUG ("Changing the mode of this queue disc is prohibited");
+      return false;
+    }
+
+  switch (m_sizePolicy)
+    {
+    case QueueDiscSizePolicy::NO_LIMITS:
+      NS_FATAL_ERROR ("The size of this queue disc is not limited");
+
+    case QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE:
+      if (GetNInternalQueues ())
+        {
+          GetInternalQueue (0)->SetMaxSize (size);
+        }
+
+    case QueueDiscSizePolicy::SINGLE_CHILD_QUEUE_DISC:
+      if (GetNQueueDiscClasses ())
+        {
+          GetQueueDiscClass (0)->GetQueueDisc ()->SetMaxSize (size);
+        }
+
+    case QueueDiscSizePolicy::MULTIPLE_QUEUES:
+    default:
+      m_maxSize = size;
+    }
+  return true;
+}
+
+QueueSize
+QueueDisc::GetCurrentSize (void)
+{
+  NS_LOG_FUNCTION (this);
+
+  if (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS)
+    {
+      return QueueSize (QueueSizeUnit::PACKETS, m_nPackets);
+    }
+  if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES)
+    {
+      return QueueSize (QueueSizeUnit::BYTES, m_nBytes);
+    }
+  NS_ABORT_MSG ("Unknown queue size unit");
 }
 
 void

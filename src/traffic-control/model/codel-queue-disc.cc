@@ -77,19 +77,34 @@ TypeId CoDelQueueDisc::GetTypeId (void)
     .AddAttribute ("Mode",
                    "Whether to use Bytes (see MaxBytes) or Packets (see MaxPackets) as the maximum queue size metric.",
                    EnumValue (QUEUE_DISC_MODE_BYTES),
-                   MakeEnumAccessor (&CoDelQueueDisc::SetMode),
+                   MakeEnumAccessor (&CoDelQueueDisc::SetMode,
+                                     &CoDelQueueDisc::GetMode),
                    MakeEnumChecker (QUEUE_DISC_MODE_BYTES, "QUEUE_DISC_MODE_BYTES",
-                                    QUEUE_DISC_MODE_PACKETS, "QUEUE_DISC_MODE_PACKETS"))
+                                    QUEUE_DISC_MODE_PACKETS, "QUEUE_DISC_MODE_PACKETS"),
+                   TypeId::DEPRECATED,
+                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxPackets",
                    "The maximum number of packets accepted by this CoDelQueueDisc.",
                    UintegerValue (DEFAULT_CODEL_LIMIT),
-                   MakeUintegerAccessor (&CoDelQueueDisc::m_maxPackets),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerAccessor (&CoDelQueueDisc::SetMaxPackets,
+                                         &CoDelQueueDisc::GetMaxPackets),
+                   MakeUintegerChecker<uint32_t> (),
+                   TypeId::DEPRECATED,
+                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxBytes",
                    "The maximum number of bytes accepted by this CoDelQueueDisc.",
                    UintegerValue (1500 * DEFAULT_CODEL_LIMIT),
-                   MakeUintegerAccessor (&CoDelQueueDisc::m_maxBytes),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerAccessor (&CoDelQueueDisc::SetMaxBytes,
+                                         &CoDelQueueDisc::GetMaxBytes),
+                   MakeUintegerChecker<uint32_t> (),
+                   TypeId::DEPRECATED,
+                   "Use the MaxSize attribute instead")
+    .AddAttribute ("MaxSize",
+                   "The maximum number of packets/bytes accepted by this queue disc.",
+                   QueueSizeValue (QueueSize ("0p")),
+                   MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
+                                          &QueueDisc::GetMaxSize),
+                   MakeQueueSizeChecker ())
     .AddAttribute ("MinBytes",
                    "The CoDel algorithm minbytes parameter.",
                    UintegerValue (1500),
@@ -127,8 +142,9 @@ TypeId CoDelQueueDisc::GetTypeId (void)
 }
 
 CoDelQueueDisc::CoDelQueueDisc ()
-  : QueueDisc (),
-    m_maxBytes (),
+  : QueueDisc (QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE),
+    m_maxPackets (1),         // to avoid that setting the mode at construction time is ignored
+    m_maxBytes (1),           // to avoid that setting the mode at construction time is ignored
     m_count (0),
     m_lastCount (0),
     m_dropping (false),
@@ -171,15 +187,67 @@ CoDelQueueDisc::ControlLaw (uint32_t t)
 void
 CoDelQueueDisc::SetMode (QueueDiscMode mode)
 {
-  NS_LOG_FUNCTION (mode);
-  m_mode = mode;
+  NS_LOG_FUNCTION (this << mode);
+
+  if (mode == QUEUE_DISC_MODE_BYTES)
+    {
+      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, m_maxBytes));
+    }
+  else if (mode == QUEUE_DISC_MODE_PACKETS)
+    {
+      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, m_maxPackets));
+    }
+  else
+    {
+      NS_ABORT_MSG ("Unknown queue size unit");
+    }
 }
 
 CoDelQueueDisc::QueueDiscMode
-CoDelQueueDisc::GetMode (void)
+CoDelQueueDisc::GetMode (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_mode;
+  return (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS ? QUEUE_DISC_MODE_PACKETS : QUEUE_DISC_MODE_BYTES);
+}
+
+void
+CoDelQueueDisc::SetMaxPackets (uint32_t maxPackets)
+{
+  NS_LOG_FUNCTION (this << maxPackets);
+
+  m_maxPackets = maxPackets;
+
+  if (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS)
+    {
+      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, m_maxPackets));
+    }
+}
+
+uint32_t
+CoDelQueueDisc::GetMaxPackets (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_maxPackets;
+}
+
+void
+CoDelQueueDisc::SetMaxBytes (uint32_t maxBytes)
+{
+  NS_LOG_FUNCTION (this << maxBytes);
+
+  m_maxBytes = maxBytes;
+
+  if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES)
+    {
+      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, m_maxBytes));
+    }
+}
+
+uint32_t
+CoDelQueueDisc::GetMaxBytes (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_maxBytes;
 }
 
 bool
@@ -187,16 +255,9 @@ CoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  if (m_mode == QUEUE_DISC_MODE_PACKETS && (GetInternalQueue (0)->GetNPackets () + 1 > m_maxPackets))
+  if (GetCurrentSize () + item > GetMaxSize ())
     {
-      NS_LOG_LOGIC ("Queue full (at max packets) -- dropping pkt");
-      DropBeforeEnqueue (item, OVERLIMIT_DROP);
-      return false;
-    }
-
-  if (m_mode == QUEUE_DISC_MODE_BYTES && (GetInternalQueue (0)->GetNBytes () + item->GetSize () > m_maxBytes))
-    {
-      NS_LOG_LOGIC ("Queue full (packet would exceed max bytes) -- dropping pkt");
+      NS_LOG_LOGIC ("Queue full -- dropping pkt");
       DropBeforeEnqueue (item, OVERLIMIT_DROP);
       return false;
     }
@@ -479,36 +540,14 @@ CoDelQueueDisc::CheckConfig (void)
 
   if (GetNInternalQueues () == 0)
     {
-      // create a DropTail queue
-      Ptr<InternalQueue> queue = CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> > ("Mode", EnumValue (m_mode));
-      if (m_mode == QUEUE_DISC_MODE_PACKETS)
-        {
-          queue->SetMaxPackets (m_maxPackets);
-        }
-      else
-        {
-          queue->SetMaxBytes (m_maxBytes);
-        }
-      AddInternalQueue (queue);
+      // add a DropTail queue
+      AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
+                          ("MaxSize", QueueSizeValue (GetMaxSize ())));
     }
 
   if (GetNInternalQueues () != 1)
     {
       NS_LOG_ERROR ("CoDelQueueDisc needs 1 internal queue");
-      return false;
-    }
-
-  if ((GetInternalQueue (0)->GetMode () == QueueBase::QUEUE_MODE_PACKETS && m_mode == QUEUE_DISC_MODE_BYTES) ||
-      (GetInternalQueue (0)->GetMode () == QueueBase::QUEUE_MODE_BYTES && m_mode == QUEUE_DISC_MODE_PACKETS))
-    {
-      NS_LOG_ERROR ("The mode of the provided queue does not match the mode set on the CoDelQueueDisc");
-      return false;
-    }
-
-  if ((m_mode ==  QUEUE_DISC_MODE_PACKETS && GetInternalQueue (0)->GetMaxPackets () != m_maxPackets) ||
-      (m_mode ==  QUEUE_DISC_MODE_BYTES && GetInternalQueue (0)->GetMaxBytes () != m_maxBytes))
-    {
-      NS_LOG_ERROR ("The size of the internal queue differs from the queue disc limit");
       return false;
     }
 

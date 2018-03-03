@@ -79,6 +79,7 @@ public:
 
   /**
    * \brief Enumeration of the modes supported in the class.
+   * \deprecated This enum will go away in future versions of ns-3.
    *
    */
   enum QueueDiscMode
@@ -91,6 +92,8 @@ public:
    * \brief Set the operating mode of this queue disc.
    *
    * \param mode The operating mode of this queue disc.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
    */
   void SetMode (QueueDiscMode mode);
 
@@ -98,8 +101,10 @@ public:
    * \brief Get the operating mode of this queue disc.
    *
    * \returns The operating mode of this queue disc.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead GetMaxSize()
    */
-  QueueDiscMode GetMode (void);
+  QueueDiscMode GetMode (void) const;
 
   /**
    * \brief Get the current value of the queue in bytes or packets.
@@ -134,6 +139,38 @@ public:
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
 
 private:
+  /**
+   * \brief Set the maximum amount of packets that can be stored in this queue
+   *
+   * \param maxPackets amount of packets
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
+   */
+  void SetMaxPackets (uint32_t maxPackets);
+
+  /**
+   * \return the maximum amount of packets that can be stored in this queue
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead GetMaxSize()
+   */
+  uint32_t GetMaxPackets (void) const;
+
+  /**
+   * \brief Set the maximum amount of bytes that can be stored in this queue
+   *
+   * \param maxBytes amount of bytes
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
+   */
+  void SetMaxBytes (uint32_t maxBytes);
+
+  /**
+   * \return the maximum amount of bytes that can be stored in this queue
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead GetMaxSize()
+   */
+  uint32_t GetMaxBytes (void) const;
+
   friend class::CoDelQueueDiscNewtonStepTest;  // Test code
   friend class::CoDelQueueDiscControlLawTest;  // Test code
   /**

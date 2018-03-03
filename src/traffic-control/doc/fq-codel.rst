@@ -65,7 +65,7 @@ The key attributes that the FqCoDelQueue class holds include the following:
 
 * ``Interval:`` The interval parameter to be used on the CoDel queues. The default value is 100 ms.
 * ``Target:`` The target parameter to be used on the CoDel queues. The default value is 5 ms.
-* ``Packet limit:`` The limit on the maximum number of packets stored by FqCoDel.
+* ``MaxSize:`` The limit on the maximum number of packets stored by FqCoDel.
 * ``Flows:`` The number of flow queues managed by FqCoDel.
 * ``DropBatchSize:`` The maximum number of packets dropped from the fat flow.
 

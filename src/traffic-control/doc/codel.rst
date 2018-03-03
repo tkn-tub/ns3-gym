@@ -48,11 +48,9 @@ There are 2 branches to ``CoDelQueueDisc::DoDequeue ()``:
 The CoDel queue disc does not require packet filters, does not admit
 child queue discs and uses a single internal queue. If not provided by
 the user, a DropTail queue operating in the same mode (packet or byte)
-as the queue disc and having a size equal to the CoDel MaxPackets or
-MaxBytes attribute (depending on the mode) is created. If the user
-provides an internal queue, such a queue must operate in the same mode
-as the queue disc and have a size not less than the CoDel MaxPackets or
-MaxBytes attribute (depending on the mode).
+as the queue disc and having a size equal to the CoDel MaxSize attribute
+is created. Otherwise, the capacity of the queue disc is determined by
+the capacity of the internal queue provided by the user.
 
 
 References
@@ -69,9 +67,7 @@ Attributes
 
 The key attributes that the CoDelQueue class holds include the following: 
 
-* ``Mode:`` CoDel operating mode (BYTES, PACKETS, or ILLEGAL). The default mode is BYTES. 
-* ``MaxPackets:`` The maximum number of packets the queue can hold. The default value is DEFAULT_CODEL_LIMIT, which is 1000 packets.
-* ``MaxBytes:`` The maximum number of bytes the queue can hold. The default value is 1500 * DEFAULT_CODEL_LIMIT, which is 1500 * 1000 bytes. 
+* ``MaxSize:`` The maximum number of packets/bytes the queue can hold. The default value is 1500 * DEFAULT_CODEL_LIMIT, which is 1500 * 1000 bytes.
 * ``MinBytes:`` The CoDel algorithm minbytes parameter. The default value is 1500 bytes. 
 * ``Interval:`` The sliding-minimum window. The default value is 100 ms. 
 * ``Target:`` The CoDel algorithm target queue delay. The default value is 5 ms. 

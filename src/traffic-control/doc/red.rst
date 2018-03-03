@@ -22,10 +22,9 @@ examples mentioned below).
 The RED queue disc does not require packet filters, does not admit
 child queue discs and uses a single internal queue. If not provided by
 the user, a DropTail queue operating in the same mode (packet or byte)
-as the queue disc and having a size equal to the RED QueueLimit attribute
-is created. If the user provides an internal queue, such a queue must
-operate in the same mode as the queue disc and have a size not less than
-the RED QueueLimit attribute.
+as the queue disc and having a size equal to the RED MaxSize attribute
+is created. Otherwise, the capacity of the queue disc is determined by
+the capacity of the internal queue provided by the user.
 
 Adaptive Random Early Detection (ARED)
 ======================================
@@ -91,13 +90,12 @@ Attributes
 The RED queue contains a number of attributes that control the RED
 policies:
 
-* Mode (bytes or packets)
+* MaxSize
 * MeanPktSize
 * IdlePktSize
 * Wait (time)
 * Gentle mode
 * MinTh, MaxTh
-* QueueLimit
 * Queue weight
 * LInterm
 * LinkBandwidth

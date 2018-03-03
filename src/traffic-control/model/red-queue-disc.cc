@@ -81,9 +81,12 @@ TypeId RedQueueDisc::GetTypeId (void)
     .AddAttribute ("Mode",
                    "Determines unit for QueueLimit",
                    EnumValue (QUEUE_DISC_MODE_PACKETS),
-                   MakeEnumAccessor (&RedQueueDisc::SetMode),
+                   MakeEnumAccessor (&RedQueueDisc::SetMode,
+                                     &RedQueueDisc::GetMode),
                    MakeEnumChecker (QUEUE_DISC_MODE_BYTES, "QUEUE_DISC_MODE_BYTES",
-                                    QUEUE_DISC_MODE_PACKETS, "QUEUE_DISC_MODE_PACKETS"))
+                                    QUEUE_DISC_MODE_PACKETS, "QUEUE_DISC_MODE_PACKETS"),
+                   TypeId::DEPRECATED,
+                   "Use the MaxSize attribute instead")
     .AddAttribute ("MeanPktSize",
                    "Average of packet size",
                    UintegerValue (500),
@@ -138,7 +141,15 @@ TypeId RedQueueDisc::GetTypeId (void)
                    "Queue limit in bytes/packets",
                    UintegerValue (25),
                    MakeUintegerAccessor (&RedQueueDisc::SetQueueLimit),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint32_t> (),
+                   TypeId::DEPRECATED,
+                   "Use the MaxSize attribute instead")
+    .AddAttribute ("MaxSize",
+                   "The maximum number of packets accepted by this queue disc",
+                   QueueSizeValue (QueueSize ("0p")),
+                   MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
+                                          &QueueDisc::GetMaxSize),
+                   MakeQueueSizeChecker ())
     .AddAttribute ("QW",
                    "Queue weight related to the exponential weighted moving average (EWMA)",
                    DoubleValue (0.002),
@@ -230,7 +241,7 @@ TypeId RedQueueDisc::GetTypeId (void)
 }
 
 RedQueueDisc::RedQueueDisc () :
-  QueueDisc ()
+  QueueDisc (QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE)
 {
   NS_LOG_FUNCTION (this);
   m_uv = CreateObject<UniformRandomVariable> ();
@@ -253,14 +264,26 @@ void
 RedQueueDisc::SetMode (QueueDiscMode mode)
 {
   NS_LOG_FUNCTION (this << mode);
-  m_mode = mode;
+
+  if (mode == QUEUE_DISC_MODE_BYTES)
+    {
+      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, GetMaxSize ().GetValue ()));
+    }
+  else if (mode == QUEUE_DISC_MODE_PACKETS)
+    {
+      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, GetMaxSize ().GetValue ()));
+    }
+  else
+    {
+      NS_ABORT_MSG ("Unknown queue size unit");
+    }
 }
 
 RedQueueDisc::QueueDiscMode
-RedQueueDisc::GetMode (void)
+RedQueueDisc::GetMode (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_mode;
+  return (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS ? QUEUE_DISC_MODE_PACKETS : QUEUE_DISC_MODE_BYTES);
 }
 
 void
@@ -343,7 +366,7 @@ void
 RedQueueDisc::SetQueueLimit (uint32_t lim)
 {
   NS_LOG_FUNCTION (this << lim);
-  m_queueLimit = lim;
+  SetMaxSize (QueueSize (GetMaxSize ().GetUnit (), lim));
 }
 
 void
@@ -368,18 +391,7 @@ RedQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  uint32_t nQueued = 0;
-
-  if (GetMode () == QUEUE_DISC_MODE_BYTES)
-    {
-      NS_LOG_DEBUG ("Enqueue in bytes mode");
-      nQueued = GetInternalQueue (0)->GetNBytes ();
-    }
-  else if (GetMode () == QUEUE_DISC_MODE_PACKETS)
-    {
-      NS_LOG_DEBUG ("Enqueue in packets mode");
-      nQueued = GetInternalQueue (0)->GetNPackets ();
-    }
+  uint32_t nQueued = GetInternalQueue (0)->GetCurrentSize ().GetValue ();
 
   // simulate number of packets arrival during idle period
   uint32_t m = 0;
@@ -926,36 +938,14 @@ RedQueueDisc::CheckConfig (void)
 
   if (GetNInternalQueues () == 0)
     {
-      // create a DropTail queue
-      Ptr<InternalQueue> queue = CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> > ("Mode", EnumValue (m_mode));
-      if (m_mode == QUEUE_DISC_MODE_PACKETS)
-        {
-          queue->SetMaxPackets (m_queueLimit);
-        }
-      else
-        {
-          queue->SetMaxBytes (m_queueLimit);
-        }
-      AddInternalQueue (queue);
+      // add a DropTail queue
+      AddInternalQueue (CreateObjectWithAttributes<DropTailQueue<QueueDiscItem> >
+                          ("MaxSize", QueueSizeValue (GetMaxSize ())));
     }
 
   if (GetNInternalQueues () != 1)
     {
       NS_LOG_ERROR ("RedQueueDisc needs 1 internal queue");
-      return false;
-    }
-
-  if ((GetInternalQueue (0)->GetMode () == QueueBase::QUEUE_MODE_PACKETS && m_mode == QUEUE_DISC_MODE_BYTES) ||
-      (GetInternalQueue (0)->GetMode () == QueueBase::QUEUE_MODE_BYTES && m_mode == QUEUE_DISC_MODE_PACKETS))
-    {
-      NS_LOG_ERROR ("The mode of the provided queue does not match the mode set on the RedQueueDisc");
-      return false;
-    }
-
-  if ((m_mode ==  QUEUE_DISC_MODE_PACKETS && GetInternalQueue (0)->GetMaxPackets () != m_queueLimit) ||
-      (m_mode ==  QUEUE_DISC_MODE_BYTES && GetInternalQueue (0)->GetMaxBytes () != m_queueLimit))
-    {
-      NS_LOG_ERROR ("The size of the internal queue differs from the queue disc limit");
       return false;
     }
 

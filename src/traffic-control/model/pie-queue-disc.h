@@ -79,6 +79,7 @@ public:
 
   /**
    * \brief Enumeration of the modes supported in the class.
+   * \deprecated This enum will go away in future versions of ns-3.
    *
    */
   enum QueueDiscMode
@@ -91,6 +92,8 @@ public:
    * \brief Set the operating mode of this queue disc.
    *
    * \param mode The operating mode of this queue disc.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
    */
   void SetMode (QueueDiscMode mode);
 
@@ -98,8 +101,10 @@ public:
    * \brief Get the operating mode of this queue disc.
    *
    * \returns The operating mode of this queue disc.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead GetMaxSize()
    */
-  QueueDiscMode GetMode (void);
+  QueueDiscMode GetMode (void) const;
 
   /**
    * \brief Get the current value of the queue in bytes or packets.
@@ -112,6 +117,8 @@ public:
    * \brief Set the limit of the queue in bytes or packets.
    *
    * \param lim The limit in bytes or packets.
+   * \deprecated This method will go away in future versions of ns-3.
+   * See instead SetMaxSize()
    */
   void SetQueueLimit (uint32_t lim);
 
@@ -171,8 +178,6 @@ private:
   static const uint64_t DQCOUNT_INVALID = std::numeric_limits<uint64_t>::max();  //!< Invalid dqCount value
 
   // ** Variables supplied by user
-  QueueDiscMode m_mode;                         //!< Mode (bytes or packets)
-  uint32_t m_queueLimit;                        //!< Queue limit in bytes / packets
   Time m_sUpdate;                               //!< Start time of the update timer
   Time m_tUpdate;                               //!< Time period after which CalculateP () is called
   Time m_qDelayRef;                             //!< Desired queue delay

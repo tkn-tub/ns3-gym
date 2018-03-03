@@ -24,6 +24,7 @@
 #include "ns3/traced-value.h"
 #include "ns3/net-device.h"
 #include "ns3/queue-item.h"
+#include "ns3/queue-size.h"
 #include <vector>
 #include <map>
 #include <functional>
@@ -76,6 +77,35 @@ protected:
 
 private:
   Ptr<QueueDisc> m_queueDisc;        //!< Queue disc attached to this class
+};
+
+/**
+ * \ingroup traffic-control
+ * \brief Enumeration of the available policies to handle the queue disc size.
+ *
+ * - SINGLE_INTERNAL_QUEUE is intended to handle the maxSize attribute
+ * of queue discs having a single internal queue. If no internal queue is
+ * yet attached to the queue disc, setting/getting this attribute involves
+ * setting/getting the member variable of the queue disc; otherwise, the
+ * corresponding attribute of the internal queue is set/get.
+ * - SINGLE_CHILD_QUEUE_DISC is intended to handle the maxSize attribute
+ * of queue discs having a single child queue disc. If no child queue disc is
+ * yet attached to the queue disc, setting/getting this attribute involves
+ * setting/getting the member variable of the queue disc; otherwise, the
+ * corresponding attribute of the child queue disc is set/get.
+ * - MULTIPLE_QUEUES is intended to handle the maxSize attribute of queue
+ * discs having multiple internal queues or child queue discs. Setting/getting
+ * this attribute always involves setting/getting the member variable of the
+ * queue disc. Queue discs should warn the user if a packet is dropped by an
+ * internal queue/child queue disc because of lack of space, while the queue
+ * disc limit is not exceeded.
+ */
+enum class QueueDiscSizePolicy : uint8_t
+{
+  SINGLE_INTERNAL_QUEUE,       /**< Used by queue discs with single internal queue */
+  SINGLE_CHILD_QUEUE_DISC,     /**< Used by queue discs with single child queue disc */
+  MULTIPLE_QUEUES,             /**< Used by queue discs with multiple internal queues/child queue discs */
+  NO_LIMITS                    /**< Used by queue discs with unlimited size */
 };
 
 
@@ -243,7 +273,19 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  QueueDisc ();
+  /**
+   * \brief Constructor
+   * \param policy the policy to handle the queue disc size
+   */
+  QueueDisc (QueueDiscSizePolicy policy = QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE);
+
+  /**
+   * \brief Constructor
+   * \param policy the policy to handle the queue disc size
+   * \param unit The fixed operating mode of this queue disc
+   */
+  QueueDisc (QueueDiscSizePolicy policy, QueueSizeUnit unit);
+
   virtual ~QueueDisc ();
 
   /**
@@ -261,6 +303,33 @@ public:
    * The requeued packet, if any, is counted.
    */
   uint32_t GetNBytes (void) const;
+
+  /**
+   * \brief Get the maximum size of the queue disc.
+   *
+   * \returns the maximum size of the queue disc.
+   */
+  QueueSize GetMaxSize (void) const;
+
+  /**
+   * \brief Set the maximum size of the queue disc.
+   *
+   * Trying to set a null size has no effect.
+   *
+   * \param size the maximum size.
+   * \returns true if setting the size succeeded, false otherwise.
+   */
+  bool SetMaxSize (QueueSize size);
+
+  /**
+   * \brief Get the current size of the queue disc in bytes, if
+   *        operating in bytes mode, or packets, otherwise.
+   *
+   * Do not call this method if the queue disc size is not limited.
+   *
+   * \returns The queue disc size in bytes or packets.
+   */
+  QueueSize GetCurrentSize (void);
 
   /**
    * \brief Retrieve all the collected statistics.
@@ -580,6 +649,7 @@ private:
   TracedValue<uint32_t> m_nPackets; //!< Number of packets in the queue
   TracedValue<uint32_t> m_nBytes;   //!< Number of bytes in the queue
   TracedValue<Time> m_sojourn;      //!< Sojourn time of the latest dequeued packet
+  QueueSize m_maxSize;              //!< max queue size
 
   Stats m_stats;                    //!< The collected statistics
   uint32_t m_quota;                 //!< Maximum number of packets dequeued in a qdisc run
@@ -588,6 +658,8 @@ private:
   bool m_running;                   //!< The queue disc is performing multiple dequeue operations
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
   std::string m_childQueueDiscDropMsg;  //!< Reason why a packet was dropped by a child queue disc
+  QueueDiscSizePolicy m_sizePolicy;     //!< The queue disc size policy
+  bool m_prohibitChangeMode;            //!< True if changing mode is prohibited
 
   /// Traced callback: fired when a packet is enqueued
   TracedCallback<Ptr<const QueueDiscItem> > m_traceEnqueue;

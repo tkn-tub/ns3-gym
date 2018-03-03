@@ -47,8 +47,7 @@ Attributes
 
 The key attributes that the PieQueue class holds include the following: 
 
-* ``Mode:`` PIE operating mode (BYTES or PACKETS). The default mode is PACKETS. 
-* ``QueueLimit:`` The maximum number of bytes or packets the queue can hold. The default value is 25 bytes / packets.
+* ``MaxSize:`` The maximum number of bytes or packets the queue can hold.
 * ``MeanPktSize:`` Mean packet size in bytes. The default value is 1000 bytes.
 * ``Tupdate:`` Time period to calculate drop probability. The default value is 30 ms. 
 * ``Supdate:`` Start time of the update timer. The default value is 0 ms. 
