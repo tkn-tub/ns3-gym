@@ -280,9 +280,10 @@ int main (int argc, char *argv[])
     }
 
   // Queue defaults
-  Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (queueSize));
-  Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueSize));
-  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
+  Config::SetDefault ("ns3::PfifoFastQueueDisc::MaxSize",
+                      QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueSize)));
+  Config::SetDefault ("ns3::CoDelQueueDisc::MaxSize",
+                      QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueSize)));
 
   // Create the nodes
   NS_LOG_INFO ("Create nodes");

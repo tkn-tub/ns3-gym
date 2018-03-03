@@ -147,13 +147,6 @@ public:
    */
   QueueDiscMode GetMode (void) const;
 
-  /**
-   * \brief Get the current value of the queue in bytes or packets.
-   *
-   * \returns The queue size in bytes or packets.
-   */
-  uint32_t GetQueueSize (void);
-
    /**
     * \brief Set the alpha value to adapt m_curMaxP.
     *

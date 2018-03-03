@@ -110,7 +110,7 @@ main (int argc, char *argv[])
   PointToPointHelper pointToPoint;
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("10Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("2ms"));
-  pointToPoint.SetQueue ("ns3::DropTailQueue", "Mode", StringValue ("QUEUE_MODE_PACKETS"), "MaxPackets", UintegerValue (1));
+  pointToPoint.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("1p"));
 
   NetDeviceContainer devices;
   devices = pointToPoint.Install (nodes);

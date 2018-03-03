@@ -129,8 +129,8 @@ int main (int argc, char *argv[])
     }
 
   // Devices queue configuration
-  Config::SetDefault ("ns3::QueueBase::Mode", StringValue ("QUEUE_MODE_PACKETS"));
-  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (queueSize));
+  Config::SetDefault ("ns3::QueueBase::MaxSize",
+                      QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueSize)));
 
   // Create gateway, source, and sink
   NodeContainer gateway;
@@ -154,16 +154,16 @@ int main (int argc, char *argv[])
 
   // Access link traffic control configuration
   TrafficControlHelper tchPfifoFastAccess;
-  tchPfifoFastAccess.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "Limit", UintegerValue (1000));
+  tchPfifoFastAccess.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "MaxSize", StringValue ("1000p"));
 
   // Bottleneck link traffic control configuration
   TrafficControlHelper tchPfifo;
-  tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "Limit", UintegerValue (queueDiscSize));
+  tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc", "MaxSize",
+                             StringValue (std::to_string(queueDiscSize) + "p"));
 
   TrafficControlHelper tchCoDel;
   tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");
-  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (CoDelQueueDisc::QUEUE_DISC_MODE_PACKETS));
-  Config::SetDefault ("ns3::CoDelQueueDisc::MaxPackets", UintegerValue (queueDiscSize));
+  Config::SetDefault ("ns3::CoDelQueueDisc::MaxSize", StringValue (std::to_string(queueDiscSize) + "p"));
 
   Ipv4AddressHelper address;
   address.SetBase ("10.0.0.0", "255.255.255.0");

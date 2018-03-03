@@ -99,19 +99,12 @@ QueueDiscTestItem::Mark (void)
 class TcFlowControlTestCase : public TestCase
 {
 public:
-  /// Device queue operating mode
-  enum TestType
-    {
-      PACKET_MODE,
-      BYTE_MODE
-    };
-
   /**
    * Constructor
    *
    * \param tt the test type
    */
-  TcFlowControlTestCase (TestType tt);
+  TcFlowControlTestCase (QueueSizeUnit tt);
   virtual ~TcFlowControlTestCase ();
 private:
   virtual void DoRun (void);
@@ -142,10 +135,10 @@ private:
    * \param msg the message to print if a different number of packets are stored
    */
   void CheckPacketsInQueueDisc (Ptr<NetDevice> dev, uint16_t nPackets, const char* msg);
-  TestType m_type;       //!< the test type
+  QueueSizeUnit m_type;       //!< the test type
 };
 
-TcFlowControlTestCase::TcFlowControlTestCase (TestType tt)
+TcFlowControlTestCase::TcFlowControlTestCase (QueueSizeUnit tt)
   : TestCase ("Test the operation of the flow control mechanism"),
     m_type (tt)
 {
@@ -201,15 +194,13 @@ TcFlowControlTestCase::DoRun (void)
 
   Ptr<Queue<Packet> > queue;
 
-  if (m_type == PACKET_MODE)
+  if (m_type == QueueSizeUnit::PACKETS)
     {
-      queue = CreateObjectWithAttributes<DropTailQueue<Packet> > ("Mode", EnumValue (QueueBase::QUEUE_MODE_PACKETS),
-                                                                  "MaxPackets", UintegerValue (5));
+      queue = CreateObjectWithAttributes<DropTailQueue<Packet> > ("MaxSize", StringValue ("5p"));
     }
   else
     {
-      queue = CreateObjectWithAttributes<DropTailQueue<Packet> > ("Mode", EnumValue (QueueBase::QUEUE_MODE_BYTES),
-                                                                  "MaxBytes", UintegerValue (5000));
+      queue = CreateObjectWithAttributes<DropTailQueue<Packet> > ("MaxSize", StringValue ("5000B"));
     }
 
   // link the two nodes
@@ -232,7 +223,7 @@ TcFlowControlTestCase::DoRun (void)
   Simulator::Schedule (Time (Seconds (0)), &TcFlowControlTestCase::SendPackets,
                       this, n.Get (0), 10);
 
-  if (m_type == PACKET_MODE)
+  if (m_type == QueueSizeUnit::PACKETS)
     {
       /*
        * When the device queue is in packet mode, all the packets enqueued in the
@@ -395,7 +386,7 @@ public:
   TcFlowControlTestSuite ()
     : TestSuite ("tc-flow-control", UNIT)
   {
-    AddTestCase (new TcFlowControlTestCase (TcFlowControlTestCase::PACKET_MODE), TestCase::QUICK);
-    AddTestCase (new TcFlowControlTestCase (TcFlowControlTestCase::BYTE_MODE), TestCase::QUICK);
+    AddTestCase (new TcFlowControlTestCase (QueueSizeUnit::PACKETS), TestCase::QUICK);
+    AddTestCase (new TcFlowControlTestCase (QueueSizeUnit::BYTES), TestCase::QUICK);
   }
 } g_tcFlowControlTestSuite; ///< the test suite

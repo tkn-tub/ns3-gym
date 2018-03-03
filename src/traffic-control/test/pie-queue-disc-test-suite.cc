@@ -130,7 +130,7 @@ private:
    * Run test function
    * \param mode the test mode
    */
-  void RunPieTest (StringValue mode);
+  void RunPieTest (QueueSizeUnit mode);
 };
 
 PieQueueDiscTestCase::PieQueueDiscTestCase ()
@@ -139,7 +139,7 @@ PieQueueDiscTestCase::PieQueueDiscTestCase ()
 }
 
 void
-PieQueueDiscTestCase::RunPieTest (StringValue mode)
+PieQueueDiscTestCase::RunPieTest (QueueSizeUnit mode)
 {
   uint32_t pktSize = 0;
 
@@ -151,12 +151,9 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
 
 
   // test 1: simple enqueue/dequeue with defaults, no drops
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-
   Address dest;
 
-  if (queue->GetMode () == PieQueueDisc::QUEUE_DISC_MODE_BYTES)
+  if (mode == QueueSizeUnit::BYTES)
     {
       // pktSize should be same as MeanPktSize to avoid performance gap between byte and packet mode
       pktSize = 1000;
@@ -164,8 +161,8 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
       qSize = qSize * modeSize;
     }
 
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
 
   Ptr<Packet> p1, p2, p3, p4, p5, p6, p7, p8;
   p1 = Create<Packet> (pktSize);
@@ -178,34 +175,34 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
   p8 = Create<Packet> (pktSize);
 
   queue->Initialize ();
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 0 * modeSize, "There should be no packets in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 0 * modeSize, "There should be no packets in there");
   queue->Enqueue (Create<PieQueueDiscTestItem> (p1, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 1 * modeSize, "There should be one packet in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 1 * modeSize, "There should be one packet in there");
   queue->Enqueue (Create<PieQueueDiscTestItem> (p2, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 2 * modeSize, "There should be two packets in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 2 * modeSize, "There should be two packets in there");
   queue->Enqueue (Create<PieQueueDiscTestItem> (p3, dest));
   queue->Enqueue (Create<PieQueueDiscTestItem> (p4, dest));
   queue->Enqueue (Create<PieQueueDiscTestItem> (p5, dest));
   queue->Enqueue (Create<PieQueueDiscTestItem> (p6, dest));
   queue->Enqueue (Create<PieQueueDiscTestItem> (p7, dest));
   queue->Enqueue (Create<PieQueueDiscTestItem> (p8, dest));
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 8 * modeSize, "There should be eight packets in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 8 * modeSize, "There should be eight packets in there");
 
   Ptr<QueueDiscItem> item;
 
   item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the first packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 7 * modeSize, "There should be seven packets in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 7 * modeSize, "There should be seven packets in there");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p1->GetUid (), "was this the first packet ?");
 
   item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the second packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 6 * modeSize, "There should be six packet in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 6 * modeSize, "There should be six packet in there");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p2->GetUid (), "Was this the second packet ?");
 
   item = queue->Dequeue ();
   NS_TEST_EXPECT_MSG_EQ ((item != 0), true, "I want to remove the third packet");
-  NS_TEST_EXPECT_MSG_EQ (queue->GetQueueSize (), 5 * modeSize, "There should be five packets in there");
+  NS_TEST_EXPECT_MSG_EQ (queue->GetCurrentSize ().GetValue (), 5 * modeSize, "There should be five packets in there");
   NS_TEST_EXPECT_MSG_EQ (item->GetPacket ()->GetUid (), p3->GetUid (), "Was this the third packet ?");
 
   item = queue->Dequeue ();
@@ -221,10 +218,8 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
   // test 2: more data with defaults, unforced drops but no forced drops
   queue = CreateObject<PieQueueDisc> ();
   pktSize = 1000;  // pktSize != 0 because DequeueThreshold always works in bytes
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
                          "Verify that we can actually set the attribute A");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
@@ -252,10 +247,8 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
 
   // test 3: same as test 2, but with higher QueueDelayReference
   queue = CreateObject<PieQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
                          "Verify that we can actually set the attribute A");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
@@ -283,10 +276,8 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
 
   // test 4: same as test 2, but with reduced dequeue rate
   queue = CreateObject<PieQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
                          "Verify that we can actually set the attribute A");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
@@ -314,10 +305,8 @@ PieQueueDiscTestCase::RunPieTest (StringValue mode)
 
   // test 5: same dequeue rate as test 4, but with higher Tupdate
   queue = CreateObject<PieQueueDisc> ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("Mode", mode), true,
-                         "Verify that we can actually set the attribute Mode");
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("QueueLimit", UintegerValue (qSize)), true,
-                         "Verify that we can actually set the attribute QueueLimit");
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", QueueSizeValue (QueueSize (mode, qSize))),
+                         true, "Verify that we can actually set the attribute MaxSize");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("A", DoubleValue (0.125)), true,
                          "Verify that we can actually set the attribute A");
   NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("B", DoubleValue (1.25)), true,
@@ -385,8 +374,8 @@ PieQueueDiscTestCase::DequeueWithDelay (Ptr<PieQueueDisc> queue, double delay, u
 void
 PieQueueDiscTestCase::DoRun (void)
 {
-  RunPieTest (StringValue ("QUEUE_DISC_MODE_PACKETS"));
-  RunPieTest (StringValue ("QUEUE_DISC_MODE_BYTES"));
+  RunPieTest (QueueSizeUnit::PACKETS);
+  RunPieTest (QueueSizeUnit::BYTES);
   Simulator::Destroy ();
 }
 

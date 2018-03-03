@@ -1,3 +1,4 @@
+
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2015 NITK Surathkal
@@ -104,7 +105,7 @@ std::stringstream filePlotQueueDiscAvg;
 void
 CheckQueueDiscSize (Ptr<QueueDisc> queue)
 {
-  uint32_t qSize = StaticCast<RedQueueDisc> (queue)->GetQueueSize ();
+  uint32_t qSize = queue->GetCurrentSize ().GetValue ();
 
   avgQueueDiscSize += qSize;
   checkTimes++;
@@ -240,24 +241,23 @@ main (int argc, char *argv[])
 
   // RED params
   NS_LOG_INFO ("Set RED params");
-  Config::SetDefault ("ns3::RedQueueDisc::Mode", StringValue ("QUEUE_DISC_MODE_PACKETS"));
+  Config::SetDefault ("ns3::RedQueueDisc::MaxSize", StringValue ("1000p"));
   Config::SetDefault ("ns3::RedQueueDisc::MeanPktSize", UintegerValue (meanPktSize));
   Config::SetDefault ("ns3::RedQueueDisc::Wait", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::Gentle", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::QW", DoubleValue (0.002));
   Config::SetDefault ("ns3::RedQueueDisc::MinTh", DoubleValue (5));
   Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (15));
-  Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (1000));
 
   if (aredTest == 1) // test 1: red1
     {
-      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (25));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxSize", StringValue ("25p"));
     }
   else if (aredTest == 2) // test 2: red1Adapt
     {
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10));
-      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (25));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxSize", StringValue ("25p"));
     }
   else if (aredTest == 7) // test 7: fastlinkAutowq
     {
@@ -286,13 +286,13 @@ main (int argc, char *argv[])
     }
   else if (aredTest == 13) // test 13: longlink
     {
-      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (100));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxSize", StringValue ("100p"));
     }
   else if (aredTest == 14) // test 14: longlinkAdapt
     {
       Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10));
-      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (100));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxSize", StringValue ("100p"));
     }
   else if (aredTest == 15) // test 15: longlinkAdapt1
     {
@@ -301,7 +301,7 @@ main (int argc, char *argv[])
       Config::SetDefault ("ns3::RedQueueDisc::MaxTh", DoubleValue (0));
       Config::SetDefault ("ns3::RedQueueDisc::AdaptMaxP", BooleanValue (true));
       Config::SetDefault ("ns3::RedQueueDisc::LInterm", DoubleValue (10));
-      Config::SetDefault ("ns3::RedQueueDisc::QueueLimit", UintegerValue (100));
+      Config::SetDefault ("ns3::RedQueueDisc::MaxSize", StringValue ("100p"));
     }
 
   NS_LOG_INFO ("Install internet stack on all nodes.");
@@ -310,7 +310,7 @@ main (int argc, char *argv[])
 
   TrafficControlHelper tchPfifo;
   uint16_t handle = tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  tchPfifo.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxPackets", UintegerValue (1000));
+  tchPfifo.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue ("1000p"));
 
   TrafficControlHelper tchRed;
   tchRed.SetRootQueueDisc ("ns3::RedQueueDisc", "LinkBandwidth", StringValue (aredLinkDataRate),

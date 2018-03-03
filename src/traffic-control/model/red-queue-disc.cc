@@ -857,24 +857,6 @@ RedQueueDisc::ModifyP (double p, uint32_t size)
   return p;
 }
 
-uint32_t
-RedQueueDisc::GetQueueSize (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (GetMode () == QUEUE_DISC_MODE_BYTES)
-    {
-      return GetInternalQueue (0)->GetNBytes ();
-    }
-  else if (GetMode () == QUEUE_DISC_MODE_PACKETS)
-    {
-      return GetInternalQueue (0)->GetNPackets ();
-    }
-  else
-    {
-      NS_ABORT_MSG ("Unknown RED mode.");
-    }
-}
-
 Ptr<QueueDiscItem>
 RedQueueDisc::DoDequeue (void)
 {
