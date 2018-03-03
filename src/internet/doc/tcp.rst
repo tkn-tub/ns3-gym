@@ -723,7 +723,6 @@ The following unit tests have been written to validate the implementation of LED
 * LEDBAT should operate same as NewReno during slow start
 * LEDBAT should operate same as NewReno if timestamps are disabled
 * Test to validate cwnd increment in LEDBAT
-* Test to validate cwnd decrement in LEDBAT
 
 In comparison to RFC 6817, the scope and limitations of the current LEDBAT
 implementation are:
@@ -796,6 +795,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-timestamp:** Unit test on the timestamp option
 * **tcp-wscaling:** Unit test on the window scaling option
 * **tcp-zero-window-test:** Unit test persist behavior for zero window conditions
+* **tcp-close-test:** Unit test on the socket closing: both receiver and sender have to close their socket when all bytes are transferred
 
 Several tests have dependencies outside of the ``internet`` module, so they
 are located in a system test directory called ``src/test/ns3tcp``.  Three
