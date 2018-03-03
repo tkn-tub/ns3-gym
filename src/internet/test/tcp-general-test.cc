@@ -209,6 +209,13 @@ TcpGeneralTest::DoRun (void)
                                               MakeCallback (&TcpGeneralTest::RttTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("BytesInFlight",
                                               MakeCallback (&TcpGeneralTest::BytesInFlightTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("RTO",
+                                              MakeCallback (&TcpGeneralTest::RtoTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("NextTxSequence",
+                                              MakeCallback (&TcpGeneralTest::NextTxSeqTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("HighestSequence",
+                                              MakeCallback (&TcpGeneralTest::HighestTxSeqTrace, this));
+
 
   m_remoteAddr = InetSocketAddress (serverAddress, 4477);
 
@@ -281,13 +288,13 @@ TcpGeneralTest::CreateSocket (Ptr<Node> node, TypeId socketType,
 Ptr<ErrorModel>
 TcpGeneralTest::CreateSenderErrorModel ()
 {
-  return 0;
+  return nullptr;
 }
 
 Ptr<ErrorModel>
 TcpGeneralTest::CreateReceiverErrorModel ()
 {
-  return 0;
+  return nullptr;
 }
 
 Ptr<TcpSocketMsgBase>
@@ -322,6 +329,7 @@ TcpGeneralTest::QueueDropCb ( std::string context, Ptr<const Packet> p)
 void
 TcpGeneralTest::PhyDropCb (std::string context, Ptr<const Packet> p)
 {
+  NS_UNUSED (p);
   if (context.compare ("SENDER") == 0)
     {
       PhyDrop (SENDER);
@@ -1084,7 +1092,7 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
       p->AddPacketTag (ipHopLimitTag);
     }
 
-  if (m_endPoint == 0 && m_endPoint6 == 0)
+  if (m_endPoint == nullptr && m_endPoint6 == nullptr)
     {
       NS_LOG_WARN ("Failed to send empty packet due to null endpoint");
       return;
@@ -1133,7 +1141,7 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
 
   // end of division in small acks
 
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       header.SetSourcePort (m_endPoint->GetLocalPort ());
       header.SetDestinationPort (m_endPoint->GetPeerPort ());
@@ -1165,7 +1173,7 @@ TcpSocketSmallAcks::SendEmptyPacket (uint8_t flags)
           m_synCount--;
         }
     }
-  if (m_endPoint != 0)
+  if (m_endPoint != nullptr)
     {
       m_tcp->SendPacket (p, header, m_endPoint->GetLocalAddress (),
                          m_endPoint->GetPeerAddress (), m_boundnetdevice);
