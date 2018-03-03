@@ -1488,8 +1488,8 @@ TcpSocketBase::EnterRecovery ()
   m_tcb->m_congState = TcpSocketState::CA_RECOVERY;
 
   // (4.2) ssthresh = cwnd = (FlightSize / 2)
-  m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb,
-                                                        BytesInFlight ());
+  uint32_t bytesInFlight = BytesInFlight ();
+  m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, bytesInFlight);
   if (m_sackEnabled)
     {
       m_tcb->m_cWnd = m_tcb->m_ssThresh;
@@ -1501,7 +1501,8 @@ TcpSocketBase::EnterRecovery ()
 
   NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
                "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
-               m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover);
+               m_tcb->m_ssThresh << " at fast recovery seqnum " << m_recover <<
+               " calculated in flight: " << bytesInFlight);
 
   // (4.3) Retransmit the first data segment presumed dropped
   DoRetransmit ();
@@ -1653,7 +1654,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
   // acknowledgment), and the TCP is not currently in loss recovery
   if (scoreboardUpdated ||
       (!m_sackEnabled && ackNumber == m_txBuffer->HeadSequence ()
-       && ackNumber < m_tcb->m_nextTxSequence))
+       && ackNumber < m_tcb->m_highTxMark))
     {
       NS_LOG_DEBUG ("ACK of " << ackNumber <<
                     " SND.UNA=" << m_txBuffer->HeadSequence () <<
@@ -1665,7 +1666,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
     }
 
   if (ackNumber == m_txBuffer->HeadSequence ()
-      && ackNumber == m_tcb->m_nextTxSequence)
+      && ackNumber == m_tcb->m_highTxMark)
     {
       NS_LOG_INFO ("ACK of " << ackNumber <<
                    ", there is no need to process (we haven't data to transmit)");
@@ -1673,7 +1674,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
       return;
     }
   else if (ackNumber == m_txBuffer->HeadSequence ()
-           && ackNumber > m_tcb->m_nextTxSequence)
+           && ackNumber > m_tcb->m_highTxMark)
     {
       // ACK of the FIN bit ... nextTxSequence is not updated since we
       // don't have anything to transmit
