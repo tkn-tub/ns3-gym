@@ -1332,14 +1332,14 @@ Bug2483TestCase::DoRun (void)
   // {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation type} tuples
   uint8_t numberTuples = m_distinctTuples.size ();
   NS_TEST_ASSERT_MSG_EQ (numberTuples, 2, "Only two distinct tuples expected");
-  NS_TEST_ASSERT_MSG_EQ (std::get<0> (m_distinctTuples[0]), std::get<0> (m_distinctTuples[1]), "Both tuples should have same starting frequency");
+  NS_TEST_ASSERT_MSG_EQ (std::get<0> (m_distinctTuples[0]) - 20e6, std::get<0> (m_distinctTuples[1]), "The starting frequency of the first tuple should be shifted 20 MHz to the right wrt second tuple");
   // Note that the first tuple should the one initiated by the beacon, i.e. legacy OFDM (20 MHz)
   NS_TEST_ASSERT_MSG_EQ (std::get<1> (m_distinctTuples[0]), 20, "First tuple's channel width should be 20 MHz");
-  NS_TEST_ASSERT_MSG_EQ (std::get<2> (m_distinctTuples[0]), 129, "First tuple should have 129 subbands (64+DC, 20MHz+DC, inband and 32*2 out-of-band, 10MHz on each side)");
+  NS_TEST_ASSERT_MSG_EQ (std::get<2> (m_distinctTuples[0]), 193, "First tuple should have 193 subbands (64+DC, 20MHz+DC, inband and 64*2 out-of-band, 20MHz on each side)");
   NS_TEST_ASSERT_MSG_EQ (std::get<3> (m_distinctTuples[0]), WifiModulationClass::WIFI_MOD_CLASS_OFDM, "First tuple should be OFDM");
   // Second tuple
   NS_TEST_ASSERT_MSG_EQ (std::get<1> (m_distinctTuples[1]), channelWidth, "Second tuple's channel width should be 40 MHz");
-  NS_TEST_ASSERT_MSG_EQ (std::get<2> (m_distinctTuples[1]), 193, "Second tuple should have 193 subbands (128+DC, 40MHz+DC, inband and 32*2 out-of-band, 10MHz on each side)");
+  NS_TEST_ASSERT_MSG_EQ (std::get<2> (m_distinctTuples[1]), 385, "Second tuple should have 385 subbands (128+DC, 40MHz+DC, inband and 128*2 out-of-band, 40MHz on each side)");
   NS_TEST_ASSERT_MSG_EQ (std::get<3> (m_distinctTuples[1]), WifiModulationClass::WIFI_MOD_CLASS_VHT, "Second tuple should be VHT_OFDM");
 }
 

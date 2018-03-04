@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2009 CTTC
+ * Copyright (c) 2017 Orange Labs
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,7 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Nicola Baldo <nbaldo@cttc.es>
+ * Authors: Nicola Baldo <nbaldo@cttc.es>
+ *          Rediet <getachew.redieteab@orange.com>
  */
 
 #ifndef WIFI_SPECTRUM_VALUE_HELPER_H
@@ -45,7 +47,7 @@ public:
    * Return a SpectrumModel instance corresponding to the center frequency
    * and channel width.  The spectrum model spans the channel width 
    * +/- the guard bands (i.e. the model will span (channelWidth + 
-   * 2 * guardBandwidth) MHz of bandwidth).  
+   * 2 * guardBandwidth) MHz of bandwidth).
    *
    * \param centerFrequency center frequency (MHz)
    * \param channelWidth channel width (MHz)
@@ -55,7 +57,7 @@ public:
    * \return the static SpectrumModel instance corresponding to the
    * given carrier frequency and channel width configuration. 
    */
-  static Ptr<SpectrumModel> GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double guardBandwidth);
+  static Ptr<SpectrumModel> GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth);
 
   /**
    * Create a transmit power spectral density corresponding to DSSS 
@@ -70,7 +72,7 @@ public:
    * \param guardBandwidth width of the guard band (MHz)
    * \returns a pointer to a newly allocated SpectrumValue representing the DSSS Transmit Power Spectral Density in W/Hz
    */
-  static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, double guardBandwidth);
+  static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, uint8_t guardBandwidth);
 
   /**
    * Create a transmit power spectral density corresponding to OFDM 
@@ -83,7 +85,7 @@ public:
    * \param guardBandwidth width of the guard band (MHz)
    * \return a pointer to a newly allocated SpectrumValue representing the OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, double guardBandwidth);
+  static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth);
 
   /**
    * Create a transmit power spectral density corresponding to OFDM 
@@ -96,7 +98,7 @@ public:
    * \param guardBandwidth width of the guard band (MHz)
    * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, double guardBandwidth);
+  static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth);
 
   /**
    * Create a transmit power spectral density corresponding to OFDM 
@@ -109,7 +111,7 @@ public:
    * \param guardBandwidth width of the guard band (MHz)
    * \return a pointer to a newly allocated SpectrumValue representing the HE OFDM Transmit Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, double guardBandwidth);
+  static Ptr<SpectrumValue> CreateHeOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth);
 
   /**
    * Create a power spectral density corresponding to the noise
@@ -121,7 +123,7 @@ public:
    * \param guardBandwidth width of the guard band (MHz)
    * \return a pointer to a newly allocated SpectrumValue representing the noise Power Spectral Density in W/Hz for each Band
    */
-  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double noiseFigure, double guardBandwidth);
+  static Ptr<SpectrumValue> CreateNoisePowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double noiseFigure, uint8_t guardBandwidth);
 
   /**
    * Create a thermal noise power spectral density
@@ -143,7 +145,71 @@ public:
    * \return a pointer to a SpectrumValue representing the RF filter applied
    * to an received power spectral density
    */
-  static Ptr<SpectrumValue> CreateRfFilter (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, double guardBandwidth);
+  static Ptr<SpectrumValue> CreateRfFilter (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth);
+
+  /**
+   * typedef for a pair of start and stop sub-band indexes
+   */
+  typedef std::pair<uint32_t, uint32_t> StartStop;
+
+  /**
+   * Create a transmit power spectral density corresponding to OFDM
+   * transmit spectrum mask requirements for 11a/11g/11n/11ac/11ax
+   * Channel width may vary between 5, 10, 20, 40, 80, and 160 MHz.
+   *
+   *   [ guard band  ][    channel width     ][  guard band ]
+   *                   __________   __________                  _ 0 dBr
+   *                  /          | |          \
+   *                 /           |_|           \                _ -20 dBr
+   *             . '                             ' .
+   *         . '                                     ' .        _ -28 dBr
+   *       .'                                           '.
+   *     .'                                               '.
+   *   .'                                                   '.  _ lowest point
+   *
+   *   |-----|                                         |-----|  outerBand left/right
+   *         |------|                           |-- ---|        middle band left/right
+   *                |-|                       |-|               inner band left/right
+   *                  |-----------------------|                 allocated sub-bands
+   *   |-----------------------------------------------------|  mask band
+   *
+   * Please take note that, since guard tones are within the allocated band
+   * while not being ideally allocated any power, the inner band had to be
+   * shifted inwards and a flat junction band (at -20 dBr) had to be added
+   * between the inner and the middle bands.
+   *
+   * \param c spectrumValue to allocate according to transmit power spectral density mask (in W/Hz for each band)
+   * \param allocatedSubBands vector of start and stop subcarrier indexes of the allocated sub bands
+   * \param maskBand start and stop subcarrier indexes of transmit mask (in case signal doesn't cover whole SpectrumModel)
+   * \param txPowerPerBandW power allocated to each subcarrier in the allocated sub bands
+   * \param nGuardBands size (in number of subcarriers) of the guard band (left and right)
+   * \param innerSlopeWidth size (in number of subcarriers) of the inner band (i.e. slope going from 0 dBr to -20 dBr)
+   * \param lowestPointDbr maximum relative power of the outermost subcarriers of the guard band (in dBr)
+   * \return a pointer to a newly allocated SpectrumValue representing the HT OFDM Transmit Power Spectral Density in W/Hz for each Band
+   */
+  static void CreateSpectrumMaskForOfdm (Ptr<SpectrumValue> c, std::vector <StartStop> allocatedSubBands, StartStop maskBand,
+                                         double txPowerPerBandW, uint32_t nGuardBands,
+                                         uint32_t innerSlopeWidth, double lowestPointDbr);
+
+  /**
+   * Normalize the transmit spectrum mask generated by CreateSpectrumMaskForOfdm
+   * so that the total transmitted power corresponds to the input value.
+   *
+   * \param c spectrumValue to normalize (in W/Hz for each band)
+   * \param txPowerW total transmit power (W) to allocate
+   */
+  static void NormalizeSpectrumMask (Ptr<SpectrumValue> c, double txPowerW);
+
+  /**
+   * Convert from dBm to Watts.
+   * Taken from wifi-utils since the original method couldn't be called from here
+   * due to resulting circular dependencies of spectrum and wifi modules.
+   *
+   * \param dbm the power in dBm
+   *
+   * \return the equivalent Watts for the given dBm
+   */
+  static double DbmToW (double dbm);
 };
 
 /**

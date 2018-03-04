@@ -34,7 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("SpectrumWifiPhyBasicTest");
 static const uint8_t CHANNEL_NUMBER = 36;
 static const uint32_t FREQUENCY = 5180; // MHz
 static const uint8_t CHANNEL_WIDTH = 20; // MHz
-static const uint8_t GUARD_WIDTH = 10; // MHz
+static const uint8_t GUARD_WIDTH = CHANNEL_WIDTH; // MHz (expanded to channel width to model spectrum mask)
 
 /**
  * \ingroup wifi-test

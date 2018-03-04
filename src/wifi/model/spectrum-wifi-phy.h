@@ -153,9 +153,17 @@ public:
   double GetBandBandwidth (void) const;
 
   /**
+   * \param currentChannelWidth channel width of the current transmission (MHz)
    * \return the width of the guard band (MHz)
+   *
+   * Note: in order to properly model out of band transmissions for OFDM, the guard
+   * band has been configured so as to expand the modeled spectrum up to the
+   * outermost referenced point in "Transmit spectrum mask" sections' PSDs of
+   * each PHY specification of 802.11-2016 standard. It thus ultimately corresponds
+   * to the current channel bandwidth (which can be different from devices max
+   * channel width).
    */
-  double GetGuardBandwidth (void) const;
+  uint8_t GetGuardBandwidth (uint8_t currentChannelWidth) const;
 
   /**
    * Callback invoked when the Phy model starts to process a signal
@@ -189,7 +197,7 @@ protected:
 private:
   /**
    * \param centerFrequency center frequency (MHz)
-   * \param channelWidth channel width (MHz) of the channel
+   * \param channelWidth channel width (MHz) of the channel for the current transmission
    * \param txPowerW power in W to spread across the bands
    * \param modulationClass the modulation class
    * \return Ptr to SpectrumValue

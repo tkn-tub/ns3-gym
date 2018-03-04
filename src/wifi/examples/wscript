@@ -15,3 +15,7 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-manager-example',
         ['core', 'network', 'wifi', 'stats', 'mobility', 'propagation'])
     obj.source = 'wifi-manager-example.cc'
+
+    obj = bld.create_ns3_program('wifi-trans-example',
+        ['core', 'mobility', 'spectrum', 'wifi'])
+    obj.source = 'wifi-trans-example.cc'
