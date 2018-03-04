@@ -177,6 +177,7 @@ The following details pertain to the physical layer and channel models:
 * PHY_RXSTART is not supported
 * The current implementation assumes that secondary channels are always higher than primary channels
 * Cases where RTS/CTS and ACK are transmitted using HT/VHT/HE formats are not supported
+* Energy consumption model does not consider MIMO
 
 At the MAC layer, most of the main functions found in deployed Wi-Fi
 equipment for 802.11a/b/e/g/n/ac/ax are implemented, but there are scattered instances
