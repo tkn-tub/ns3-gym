@@ -20,6 +20,10 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDiscSizePolicy [enumeration]
+    module.add_enum('QueueDiscSizePolicy', ['SINGLE_INTERNAL_QUEUE', 'SINGLE_CHILD_QUEUE_DISC', 'MULTIPLE_QUEUES', 'NO_LIMITS'])
+    ## queue-size.h (module 'network'): ns3::QueueSizeUnit [enumeration]
+    module.add_enum('QueueSizeUnit', ['PACKETS', 'BYTES'], import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address [class]
     module.add_class('Address', import_from_module='ns.network')
     ## address.h (module 'network'): ns3::Address::MaxSize_e [enumeration]
@@ -114,6 +118,10 @@ def register_types(module):
     module.add_class('Mac48Address', import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
+    ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
+    module.add_class('Mac8Address', import_from_module='ns.network')
+    ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
+    root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
@@ -142,6 +150,8 @@ def register_types(module):
     module.add_class('QueueDiscContainer')
     ## traffic-control-helper.h (module 'traffic-control'): ns3::QueueDiscFactory [class]
     module.add_class('QueueDiscFactory')
+    ## queue-size.h (module 'network'): ns3::QueueSize [class]
+    module.add_class('QueueSize', import_from_module='ns.network')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Object', 'ns3::ObjectBase', 'ns3::ObjectDeleter'], parent=root_module['ns3::ObjectBase'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simulator.h (module 'core'): ns3::Simulator [class]
@@ -234,6 +244,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::QueueItem', 'ns3::empty', 'ns3::DefaultDeleter<ns3::QueueItem>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## tbf-queue-disc.h (module 'traffic-control'): ns3::TbfQueueDisc [class]
+    module.add_class('TbfQueueDisc', parent=root_module['ns3::QueueDisc'])
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
@@ -308,6 +320,8 @@ def register_types(module):
     module.add_class('EventImpl', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::EventImpl, ns3::empty, ns3::DefaultDeleter<ns3::EventImpl> >'])
     ## random-variable-stream.h (module 'core'): ns3::ExponentialRandomVariable [class]
     module.add_class('ExponentialRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
+    ## fifo-queue-disc.h (module 'traffic-control'): ns3::FifoQueueDisc [class]
+    module.add_class('FifoQueueDisc', parent=root_module['ns3::QueueDisc'])
     ## fq-codel-queue-disc.h (module 'traffic-control'): ns3::FqCoDelFlow [class]
     module.add_class('FqCoDelFlow', parent=root_module['ns3::QueueDiscClass'])
     ## fq-codel-queue-disc.h (module 'traffic-control'): ns3::FqCoDelFlow::FlowStatus [enumeration]
@@ -372,6 +386,10 @@ def register_types(module):
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
     ## queue-item.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
     module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
+    ## queue-size.h (module 'network'): ns3::QueueSizeChecker [class]
+    module.add_class('QueueSizeChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue [class]
+    module.add_class('QueueSizeValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## string.h (module 'core'): ns3::StringChecker [class]
     module.add_class('StringChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## string.h (module 'core'): ns3::StringValue [class]
@@ -546,6 +564,7 @@ def register_methods(root_module):
     register_Ns3Ipv6Address_methods(root_module, root_module['ns3::Ipv6Address'])
     register_Ns3Ipv6Prefix_methods(root_module, root_module['ns3::Ipv6Prefix'])
     register_Ns3Mac48Address_methods(root_module, root_module['ns3::Mac48Address'])
+    register_Ns3Mac8Address_methods(root_module, root_module['ns3::Mac8Address'])
     register_Ns3NetDeviceContainer_methods(root_module, root_module['ns3::NetDeviceContainer'])
     register_Ns3ObjectBase_methods(root_module, root_module['ns3::ObjectBase'])
     register_Ns3ObjectDeleter_methods(root_module, root_module['ns3::ObjectDeleter'])
@@ -559,6 +578,7 @@ def register_methods(root_module):
     register_Ns3PacketTagListTagData_methods(root_module, root_module['ns3::PacketTagList::TagData'])
     register_Ns3QueueDiscContainer_methods(root_module, root_module['ns3::QueueDiscContainer'])
     register_Ns3QueueDiscFactory_methods(root_module, root_module['ns3::QueueDiscFactory'])
+    register_Ns3QueueSize_methods(root_module, root_module['ns3::QueueSize'])
     register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     register_Ns3Simulator_methods(root_module, root_module['ns3::Simulator'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
@@ -595,6 +615,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
     register_Ns3SimpleRefCount__Ns3QueueItem_Ns3Empty_Ns3DefaultDeleter__lt__ns3QueueItem__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
+    register_Ns3TbfQueueDisc_methods(root_module, root_module['ns3::TbfQueueDisc'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3TracedValue__Ns3Time_methods(root_module, root_module['ns3::TracedValue< ns3::Time >'])
@@ -628,6 +649,7 @@ def register_methods(root_module):
     register_Ns3ErlangRandomVariable_methods(root_module, root_module['ns3::ErlangRandomVariable'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3ExponentialRandomVariable_methods(root_module, root_module['ns3::ExponentialRandomVariable'])
+    register_Ns3FifoQueueDisc_methods(root_module, root_module['ns3::FifoQueueDisc'])
     register_Ns3FqCoDelFlow_methods(root_module, root_module['ns3::FqCoDelFlow'])
     register_Ns3FqCoDelQueueDisc_methods(root_module, root_module['ns3::FqCoDelQueueDisc'])
     register_Ns3GammaRandomVariable_methods(root_module, root_module['ns3::GammaRandomVariable'])
@@ -655,6 +677,8 @@ def register_methods(root_module):
     register_Ns3PfifoFastQueueDisc_methods(root_module, root_module['ns3::PfifoFastQueueDisc'])
     register_Ns3PieQueueDisc_methods(root_module, root_module['ns3::PieQueueDisc'])
     register_Ns3QueueItem_methods(root_module, root_module['ns3::QueueItem'])
+    register_Ns3QueueSizeChecker_methods(root_module, root_module['ns3::QueueSizeChecker'])
+    register_Ns3QueueSizeValue_methods(root_module, root_module['ns3::QueueSizeValue'])
     register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
     register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
@@ -1771,6 +1795,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac64Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
                    is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredAddress(ns3::Mac8Address addr, ns3::Ipv6Address prefix) [member function]
+    cls.add_method('MakeAutoconfiguredAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Mac8Address', 'addr'), param('ns3::Ipv6Address', 'prefix')], 
+                   is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac16Address mac) [member function]
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
@@ -1785,6 +1814,11 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
                    'ns3::Ipv6Address', 
                    [param('ns3::Mac64Address', 'mac')], 
+                   is_static=True)
+    ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeAutoconfiguredLinkLocalAddress(ns3::Mac8Address mac) [member function]
+    cls.add_method('MakeAutoconfiguredLinkLocalAddress', 
+                   'ns3::Ipv6Address', 
+                   [param('ns3::Mac8Address', 'mac')], 
                    is_static=True)
     ## ipv6-address.h (module 'network'): static ns3::Ipv6Address ns3::Ipv6Address::MakeIpv4MappedAddress(ns3::Ipv4Address addr) [member function]
     cls.add_method('MakeIpv4MappedAddress', 
@@ -1940,6 +1974,48 @@ def register_Ns3Mac48Address_methods(root_module, cls):
                    [], 
                    is_const=True)
     ## mac48-address.h (module 'network'): static bool ns3::Mac48Address::IsMatchingType(ns3::Address const & address) [member function]
+    cls.add_method('IsMatchingType', 
+                   'bool', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_static=True)
+    return
+
+def register_Ns3Mac8Address_methods(root_module, cls):
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('!=')
+    cls.add_output_stream_operator()
+    ## mac8-address.h (module 'network'): ns3::Mac8Address::Mac8Address(ns3::Mac8Address const & arg0) [constructor]
+    cls.add_constructor([param('ns3::Mac8Address const &', 'arg0')])
+    ## mac8-address.h (module 'network'): ns3::Mac8Address::Mac8Address() [constructor]
+    cls.add_constructor([])
+    ## mac8-address.h (module 'network'): ns3::Mac8Address::Mac8Address(uint8_t addr) [constructor]
+    cls.add_constructor([param('uint8_t', 'addr')])
+    ## mac8-address.h (module 'network'): static ns3::Mac8Address ns3::Mac8Address::Allocate() [member function]
+    cls.add_method('Allocate', 
+                   'ns3::Mac8Address', 
+                   [], 
+                   is_static=True)
+    ## mac8-address.h (module 'network'): static ns3::Mac8Address ns3::Mac8Address::ConvertFrom(ns3::Address const & address) [member function]
+    cls.add_method('ConvertFrom', 
+                   'ns3::Mac8Address', 
+                   [param('ns3::Address const &', 'address')], 
+                   is_static=True)
+    ## mac8-address.h (module 'network'): void ns3::Mac8Address::CopyFrom(uint8_t const * pBuffer) [member function]
+    cls.add_method('CopyFrom', 
+                   'void', 
+                   [param('uint8_t const *', 'pBuffer')])
+    ## mac8-address.h (module 'network'): void ns3::Mac8Address::CopyTo(uint8_t * pBuffer) const [member function]
+    cls.add_method('CopyTo', 
+                   'void', 
+                   [param('uint8_t *', 'pBuffer')], 
+                   is_const=True)
+    ## mac8-address.h (module 'network'): static ns3::Mac8Address ns3::Mac8Address::GetBroadcast() [member function]
+    cls.add_method('GetBroadcast', 
+                   'ns3::Mac8Address', 
+                   [], 
+                   is_static=True)
+    ## mac8-address.h (module 'network'): static bool ns3::Mac8Address::IsMatchingType(ns3::Address const & address) [member function]
     cls.add_method('IsMatchingType', 
                    'bool', 
                    [param('ns3::Address const &', 'address')], 
@@ -2357,6 +2433,34 @@ def register_Ns3QueueDiscFactory_methods(root_module, cls):
     cls.add_method('SetChildQueueDisc', 
                    'void', 
                    [param('uint16_t', 'classId'), param('uint16_t', 'handle')])
+    return
+
+def register_Ns3QueueSize_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('<=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('>=')
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize(ns3::QueueSize const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueSize const &', 'arg0')])
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize() [constructor]
+    cls.add_constructor([])
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize(ns3::QueueSizeUnit unit, uint32_t value) [constructor]
+    cls.add_constructor([param('ns3::QueueSizeUnit', 'unit'), param('uint32_t', 'value')])
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize(std::string size) [constructor]
+    cls.add_constructor([param('std::string', 'size')])
+    ## queue-size.h (module 'network'): ns3::QueueSizeUnit ns3::QueueSize::GetUnit() const [member function]
+    cls.add_method('GetUnit', 
+                   'ns3::QueueSizeUnit', 
+                   [], 
+                   is_const=True)
+    ## queue-size.h (module 'network'): uint32_t ns3::QueueSize::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
     return
 
 def register_Ns3SimpleRefCount__Ns3Object_Ns3ObjectBase_Ns3ObjectDeleter_methods(root_module, cls):
@@ -3057,6 +3161,11 @@ def register_Ns3Chunk_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'start')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## chunk.h (module 'network'): uint32_t ns3::Chunk::Deserialize(ns3::Buffer::Iterator start, ns3::Buffer::Iterator end) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('ns3::Buffer::Iterator', 'end')], 
+                   is_virtual=True)
     ## chunk.h (module 'network'): static ns3::TypeId ns3::Chunk::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -3203,8 +3312,10 @@ def register_Ns3PacketFilter_methods(root_module, cls):
     return
 
 def register_Ns3QueueDisc_methods(root_module, cls):
-    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::QueueDisc() [constructor]
-    cls.add_constructor([])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::QueueDisc(ns3::QueueDiscSizePolicy policy=::ns3::QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE) [constructor]
+    cls.add_constructor([param('ns3::QueueDiscSizePolicy', 'policy', default_value='::ns3::QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::QueueDisc(ns3::QueueDiscSizePolicy policy, ns3::QueueSizeUnit unit) [constructor]
+    cls.add_constructor([param('ns3::QueueDiscSizePolicy', 'policy'), param('ns3::QueueSizeUnit', 'unit')])
     ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::AddInternalQueue(ns3::Ptr<ns3::Queue<ns3::QueueDiscItem> > queue) [member function]
     cls.add_method('AddInternalQueue', 
                    'void', 
@@ -3225,14 +3336,27 @@ def register_Ns3QueueDisc_methods(root_module, cls):
     cls.add_method('Dequeue', 
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [])
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::QueueDisc::DequeuePeeked() [member function]
+    cls.add_method('DequeuePeeked', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [])
     ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::Enqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
     cls.add_method('Enqueue', 
                    'bool', 
                    [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueSize ns3::QueueDisc::GetCurrentSize() [member function]
+    cls.add_method('GetCurrentSize', 
+                   'ns3::QueueSize', 
+                   [])
     ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::Queue<ns3::QueueDiscItem> > ns3::QueueDisc::GetInternalQueue(uint32_t i) const [member function]
     cls.add_method('GetInternalQueue', 
                    'ns3::Ptr< ns3::Queue< ns3::QueueDiscItem > >', 
                    [param('uint32_t', 'i')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueSize ns3::QueueDisc::GetMaxSize() const [member function]
+    cls.add_method('GetMaxSize', 
+                   'ns3::QueueSize', 
+                   [], 
                    is_const=True)
     ## queue-disc.h (module 'traffic-control'): uint32_t ns3::QueueDisc::GetNBytes() const [member function]
     cls.add_method('GetNBytes', 
@@ -3293,15 +3417,18 @@ def register_Ns3QueueDisc_methods(root_module, cls):
                    'ns3::QueueDisc::WakeMode', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::Peek() const [member function]
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::Peek() [member function]
     cls.add_method('Peek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
-                   [], 
-                   is_const=True)
+                   [])
     ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::Run() [member function]
     cls.add_method('Run', 
                    'void', 
                    [])
+    ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::SetMaxSize(ns3::QueueSize size) [member function]
+    cls.add_method('SetMaxSize', 
+                   'bool', 
+                   [param('ns3::QueueSize', 'size')])
     ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::SetNetDevice(ns3::Ptr<ns3::NetDevice> device) [member function]
     cls.add_method('SetNetDevice', 
                    'void', 
@@ -3340,6 +3467,11 @@ def register_Ns3QueueDisc_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::QueueDiscItem >', 'item'), param('char const *', 'reason')], 
                    visibility='protected')
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::PeekDequeued() [member function]
+    cls.add_method('PeekDequeued', 
+                   'ns3::Ptr< ns3::QueueDiscItem const >', 
+                   [], 
+                   visibility='protected')
     ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -3355,11 +3487,11 @@ def register_Ns3QueueDisc_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::DoPeek() const [member function]
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
     ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::InitializeParams() [member function]
     cls.add_method('InitializeParams', 
                    'void', 
@@ -3529,14 +3661,11 @@ def register_Ns3RedQueueDisc_methods(root_module, cls):
     cls.add_method('SetMode', 
                    'void', 
                    [param('ns3::RedQueueDisc::QueueDiscMode', 'mode')])
-    ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc::QueueDiscMode ns3::RedQueueDisc::GetMode() [member function]
+    ## red-queue-disc.h (module 'traffic-control'): ns3::RedQueueDisc::QueueDiscMode ns3::RedQueueDisc::GetMode() const [member function]
     cls.add_method('GetMode', 
                    'ns3::RedQueueDisc::QueueDiscMode', 
-                   [])
-    ## red-queue-disc.h (module 'traffic-control'): uint32_t ns3::RedQueueDisc::GetQueueSize() [member function]
-    cls.add_method('GetQueueSize', 
-                   'uint32_t', 
-                   [])
+                   [], 
+                   is_const=True)
     ## red-queue-disc.h (module 'traffic-control'): void ns3::RedQueueDisc::SetAredAlpha(double alpha) [member function]
     cls.add_method('SetAredAlpha', 
                    'void', 
@@ -3604,11 +3733,11 @@ def register_Ns3RedQueueDisc_methods(root_module, cls):
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## red-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::RedQueueDisc::DoPeek() const [member function]
+    ## red-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::RedQueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_virtual=True)
     ## red-queue-disc.h (module 'traffic-control'): bool ns3::RedQueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -3729,6 +3858,92 @@ def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDelete
     cls.add_constructor([])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount(ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter< ns3::TraceSourceAccessor > > const &', 'o')])
+    return
+
+def register_Ns3TbfQueueDisc_methods(root_module, cls):
+    ## tbf-queue-disc.h (module 'traffic-control'): static ns3::TypeId ns3::TbfQueueDisc::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): ns3::TbfQueueDisc::TbfQueueDisc() [constructor]
+    cls.add_constructor([])
+    ## tbf-queue-disc.h (module 'traffic-control'): void ns3::TbfQueueDisc::SetBurst(uint32_t burst) [member function]
+    cls.add_method('SetBurst', 
+                   'void', 
+                   [param('uint32_t', 'burst')])
+    ## tbf-queue-disc.h (module 'traffic-control'): uint32_t ns3::TbfQueueDisc::GetBurst() const [member function]
+    cls.add_method('GetBurst', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): void ns3::TbfQueueDisc::SetMtu(uint32_t mtu) [member function]
+    cls.add_method('SetMtu', 
+                   'void', 
+                   [param('uint32_t', 'mtu')])
+    ## tbf-queue-disc.h (module 'traffic-control'): uint32_t ns3::TbfQueueDisc::GetMtu() const [member function]
+    cls.add_method('GetMtu', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): void ns3::TbfQueueDisc::SetRate(ns3::DataRate rate) [member function]
+    cls.add_method('SetRate', 
+                   'void', 
+                   [param('ns3::DataRate', 'rate')])
+    ## tbf-queue-disc.h (module 'traffic-control'): ns3::DataRate ns3::TbfQueueDisc::GetRate() const [member function]
+    cls.add_method('GetRate', 
+                   'ns3::DataRate', 
+                   [], 
+                   is_const=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): void ns3::TbfQueueDisc::SetPeakRate(ns3::DataRate peakRate) [member function]
+    cls.add_method('SetPeakRate', 
+                   'void', 
+                   [param('ns3::DataRate', 'peakRate')])
+    ## tbf-queue-disc.h (module 'traffic-control'): ns3::DataRate ns3::TbfQueueDisc::GetPeakRate() const [member function]
+    cls.add_method('GetPeakRate', 
+                   'ns3::DataRate', 
+                   [], 
+                   is_const=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): uint32_t ns3::TbfQueueDisc::GetFirstBucketTokens() const [member function]
+    cls.add_method('GetFirstBucketTokens', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): uint32_t ns3::TbfQueueDisc::GetSecondBucketTokens() const [member function]
+    cls.add_method('GetSecondBucketTokens', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): void ns3::TbfQueueDisc::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): bool ns3::TbfQueueDisc::DoEnqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   visibility='private', is_virtual=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::TbfQueueDisc::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::TbfQueueDisc::DoPeek() [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::QueueDiscItem const >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): bool ns3::TbfQueueDisc::CheckConfig() [member function]
+    cls.add_method('CheckConfig', 
+                   'bool', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## tbf-queue-disc.h (module 'traffic-control'): void ns3::TbfQueueDisc::InitializeParams() [member function]
+    cls.add_method('InitializeParams', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -4069,6 +4284,11 @@ def register_Ns3Trailer_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'end')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## trailer.h (module 'network'): uint32_t ns3::Trailer::Deserialize(ns3::Buffer::Iterator start, ns3::Buffer::Iterator end) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start'), param('ns3::Buffer::Iterator', 'end')], 
+                   is_virtual=True)
     ## trailer.h (module 'network'): uint32_t ns3::Trailer::GetSerializedSize() const [member function]
     cls.add_method('GetSerializedSize', 
                    'uint32_t', 
@@ -4547,10 +4767,11 @@ def register_Ns3CoDelQueueDisc_methods(root_module, cls):
     cls.add_method('SetMode', 
                    'void', 
                    [param('ns3::CoDelQueueDisc::QueueDiscMode', 'mode')])
-    ## codel-queue-disc.h (module 'traffic-control'): ns3::CoDelQueueDisc::QueueDiscMode ns3::CoDelQueueDisc::GetMode() [member function]
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::CoDelQueueDisc::QueueDiscMode ns3::CoDelQueueDisc::GetMode() const [member function]
     cls.add_method('GetMode', 
                    'ns3::CoDelQueueDisc::QueueDiscMode', 
-                   [])
+                   [], 
+                   is_const=True)
     ## codel-queue-disc.h (module 'traffic-control'): uint32_t ns3::CoDelQueueDisc::GetQueueSize() [member function]
     cls.add_method('GetQueueSize', 
                    'uint32_t', 
@@ -4581,11 +4802,11 @@ def register_Ns3CoDelQueueDisc_methods(root_module, cls):
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## codel-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::CoDelQueueDisc::DoPeek() const [member function]
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::CoDelQueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_virtual=True)
     ## codel-queue-disc.h (module 'traffic-control'): bool ns3::CoDelQueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -5026,6 +5247,43 @@ def register_Ns3ExponentialRandomVariable_methods(root_module, cls):
                    is_virtual=True)
     return
 
+def register_Ns3FifoQueueDisc_methods(root_module, cls):
+    ## fifo-queue-disc.h (module 'traffic-control'): static ns3::TypeId ns3::FifoQueueDisc::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## fifo-queue-disc.h (module 'traffic-control'): ns3::FifoQueueDisc::FifoQueueDisc() [constructor]
+    cls.add_constructor([])
+    ## fifo-queue-disc.h (module 'traffic-control'): ns3::FifoQueueDisc::LIMIT_EXCEEDED_DROP [variable]
+    cls.add_static_attribute('LIMIT_EXCEEDED_DROP', 'char const * const', is_const=True)
+    ## fifo-queue-disc.h (module 'traffic-control'): bool ns3::FifoQueueDisc::DoEnqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   visibility='private', is_virtual=True)
+    ## fifo-queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::FifoQueueDisc::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## fifo-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::FifoQueueDisc::DoPeek() [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::QueueDiscItem const >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## fifo-queue-disc.h (module 'traffic-control'): bool ns3::FifoQueueDisc::CheckConfig() [member function]
+    cls.add_method('CheckConfig', 
+                   'bool', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## fifo-queue-disc.h (module 'traffic-control'): void ns3::FifoQueueDisc::InitializeParams() [member function]
+    cls.add_method('InitializeParams', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    return
+
 def register_Ns3FqCoDelFlow_methods(root_module, cls):
     ## fq-codel-queue-disc.h (module 'traffic-control'): ns3::FqCoDelFlow::FqCoDelFlow(ns3::FqCoDelFlow const & arg0) [constructor]
     cls.add_constructor([param('ns3::FqCoDelFlow const &', 'arg0')])
@@ -5091,11 +5349,11 @@ def register_Ns3FqCoDelQueueDisc_methods(root_module, cls):
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## fq-codel-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::FqCoDelQueueDisc::DoPeek() const [member function]
+    ## fq-codel-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::FqCoDelQueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_virtual=True)
     ## fq-codel-queue-disc.h (module 'traffic-control'): bool ns3::FqCoDelQueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -5440,11 +5698,11 @@ def register_Ns3MqQueueDisc_methods(root_module, cls):
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## mq-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::MqQueueDisc::DoPeek() const [member function]
+    ## mq-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::MqQueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_virtual=True)
     ## mq-queue-disc.h (module 'traffic-control'): bool ns3::MqQueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -5919,6 +6177,11 @@ def register_Ns3Packet_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Header &', 'header')], 
                    is_const=True)
+    ## packet.h (module 'network'): uint32_t ns3::Packet::PeekHeader(ns3::Header & header, uint32_t size) const [member function]
+    cls.add_method('PeekHeader', 
+                   'uint32_t', 
+                   [param('ns3::Header &', 'header'), param('uint32_t', 'size')], 
+                   is_const=True)
     ## packet.h (module 'network'): bool ns3::Packet::PeekPacketTag(ns3::Tag & tag) const [member function]
     cls.add_method('PeekPacketTag', 
                    'bool', 
@@ -5963,6 +6226,10 @@ def register_Ns3Packet_methods(root_module, cls):
     cls.add_method('RemoveHeader', 
                    'uint32_t', 
                    [param('ns3::Header &', 'header')])
+    ## packet.h (module 'network'): uint32_t ns3::Packet::RemoveHeader(ns3::Header & header, uint32_t size) [member function]
+    cls.add_method('RemoveHeader', 
+                   'uint32_t', 
+                   [param('ns3::Header &', 'header'), param('uint32_t', 'size')])
     ## packet.h (module 'network'): bool ns3::Packet::RemovePacketTag(ns3::Tag & tag) [member function]
     cls.add_method('RemovePacketTag', 
                    'bool', 
@@ -6059,11 +6326,11 @@ def register_Ns3PfifoFastQueueDisc_methods(root_module, cls):
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## pfifo-fast-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::PfifoFastQueueDisc::DoPeek() const [member function]
+    ## pfifo-fast-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::PfifoFastQueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_virtual=True)
     ## pfifo-fast-queue-disc.h (module 'traffic-control'): bool ns3::PfifoFastQueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -6088,10 +6355,11 @@ def register_Ns3PieQueueDisc_methods(root_module, cls):
     cls.add_method('SetMode', 
                    'void', 
                    [param('ns3::PieQueueDisc::QueueDiscMode', 'mode')])
-    ## pie-queue-disc.h (module 'traffic-control'): ns3::PieQueueDisc::QueueDiscMode ns3::PieQueueDisc::GetMode() [member function]
+    ## pie-queue-disc.h (module 'traffic-control'): ns3::PieQueueDisc::QueueDiscMode ns3::PieQueueDisc::GetMode() const [member function]
     cls.add_method('GetMode', 
                    'ns3::PieQueueDisc::QueueDiscMode', 
-                   [])
+                   [], 
+                   is_const=True)
     ## pie-queue-disc.h (module 'traffic-control'): uint32_t ns3::PieQueueDisc::GetQueueSize() [member function]
     cls.add_method('GetQueueSize', 
                    'uint32_t', 
@@ -6127,11 +6395,11 @@ def register_Ns3PieQueueDisc_methods(root_module, cls):
                    'ns3::Ptr< ns3::QueueDiscItem >', 
                    [], 
                    visibility='private', is_virtual=True)
-    ## pie-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::PieQueueDisc::DoPeek() const [member function]
+    ## pie-queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::PieQueueDisc::DoPeek() [member function]
     cls.add_method('DoPeek', 
                    'ns3::Ptr< ns3::QueueDiscItem const >', 
                    [], 
-                   is_const=True, visibility='private', is_virtual=True)
+                   visibility='private', is_virtual=True)
     ## pie-queue-disc.h (module 'traffic-control'): bool ns3::PieQueueDisc::CheckConfig() [member function]
     cls.add_method('CheckConfig', 
                    'bool', 
@@ -6168,6 +6436,46 @@ def register_Ns3QueueItem_methods(root_module, cls):
                    'void', 
                    [param('std::ostream &', 'os')], 
                    is_const=True, is_virtual=True)
+    return
+
+def register_Ns3QueueSizeChecker_methods(root_module, cls):
+    ## queue-size.h (module 'network'): ns3::QueueSizeChecker::QueueSizeChecker() [constructor]
+    cls.add_constructor([])
+    ## queue-size.h (module 'network'): ns3::QueueSizeChecker::QueueSizeChecker(ns3::QueueSizeChecker const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueSizeChecker const &', 'arg0')])
+    return
+
+def register_Ns3QueueSizeValue_methods(root_module, cls):
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue::QueueSizeValue() [constructor]
+    cls.add_constructor([])
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue::QueueSizeValue(ns3::QueueSize const & value) [constructor]
+    cls.add_constructor([param('ns3::QueueSize const &', 'value')])
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue::QueueSizeValue(ns3::QueueSizeValue const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueSizeValue const &', 'arg0')])
+    ## queue-size.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::QueueSizeValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## queue-size.h (module 'network'): bool ns3::QueueSizeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## queue-size.h (module 'network'): ns3::QueueSize ns3::QueueSizeValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::QueueSize', 
+                   [], 
+                   is_const=True)
+    ## queue-size.h (module 'network'): std::string ns3::QueueSizeValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## queue-size.h (module 'network'): void ns3::QueueSizeValue::Set(ns3::QueueSize const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::QueueSize const &', 'value')])
     return
 
 def register_Ns3StringChecker_methods(root_module, cls):
