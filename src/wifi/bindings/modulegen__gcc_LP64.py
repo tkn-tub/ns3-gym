@@ -18781,10 +18781,10 @@ def register_Ns3SpectrumWifiPhy_methods(root_module, cls):
                    'ns3::Ptr< ns3::Channel >', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## spectrum-wifi-phy.h (module 'wifi'): double ns3::SpectrumWifiPhy::GetGuardBandwidth() const [member function]
+    ## spectrum-wifi-phy.h (module 'wifi'): uint8_t ns3::SpectrumWifiPhy::GetGuardBandwidth(uint8_t currentChannelWidth) const [member function]
     cls.add_method('GetGuardBandwidth', 
-                   'double', 
-                   [], 
+                   'uint8_t', 
+                   [param('uint8_t', 'currentChannelWidth')], 
                    is_const=True)
     ## spectrum-wifi-phy.h (module 'wifi'): std::vector<unsigned char, std::allocator<unsigned char> > ns3::SpectrumWifiPhy::GetOperationalChannelList() const [member function]
     cls.add_method('GetOperationalChannelList', 
