@@ -316,7 +316,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
       hdr.SetType (WIFI_MAC_DATA);
     }
 
-  if (m_htSupported || m_vhtSupported || m_heSupported)
+  if (m_qosSupported || m_htSupported || m_vhtSupported || m_heSupported)
     {
       hdr.SetNoOrder ();
     }
