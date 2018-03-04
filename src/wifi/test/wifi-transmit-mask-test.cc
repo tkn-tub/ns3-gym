@@ -39,7 +39,6 @@ NS_LOG_COMPONENT_DEFINE ("WifiTransmitMaskTest");
 class WifiOfdmMaskSlopesTestCase : public TestCase
 {
 public:
-
   /**
    * typedef for a pair of sub-band index and relative power value (dBr)
    */
@@ -115,7 +114,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiPhy
     // 11g and 11a
     case WIFI_PHY_STANDARD_80211g:
       freq = 2412;
-      // no break on purpose
+    // no break on purpose
     case WIFI_PHY_STANDARD_80211a:
     case WIFI_PHY_STANDARD_holland:
       NS_ASSERT (bw == 20);
@@ -125,7 +124,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiPhy
     // 11n
     case WIFI_PHY_STANDARD_80211n_2_4GHZ:
       freq = 2402 + (bw / 2); //so as to have 2412/2422 for 20/40
-      // no break on purpose
+    // no break on purpose
     case WIFI_PHY_STANDARD_80211n_5GHZ:
       NS_ASSERT (bw == 20 || bw == 40);
       m_actualSpectrum = WifiSpectrumValueHelper::CreateHtOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw);
@@ -141,7 +140,7 @@ WifiOfdmMaskSlopesTestCase::WifiOfdmMaskSlopesTestCase (const char* str, WifiPhy
     case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
       NS_ASSERT (bw != 160); // not enough space in 2.4 GHz bands
       freq = 2402 + (bw / 2); //so as to have 2412/2422 for 20/40
-      // no break on purpose
+    // no break on purpose
     case WIFI_PHY_STANDARD_80211ax_5GHZ:
       NS_ASSERT (bw == 20 || bw == 40 || bw == 80 || bw == 160);
       m_actualSpectrum = WifiSpectrumValueHelper::CreateHeOfdmTxPowerSpectralDensity (freq, bw, refTxPowerW, bw);
@@ -196,10 +195,10 @@ WifiOfdmMaskSlopesTestCase::InterpolateAndAppendValues (IndexPowerVect &vect, In
       NS_LOG_LOGIC ("Append (" << i << ", " << val << ")");
     }
   NS_ASSERT (vect.back ().first == stop.first
-             && TestDoubleIsEqual(vect.back ().second, stop.second, tol));
+             && TestDoubleIsEqual (vect.back ().second, stop.second, tol));
 }
 
-void 
+void
 WifiOfdmMaskSlopesTestCase::DoRun (void)
 {
   NS_LOG_FUNCTION (this);

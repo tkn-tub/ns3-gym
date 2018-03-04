@@ -31,7 +31,7 @@ namespace ns3 {
 /**
  * \ingroup spectrum
  *
- *  This class defines all functions to create a spectrum model for 
+ *  This class defines all functions to create a spectrum model for
  *  Wi-Fi based on a a spectral model aligned with an OFDM subcarrier
  *  spacing of 312.5 KHz (model also reused for DSSS modulations)
  */
@@ -42,11 +42,11 @@ public:
    * Destructor
    */
   virtual ~WifiSpectrumValueHelper ();
-  
+
   /**
    * Return a SpectrumModel instance corresponding to the center frequency
-   * and channel width.  The spectrum model spans the channel width 
-   * +/- the guard bands (i.e. the model will span (channelWidth + 
+   * and channel width.  The spectrum model spans the channel width
+   * +/- the guard bands (i.e. the model will span (channelWidth +
    * 2 * guardBandwidth) MHz of bandwidth).
    *
    * \param centerFrequency center frequency (MHz)
@@ -55,14 +55,14 @@ public:
    * \param guardBandwidth width of the guard band (MHz)
    *
    * \return the static SpectrumModel instance corresponding to the
-   * given carrier frequency and channel width configuration. 
+   * given carrier frequency and channel width configuration.
    */
   static Ptr<SpectrumModel> GetSpectrumModel (uint32_t centerFrequency, uint8_t channelWidth, double bandBandwidth, uint8_t guardBandwidth);
 
   /**
-   * Create a transmit power spectral density corresponding to DSSS 
+   * Create a transmit power spectral density corresponding to DSSS
    *
-   * The center frequency typically corresponds to 802.11b channel 
+   * The center frequency typically corresponds to 802.11b channel
    * center frequencies but is not restricted to those frequencies.
    *
    * \note There is no channel width parameter; this method assumes 22 MHz
@@ -75,7 +75,7 @@ public:
   static Ptr<SpectrumValue> CreateDsssTxPowerSpectralDensity (uint32_t centerFrequency, double txPowerW, uint8_t guardBandwidth);
 
   /**
-   * Create a transmit power spectral density corresponding to OFDM 
+   * Create a transmit power spectral density corresponding to OFDM
    * (802.11a/g).  Channel width may vary between 20, 10, and 5 MHz.
    * Guard bandwidth also typically varies with channel width.
    *
@@ -88,8 +88,8 @@ public:
   static Ptr<SpectrumValue> CreateOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth);
 
   /**
-   * Create a transmit power spectral density corresponding to OFDM 
-   * High Throughput (HT) (802.11n/ac).  Channel width may vary between 
+   * Create a transmit power spectral density corresponding to OFDM
+   * High Throughput (HT) (802.11n/ac).  Channel width may vary between
    * 20, 40, 80, and 160 MHz.
    *
    * \param centerFrequency center frequency (MHz)
@@ -101,8 +101,8 @@ public:
   static Ptr<SpectrumValue> CreateHtOfdmTxPowerSpectralDensity (uint32_t centerFrequency, uint8_t channelWidth, double txPowerW, uint8_t guardBandwidth);
 
   /**
-   * Create a transmit power spectral density corresponding to OFDM 
-   * High Efficiency (HE) (802.11ax).  Channel width may vary between 
+   * Create a transmit power spectral density corresponding to OFDM
+   * High Efficiency (HE) (802.11ax).  Channel width may vary between
    * 20, 40, 80, and 160 MHz.
    *
    * \param centerFrequency center frequency (MHz)
@@ -235,7 +235,7 @@ public:
    */
   virtual Ptr<SpectrumValue> CreateConstant (double psd);
   /**
-   * Creates a SpectrumValue instance that represents the TX Power Spectral 
+   * Creates a SpectrumValue instance that represents the TX Power Spectral
    * Density  of a wifi device corresponding to the provided parameters
    *
    * Since the spectrum model has a resolution of 5 MHz, we model

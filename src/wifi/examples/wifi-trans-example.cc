@@ -55,7 +55,7 @@ int main (int argc, char** argv)
   cmd.AddValue ("txPower", "Transmit power (dBm)", pow);
   cmd.AddValue ("verbose", "Display log messages for WifiSpectrumValueHelper and SpectrumWifiPhy", verbose);
   cmd.Parse (argc,argv);
-  
+
   WifiHelper wifi;
   Ssid ssid;
   std::string dataRate;
@@ -190,7 +190,7 @@ int main (int argc, char** argv)
   // FriisSpectrumPropagationLossModel already added by default in SpectrumChannelHelper
   channelHelper.AddSpectrumPropagationLoss ("ns3::ConstantSpectrumPropagationLossModel");
   Ptr<SpectrumChannel> channel = channelHelper.Create ();
-  
+
   /* Wi-Fi transmitter setup */
 
   SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
