@@ -57,6 +57,7 @@ YansWifiPhy::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_channel = 0;
+  WifiPhy::DoDispose ();
 }
 
 Ptr<Channel>

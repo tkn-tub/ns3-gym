@@ -53,9 +53,6 @@ namespace ns3 {
 ///MinstrelHtWifiRemoteStation structure
 struct MinstrelHtWifiRemoteStation : MinstrelWifiRemoteStation
 {
-  /// Dispose station function
-  void DisposeStation ();
-
   uint32_t m_sampleGroup;     //!< The group that the sample rate belongs to.
 
   uint32_t m_sampleWait;      //!< How many transmission attempts to wait until a new sample.
@@ -72,21 +69,6 @@ struct MinstrelHtWifiRemoteStation : MinstrelWifiRemoteStation
 
   std::ofstream m_statsFile;   //!< File where statistics table is written.
 };
-
-void
-MinstrelHtWifiRemoteStation::DisposeStation ()
-{
-  if (m_isHt)
-    {
-      std::vector<std::vector<uint32_t> > ().swap (m_sampleTable);
-      for (uint8_t j = 0; j < m_groupsTable.size (); j++)
-        {
-          std::vector<HtRateInfo> ().swap (m_groupsTable[j].m_ratesTable);
-        }
-      std::vector<GroupInfo> ().swap (m_groupsTable);
-      m_statsFile.close ();
-    }
-}
 
 NS_OBJECT_ENSURE_REGISTERED (MinstrelHtWifiManager);
 
@@ -854,14 +836,6 @@ MinstrelHtWifiManager::UpdatePacketCounters (MinstrelHtWifiRemoteStation *statio
       station->m_sampleTries = 1;
       station->m_sampleCount--;
     }
-}
-
-void
-MinstrelHtWifiManager::DoDisposeStation (WifiRemoteStation *st)
-{
-  NS_LOG_FUNCTION (this << st);
-  MinstrelHtWifiRemoteStation *station = (MinstrelHtWifiRemoteStation *) st;
-  station->DisposeStation ();
 }
 
 WifiTxVector

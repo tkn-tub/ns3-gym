@@ -254,11 +254,6 @@ private:
                               double rxSnr, double dataSnr);
   bool IsLowLatency (void) const;
   bool DoNeedDataRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
-  /**
-   * Dispose station function
-   * \param station the wifi remote station
-   */
-  void DoDisposeStation (WifiRemoteStation *station);
 
   /**
    * Check the validity of a combination of number of streams, chWidth and mode.

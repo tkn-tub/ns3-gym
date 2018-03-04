@@ -104,6 +104,7 @@ WifiRadioEnergyModel::WifiRadioEnergyModel ()
 WifiRadioEnergyModel::~WifiRadioEnergyModel ()
 {
   NS_LOG_FUNCTION (this);
+  m_txCurrentModel = 0;
   delete m_listener;
 }
 

@@ -384,6 +384,7 @@ WifiPhy::DoDispose (void)
   m_device = 0;
   m_mobility = 0;
   m_state = 0;
+  m_wifiRadioEnergyModel = 0;
   m_deviceRateSet.clear ();
   m_deviceMcsSet.clear ();
 }
