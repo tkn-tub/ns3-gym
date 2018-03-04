@@ -76,6 +76,8 @@ us a note on ns-developers mailing list.</p>
   MaxSize attribute. Old attributes can still be used, but using them will be no longer possible in one of the next releases. The methods to get/set the old attributes will be removed as well.</li>
   <li>The attributes of the QueueDisc subclasses that separately determine the mode and the limit of the QueueDisc have been deprecated in favor of the single MaxSize attribute.</li>
   <li>The GetQueueSize method of some QueueDisc subclasses (e.g., Red) has been removed and replaced by the GetCurrentSize method of the QueueDisc base class.</li>
+  <li>All Wi-Fi management frames are now transmitted using the lowest basic rate.</li>
+  <li>The Wi-Fi spectrum model now takes into account adjacent channels through OFDM transmit spectrum masks.</li>
 </ul>
 
 <hr>
