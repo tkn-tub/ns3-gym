@@ -6,3 +6,15 @@ def build(bld):
 
     obj = bld.create_ns3_program('uan-rc-example', ['internet', 'mobility', 'stats', 'applications', 'uan'])
     obj.source = 'uan-rc-example.cc'
+
+    obj = bld.create_ns3_program ('uan-raw-example', ['internet', 'mobility', 'stats', 'uan'])
+    obj.source = 'uan-raw-example.cc'
+
+    obj = bld.create_ns3_program ('uan-ipv4-example', ['internet', 'mobility', 'stats', 'uan'])
+    obj.source = 'uan-ipv4-example.cc'
+
+    obj = bld.create_ns3_program ('uan-ipv6-example', ['internet', 'mobility', 'stats', 'uan'])
+    obj.source = 'uan-ipv6-example.cc'
+
+    obj = bld.create_ns3_program ('uan-6lowpan-example', ['internet', 'mobility', 'stats', 'uan', 'sixlowpan'])
+    obj.source = 'uan-6lowpan-example.cc'

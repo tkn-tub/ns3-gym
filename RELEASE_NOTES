@@ -34,6 +34,7 @@ New user-visible features
 - (internet) Ipv6AddressHelper is now more pedantic but you can use more than one in a script.
 - (lte) UEs can now use IPv6 to send and receive traffic.
 - (uan) UAN module now supports IP stack
+- (uan) Added some examples for running raw, IPv4, IPv6, and 6LoWPAN over UAN
 
 Bugs fixed
 ----------
