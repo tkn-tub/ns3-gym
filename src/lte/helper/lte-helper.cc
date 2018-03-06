@@ -1322,38 +1322,103 @@ LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bear
 void
 LteHelper::EnableLogComponents (void)
 {
-  LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlcUm", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteRlcAm", LOG_LEVEL_ALL);
-  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
-  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
-
-  LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteSpectrumValueHelper", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
+  LogComponentEnableAll (LOG_PREFIX_TIME);
+  LogComponentEnableAll (LOG_PREFIX_FUNC);
+  LogComponentEnableAll (LOG_PREFIX_NODE);
+  // Model directory
+  LogComponentEnable ("A2A4RsrqHandoverAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("A3RsrpHandoverAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("Asn1Header", LOG_LEVEL_ALL);
+  LogComponentEnable ("ComponentCarrier", LOG_LEVEL_ALL);
+  LogComponentEnable ("ComponentCarrierEnb", LOG_LEVEL_ALL);
+  LogComponentEnable ("ComponentCarrierUe", LOG_LEVEL_ALL);
+  LogComponentEnable ("CqaFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcEnbApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcMme", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcSgwPgwApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcTft", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcTftClassifier", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcUeNas", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcX2", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcX2Header", LOG_LEVEL_ALL);
+  LogComponentEnable ("FdBetFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("FdMtFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("FdTbfqFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("FfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("GtpuHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteAmc", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteAnr", LOG_LEVEL_ALL);
   LogComponentEnable ("LteChunkProcessor", LOG_LEVEL_ALL);
-
-  std::string propModelStr = m_pathlossModelFactory.GetTypeId ().GetName ().erase (0,5).c_str ();
-  LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteCommon", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteControlMessage", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbComponentCarrierManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbMac", LOG_LEVEL_ALL);
   LogComponentEnable ("LteEnbNetDevice", LOG_LEVEL_ALL);
-
-  LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteEnbRrc", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFfrAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFfrDistributedAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFfrEnhancedAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFfrSoftAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFrHardAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFrNoOpAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFrSoftAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteFrStrictAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteHandoverAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteHarqPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteInterference", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteMiErrorModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("LtePdcp", LOG_LEVEL_ALL);
+  LogComponentEnable ("LtePdcpHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("LtePhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlc", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcAm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcAmHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcTm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRlcUm", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRrcProtocolIdeal", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteRrcProtocolReal", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteSpectrumPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteSpectrumSignalParameters", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteSpectrumValueHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUeComponentCarrierManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUeMac", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUeNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUePhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUePowerControl", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteUeRrc", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteVendorSpecificParameters", LOG_LEVEL_ALL);
+  LogComponentEnable ("NoOpComponentCarrierManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("NoOpHandoverAlgorithm", LOG_LEVEL_ALL);
+  LogComponentEnable ("PfFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("PssFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("RemSpectrumPhy", LOG_LEVEL_ALL);
+  LogComponentEnable ("RrcHeader", LOG_LEVEL_ALL);
+  LogComponentEnable ("RrFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("SimpleUeComponentCarrierManager", LOG_LEVEL_ALL);
+  LogComponentEnable ("TdBetFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("TdMtFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("TdTbfqFfMacScheduler", LOG_LEVEL_ALL);
+  LogComponentEnable ("TraceFadingLossModel", LOG_LEVEL_ALL);
+  LogComponentEnable ("TtaFfMacScheduler", LOG_LEVEL_ALL);
+  // Helper directory
+  LogComponentEnable ("CcHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("EmuEpcHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteGlobalPathlossDatabase", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("LteHexGridEnbTopologyHelper", LOG_LEVEL_ALL);
   LogComponentEnable ("LteStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("MacStatsCalculator", LOG_LEVEL_ALL);
-  LogComponentEnable ("PhyTxStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyRxStatsCalculator", LOG_LEVEL_ALL);
   LogComponentEnable ("PhyStatsCalculator", LOG_LEVEL_ALL);
-
-
+  LogComponentEnable ("PhyTxStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("PointToPointEpcHelper", LOG_LEVEL_ALL);
+  LogComponentEnable ("RadioBearerStatsCalculator", LOG_LEVEL_ALL);
+  LogComponentEnable ("RadioBearerStatsConnector", LOG_LEVEL_ALL);
+  LogComponentEnable ("RadioEnvironmentMapHelper", LOG_LEVEL_ALL);
 }
 
 void
