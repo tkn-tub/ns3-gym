@@ -386,9 +386,9 @@ class ns3pcfile_task(Task.Task):
 
     def _includes(self, dep):
         includes = self.env['INCLUDES_%s' % dep]
-        return [self.env['CPPPATH_ST'] % include for include in includes]
+        return [self.env['CPPPATH_ST'] % include for include in Utils.to_list(includes)]
 
-    def _generate_pcfile(self, name, use, env, outfilename):
+    def _generate_pcfile(self, name, use, env, outfilename, module):
         outfile = open(outfilename, 'wt')
         prefix = env.PREFIX
         includedir = Utils.subst_vars('${INCLUDEDIR}/%s%s' % (wutils.APPNAME, wutils.VERSION), env)
@@ -399,6 +399,10 @@ class ns3pcfile_task(Task.Task):
         for dep in env.LIBS:
             libs += self.env['LIB_ST'] % dep
         cflags = [self.env['CPPPATH_ST'] % '${includedir}']
+
+        if getattr(module, 'export_includes', None):
+            for include in module.to_incnodes(module.export_includes):
+                cflags += [self.env['CPPPATH_ST'] % include.abspath()]
         requires = []
         for dep in use:
             cflags = cflags + self._cflags(dep) + self._cxxflags(dep) + \
@@ -425,7 +429,7 @@ Requires: %s\
         output_filename = self.outputs[0].abspath()
         self._generate_pcfile(self.module.name, 
                               self.module.to_list(self.module.use),
-                              self.env, output_filename)
+                              self.env, output_filename, self.module)
 
 
 @TaskGen.feature('ns3pcfile')
