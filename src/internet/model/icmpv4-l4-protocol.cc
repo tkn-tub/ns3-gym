@@ -155,14 +155,14 @@ Icmpv4L4Protocol::SendDestUnreachFragNeeded (Ipv4Header header,
                                              uint16_t nextHopMtu)
 {
   NS_LOG_FUNCTION (this << header << *orgData << nextHopMtu);
-  SendDestUnreach (header, orgData, Icmpv4DestinationUnreachable::FRAG_NEEDED, nextHopMtu);
+  SendDestUnreach (header, orgData, Icmpv4DestinationUnreachable::ICMPV4_FRAG_NEEDED, nextHopMtu);
 }
 void 
 Icmpv4L4Protocol::SendDestUnreachPort (Ipv4Header header, 
                                        Ptr<const Packet> orgData)
 {
   NS_LOG_FUNCTION (this << header << *orgData);
-  SendDestUnreach (header, orgData, Icmpv4DestinationUnreachable::PORT_UNREACHABLE, 0);
+  SendDestUnreach (header, orgData, Icmpv4DestinationUnreachable::ICMPV4_PORT_UNREACHABLE, 0);
 }
 void 
 Icmpv4L4Protocol::SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData, 
@@ -175,7 +175,7 @@ Icmpv4L4Protocol::SendDestUnreach (Ipv4Header header, Ptr<const Packet> orgData,
   unreach.SetHeader (header);
   unreach.SetData (orgData);
   p->AddHeader (unreach);
-  SendMessage (p, header.GetSource (), Icmpv4Header::DEST_UNREACH, code);
+  SendMessage (p, header.GetSource (), Icmpv4Header::ICMPV4_DEST_UNREACH, code);
 }
 
 void 
@@ -189,11 +189,11 @@ Icmpv4L4Protocol::SendTimeExceededTtl (Ipv4Header header, Ptr<const Packet> orgD
   p->AddHeader (time);
   if (!isFragment)
     {
-      SendMessage (p, header.GetSource (), Icmpv4Header::TIME_EXCEEDED, Icmpv4TimeExceeded::TIME_TO_LIVE);
+      SendMessage (p, header.GetSource (), Icmpv4Header::ICMPV4_TIME_EXCEEDED, Icmpv4TimeExceeded::ICMPV4_TIME_TO_LIVE);
     }
   else
     {
-      SendMessage (p, header.GetSource (), Icmpv4Header::TIME_EXCEEDED, Icmpv4TimeExceeded::FRAGMENT_REASSEMBLY);
+      SendMessage (p, header.GetSource (), Icmpv4Header::ICMPV4_TIME_EXCEEDED, Icmpv4TimeExceeded::ICMPV4_FRAGMENT_REASSEMBLY);
     }
 }
 
@@ -209,7 +209,7 @@ Icmpv4L4Protocol::HandleEcho (Ptr<Packet> p,
   Icmpv4Echo echo;
   p->RemoveHeader (echo);
   reply->AddHeader (echo);
-  SendMessage (reply, destination, source, Icmpv4Header::ECHO_REPLY, 0, 0);
+  SendMessage (reply, destination, source, Icmpv4Header::ICMPV4_ECHO_REPLY, 0, 0);
 }
 void
 Icmpv4L4Protocol::Forward (Ipv4Address source, Icmpv4Header icmp,
@@ -268,13 +268,13 @@ Icmpv4L4Protocol::Receive (Ptr<Packet> p,
   Icmpv4Header icmp;
   p->RemoveHeader (icmp);
   switch (icmp.GetType ()) {
-    case Icmpv4Header::ECHO:
+    case Icmpv4Header::ICMPV4_ECHO:
       HandleEcho (p, icmp, header.GetSource (), header.GetDestination ());
       break;
-    case Icmpv4Header::DEST_UNREACH:
+    case Icmpv4Header::ICMPV4_DEST_UNREACH:
       HandleDestUnreach (p, icmp, header.GetSource (), header.GetDestination ());
       break;
-    case Icmpv4Header::TIME_EXCEEDED:
+    case Icmpv4Header::ICMPV4_TIME_EXCEEDED:
       HandleTimeExceeded (p, icmp, header.GetSource (), header.GetDestination ());
       break;
     default:

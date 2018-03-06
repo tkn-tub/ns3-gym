@@ -131,7 +131,7 @@ Bug780Test::SendPing ()
   echo.SetData (dataPacket);
   p->AddHeader (echo);
   Icmpv4Header header;
-  header.SetType (Icmpv4Header::ECHO);
+  header.SetType (Icmpv4Header::ICMPV4_ECHO);
   header.SetCode (0);
   if (Node::ChecksumEnabled ())
     {
@@ -158,7 +158,7 @@ Bug780Test::Receive (Ptr<Socket> socket)
       NS_ASSERT (ipv4.GetProtocol () == 1); // protocol should be icmp.
       Icmpv4Header icmp;
       p->RemoveHeader (icmp);
-      if (icmp.GetType () == Icmpv4Header::ECHO_REPLY)
+      if (icmp.GetType () == Icmpv4Header::ICMPV4_ECHO_REPLY)
         {
           m_recvCount++;
         }

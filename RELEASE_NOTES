@@ -75,6 +75,7 @@ Bugs fixed
 - Bug 2876 - tcp: Do not shrink adv window after we send the FIN
 - Bug 2877 - wifi: Wrong data types for CWmin and CWmax
 - Bug 2885 - lte: Tests fail for CQA and PSS testsuites
+- Bug 2890 - internet: Icmpv4 "ECHO" is defined in system-wide headers
 
 Known issues
 ------------

@@ -311,17 +311,17 @@ def register_types(module):
     ## icmpv4.h (module 'internet'): ns3::Icmpv4DestinationUnreachable [class]
     module.add_class('Icmpv4DestinationUnreachable', parent=root_module['ns3::Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4DestinationUnreachable::ErrorDestinationUnreachable_e [enumeration]
-    module.add_enum('ErrorDestinationUnreachable_e', ['NET_UNREACHABLE', 'HOST_UNREACHABLE', 'PROTOCOL_UNREACHABLE', 'PORT_UNREACHABLE', 'FRAG_NEEDED', 'SOURCE_ROUTE_FAILED'], outer_class=root_module['ns3::Icmpv4DestinationUnreachable'])
+    module.add_enum('ErrorDestinationUnreachable_e', ['ICMPV4_NET_UNREACHABLE', 'ICMPV4_HOST_UNREACHABLE', 'ICMPV4_PROTOCOL_UNREACHABLE', 'ICMPV4_PORT_UNREACHABLE', 'ICMPV4_FRAG_NEEDED', 'ICMPV4_SOURCE_ROUTE_FAILED'], outer_class=root_module['ns3::Icmpv4DestinationUnreachable'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4Echo [class]
     module.add_class('Icmpv4Echo', parent=root_module['ns3::Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4Header [class]
     module.add_class('Icmpv4Header', parent=root_module['ns3::Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4Header::Type_e [enumeration]
-    module.add_enum('Type_e', ['ECHO_REPLY', 'DEST_UNREACH', 'ECHO', 'TIME_EXCEEDED'], outer_class=root_module['ns3::Icmpv4Header'])
+    module.add_enum('Type_e', ['ICMPV4_ECHO_REPLY', 'ICMPV4_DEST_UNREACH', 'ICMPV4_ECHO', 'ICMPV4_TIME_EXCEEDED'], outer_class=root_module['ns3::Icmpv4Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4TimeExceeded [class]
     module.add_class('Icmpv4TimeExceeded', parent=root_module['ns3::Header'])
     ## icmpv4.h (module 'internet'): ns3::Icmpv4TimeExceeded::ErrorTimeExceeded_e [enumeration]
-    module.add_enum('ErrorTimeExceeded_e', ['TIME_TO_LIVE', 'FRAGMENT_REASSEMBLY'], outer_class=root_module['ns3::Icmpv4TimeExceeded'])
+    module.add_enum('ErrorTimeExceeded_e', ['ICMPV4_TIME_TO_LIVE', 'ICMPV4_FRAGMENT_REASSEMBLY'], outer_class=root_module['ns3::Icmpv4TimeExceeded'])
     ## icmpv6-header.h (module 'internet'): ns3::Icmpv6Header [class]
     module.add_class('Icmpv6Header', parent=root_module['ns3::Header'])
     ## icmpv6-header.h (module 'internet'): ns3::Icmpv6Header::Type_e [enumeration]

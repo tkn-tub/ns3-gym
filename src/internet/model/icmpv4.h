@@ -45,10 +45,10 @@ public:
    * ICMP type code.
    */
   enum Type_e {
-    ECHO_REPLY = 0,
-    DEST_UNREACH = 3,
-    ECHO = 8,
-    TIME_EXCEEDED = 11
+    ICMPV4_ECHO_REPLY = 0,
+    ICMPV4_DEST_UNREACH = 3,
+    ICMPV4_ECHO = 8,
+    ICMPV4_TIME_EXCEEDED = 11
   };
 
   /**
@@ -176,12 +176,12 @@ public:
    * ICMP error code : Destination Unreachable
    */
   enum ErrorDestinationUnreachable_e {
-    NET_UNREACHABLE = 0,
-    HOST_UNREACHABLE = 1,
-    PROTOCOL_UNREACHABLE = 2,
-    PORT_UNREACHABLE = 3,
-    FRAG_NEEDED = 4,
-    SOURCE_ROUTE_FAILED = 5
+    ICMPV4_NET_UNREACHABLE = 0,
+    ICMPV4_HOST_UNREACHABLE = 1,
+    ICMPV4_PROTOCOL_UNREACHABLE = 2,
+    ICMPV4_PORT_UNREACHABLE = 3,
+    ICMPV4_FRAG_NEEDED = 4,
+    ICMPV4_SOURCE_ROUTE_FAILED = 5
   };
 
   /**
@@ -251,8 +251,8 @@ public:
    */
   enum ErrorTimeExceeded_e
   {
-    TIME_TO_LIVE = 0,
-    FRAGMENT_REASSEMBLY = 1
+    ICMPV4_TIME_TO_LIVE = 0,
+    ICMPV4_FRAGMENT_REASSEMBLY = 1
   };
 
   /**

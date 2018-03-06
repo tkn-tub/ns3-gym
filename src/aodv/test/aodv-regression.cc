@@ -105,7 +105,7 @@ ChainRegressionTest::SendPing ()
   echo.SetData (dataPacket);
   p->AddHeader (echo);
   Icmpv4Header header;
-  header.SetType (Icmpv4Header::ECHO);
+  header.SetType (Icmpv4Header::ICMPV4_ECHO);
   header.SetCode (0);
   if (Node::ChecksumEnabled ())
     {
