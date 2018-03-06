@@ -273,10 +273,15 @@ int main ()
                                      "Missing 'pygccxml' Python module")
         return
 
-    out = subprocess.Popen([conf.env['PYTHON'][0], "-c",
-                            "import pygccxml; print pygccxml.__version__"],
-                            stdout=subprocess.PIPE).communicate()[0]
-    pygccxml_version_str = out.strip()
+    try:
+        import pygccxml as pygccxml_imported
+        pygccxml_version_str = pygccxml_imported.__version__
+    except (ImportError, AttributeError):
+        Logs.warn("pygccxml version cannot be determined")
+        conf.report_optional_feature("castxml", "Python API Scanning Support", False,
+                                     "pygccxml Python module version is unknown")
+        return
+
     # Bug 2013:  pygccxml versions > 1.0.0 prepend a 'v' to version number
     pygccxml_version_str = pygccxml_version_str.lstrip('v')
     pygccxml_version = tuple([int(x) for x in pygccxml_version_str.split('.')])
