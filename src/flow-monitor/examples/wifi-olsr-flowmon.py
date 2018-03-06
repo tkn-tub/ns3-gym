@@ -103,7 +103,7 @@ def main(argv):
 
     for i, node in enumerate(nodes):
         destaddr = addresses[(len(addresses) - 1 - i) % len(addresses)]
-        #print i, destaddr
+        #print (i, destaddr)
         onOffHelper.SetAttribute("Remote", ns.network.AddressValue(ns.network.InetSocketAddress(destaddr, port)))
         app = onOffHelper.Install(ns.network.NodeContainer(node))
         urv = ns.core.UniformRandomVariable()
@@ -129,7 +129,7 @@ def main(argv):
         print >> os, "  Lost Packets: ", st.lostPackets
         if st.rxPackets > 0:
             print >> os, "  Mean{Delay}: ", (st.delaySum.GetSeconds() / st.rxPackets)
-	    print >> os, "  Mean{Jitter}: ", (st.jitterSum.GetSeconds() / (st.rxPackets-1))
+            print >> os, "  Mean{Jitter}: ", (st.jitterSum.GetSeconds() / (st.rxPackets-1))
             print >> os, "  Mean{Hop Count}: ", float(st.timesForwarded) / st.rxPackets + 1
 
         if 0:
@@ -147,7 +147,7 @@ def main(argv):
                   st.packetSizeHistogram.GetBinEnd (i), "): ", st.packetSizeHistogram.GetBinCount (i)
 
         for reason, drops in enumerate(st.packetsDropped):
-            print "  Packets dropped by reason %i: %i" % (reason, drops)
+            print ("  Packets dropped by reason %i: %i" % (reason, drops))
         #for reason, drops in enumerate(st.bytesDropped):
         #    print "Bytes dropped by reason %i: %i" % (reason, drops)
 
@@ -158,11 +158,11 @@ def main(argv):
         for flow_id, flow_stats in monitor.GetFlowStats():
             t = classifier.FindFlow(flow_id)
             proto = {6: 'TCP', 17: 'UDP'} [t.protocol]
-            print "FlowID: %i (%s %s/%s --> %s/%i)" % \
-                (flow_id, proto, t.sourceAddress, t.sourcePort, t.destinationAddress, t.destinationPort)
+            print ("FlowID: %i (%s %s/%s --> %s/%i)" % \
+                (flow_id, proto, t.sourceAddress, t.sourcePort, t.destinationAddress, t.destinationPort))
             print_stats(sys.stdout, flow_stats)
     else:
-        print monitor.SerializeToXmlFile(cmd.Results, True, True)
+        print (monitor.SerializeToXmlFile(cmd.Results, True, True))
 
 
     if cmd.Plot is not None:

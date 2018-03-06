@@ -52,7 +52,7 @@ verbose = cmd.verbose
 nWifi = int(cmd.nWifi)
 
 if nWifi > 18:
-	print "Number of wifi nodes "+ str(nWifi)+ " specified exceeds the mobility bounding box"
+	print ("Number of wifi nodes "+ str(nWifi)+ " specified exceeds the mobility bounding box")
 	sys.exit(1)
 
 if verbose == "True":

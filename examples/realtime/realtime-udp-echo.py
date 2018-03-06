@@ -46,7 +46,7 @@ def main(argv):
   #
   # Explicitly create the nodes required by the topology (shown above).
   #
-  print "Create nodes."
+  print ("Create nodes.")
   n = ns.network.NodeContainer()
   n.Create(4)
 

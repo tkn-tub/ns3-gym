@@ -41,18 +41,18 @@ class MyModel(object):
     ## \return None.
     def HandleEvent(self, value):
         """Simple event handler."""
-        print "Member method received event at", ns.core.Simulator.Now().GetSeconds(), \
-            "s started at", value, "s"
+        print ("Member method received event at", ns.core.Simulator.Now().GetSeconds(), \
+            "s started at", value, "s")
 
 def ExampleFunction(model):
-    print "ExampleFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s"
+    print ("ExampleFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
     model.Start()
 
 def RandomFunction(model):
-    print "RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s"
+    print ("RandomFunction received event at", ns.core.Simulator.Now().GetSeconds(), "s")
 
 def CancelledEvent():
-    print "I should never be called... "
+    print ("I should never be called... ")
 
 def main(dummy_argv):
     ns.core.CommandLine().Parse(dummy_argv)
