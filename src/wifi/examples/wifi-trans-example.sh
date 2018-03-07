@@ -121,7 +121,7 @@ do
   for bw in "${bw_ac_ax[@]}"
   do
     #160 MHz not available in 2.4 GHz
-    [ ${std} = "11ax_2_4GHZ" ] && ([ ${bw} = "80" ] || [${bw} = "160" ]) && continue
+    [ ${std} = "11ax_2_4GHZ" ] && ([ ${bw} = "80" ] || [ ${bw} = "160" ]) && continue
     #for all other combinations continue
     echo "==============================================="
     echo "Run for wifi-trans-example for ${std} and ${bw} MHz"
