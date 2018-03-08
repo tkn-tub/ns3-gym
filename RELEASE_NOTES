@@ -77,6 +77,7 @@ Bugs fixed
 - Bug 2885 - lte: Tests fail for CQA and PSS testsuites
 - Bug 2890 - internet: Icmpv4 "ECHO" is defined in system-wide headers
 - Bug 2898 - lte: Coding issue in function RrcAsn1Header::DeserializeRachConfigCommon
+- Bug 2899 - lte: Inconsistent type for variable cellForWhichToReportCGI
 
 Known issues
 ------------
