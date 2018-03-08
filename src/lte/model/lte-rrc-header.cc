@@ -846,7 +846,7 @@ RrcAsn1Header::SerializeRachConfigCommon (LteRrcSap::RachConfigCommon rachConfig
       SerializeEnum (16,15);
       break;
     default:
-      SerializeEnum (16,0);
+      NS_FATAL_ERROR ("Wrong numberOfRA-Preambles value");
     }
 
   SerializeSequence (std::bitset<0> (0),false); // powerRampingParameters
@@ -3294,7 +3294,7 @@ RrcAsn1Header::DeserializeRachConfigCommon (LteRrcSap::RachConfigCommon * rachCo
       rachConfigCommon->preambleInfo.numberOfRaPreambles = 64;
       break;
     default:
-      rachConfigCommon->preambleInfo.numberOfRaPreambles = 0;
+      rachConfigCommon->preambleInfo.numberOfRaPreambles = 4;
     }
 
   if (preamblesGroupAConfigPresent[0])
