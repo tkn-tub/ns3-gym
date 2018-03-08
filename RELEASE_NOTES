@@ -76,6 +76,7 @@ Bugs fixed
 - Bug 2877 - wifi: Wrong data types for CWmin and CWmax
 - Bug 2885 - lte: Tests fail for CQA and PSS testsuites
 - Bug 2890 - internet: Icmpv4 "ECHO" is defined in system-wide headers
+- Bug 2898 - lte: Coding issue in function RrcAsn1Header::DeserializeRachConfigCommon
 
 Known issues
 ------------

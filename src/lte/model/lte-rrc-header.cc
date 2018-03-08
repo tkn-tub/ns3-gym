@@ -3297,8 +3297,6 @@ RrcAsn1Header::DeserializeRachConfigCommon (LteRrcSap::RachConfigCommon * rachCo
       rachConfigCommon->preambleInfo.numberOfRaPreambles = 0;
     }
 
-  rachConfigCommon->preambleInfo.numberOfRaPreambles = n;
-
   if (preamblesGroupAConfigPresent[0])
     {
       // Deserialize preamblesGroupAConfig
