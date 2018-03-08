@@ -391,32 +391,20 @@ uint8_t
 SpectrumWifiPhy::GetGuardBandwidth (uint8_t currentChannelWidth) const
 {
   uint8_t guardBandwidth = 0;
-  switch (GetStandard ())
+  if (currentChannelWidth == 22)
     {
-    case WIFI_PHY_STANDARD_80211b:
+      //handle case of use of legacy DSSS transmission
       guardBandwidth = 10;
-      break;
-    case WIFI_PHY_STANDARD_80211a:
-    case WIFI_PHY_STANDARD_80211g:
-    case WIFI_PHY_STANDARD_holland:
-    case WIFI_PHY_STANDARD_80211n_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211n_5GHZ:
-    case WIFI_PHY_STANDARD_80211ac:
-    case WIFI_PHY_STANDARD_80211ax_2_4GHZ:
-    case WIFI_PHY_STANDARD_80211ax_5GHZ:
-    case WIFI_PHY_STANDARD_80211_10MHZ:
-    case WIFI_PHY_STANDARD_80211_5MHZ:
-      // In order to properly model out of band transmissions for OFDM, the guard
-      // band has been configured so as to expand the modeled spectrum up to the
-      // outermost referenced point in "Transmit spectrum mask" sections' PSDs of
-      // each PHY specification of 802.11-2016 standard. It thus ultimately corresponds
-      // to the currently considered channel bandwidth (which can be different from
-      // supported channel width).
+    }
+  else
+    {
+      //In order to properly model out of band transmissions for OFDM, the guard
+      //band has been configured so as to expand the modeled spectrum up to the
+      //outermost referenced point in "Transmit spectrum mask" sections' PSDs of
+      //each PHY specification of 802.11-2016 standard. It thus ultimately corresponds
+      //to the currently considered channel bandwidth (which can be different from
+      //supported channel width).
       guardBandwidth = currentChannelWidth;
-      break;
-    default:
-      NS_FATAL_ERROR ("Standard unknown: " << GetStandard ());
-      break;
     }
   return guardBandwidth;
 }
