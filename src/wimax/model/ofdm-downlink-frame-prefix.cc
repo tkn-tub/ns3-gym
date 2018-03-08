@@ -19,7 +19,6 @@
  */
 
 #include <stdint.h>
-#include <stdint.h>
 #include "ofdm-downlink-frame-prefix.h"
 #include "ns3/address-utils.h"
 

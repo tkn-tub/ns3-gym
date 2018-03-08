@@ -28,7 +28,6 @@
 #include <ns3/boolean.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/ipv4-address.h>
-#include <ns3/ipv4-address.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/point-to-point-helper.h>
 #include <ns3/packet-socket-helper.h>

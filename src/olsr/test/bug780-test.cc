@@ -33,7 +33,6 @@
 #include "ns3/boolean.h"
 #include "ns3/ipv4-address-helper.h"
 #include "ns3/ipv4-interface-container.h"
-#include "ns3/internet-stack-helper.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/simple-net-device-helper.h"
 #include "ns3/simple-net-device.h"

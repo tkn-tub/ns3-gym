@@ -23,7 +23,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 #include <ns3/object.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-error-model.h>
@@ -49,9 +48,6 @@
 #include <ns3/lte-ue-phy.h>
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
-
-
-#include "lte-test-fdmt-ff-mac-scheduler.h"
 
 using namespace ns3;
 

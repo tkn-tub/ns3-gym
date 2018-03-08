@@ -18,6 +18,7 @@
  * Authors: George F. Riley<riley@ece.gatech.edu>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+ 
 #include "node.h"
 #include "node-list.h"
 #include "net-device.h"
@@ -30,7 +31,6 @@
 #include "ns3/assert.h"
 #include "ns3/global-value.h"
 #include "ns3/boolean.h"
-#include "ns3/simulator.h"
 
 namespace ns3 {
 

@@ -20,7 +20,6 @@
 #include "ns3/csma-module.h"
 #include "ns3/csma-star-helper.h"
 #include "ns3/applications-module.h"
-#include "ns3/csma-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/ipv6-address-generator.h"
 

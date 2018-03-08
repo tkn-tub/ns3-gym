@@ -35,7 +35,6 @@
 #include "service-flow.h"
 #include "service-flow-record.h"
 #include "service-flow-manager.h"
-#include "wimax-mac-queue.h"
 
 namespace ns3 {
 

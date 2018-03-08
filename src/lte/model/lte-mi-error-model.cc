@@ -29,18 +29,14 @@
 *      Marco Miozzo <marco.miozzo@cttc.es>
 */ 
 
-
 #include <list>
 #include <vector>
 #include <ns3/log.h>
 #include <ns3/pointer.h>
 #include <stdint.h>
 #include <cmath>
-#include <stdint.h>
 #include "stdlib.h"
 #include <ns3/lte-mi-error-model.h>
-
-
 
 namespace ns3 {
 

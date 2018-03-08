@@ -21,7 +21,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
 #include <ns3/object.h>
 #include <ns3/spectrum-interference.h>
 #include <ns3/spectrum-error-model.h>
@@ -30,7 +29,6 @@
 #include <ns3/simulator.h>
 #include <ns3/packet.h>
 #include <ns3/ptr.h>
-#include <iostream>
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/mobility-building-info.h>
 #include <ns3/buildings-propagation-loss-model.h>
@@ -52,7 +50,6 @@
 #include <ns3/pointer.h>
 #include <ns3/enum.h>
 #include <ns3/buildings-helper.h>
-
 #include "lte-test-mimo.h"
 
 

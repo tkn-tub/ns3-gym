@@ -27,7 +27,6 @@
 #include "ns3/packet.h"
 #include "ns3/mesh-point-device.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/mesh-point-device.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/random-variable-stream.h"
 #include "airtime-metric.h"

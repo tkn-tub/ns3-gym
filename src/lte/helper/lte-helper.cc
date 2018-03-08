@@ -21,7 +21,6 @@
  *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
  */
 
-
 #include "lte-helper.h"
 #include <ns3/string.h>
 #include <ns3/log.h>
@@ -42,7 +41,6 @@
 #include <ns3/friis-spectrum-propagation-loss.h>
 #include <ns3/trace-fading-loss-model.h>
 #include <ns3/isotropic-antenna-model.h>
-#include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/ff-mac-scheduler.h>
 #include <ns3/lte-ffr-algorithm.h>
@@ -65,7 +63,6 @@
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/lte-spectrum-value-helper.h>
 #include <ns3/epc-x2.h>
-#include <ns3/pointer.h>
 #include <ns3/object-map.h>
 #include <ns3/object-factory.h>
 

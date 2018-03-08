@@ -19,15 +19,11 @@
 */
 
 #include "ns3/simulator.h"
-
 #include "ns3/log.h"
-
 #include "ns3/spectrum-test.h"
-
 #include "ns3/lte-phy-tag.h"
 #include "ns3/lte-test-ue-phy.h"
 #include "ns3/lte-chunk-processor.h"
-
 #include "ns3/lte-test-fading.h"
 #include <ns3/buildings-propagation-loss-model.h>
 #include <ns3/node-container.h>
@@ -42,13 +38,9 @@
 #include <ns3/lte-ue-net-device.h>
 #include <ns3/lte-enb-net-device.h>
 #include <ns3/lte-ue-rrc.h>
-#include <ns3/lte-helper.h>
 #include <ns3/lte-enb-phy.h>
 #include <ns3/lte-ue-phy.h>
 #include "lte-test-sinr-chunk-processor.h"
-
-// #include <ns3/trace-fading-loss-model.h>
-// #include <ns3/spectrum-value.h>
 
 using namespace ns3;
 
