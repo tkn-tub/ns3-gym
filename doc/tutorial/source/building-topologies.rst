@@ -1424,3 +1424,128 @@ they happen.
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.71414, y = 6.84456
   /NodeList/7/$ns3::MobilityModel/CourseChange x = 6.42489, y = 7.80181
 
+
+Queues in ns-3
+**************
+
+The selection of queueing disciplines in |ns3| can have a large impact
+on performance, and it is important for users to understand what is installed
+by default and how to change the defaults and observe the performance.
+
+Architecturally, |ns3| separates the device layer from the IP layers 
+or traffic control layers of an Internet host.  Since recent releases
+of |ns3|, outgoing packets traverse two queueing layers before reaching
+the channel object.  The first queueing layer encountered is what is
+called the 'traffic control layer' in |ns3|; here, active queue management
+(RFC7567) and prioritization due to quality-of-service (QoS) takes place
+in a device-independent manner through the use of queueing disciplines.
+The second queueing layer is typically found in the NetDevice objects.
+Different devices (e.g. LTE, Wi-Fi) have different implementations of these queues.
+This two-layer approach mirrors what is found in practice, (software queues
+providing prioritization, and hardware queues specific to a link type).
+In practice, it may be even more complex than this.  For instance, address
+resolution protocols have a small queue.  Wi-Fi in Linux has four layers
+of queueing (https://lwn.net/Articles/705884/).
+
+The traffic control layer is effective only if it is notified by the
+NetDevice when the device queue is full, so that the traffic control layer
+can stop sending packets to the NetDevice. Otherwise, the backlog of the
+queueing disciplines is always null and they are ineffective. Currently,
+flow control, i.e., the ability of notifying the traffic control layer,
+is supported by the following NetDevices, which use Queue objects (or objects
+of Queue subclasses) to store their packets:
+
+* Point-To-Point
+* Csma
+* Wi-Fi
+* SimpleNetDevice
+
+The performance of queueing disciplines is highly impacted by the size
+of the queues used by the NetDevices. Currently, queues by default in |ns3|
+are not autotuned for the configured link properties (bandwidth, delay), and
+are typically the simplest variants (e.g. FIFO scheduling with drop-tail behavior).
+However, the size of the queues can be dynamically adjusted by enabling BQL
+(Byte Queue Limits), the algorithm implemented in the Linux kernel to adjust
+the size of the device queues to fight bufferbloat while avoiding starvation.
+Currently, BQL is supported by the NetDevices that support flow control.
+An analysis of the impact of the size of the device queues on the effectiveness
+of the queueing disciplines conducted by means of |ns3| simulations and real
+experiments is reported in:
+
+P. Imputato and S. Avallone. An analysis of the impact of network device buffers
+on packet schedulers through experiments and simulations. Simulation Modelling
+Practice and Theory, 80(Supplement C):1--18, January 2018.
+DOI: 10.1016/j.simpat.2017.09.008
+
+Available queueing models in |ns3|
+++++++++++++++++++++++++++++++++++
+
+At the traffic-control layer, these are the options:
+
+* PFifoFastQueueDisc: The default maximum size is 1000 packets
+* FifoQueueDisc: The default maximum size is 1000 packets
+* RedQueueDisc: The default maximum size is 25 packets
+* CoDelQueueDisc: The default maximum size is 1500 kilobytes
+* FqCoDelQueueDisc: The default maximum size is 10024 packets
+* PieQueueDisc: The default maximum size is 25 packets
+* MqQueueDisc: This queue disc has no limits on its capacity
+* TbfQueueDisc: The default maximum size is 1000 packets
+
+By default, a pfifo_fast queueing discipline is installed on a NetDevice when
+an IPv4 or IPv6 address is assigned to an interface associated with the NetDevice,
+unless a queueing discipline has been already installed on the NetDevice.
+
+At the device layer, there are device specific queues:
+
+* PointToPointNetDevice: The default configuration (as set by the helper) is to install
+  a DropTail queue of default size (100 packets)
+* CsmaNetDevice: The default configuration (as set by the helper) is to install
+  a DropTail queue of default size (100 packets)
+* WiFiNetDevice: The default configuration is to install a DropTail queue of default size
+  (100 packets) for non-QoS stations and four DropTail queues of default size (100
+  packets) for QoS stations
+* SimpleNetDevice: The default configuration is to install a DropTail queue of default
+  size (100 packets)
+* LTENetDevice: Queueing occurs at the RLC layer (RLC UM default buffer is 10 * 1024 bytes, RLC AM does not have a buffer limit).
+* UanNetDevice: There is a default 10 packet queue at the MAC layer
+
+
+Changing from the defaults
+++++++++++++++++++++++++++
+
+* The type of queue used by a NetDevice can be usually modified through the device helper:
+
+.. sourcecode:: cpp
+
+  NodeContainer nodes;
+  nodes.Create (2);
+
+  PointToPointHelper p2p;
+  p2p.SetQueue ("ns3::DropTailQueue", "MaxSize", StringValue ("50p"));
+
+  NetDeviceContainer devices = p2p.Install (nodes);
+
+* The type of queue disc installed on a NetDevice can be modified through the
+  traffic control helper
+
+.. sourcecode:: cpp
+
+  InternetStackHelper stack;
+  stack.Install (nodes);
+
+  TrafficControlHelper tch;
+  tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
+  tch.Install (devices);
+
+* BQL can be enabled on a device that supports it through the traffic control helper
+
+.. sourcecode:: cpp
+
+  InternetStackHelper stack;
+  stack.Install (nodes);
+
+  TrafficControlHelper tch;
+  tch.SetRootQueueDisc ("ns3::CoDelQueueDisc", "MaxSize", StringValue ("1000p"));
+  tch.SetQueueLimits ("ns3::DynamicQueueLimits", "HoldTime", StringValue ("4ms"));
+  tch.Install (devices);
+
