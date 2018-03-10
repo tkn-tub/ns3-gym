@@ -69,6 +69,7 @@ Bugs fixed
 - Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
 - Bug 2859 - tcp: calculation of BytesInFlight during partial recovery is fixed 
 - Bug 2866 - tcp: Removed VS warnings on TcpSocketBase
+- Bug 2872 - csma: Packet copy in CsmaChannel breaks netanim tracing
 - Bug 2873 - tcp: Potential SIGFPE in TcpYeah
 - Bug 2874 - tcp: Corrected interpretation of RFC 6675 for IsLost check
 - Bug 2875 - tcp: Use Rule3 of RFC6675 only with SACK enabled

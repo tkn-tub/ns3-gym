@@ -78,6 +78,7 @@ us a note on ns-developers mailing list.</p>
   <li>The GetQueueSize method of some QueueDisc subclasses (e.g., Red) has been removed and replaced by the GetCurrentSize method of the QueueDisc base class.</li>
   <li>All Wi-Fi management frames are now transmitted using the lowest basic rate.</li>
   <li>The Wi-Fi spectrum model now takes into account adjacent channels through OFDM transmit spectrum masks.</li>
+  <li> The CsmaNetDevice::PhyTxBeginTrace will trace all attempts to transmit, even those that result in drops. Previously, eventual channel drops were excluded from this trace.</l>
 </ul>
 
 <hr>
