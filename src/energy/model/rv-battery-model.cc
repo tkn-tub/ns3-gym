@@ -87,7 +87,7 @@ RvBatteryModel::GetTypeId (void)
     .AddTraceSource ("RvBatteryModelBatteryLifetime",
                      "RV battery model battery lifetime.",
                      MakeTraceSourceAccessor (&RvBatteryModel::m_lifetime),
-                     "ns3::Time::TracedValueCallback")
+                     "ns3::TracedValueCallback::Time")
   ;
   return tid;
 }

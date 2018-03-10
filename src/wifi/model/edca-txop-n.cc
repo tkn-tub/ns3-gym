@@ -50,11 +50,11 @@ EdcaTxopN::GetTypeId (void)
     .AddTraceSource ("BackoffTrace",
                      "Trace source for backoff values",
                      MakeTraceSourceAccessor (&EdcaTxopN::m_backoffTrace),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("CwTrace",
                      "Trace source for contention window values",
                      MakeTraceSourceAccessor (&EdcaTxopN::m_cwTrace),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("TxopTrace",
                      "Trace source for txop start and duration times",
                      MakeTraceSourceAccessor (&EdcaTxopN::m_txopTrace),

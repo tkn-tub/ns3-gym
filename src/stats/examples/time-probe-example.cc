@@ -81,7 +81,7 @@ Emitter::GetTypeId (void)
     .AddTraceSource ("Interval",
                      "Trace source",
                      MakeTraceSourceAccessor (&Emitter::m_interval),
-                     "ns3::Time::TracedValueCallback")
+                     "ns3::TracedValueCallback::Time")
   ;
   return tid;
 }

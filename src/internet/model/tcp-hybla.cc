@@ -40,7 +40,7 @@ TcpHybla::GetTypeId (void)
     .AddTraceSource ("Rho",
                      "Rho parameter of Hybla",
                      MakeTraceSourceAccessor (&TcpHybla::m_rho),
-                     "ns3::TracedValue::DoubleCallback")
+                     "ns3::TracedValueCallback::Double")
   ;
   return tid;
 }

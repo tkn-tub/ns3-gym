@@ -140,11 +140,11 @@ TcpSocketBase::GetTypeId (void)
     .AddTraceSource ("RTO",
                      "Retransmission timeout",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_rto),
-                     "ns3::Time::TracedValueCallback")
+                     "ns3::TracedValueCallback::Time")
     .AddTraceSource ("RTT",
                      "Last RTT sample",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_lastRtt),
-                     "ns3::Time::TracedValueCallback")
+                     "ns3::TracedValueCallback::Time")
     .AddTraceSource ("NextTxSequence",
                      "Next sequence number to send (SND.NXT)",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_nextTxSequenceTrace),
@@ -152,7 +152,7 @@ TcpSocketBase::GetTypeId (void)
     .AddTraceSource ("HighestSequence",
                      "Highest sequence number ever sent in socket's life time",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_highTxMarkTrace),
-                     "ns3::SequenceNumber32TracedValueCallback")
+                     "ns3::TracedValueCallback::SequenceNumber32")
     .AddTraceSource ("State",
                      "TCP state",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_state),
@@ -176,11 +176,11 @@ TcpSocketBase::GetTypeId (void)
     .AddTraceSource ("HighestRxSequence",
                      "Highest sequence number received from peer",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_highRxMark),
-                     "ns3::SequenceNumber32TracedValueCallback")
+                     "ns3::TracedValueCallback::SequenceNumber32")
     .AddTraceSource ("HighestRxAck",
                      "Highest ack received from peer",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_highRxAckMark),
-                     "ns3::SequenceNumber32TracedValueCallback")
+                     "ns3::TracedValueCallback::SequenceNumber32")
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketBase::m_cWndTrace),

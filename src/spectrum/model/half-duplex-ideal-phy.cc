@@ -114,27 +114,27 @@ HalfDuplexIdealPhy::GetTypeId (void)
     .AddTraceSource ("TxStart",
                      "Trace fired when a new transmission is started",
                      MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxStartTrace),
-                     "ns3::Packet::TraceCallback")
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("TxEnd",
                      "Trace fired when a previosuly started transmission is finished",
                      MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyTxEndTrace),
-                     "ns3::Packet::TraceCallback")
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("RxStart",
                      "Trace fired when the start of a signal is detected",
                      MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxStartTrace),
-                     "ns3::Packet::TraceCallback")
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("RxAbort",
                      "Trace fired when a previously started RX is aborted before time",
                      MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxAbortTrace),
-                     "ns3::Packet::TraceCallback")
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("RxEndOk",
                      "Trace fired when a previosuly started RX terminates successfully",
                      MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndOkTrace),
-                     "ns3::Packet::TraceCallback")
+                     "ns3::Packet::TracedCallback")
     .AddTraceSource ("RxEndError",
                      "Trace fired when a previosuly started RX terminates with an error (packet is corrupted)",
                      MakeTraceSourceAccessor (&HalfDuplexIdealPhy::m_phyRxEndErrorTrace),
-                     "ns3::Packet::TraceCallback")
+                     "ns3::Packet::TracedCallback")
   ;
   return tid;
 }
