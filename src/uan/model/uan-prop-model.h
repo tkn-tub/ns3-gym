@@ -235,13 +235,6 @@ public:
   std::complex<double> SumTapsFromMaxC (Time delay, Time duration) const;
 
   /**
-   * Creates a new UanPdp normalized to its non coherent sum.
-   * \see SumTapsNc
-   * \returns the new PDP
-   */
-  UanPdp NormalizeToSumNc (void);
-
-  /**
    * Get a unit impulse PDP at time 0.
    *
    * \return The unit impulse.
