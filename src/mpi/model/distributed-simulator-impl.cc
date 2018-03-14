@@ -373,6 +373,7 @@ DistributedSimulatorImpl::Run (void)
 #ifdef NS3_MPI
   CalculateLookAhead ();
   m_stop = false;
+  m_globalFinished = false;
   while (!m_globalFinished)
     {
       Time nextTime = Next ();
