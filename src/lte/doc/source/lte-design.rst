@@ -4126,6 +4126,8 @@ Overview
 This section describes the ns-3 support for Carrier Aggregation.
 The references in the standard are [TS36211]_, [TS36213]_ and [TS36331]_.
 
+**Note:** Carrier Aggregation was introduced in release 3.27 and currently, only works in downlink.
+
 3GPP standardizes, in release R10, the Carrier Aggregation (CA) technology.
 
 This technology consists of the possibility, to aggregate radio resources belonging to 
