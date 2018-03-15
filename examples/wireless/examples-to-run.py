@@ -60,7 +60,7 @@ cpp_examples = [
     ("wifi-hidden-terminal --wifiManager=Minstrel", "True", "True"),
     ("wifi-hidden-terminal --wifiManager=Cara", "True", "True"),
     ("wifi-hidden-terminal --wifiManager=Rraa", "True", "True"),
-    ("wifi-hidden-terminal --wifiManager=Rrpaa", "True", "Ideal"),
+    ("wifi-hidden-terminal --wifiManager=Rrpaa", "True", "True"),
     ("wifi-spectrum-per-example --distance=52 --index=3 --wifiType=ns3::SpectrumWifiPhy --simulationTime=1", "True", "True"),
     ("wifi-spectrum-per-example --distance=24 --index=31 --wifiType=ns3::YansWifiPhy --simulationTime=1", "True", "False"),
     ("wifi-spectrum-per-interference --distance=24 --index=31 --simulationTime=1 --waveformPower=0.1", "True", "True"),
