@@ -336,7 +336,7 @@ class ns3pcfile_task(Task.Task):
     def __str__(self):
         "string to display to the user"
         tgt_str = ' '.join([a.bldpath() for a in self.outputs])
-        return 'pcfile: %s\n' % (tgt_str)
+        return 'pcfile: %s' % (tgt_str)
 
     def runnable_status(self):
         return super(ns3pcfile_task, self).runnable_status()

@@ -31,7 +31,7 @@ class command_task(Task.Task):
 		pipeline = shellcmd.Pipeline()
 		pipeline.parse(self.generator.command)
 		cmd = pipeline.get_abbreviated_command()
-		return 'command (%s): %s%s%s\n' % (cmd, src_str, sep, tgt_str)
+		return 'command (%s): %s%s%s' % (cmd, src_str, sep, tgt_str)
 
 	def _subst_arg(self, arg, direction, namespace):
 		"""
