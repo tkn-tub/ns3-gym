@@ -18,22 +18,21 @@ bytes. If yes, then the tokens are removed and the packet is passed for transmis
 packets will have to wait until there are sufficient tokens in the bucket. This data conformance
 can be thus put into three possible scenarios [Ref3]_:
 
-1. Data rate = Token rate : Packets pass without delay
-2. Data rate < Token rate : Few tokens are depleted.
-  * Burst Condition : So the tokens might accumulate and the bucket might become
-    full. Then, the next packets to enter TBF will be transmitted right away without
-    having any limit applied to them, until the bucket is empty. This is called a burst
-    condition and in TBF the burst parameter defines the size of the bucket. In order
-    to overcome this problem and provide better control over the bursts, TBF
-    implements a second bucket which is smaller and generally the same size as the
-    MTU. This second bucket cannot store large amount of tokens, but its
-    replenishing rate will be a lot faster than the one of the big bucket. This second
-    rate is called 'peakRate' and it will determine the maximum rate of a burst.
+1. Data rate = Token rate : Packets pass without delay.
+2. Data rate < Token rate : The tokens might accumulate and the bucket might become
+   full. Then, the next packets to enter TBF will be transmitted right away without
+   having any limit applied to them, until the bucket is empty. This is called a burst
+   condition and in TBF the burst parameter defines the size of the bucket. In order
+   to overcome this problem and provide better control over the bursts, TBF
+   implements a second bucket which is smaller and generally the same size as the
+   MTU. This second bucket cannot store large amount of tokens, but its
+   replenishing rate will be a lot faster than the one of the big bucket. This second
+   rate is called 'peakRate' and it will determine the maximum rate of a burst.
 3. Data rate > Token rate : This causes the TBF algorithm to throttle itself for a while as
-soon as the bucket gets empty. This is called an 'overlimit situation' [Ref2]_. In this situation,
-some of the packets will be blocked until enough tokens are available at which time a schedule for
-the waking of the queue will be done. If packets keep coming in, at a larger rate, then the
-packets will start to get dropped when the total number of bytes exceeds the QueueLimit.
+   soon as the bucket gets empty. This is called an 'overlimit situation' [Ref2]_. In this situation,
+   some of the packets will be blocked until enough tokens are available at which time a schedule for
+   the waking of the queue will be done. If packets keep coming in, at a larger rate, then the
+   packets will start to get dropped when the total number of bytes exceeds the QueueLimit.
 
 Model Description
 *****************
