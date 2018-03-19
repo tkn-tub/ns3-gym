@@ -9,42 +9,62 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.28
+============
 
 Availability
 ------------
-This release is not yet available.
+This release is available from:
+https://www.nsnam.org/release/ns-allinone-3.28.tar.bz2
 
 Supported platforms
 -------------------
 This release is intended to work on systems with the following minimal
-requirements (Note:  not all features available on all platforms):
+compiler requirements (other compilers supporting C++11 may also work):
+- g++-4.9 or later
+- Apple LLVM version 7.0.2 or later 
+- clang-3.3 or later
+In addition, a Python 2.7 (Python 2 series) or Python 3.4 (Python 3 series) 
+or later is required.
 
 This release has been tested on the following platforms:
+- Ubuntu 17.10 (64 bit) with g++-7.2.0 and Python 2.7.14
+- Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12
+- Fedora Core 27 (64 bit) with g++-7.3.1 and Python 2.7.14
+- Fedora Core 26 (64 bit) with g++-7.3.1 and g++-7.1.1, and Python 2.7.14
+- CentOS/RHEL 7.4 (64-bit) with g++-6.3.1 and Python 3.5.1
+  - Note: the default g++ version (4.8) must be upgraded 
+- CentOS/RHEL 6.8 (64-bit) with g++-4.9.2 and Python 2.7.13
+  - Note: the default g++ version (4.4) must be upgraded 
+  - Note: the default Python version (2.6) must be upgraded 
+- OS X Sierra 10.12.6 with Xcode 9.2, Apple LLVM version 9.0.0, Python 2.7.13
+- OS X Yosemite 10.10.5 with Xcode 7.2.1, Apple LLVM vers. 7.0.2, Python 2.7.10
 
 New user-visible features
 -------------------------
-- (tcp) Added TCP-LP as congestion control module
-- (tcp) RFC 6675 third rule for generating next sequence to transmit is used only when SACK is enabled
-- (tcp) Added a CongestionWindowInflated trace which, in case of non-SACK connections, will show the congestion window values as they were on previous releases. 
-- (lr-wpan) Extended addressing mode is now supported.
+- (tcp) Added TCP-LP as a congestion control module
+- (tcp) When TCP SACK is enabled, the third rule defined in RFC 6675 regarding the next segment to transmit is followed
+- (tcp) Separated the CongestionWindow trace into a CongestionWindow trace and a CongestionWindowInflated trace, where the latter tracks window inflation during loss recovery as defined by the Reno algorithm
 - (tcp) Implemented the core functionality of TCP Pacing.
-- (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is allocated.
-- (internet) Ipv6AddressHelper is now more pedantic but you can use more than one in a script.
+- (lr-wpan) Extended addressing mode is now supported.
+- (internet) Ipv[4,6]AddressGenerator can now check if an address or a network is already allocated.
+- (internet) Ipv6AddressHelper has more pedantic checks, but more than one such helper can now be used in a program.
 - (lte) UEs can now use IPv6 to send and receive traffic.
-- (uan) UAN module now supports IP stack
+- (uan) The UAN module now supports an IP stack
 - (uan) Added some examples for running raw, IPv4, IPv6, and 6LoWPAN over UAN
+- (traffic-control) Added a FIFO queue disc (FifoQueueDisc) and the Token Bucket Filter (TbfQueueDisc).
 
 Bugs fixed
 ----------
 - Bug 1745 - There can be only one Ipv6AddressHelper in a script
 - Bug 1783 - tcp: Experiencing drops during fast recovery causes TCP's congestion window to blow up. Not anymore.
 - Bug 2107 - lte: Enable PCAP for S1 and X2 point-to-point links
+- Bug 2152 - lte: Fix uplink HARQ retx. out of synch at the MAC layer
+- Bug 2151 - lte: Generate correct redundancy version in uplink HARQ
 - Bug 2277 - lte: EpcTftClassifier::Classify blindly assumes that a packet has a L4 header 
 - Bug 2505 - network:  Avoid asserts in Header/Trailer deserialization
-- Bug 2656 - wifi: Minstrel and MinstrelHt provide different results for 802.11a/b/g
 - Bug 2653 - tcp: Avoid saving smaller TS in case of packet reordering
+- Bug 2656 - wifi: Minstrel and MinstrelHt provide different results for 802.11a/b/g
 - Bug 2754 - lte: Incorrect arguments passed to Asn1Header::SerializeInteger
 - Bug 2764 - wifi: WifiSpectrumModelId doesn't distinguish 11ax from legacy
 - Bug 2766 - core: Modify logging for int64x64 to avoid stack overflow
@@ -55,18 +75,21 @@ Bugs fixed
 - Bug 2809 - wifi: Wifi doesn't fully stop when energy is depleted
 - Bug 2813 - wifi: OFDM 10 MHz and 5 MHz PHYs do not have correct subcarrier frequency spacings
 - Bug 2820 - wifi: segmentation fault when Rrpaa wifi manager is used
+- Bug 2821 - lte: Set correct limit for UL retx. in Round Robin scheduler
 - Bug 2824 - ICMP opcode fr fragment timeout drop is wrong
 - Bug 2826 - wifi: Management frames should be sent using the lowest basic rate
 - Bug 2827 - wifi: Active scanning not working with 802.11n/ac/ax
 - Bug 2828 - OLSR simple P2P example produces wrong results
 - Bug 2831 - wifi: runtime channel width switch has no effect
+- Bug 2832 - tcp: Partial ACK triggering repeated retransmission
 - Bug 2836 - wifi: Missing VHT information in radiotap header when A-MPDU is used
 - Bug 2838 - wifi: ht-wifi-network crashes with RTS/CTS enabled and frequency set to 2.4GHz
 - Bug 2840 - lte: Wrong configuration of eNBs and UEs
 - Bug 2843 - spectrum, wifi: Incorrect channel width and center frequency provided for non-HT PPDUs when building SpectralDensity
 - Bug 2848 - wifi: Association ID not correctly set upon association
 - Bug 2849 - lte: Received RLC and PDCP PDUs are missing in the stats files
-- Bug 2854 - wifi: he-wifi-network crashes when frequency is set at 2.4 GHz
+- Bug 2854 - wifi: Fix 802.11ax channel width capabilities
+- Bug 2856 - wifi: Correct bugs and improve logging in MinstrelHt
 - Bug 2859 - tcp: calculation of BytesInFlight during partial recovery is fixed 
 - Bug 2866 - tcp: Removed VS warnings on TcpSocketBase
 - Bug 2872 - csma: Packet copy in CsmaChannel breaks netanim tracing
@@ -79,6 +102,7 @@ Bugs fixed
 - Bug 2890 - internet: Icmpv4 "ECHO" is defined in system-wide headers
 - Bug 2898 - lte: Coding issue in function RrcAsn1Header::DeserializeRachConfigCommon
 - Bug 2899 - lte: Inconsistent type for variable cellForWhichToReportCGI
+- wifi:  Fix wrong guard band for SpectrumWifiPhy DSSS/HR-DSSS
 
 Known issues
 ------------

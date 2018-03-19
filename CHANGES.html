@@ -51,34 +51,35 @@ to this file based on your experience, please contribute a patch or drop
 us a note on ns-developers mailing list.</p>
 
 <hr>
-<h1>Changes from ns-3.27 to ns-3-dev</h1>
+<h1>Changes from ns-3.27 to ns-3.28</h1>
 <h2>New API:</h2>
 <ul>
   <li> When deserializing Packet contents, <b>Header::Deserialize (Buffer::Iterator start)</b> and <b>Trailer::Deserialize (Buffer::Iterator start)</b> can not successfully deserialize variable-length headers and trailers.  New variants of these methods that also include an 'end' parameter are now provided.</li>
   <li> Ipv[4,6]AddressGenerator can now check if an address is allocated (<b>Ipv[4,6]AddressGenerator::IsAddressAllocated</b>) or a network has some allocated address (<b>Ipv[4,6]AddressGenerator::IsNetworkAllocated</b>).</li>
   <li> LTE UEs can now use IPv6 to send and receive traffic.</li>
-  <li> UAN module now supports IP stack.</li>
-  <li> Class <b>TcpSocketBase</b> attribute <i>CongestionWindowInflated</i> shows the values with the in-recovery inflation and the post-recovery deflation.
+  <li> UAN module now supports an IP stack.</li>
+  <li> Class <b>TcpSocketBase</b> trace source <i>CongestionWindowInflated</i> shows the values with the in-recovery inflation and the post-recovery deflation.
   <li> Added a FIFO queue disc (FifoQueueDisc) and the Token Bucket Filter (TbfQueueDisc).</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
   <li> Class <b>LrWpanMac</b> now supports extended addressing mode. Both <b>McpsDataRequest</b> and <b>PdDataIndication</b> methods will now use extended addressing if <b>McpsDataRequestParams::m_srcAddrMode</b> or <b>McpsDataRequestParams::m_dstAddrMode</b> are set to <b>EXT_ADDR</b>.</li>
-  <li> Class <b>LteUeNetDevice</b> MAC address is now a 64-bit address and it's set during construction.</li>
-  <li> Class <b>TcpSocketBase</b> attribute <i>CongestionWindow</i> shows the values without the in-recovery inflation and the post-recovery deflation.
+  <li> Class <b>LteUeNetDevice</b> MAC address is now a 64-bit address and can be set during construction.</li>
+  <li> Class <b>TcpSocketBase</b> trace source <i>CongestionWindow</i> shows the values without the in-recovery inflation and the post-recovery deflation; the old behavior has been moved to the new trace source <i>CongestionWindowInflated</i>.
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
+  <li> The C++ standard used during compilation (default std=c++11) can be now be changed via the CXXFLAGS variable.</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
-  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class have been deprecated in favor of the
-  MaxSize attribute. Old attributes can still be used, but using them will be no longer possible in one of the next releases. The methods to get/set the old attributes will be removed as well.</li>
+  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class have been deprecated in favor of the MaxSize attribute. Old attributes can still be used, but using them will be no longer possible in one of the next releases. The methods to get/set the old attributes will be removed as well.</li>
   <li>The attributes of the QueueDisc subclasses that separately determine the mode and the limit of the QueueDisc have been deprecated in favor of the single MaxSize attribute.</li>
-  <li>The GetQueueSize method of some QueueDisc subclasses (e.g., Red) has been removed and replaced by the GetCurrentSize method of the QueueDisc base class.</li>
+  <li>The GetQueueSize method of some QueueDisc subclasses (e.g., RED) has been removed and replaced by the GetCurrentSize method of the QueueDisc base class.</li>
   <li>All Wi-Fi management frames are now transmitted using the lowest basic rate.</li>
   <li>The Wi-Fi spectrum model now takes into account adjacent channels through OFDM transmit spectrum masks.</li>
   <li> The CsmaNetDevice::PhyTxBeginTrace will trace all attempts to transmit, even those that result in drops. Previously, eventual channel drops were excluded from this trace.</l>
+  <li>The TCP congestion window trace now does not report on window inflation during fast recovery phase because it is no longer internally maintained as an inflated value (a separate trace called CongestionWindowInflated can be used to recover the old trace behavior).</li>
 </ul>
 
 <hr>
