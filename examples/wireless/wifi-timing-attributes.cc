@@ -162,7 +162,7 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
 
   //Get and print results
-  uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
+  uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * 1472 * 8 / (simulationTime * 1000000.0); //Mbit/s
   std::cout << "Throughput: " << throughput << " Mbit/s" << std::endl;
 

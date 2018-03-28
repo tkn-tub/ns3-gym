@@ -65,7 +65,7 @@ NS_LOG_COMPONENT_DEFINE ("SimpleMpduAggregation");
 int main (int argc, char *argv[])
 {
   uint32_t payloadSize = 1472; //bytes
-  uint64_t simulationTime = 10; //seconds
+  double simulationTime = 10; //seconds
   double distance = 5; //meters
   bool enableRts = 0;
   bool enablePcap = 0;

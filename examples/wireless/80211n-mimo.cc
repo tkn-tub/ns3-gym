@@ -100,7 +100,7 @@ int main (int argc, char *argv[])
     {
       std::cout << modes[i] << std::endl;
       Gnuplot2dDataset dataset (modes[i]);
-      for (int d = 0; d <= 100; ) //distance
+      for (double d = 0; d <= 100; ) //distance
         {
           std::cout << "Distance = " << d << "m: " << std::endl;
           uint32_t payloadSize; //1500 byte IP packet

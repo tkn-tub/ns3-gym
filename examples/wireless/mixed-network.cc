@@ -76,7 +76,7 @@ struct Parameters
   bool nGreenfieldHasTraffic;
   bool isUdp;
   uint32_t payloadSize;
-  uint32_t simulationTime;
+  double simulationTime;
 };
 
 class Experiment
@@ -129,7 +129,7 @@ Experiment::Run (Parameters params)
   uint32_t nWifiG = params.nWifiG;
   uint32_t nWifiNNGF = params.nWifiNNonGreenfield;
   uint32_t nWifiNGF = params.nWifiNGreenfield;
-  uint32_t simulationTime = params.simulationTime;
+  double simulationTime = params.simulationTime;
   uint32_t payloadSize = params.payloadSize;
 
   NodeContainer wifiBStaNodes;

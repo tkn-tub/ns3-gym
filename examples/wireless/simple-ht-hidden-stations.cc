@@ -48,7 +48,7 @@ NS_LOG_COMPONENT_DEFINE ("SimplesHtHiddenStations");
 int main (int argc, char *argv[])
 {
   uint32_t payloadSize = 1472; //bytes
-  uint64_t simulationTime = 10; //seconds
+  double simulationTime = 10; //seconds
   uint32_t nMpdus = 1;
   uint32_t maxAmpduSize = 0;
   bool enableRts = 0;
@@ -167,7 +167,7 @@ int main (int argc, char *argv[])
   Simulator::Run ();
   Simulator::Destroy ();
 
-  uint32_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
+  uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput: " << throughput << " Mbit/s" << '\n';
   if (throughput < minExpectedThroughput || (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput))

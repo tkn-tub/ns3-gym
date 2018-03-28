@@ -52,7 +52,7 @@ void experiment (bool enableCtsRts, std::string wifiManager)
   nodes.Create (3);
 
   // 2. Place nodes somehow, this is required by every wireless simulation
-  for (size_t i = 0; i < 3; ++i)
+  for (uint8_t i = 0; i < 3; ++i)
     {
       nodes.Get (i)->AggregateObject (CreateObject<ConstantPositionMobilityModel> ());
     }
