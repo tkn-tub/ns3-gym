@@ -590,10 +590,9 @@ int main (int argc, char *argv[])
   WifiMacHelper wifiMac;
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
-  Ssid ssid = Ssid ("Testbed");
 
   wifiMac.SetType ("ns3::AdhocWifiMac",
-                   "Ssid", SsidValue (ssid));
+                   "Ssid", StringValue ("Testbed"));
   wifi.SetStandard (WIFI_PHY_STANDARD_holland);
   wifi.SetRemoteStationManager (experiment.GetRateManager ());
 
