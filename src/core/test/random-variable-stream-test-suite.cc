@@ -2603,7 +2603,9 @@ RandomVariableStreamZetaTestCase::DoRun (void)
   // There are no simple analytic forms for the Riemann zeta function,
   // which is why the gsl library is used in this test to calculate
   // the known mean of the values.
-  double expectedMean = gsl_sf_zeta_int (alpha - 1) / gsl_sf_zeta_int (alpha);
+  double expectedMean = 
+    gsl_sf_zeta_int (static_cast<int> (alpha - 1)) / 
+    gsl_sf_zeta_int (static_cast<int> (alpha)       );
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
@@ -2670,7 +2672,9 @@ RandomVariableStreamZetaAntitheticTestCase::DoRun (void)
   // There are no simple analytic forms for the Riemann zeta function,
   // which is why the gsl library is used in this test to calculate
   // the known mean of the values.
-  double expectedMean = gsl_sf_zeta_int (alpha - 1) / gsl_sf_zeta_int (alpha);
+  double expectedMean = 
+    gsl_sf_zeta_int (static_cast<int> (alpha) - 1) / 
+    gsl_sf_zeta_int (static_cast<int> (alpha)       );
 
   // Test that values have approximately the right mean value.
   double TOLERANCE = expectedMean * 1e-2;
@@ -2715,7 +2719,7 @@ RandomVariableStreamDeterministicTestCase::DoRun (void)
   //    4, 4, 7, 7, 10, 10 .
   //
   double array1 [] = { 4, 4, 7, 7, 10, 10};
-  uint64_t count1 = 6;
+  std::size_t count1 = 6;
   s->SetValueArray (array1, count1);
 
   double value;
@@ -2739,7 +2743,7 @@ RandomVariableStreamDeterministicTestCase::DoRun (void)
   //    1000, 2000, 7, 7 .
   //
   double array2 [] = { 1000, 2000, 3000, 4000};
-  uint64_t count2 = 4;
+  std::size_t count2 = 4;
   s->SetValueArray (array2, count2);
 
   // Test that the second sequence is correct.

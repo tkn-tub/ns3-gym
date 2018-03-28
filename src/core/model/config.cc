@@ -65,14 +65,14 @@ MatchContainer::End (void) const
   NS_LOG_FUNCTION (this);
   return m_objects.end ();
 }
-uint32_t
+std::size_t
 MatchContainer::GetN (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_objects.size ();
 }
 Ptr<Object>
-MatchContainer::Get (uint32_t i) const
+MatchContainer::Get (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   return m_objects[i];
@@ -166,7 +166,7 @@ public:
    * \param [in] i The index.
    * \returns \c true if the index matches the Config Path.
    */
-  bool Matches (uint32_t i) const;
+  bool Matches (std::size_t i) const;
 private:
   /**
    * Convert a string to an \c uint32_t.
@@ -188,7 +188,7 @@ ArrayMatcher::ArrayMatcher (std::string element)
   NS_LOG_FUNCTION (this << element);
 }
 bool
-ArrayMatcher::Matches (uint32_t i) const
+ArrayMatcher::Matches (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   if (m_element == "*")
@@ -500,13 +500,13 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
                   continue;
                 }
               // attempt to cast to a pointer checker.
-              const PointerChecker *ptr = dynamic_cast<const PointerChecker *> (PeekPointer (info.checker));
-              if (ptr != 0)
+              const PointerChecker *pChecker = dynamic_cast<const PointerChecker *> (PeekPointer(info.checker));
+              if (pChecker != 0)
                 {
                   NS_LOG_DEBUG ("GetAttribute(ptr)="<<info.name<<" on path="<<GetResolvedPath ());
-                  PointerValue ptr;
-                  root->GetAttribute (info.name, ptr);
-                  Ptr<Object> object = ptr.Get<Object> ();
+                  PointerValue pValue;
+                  root->GetAttribute (info.name, pValue);
+                  Ptr<Object> object = pValue.Get<Object> ();
                   if (object == 0)
                     {
                       NS_LOG_ERROR ("Requested object name=\""<<item<<
@@ -602,9 +602,9 @@ public:
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
 
   /** \copydoc Config::GetRootNamespaceObjectN() */
-  uint32_t GetRootNamespaceObjectN (void) const;
+  std::size_t GetRootNamespaceObjectN (void) const;
   /** \copydoc Config::GetRootNamespaceObject() */
-  Ptr<Object> GetRootNamespaceObject (uint32_t i) const;
+  Ptr<Object> GetRootNamespaceObject (std::size_t i) const;
 
 private:
   /**
@@ -740,14 +740,14 @@ ConfigImpl::UnregisterRootNamespaceObject (Ptr<Object> obj)
     }
 }
 
-uint32_t 
+std::size_t
 ConfigImpl::GetRootNamespaceObjectN (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_roots.size ();
 }
 Ptr<Object> 
-ConfigImpl::GetRootNamespaceObject (uint32_t i) const
+ConfigImpl::GetRootNamespaceObject (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   return m_roots[i];
@@ -758,7 +758,7 @@ void Reset (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   // First, let's reset the initial value of every attribute
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
+  for (uint16_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
       TypeId tid = TypeId::GetRegistered (i);
       for (uint32_t j = 0; j < tid.GetAttributeN (); j++)
@@ -869,7 +869,7 @@ void UnregisterRootNamespaceObject (Ptr<Object> obj)
   ConfigImpl::Get ()->UnregisterRootNamespaceObject (obj);
 }
 
-uint32_t GetRootNamespaceObjectN (void)
+std::size_t GetRootNamespaceObjectN (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return ConfigImpl::Get ()->GetRootNamespaceObjectN ();

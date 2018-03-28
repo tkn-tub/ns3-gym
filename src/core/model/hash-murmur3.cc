@@ -493,8 +493,8 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
   h1 += h2;
   h2 += h1;
 
-  ((uint32_t *)out)[0] = h1;
-  ((uint32_t *)out)[1] = h2;
+  ((uint32_t *)out)[0] = static_cast<uint32_t> (h1);  //PDB cast
+  ((uint32_t *)out)[1] = static_cast<uint32_t> (h2);  //PDB cast
 }
 
 
@@ -521,8 +521,9 @@ Murmur3::GetHash32  (const char * buffer, const size_t size)
 {
   using namespace Murmur3Implementation;
 
-  MurmurHash3_x86_32_incr (buffer, size, m_hash32, (void *) & m_hash32);
-  m_size32 += size;
+  MurmurHash3_x86_32_incr (buffer, static_cast<int> (size),
+                           m_hash32, (void *)& m_hash32);
+  m_size32 += static_cast<uint32_t> (size);
   uint32_t hash;
   MurmurHash3_x86_32_fin  (m_size32, m_hash32, (void *) & hash);
 
@@ -533,7 +534,8 @@ uint64_t
 Murmur3::GetHash64  (const char * buffer, const size_t size)
 {
   using namespace Murmur3Implementation;
-  MurmurHash3_x86_128_incr (buffer, size,
+
+  MurmurHash3_x86_128_incr (buffer, static_cast<int> (size),
                             (uint32_t *)(void *)m_hash64, m_hash64);
   m_size64 += size;
 
@@ -551,7 +553,7 @@ Murmur3::GetHash64  (const char * buffer, const size_t size)
   // Using uint32_t here avoids the bug, and continues to works with newer gcc.
   uint32_t hash[4];
   
-  MurmurHash3_x86_128_fin (m_size64,
+  MurmurHash3_x86_128_fin (static_cast<int> (m_size64),
                            (uint32_t *)(void *)m_hash64, hash);
   uint64_t result = hash[1];
   result = (result << 32) | hash[0];
@@ -563,7 +565,7 @@ Murmur3::clear (void)
 {
   m_hash32 = (uint32_t)SEED;
   m_size32 = 0;
-  m_hash64[0] = m_hash64[1] = ((uint64_t)(SEED) << 32) + (uint64_t)SEED;
+  m_hash64[0] = m_hash64[1] = ((uint64_t)SEED << 32) | (uint32_t)SEED;
   m_size64 = 0;
 }
 

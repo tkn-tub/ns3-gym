@@ -373,7 +373,7 @@ RealtimeSimulatorImpl::ProcessOneEvent (void)
             tsJitter = m_currentTs - tsFinal;
           }
 
-        if (tsJitter > static_cast<uint64_t>(m_hardLimit.GetTimeStep ()))
+        if (tsJitter > static_cast<uint64_t> (m_hardLimit.GetTimeStep ()))
           {
             NS_FATAL_ERROR ("RealtimeSimulatorImpl::ProcessOneEvent (): "
                             "Hard real-time limit exceeded (jitter = " << tsJitter << ")");
@@ -433,7 +433,7 @@ RealtimeSimulatorImpl::Run (void)
   m_synchronizer->SetOrigin (m_currentTs);
 
   // Sleep until signalled
-  uint64_t tsNow;
+  uint64_t tsNow = 0;
   uint64_t tsDelay = 1000000000; // wait time of 1 second (in nanoseconds)
  
   while (!m_stop) 

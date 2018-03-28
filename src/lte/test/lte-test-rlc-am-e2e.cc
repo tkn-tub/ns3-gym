@@ -146,7 +146,7 @@ LteRlcAmE2eTestCase::DoRun (void)
   // LogComponentEnable ("LteRlcUm", level);
   // LogComponentEnable ("LteRlcAm", level);
 
-  Config::SetGlobal ("RngRun", IntegerValue (m_run));
+  Config::SetGlobal ("RngRun", UintegerValue (m_run));
   Config::SetDefault ("ns3::LteRlcAm::PollRetransmitTimer", TimeValue (MilliSeconds (20)));
   Config::SetDefault ("ns3::LteRlcAm::ReorderingTimer", TimeValue (MilliSeconds (10)));
   Config::SetDefault ("ns3::LteRlcAm::StatusProhibitTimer", TimeValue (MilliSeconds (40)));

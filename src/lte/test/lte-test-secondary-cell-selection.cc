@@ -55,13 +55,13 @@ LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite ()
 {
   // REAL RRC PROTOCOL
 
-  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1, 2), TestCase::QUICK);
-  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1, 4), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1U, 2), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, real RRC, RngRun=1", false, 1U, 4), TestCase::QUICK);
 
   // IDEAL RRC PROTOCOL
 
-  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1, 2), TestCase::QUICK);
-  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1, 4), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1U, 2), TestCase::QUICK);
+  AddTestCase (new LteSecondaryCellSelectionTestCase ("EPC, ideal RRC, RngRun=1", true, 1U, 4), TestCase::QUICK);
 
 } // end of LteSecondaryCellSelectionTestSuite::LteSecondaryCellSelectionTestSuite ()
 
@@ -72,7 +72,7 @@ static LteSecondaryCellSelectionTestSuite g_lteSecondaryCellSelectionTestSuite;
  */
 
 LteSecondaryCellSelectionTestCase::LteSecondaryCellSelectionTestCase (
-  std::string name, bool isIdealRrc, int64_t rngRun, uint8_t numberOfComponentCarriers)
+  std::string name, bool isIdealRrc, uint64_t rngRun, uint8_t numberOfComponentCarriers)
   : TestCase (name),
     m_isIdealRrc (isIdealRrc),
     m_rngRun (rngRun),
@@ -92,7 +92,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
 
-  Config::SetGlobal ("RngRun", IntegerValue (m_rngRun));
+  Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
 
   // Create helpers.
   auto lteHelper = CreateObject<LteHelper> ();
@@ -150,7 +150,7 @@ LteSecondaryCellSelectionTestCase::DoRun ()
 
   for (auto &it: enbDev->GetCcMap ())
     {
-      auto ueDev = DynamicCast<LteUeNetDevice> (ueDevs.Get (it.first));
+      ueDev = DynamicCast<LteUeNetDevice> (ueDevs.Get (it.first));
       uint16_t expectedCellId = it.second->GetCellId ();
       uint16_t actualCellId = ueDev->GetRrc ()->GetCellId ();
       NS_TEST_ASSERT_MSG_EQ (expectedCellId, actualCellId, "IMSI " << ueDev->GetImsi () << " has attached to an unexpected cell");

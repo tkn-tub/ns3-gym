@@ -27,13 +27,13 @@
 #include <cstring>
 
 
-#if defined (HAVE_DIRENT_H) and defined (HAVE_SYS_TYPES_H)
+#if defined (HAVE_DIRENT_H) && defined (HAVE_SYS_TYPES_H)
 /** Do we have an \c opendir function? */
 #define HAVE_OPENDIR
 #include <sys/types.h>
 #include <dirent.h>
 #endif
-#if defined (HAVE_SYS_STAT_H) and defined (HAVE_SYS_TYPES_H)
+#if defined (HAVE_SYS_STAT_H) && defined (HAVE_SYS_TYPES_H)
 /** Do we have a \c makedir function? */
 #define HAVE_MKDIR_H
 #include <sys/types.h>

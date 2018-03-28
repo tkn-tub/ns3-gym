@@ -184,8 +184,14 @@ public:
    */
   static uint32_t GetContext (void);
 
-  /** Context enum values. */
-  enum {
+  /**
+   * Context enum values.
+   *
+   * \internal
+   * This enum type is fixed to match the representation size
+   * of simulation context.
+   */
+  enum : uint32_t {
     /**
      * Flag for events not associated with any particular context.
      */

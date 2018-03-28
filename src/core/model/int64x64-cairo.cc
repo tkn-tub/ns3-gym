@@ -174,7 +174,7 @@ int64x64_t::Udiv (const cairo_uint128_t a, const cairo_uint128_t b)
       qr = _cairo_uint128_divrem (rem, den);
 
       // Add in the quotient as shift bits of the fraction
-      result = _cairo_uint128_lsl (result, shift);
+      result = _cairo_uint128_lsl (result, static_cast<int> (shift));
       result = _cairo_uint128_add (result, qr.quo);
       rem = qr.rem;
       digis += shift;
@@ -184,7 +184,7 @@ int64x64_t::Udiv (const cairo_uint128_t a, const cairo_uint128_t b)
   if (digis < DIGITS)
     {
       shift = DIGITS - digis;
-      result = _cairo_uint128_lsl (result, shift);
+      result = _cairo_uint128_lsl (result, static_cast<int> (shift));
     }
   
   return result;

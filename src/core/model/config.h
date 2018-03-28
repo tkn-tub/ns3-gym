@@ -176,12 +176,12 @@ public:
   /**
    * \returns The number of items in the container
    */
-  uint32_t GetN (void) const;
+  std::size_t GetN (void) const;
   /**
    * \param [in] i Index of item to lookup ([0,n[)
    * \returns The item requested.
    */
-  Ptr<Object> Get (uint32_t i) const;
+  Ptr<Object> Get (std::size_t i) const;
   /**
    * \param [in] i Index of item to lookup ([0,n[)
    * \returns The fully-qualified matching path associated
@@ -278,7 +278,7 @@ void UnregisterRootNamespaceObject (Ptr<Object> obj);
  * \ingroup config
  * \returns The number of registered root namespace objects.
  */
-uint32_t GetRootNamespaceObjectN (void);
+std::size_t GetRootNamespaceObjectN (void);
 
 /**
  * \ingroup config

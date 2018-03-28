@@ -62,14 +62,18 @@ private:
 
 bool operator != (const ValueClassTest &a, const ValueClassTest &b)
 {
+  NS_UNUSED (a);
+  NS_UNUSED (b);
   return true;
 }
 std::ostream & operator << (std::ostream &os, ValueClassTest v)
 {
+  NS_UNUSED (v);
   return os;
 }
 std::istream & operator >> (std::istream &is, ValueClassTest &v)
 {
+  NS_UNUSED (v);
   return is;
 }
 
@@ -259,8 +263,8 @@ private:
   bool DoGetTestB (void) const { return m_boolTestA; }
   int16_t DoGetInt16 (void) const { return m_int16SetGet; }
   void DoSetInt16 (int16_t v) { m_int16SetGet = v; }
-  uint32_t DoGetVectorN (void) const { return m_vector2.size (); }
-  Ptr<Derived> DoGetVector (uint32_t i) const { return m_vector2[i]; }
+  std::size_t DoGetVectorN (void) const { return m_vector2.size (); }
+  Ptr<Derived> DoGetVector (std::size_t i) const { return m_vector2[i]; }
   bool DoSetIntSrc (int8_t v) { m_intSrc2 = v; return true; }
   int8_t DoGetIntSrc (void) const { return m_intSrc2; }
   bool DoSetEnum (Test_e v) { m_enumSetGet = v; return true; }
@@ -1069,7 +1073,11 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource1 (int8_t old, int8_t n) { m_got1 = n; }
+  void NotifySource1 (int8_t old, int8_t n) 
+  { 
+    NS_UNUSED (old); 
+    m_got1 = n; 
+  }
   int64_t m_got1;
 };
 
@@ -1141,7 +1149,12 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource2 (double a, int b, float c) { m_got2 = a; }
+  void NotifySource2 (double a, int b, float c) 
+  { 
+    NS_UNUSED (b); 
+    NS_UNUSED (c); 
+    m_got2 = a; 
+  }
 
   double m_got2;
 };
@@ -1215,7 +1228,12 @@ public:
 private:
   virtual void DoRun (void);
 
-  void NotifySource2 (double a, int b, float c) { m_got2 = a; }
+  void NotifySource2 (double a, int b, float c) 
+  { 
+    NS_UNUSED (b);
+    NS_UNUSED (c);
+    m_got2 = a; 
+  }
 
   double m_got2;
 };

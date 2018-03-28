@@ -39,8 +39,9 @@ int64_t RandomVariableStreamHelper::AssignStreams (std::string path, int64_t str
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (stream >= 0);
   Config::MatchContainer mc = Config::LookupMatches (path);
-  int64_t i = 0;
-  for (Config::MatchContainer::Iterator mci = mc.Begin (); mci != mc.End (); ++mci, ++i)
+  
+  std::size_t i = 0;
+  for ( ; i < mc.GetN (); ++i)
     {
       PointerValue ptr = mc.Get (i);
       Ptr<RandomVariableStream> rvs = ptr.Get<RandomVariableStream> ();

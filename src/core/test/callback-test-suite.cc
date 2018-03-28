@@ -18,6 +18,7 @@
 
 #include "ns3/test.h"
 #include "ns3/callback.h"
+#include "ns3/unused.h"
 #include <stdint.h>
 
 using namespace ns3;
@@ -33,8 +34,18 @@ public:
 
   void Target1 (void) { m_test1 = true; }
   int Target2 (void) { m_test2 = true; return 2; }
-  void Target3 (double a) { m_test3 = true; }
-  int Target4 (double a, int b) { m_test4 = true; return 4; }
+  void Target3 (double a) 
+  { 
+    NS_UNUSED (a); 
+    m_test3 = true; 
+  }
+  int Target4 (double a, int b) 
+  { 
+    NS_UNUSED (a); 
+    NS_UNUSED (b); 
+    m_test4 = true; 
+    return 4; 
+  }
 
 private:
   virtual void DoRun (void);
@@ -163,8 +174,18 @@ public:
 
   void Target1 (void) { m_test1 = true; }
   int Target2 (void) { m_test2 = true; return 2; }
-  void Target3 (double a) { m_test3 = true; }
-  int Target4 (double a, int b) { m_test4 = true; return 4; }
+  void Target3 (double a) 
+  { 
+    NS_UNUSED (a); 
+    m_test3 = true; 
+  }
+  int Target4 (double a, int b) 
+  { 
+    NS_UNUSED (a); 
+    NS_UNUSED (b); 
+    m_test4 = true; 
+    return 4; 
+  }
 
 private:
   virtual void DoRun (void);

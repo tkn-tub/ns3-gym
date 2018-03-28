@@ -1488,7 +1488,7 @@ DeterministicRandomVariable::~DeterministicRandomVariable ()
 }
 
 void
-DeterministicRandomVariable::SetValueArray (double* values, uint64_t length)
+DeterministicRandomVariable::SetValueArray (double* values, std::size_t length)
 {
   NS_LOG_FUNCTION (this << values << length);
   // Delete any values currently set.
@@ -1503,7 +1503,7 @@ DeterministicRandomVariable::SetValueArray (double* values, uint64_t length)
   m_next = length;
 
   // Copy the values.
-  for (uint64_t i = 0; i < m_count; i++)
+  for (std::size_t i = 0; i < m_count; i++)
     {
       m_data[i] = values[i];
     }

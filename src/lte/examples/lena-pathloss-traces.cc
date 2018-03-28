@@ -60,7 +60,7 @@ int main (int argc, char *argv[])
   // determine the string tag that identifies this simulation run
   // this tag is then appended to all filenames
 
-  IntegerValue runValue;
+  UintegerValue runValue;
   GlobalValue::GetValueByName ("RngRun", runValue);
 
   std::ostringstream tag;

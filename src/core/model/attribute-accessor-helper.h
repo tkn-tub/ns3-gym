@@ -21,6 +21,7 @@
 #define ATTRIBUTE_ACCESSOR_HELPER_H
 
 #include "attribute.h"
+#include "unused.h"
 
 /**
  * \file
@@ -325,6 +326,8 @@ public:
     {}
 private:
     virtual bool DoSet (T *object, const V *v) const {
+      NS_UNUSED (object);
+      NS_UNUSED (v);
       return false;
     }
     virtual bool DoGet (const T *object, V *v) const {
@@ -385,6 +388,8 @@ private:
       return true;
     }
     virtual bool DoGet (const T *object, V *v) const {
+      NS_UNUSED(object);
+      NS_UNUSED(v);
       return false;
     }
     virtual bool HasGetter (void) const {

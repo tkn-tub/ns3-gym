@@ -156,14 +156,14 @@ public:
    *
    * \returns The number of TypeId instances registered.
    */
-  static uint32_t GetRegisteredN (void);
+  static uint16_t GetRegisteredN (void);
   /**
    * Get a TypeId by index.
    *
    * \param [in] i Index of the TypeId.
    * \returns The TypeId instance whose index is \c i.
    */
-  static TypeId GetRegistered (uint32_t i);
+  static TypeId GetRegistered (uint16_t i);
 
   /**
    * Constructor.
@@ -247,21 +247,21 @@ public:
    *
    * \returns The number of attributes associated to this TypeId
    */
-  uint32_t GetAttributeN (void) const;
+  std::size_t GetAttributeN (void) const;
   /**
    * Get Attribute information by index.
    *
    * \param [in] i Index into attribute array
    * \returns The information associated to attribute whose index is \p i.
    */
-  struct TypeId::AttributeInformation GetAttribute(uint32_t i) const;
+  struct TypeId::AttributeInformation GetAttribute (std::size_t i) const;
   /**
    * Get the Attribute name by index.
    *
    * \param [in] i Index into attribute array
    * \returns The full name associated to the attribute whose index is \p i.
    */
-  std::string GetAttributeFullName (uint32_t i) const;
+  std::string GetAttributeFullName (std::size_t i) const;
 
   /**
    * Get the constructor callback.
@@ -284,14 +284,14 @@ public:
    *
    * \returns The number of trace sources defined in this TypeId.
    */
-  uint32_t GetTraceSourceN (void) const;
+  std::size_t GetTraceSourceN (void) const;
   /**
    * Get the trace source by index.
    *
    * \param [in] i Index into trace source array.
    * \returns Detailed information about the requested trace source.
    */
-  struct TypeId::TraceSourceInformation GetTraceSource(uint32_t i) const;
+  struct TypeId::TraceSourceInformation GetTraceSource (std::size_t i) const;
 
   /**
    * Set the parent TypeId.
@@ -390,8 +390,8 @@ public:
    * \param [in] initialValue The new initial value to use for this attribute.
    * \returns \c true if the call was successfuly.
    */
-  bool SetAttributeInitialValue(uint32_t i, 
-                                Ptr<const AttributeValue> initialValue);
+  bool SetAttributeInitialValue (std::size_t i,
+                                 Ptr<const AttributeValue> initialValue);
 
   /**
    * Record in this TypeId the fact that a new attribute exists.

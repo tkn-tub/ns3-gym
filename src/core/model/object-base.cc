@@ -140,10 +140,10 @@ ObjectBase::ConstructSelf (const AttributeConstructionList &attributes)
                   if (equal != std::string::npos)
                     {
                       std::string name = tmp.substr (0, equal);
-                      std::string value = tmp.substr (equal+1, tmp.size () - equal - 1);
+                      std::string envval = tmp.substr (equal+1, tmp.size () - equal - 1);
                       if (name == tid.GetAttributeFullName (i))
                         {
-                          if (DoSet (info.accessor, info.checker, StringValue (value)))
+                          if (DoSet (info.accessor, info.checker, StringValue (envval)))
                             {
                               NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                                             info.name <<"\" from env var");

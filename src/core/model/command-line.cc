@@ -289,7 +289,7 @@ CommandLine::PrintGroup (std::ostream &os, const std::string &group) const
   // Sort output
   std::vector<std::string> groupTypes;
   
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+  for (uint16_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       std::stringstream ss;
       TypeId tid = TypeId::GetRegistered (i);
@@ -317,7 +317,7 @@ CommandLine::PrintTypeIds (std::ostream &os) const
   // Sort output
   std::vector<std::string> types;
     
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+  for (uint16_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       std::stringstream ss;
       TypeId tid = TypeId::GetRegistered (i);
@@ -339,7 +339,7 @@ CommandLine::PrintGroups (std::ostream &os) const
   NS_LOG_FUNCTION (this);
 
   std::set<std::string> groups;
-  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+  for (uint16_t i = 0; i < TypeId::GetRegisteredN (); ++i)
     {
       TypeId tid = TypeId::GetRegistered (i);
       groups.insert (tid.GetGroupName ());
@@ -521,8 +521,8 @@ bool
 CommandLineHelper::UserItemParse<bool> (const std::string value, bool & val)
 {
   std::string src = value;
-  std::transform(src.begin(), src.end(), src.begin(), ::tolower);
-  
+  std::transform(src.begin(), src.end(), src.begin(),
+    [](char c) {return static_cast<char>(std::tolower(c)); });
   if (src.length () == 0)
     {
       val = ! val;

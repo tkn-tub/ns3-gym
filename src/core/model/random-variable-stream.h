@@ -2381,7 +2381,7 @@ public:
    * Note that the values in the array are copied and stored
    * (deep-copy).
    */
-  void SetValueArray (double* values, uint64_t length);
+  void SetValueArray (double* values, std::size_t length);
 
   /**
    * \brief Returns the next value in the sequence.
@@ -2396,11 +2396,11 @@ public:
   virtual uint32_t GetInteger (void);
 
 private:
-  /** Position in the array of values. */
-  uint64_t   m_count;
+  /** Size of the array of values. */
+  std::size_t   m_count;
 
   /** Position of the next value in the array of values. */
-  uint64_t   m_next;
+  std::size_t   m_next;
 
   /** Array of values to return in sequence. */
   double* m_data;

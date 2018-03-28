@@ -99,13 +99,13 @@ public:
   inline int64x64_t (long int v)
     : _v (v) {}
   inline int64x64_t (long long int v)
-    : _v (v) {}
+    : _v (static_cast<double> (v)) {}
   inline int64x64_t (unsigned int v)
     : _v (v) {}
   inline int64x64_t (unsigned long int v)
     : _v (v) {}
   inline int64x64_t (unsigned long long int v)
-    : _v (v) {}
+    : _v (static_cast<double> (v)) {}
   /**@}*/
   /**
    * Construct from explicit high and low values.
@@ -116,7 +116,8 @@ public:
   explicit inline int64x64_t (int64_t hi, uint64_t lo)
   {
     const bool negative = hi < 0;
-    const long double fhi = negative ? -hi : hi;
+    const long double hild = static_cast<long double> (hi); 
+    const long double fhi = negative ? -hild : hild;
     const long double flo = lo / HP_MAX_64;
     _v = negative ? - fhi : fhi;
     _v += flo;
@@ -173,8 +174,8 @@ private:
     //   TestSuite int64x64
     const long double round = 0.5;
     flo = flo * HP_MAX_64 + round;
-    int64_t  hi = fhi;
-    uint64_t lo = flo;
+    int64_t  hi = static_cast<int64_t> (fhi);
+    uint64_t lo = static_cast<uint64_t> (flo);
     if (flo >= HP_MAX_64)
       {
 	// conversion to uint64 rolled over

@@ -100,7 +100,7 @@ public:
   LteCellSelectionTestCase (std::string name, bool isEpcMode, bool isIdealRrc,
                             double interSiteDistance,
                             std::vector<UeSetup_t> ueSetupList,
-                            int64_t rngRun);
+                            uint64_t rngRun);
 
   virtual ~LteCellSelectionTestCase ();
 
@@ -163,7 +163,7 @@ private:
   bool m_isIdealRrc; ///< whether the LTE is configured to use ideal RRC
   double m_interSiteDistance; ///< inter site distance
   std::vector<UeSetup_t> m_ueSetupList; ///< UE setup list
-  int64_t m_rngRun; ///< rng run
+  uint64_t m_rngRun; ///< rng run
 
   /// The current UE RRC state.
   std::vector<LteUeRrc::State> m_lastState;

@@ -171,7 +171,7 @@ Int64x64HiLoTestCase::DoRun (void)
   if (int64x64_t::implementation == int64x64_t::ld_impl)
     {
       // Darwin 12.5.0 (Mac 10.8.5) g++ 4.2.1
-      low = HP_MAX_64 * std::numeric_limits<long double>::epsilon ();
+      low = static_cast<uint64_t> (HP_MAX_64 * std::numeric_limits<long double>::epsilon ());
     }
 
   Check ( 0, 0);
@@ -259,7 +259,7 @@ Int64x64InputTestCase::DoRun (void)
   Check ("-1.0", -1, 0, tolerance);
   Check ("-1.0000", -1, 0, tolerance);
   Check (" 1.000000000000000000054",  1, 1, tolerance);
-  Check ("-1.000000000000000000054", -2, -1, tolerance);
+  Check ("-1.000000000000000000054", (int64_t)-2, (uint64_t)-1, tolerance);
 }
 
 
@@ -1078,11 +1078,11 @@ Int64x64DoubleTestCase::Check (const int64_t intPart)
   std::cout << GetParent ()->GetName () << " Double: "
 	    << "integer: " << intPart
 	    << std::endl;
-  m_last = intPart;
+  m_last = static_cast<long double> (intPart);
   m_deltaCount = 0;
 
   // Nudging the integer part eliminates deltas around 0
-  long double v = intPart;
+  long double v = static_cast<long double> (intPart);
   
   Check (v +0.0000000000000000000542L, intPart,                0x1ULL);
   Check (v +0.0000000000000000001084L, intPart,                0x2ULL);

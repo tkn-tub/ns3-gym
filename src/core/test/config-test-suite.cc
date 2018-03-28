@@ -30,6 +30,7 @@
 #include "ns3/names.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
+#include "ns3/unused.h"
 
 
 #include <sstream>
@@ -621,7 +622,11 @@ public:
    * \param oldValue The old value.
    * \param newValue The new value.
    */
-  void Trace (int16_t oldValue, int16_t newValue) { m_newValue = newValue; }
+  void Trace (int16_t oldValue, int16_t newValue) 
+  { 
+    NS_UNUSED (oldValue); 
+    m_newValue = newValue; 
+  }
   /**
    * Trace callback with context path.
    * \param path The context path.
@@ -629,7 +634,11 @@ public:
    * \param newValue The new value.
    */
   void TraceWithPath (std::string path, int16_t old, int16_t newValue)
-  { m_newValue = newValue; m_path = path; }
+  { 
+    NS_UNUSED (old); 
+    m_newValue = newValue; 
+    m_path = path; 
+  }
 
 private:
   virtual void DoRun (void);

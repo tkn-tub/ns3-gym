@@ -680,4 +680,36 @@ ParameterLogger::operator<< <const char *>(const char * param)
   return *this;
 }
 
+template<>
+ParameterLogger&
+ParameterLogger::operator<< <int8_t>(const int8_t param)
+{
+  if (m_first)
+  {
+    m_os << static_cast<int16_t> (param);
+    m_first = false;
+  }
+  else
+  {
+    m_os << ", " << static_cast<int16_t> (param);
+  }
+  return *this;
+}
+
+template<>
+ParameterLogger&
+ParameterLogger::operator<< <uint8_t>(const uint8_t param)
+{
+  if (m_first)
+  {
+    m_os << static_cast<uint16_t> (param);
+    m_first = false;
+  }
+  else
+  {
+    m_os << ", " << static_cast<uint16_t> (param);
+  }
+  return *this;
+}
+
 } // namespace ns3

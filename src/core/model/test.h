@@ -1426,19 +1426,19 @@ public:
    * 
    * \returns The new test vector index
    */
-  uint32_t Add (T vector);
+  std::size_t Add (T vector);
 
   /**
    * \brief Get the total number of test vectors.
    * \return The number of test vectors
    */
-  uint32_t GetN (void) const;
+  std::size_t GetN (void) const;
   /**
    * \brief Get the i'th test vector
    * \param [in] i The requested vector index
    * \return The requested vector
    */
-  T Get (uint32_t i) const;
+  T Get (std::size_t i) const;
 
 private:
   typedef std::vector<T> TestVector;    //!< Container type
@@ -1464,16 +1464,16 @@ TestVectors<T>::~TestVectors ()
 }
 
 template <typename T>
-uint32_t
+std::size_t
 TestVectors<T>::Add (T vector)
 {
-  uint32_t index = m_vectors.size ();
+  std::size_t index = m_vectors.size ();
   m_vectors.push_back (vector);
   return index;
 }
 
 template <typename T>
-uint32_t 
+std::size_t
 TestVectors<T>::GetN (void) const
 {
   return m_vectors.size ();
@@ -1481,7 +1481,7 @@ TestVectors<T>::GetN (void) const
 
 template <typename T>
 T
-TestVectors<T>::Get (uint32_t i) const
+TestVectors<T>::Get (std::size_t i) const
 {
   NS_ABORT_MSG_UNLESS (m_vectors.size () > i, "TestVectors::Get(): Bad index");
   return m_vectors[i];

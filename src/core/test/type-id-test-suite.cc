@@ -76,7 +76,7 @@ UniqueTypeIdTestCase::DoRun (void)
   cout << suite << "TypeId list:" << endl;
   cout << suite << "TypeId  Chain  hash          Name" << endl;
   
-  for (uint32_t i = 0; i < nids; ++i)
+  for (uint16_t i = 0; i < nids; ++i)
     {
       const TypeId tid = TypeId::GetRegistered (i);
       cout << suite << "" << std::setw(6) << tid.GetUid ();
@@ -363,7 +363,7 @@ LookupTimeTestCase::DoRun (void)
   int start = clock ();
   for (uint32_t j = 0; j < REPETITIONS; ++j)
     {
-      for (uint32_t i = 0; i < nids; ++i)
+      for (uint16_t i = 0; i < nids; ++i)
         {
           const TypeId tid = TypeId::GetRegistered (i);
           const TypeId sid = TypeId::LookupByName (tid.GetName ());
@@ -375,7 +375,7 @@ LookupTimeTestCase::DoRun (void)
   start = clock ();
   for (uint32_t j = 0; j < REPETITIONS; ++j)
     {
-      for (uint32_t i = 0; i < nids; ++i)
+      for (uint16_t i = 0; i < nids; ++i)
         {
           const TypeId tid = TypeId::GetRegistered (i);
           const TypeId sid = TypeId::LookupByHash (tid.GetHash ());

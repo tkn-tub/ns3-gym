@@ -46,7 +46,7 @@ class ObjectPtrContainerValue : public AttributeValue
 {
 public:
   /** Iterator type for traversing this container. */
-  typedef std::map<uint32_t, Ptr<Object> >::const_iterator Iterator;
+  typedef std::map<std::size_t, Ptr<Object> >::const_iterator Iterator;
 
   /** Default constructor. */
   ObjectPtrContainerValue ();
@@ -68,14 +68,14 @@ public:
    *
    * \returns The number of objects.
    */
-  uint32_t GetN (void) const;
+  std::size_t GetN (void) const;
   /**
    * Get a specific Object.
    *
    * \param [in] i The index of the requested object.
    * \returns The requested object
    */
-  Ptr<Object> Get (uint32_t i) const;
+  Ptr<Object> Get (std::size_t i) const;
 
   /**
    * Get a copy of this container.
@@ -104,7 +104,7 @@ public:
 private:
   friend class ObjectPtrContainerAccessor;
   /** The container implementation. */
-  std::map<uint32_t, Ptr<Object> > m_objects;
+  std::map<std::size_t, Ptr<Object> > m_objects;
 };
 
 /**
@@ -228,7 +228,7 @@ private:
    * \param [out] n The number of instances in the container.
    * \returns true if the value could be obtained successfully.
    */
-  virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
+  virtual bool DoGetN(const ObjectBase *object, std::size_t *n) const = 0;
   /**
    * Get an instance from the container, identified by index.
    *
@@ -237,7 +237,7 @@ private:
    * \param [out] index The index retrieved.
    * \returns The index requested.
    */
-  virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const = 0;
+  virtual Ptr<Object> DoGet(const ObjectBase *object, std::size_t i, std::size_t *index) const = 0;
 };
 
 template <typename T, typename U, typename INDEX>
@@ -247,7 +247,7 @@ MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
 {
   struct MemberGetters : public ObjectPtrContainerAccessor
   {
-    virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
+    virtual bool DoGetN(const ObjectBase *object, std::size_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
         {
@@ -256,7 +256,7 @@ MakeObjectPtrContainerAccessor (Ptr<U> (T::*get)(INDEX) const,
       *n = (obj->*m_getN)();
       return true;
     }
-    virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i, uint32_t *index) const {
+    virtual Ptr<Object> DoGet(const ObjectBase *object, std::size_t i, std::size_t *index) const {
       const T *obj = static_cast<const T *> (object);
       *index = i;
       return (obj->*m_get)(i);

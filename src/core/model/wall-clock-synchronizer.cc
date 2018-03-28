@@ -391,7 +391,7 @@ WallClockSynchronizer::NsToTimeval (int64_t ns, struct timeval *tv)
 {
   NS_LOG_FUNCTION (this << ns << tv);
   NS_ASSERT ((ns % US_PER_NS) == 0);
-  tv->tv_sec = ns / NS_PER_SEC;
+  tv->tv_sec = static_cast<long> (ns / NS_PER_SEC);
   tv->tv_usec = (ns % NS_PER_SEC) / US_PER_NS;
 }
 

@@ -27,6 +27,8 @@
  *
  * Contributor(s):
  *	Keith R. Packard <keithp@keithp.com>
+ *
+ * Code changes for ns-3 from upstream are marked with `//PDB'
  */
 
 #include "cairo-wideint-private.h"
@@ -311,11 +313,11 @@ _cairo_int64_divrem (cairo_int64_t num, cairo_int64_t den)
 	den = _cairo_int64_negate (den);
     uqr = _cairo_uint64_divrem (num, den);
     if (num_neg)
-	qr.rem = _cairo_int64_negate (uqr.rem);
+	qr.rem = _cairo_int64_negate ((cairo_int64_t)uqr.rem);  //PDB cast
     else
 	qr.rem = uqr.rem;
     if (num_neg != den_neg)
-	qr.quo = (cairo_int64_t) _cairo_int64_negate (uqr.quo);
+	qr.quo = (cairo_int64_t) _cairo_int64_negate ((cairo_int64_t)uqr.quo);  //PDB cast
     else
 	qr.quo = (cairo_int64_t) uqr.quo;
     return qr;
@@ -689,7 +691,7 @@ _cairo_uint_96by64_32x64_divrem (cairo_uint128_t num,
     cairo_uint64_t x = _cairo_uint128_to_uint64 (_cairo_uint128_rsl(num, 32));
 
     /* Initialise the result to indicate overflow. */
-    result.quo = _cairo_uint32s_to_uint64 (-1U, -1U);
+    result.quo = _cairo_uint32s_to_uint64 (UINT_MAX, UINT_MAX);  //PDB cast
     result.rem = den;
 
     /* Don't bother if the quotient is going to overflow. */
@@ -756,7 +758,7 @@ _cairo_uint_96by64_32x64_divrem (cairo_uint128_t num,
 	/* Add the main term's contribution to quotient.  Note B-v =
 	 * -v as an uint32 (unless v = 0) */
 	if (v)
-	    quorem = _cairo_uint64_divrem (_cairo_uint32x32_64_mul (q, -v), den);
+	    quorem = _cairo_uint64_divrem (_cairo_uint32x32_64_mul (q, -(int32_t)v), den);  //PDB cast
 	else
 	    quorem = _cairo_uint64_divrem (_cairo_uint32s_to_uint64 (q, 0), den);
 	quotient += _cairo_uint64_to_uint32 (quorem.quo);
@@ -805,17 +807,17 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num, cairo_int64_t den)
     uqr = _cairo_uint_96by64_32x64_divrem (num, nonneg_den);
     if (_cairo_uint64_eq (uqr.rem, _cairo_int64_to_uint64 (nonneg_den))) {
 	/* bail on overflow. */
-	qr.quo = _cairo_uint32s_to_uint64 (0x7FFFFFFF, -1U);;
+	qr.quo = _cairo_uint32s_to_uint64 (0x7FFFFFFF, UINT_MAX);  //PDB cast
 	qr.rem = den;
 	return qr;
     }
 
     if (num_neg)
-	qr.rem = _cairo_int64_negate (uqr.rem);
+	qr.rem = _cairo_int64_negate ((cairo_int64_t)uqr.rem);  //PDB cast
     else
 	qr.rem = uqr.rem;
     if (num_neg != den_neg)
-	qr.quo = _cairo_int64_negate (uqr.quo);
+	qr.quo = _cairo_int64_negate ((cairo_int64_t)uqr.quo);  //PDB cast
     else
 	qr.quo = uqr.quo;
     return qr;

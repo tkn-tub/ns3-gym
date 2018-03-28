@@ -130,7 +130,7 @@ LteCellSelectionTestCase::UeSetup_t::UeSetup_t (
 LteCellSelectionTestCase::LteCellSelectionTestCase (
   std::string name, bool isEpcMode, bool isIdealRrc,
   double interSiteDistance,
-  std::vector<UeSetup_t> ueSetupList, int64_t rngRun)
+  std::vector<UeSetup_t> ueSetupList, uint64_t rngRun)
   : TestCase (name),
     m_isEpcMode (isEpcMode),
     m_isIdealRrc (isIdealRrc),
@@ -154,7 +154,7 @@ LteCellSelectionTestCase::DoRun ()
 {
   NS_LOG_FUNCTION (this << GetName ());
 
-  Config::SetGlobal ("RngRun", IntegerValue (m_rngRun));
+  Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel",
@@ -186,7 +186,7 @@ LteCellSelectionTestCase::DoRun ()
   NodeContainer enbNodes;
   enbNodes.Create (4);
   NodeContainer ueNodes;
-  uint16_t nUe = m_ueSetupList.size ();
+  uint16_t nUe = static_cast<uint16_t> (m_ueSetupList.size ());
   ueNodes.Create (nUe);
 
   // Assign nodes to position
@@ -384,7 +384,7 @@ LteCellSelectionTestCase::CheckPoint (Ptr<LteUeNetDevice> ueDev,
 
   if (expectedCellId1 > 0)
     {
-      NS_TEST_ASSERT_MSG_EQ (m_lastState.at (ueDev->GetImsi () - 1),
+      NS_TEST_ASSERT_MSG_EQ (m_lastState.at (static_cast<unsigned int>(ueDev->GetImsi () - 1)),
                              LteUeRrc::CONNECTED_NORMALLY,
                              "UE " << ueDev->GetImsi ()
                                    << " is not at CONNECTED_NORMALLY state");
@@ -398,7 +398,7 @@ LteCellSelectionTestCase::StateTransitionCallback (
   LteUeRrc::State oldState, LteUeRrc::State newState)
 {
   NS_LOG_FUNCTION (this << imsi << cellId << rnti << oldState << newState);
-  m_lastState.at (imsi - 1) = newState;
+  m_lastState.at (static_cast<unsigned int>(imsi - 1)) = newState;
 }
 
 

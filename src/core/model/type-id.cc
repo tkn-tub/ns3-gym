@@ -171,7 +171,7 @@ public:
    * Get the total number of type ids.
    * \returns The total number.
    */
-  uint32_t GetRegisteredN (void) const;
+  uint16_t GetRegisteredN (void) const;
   /**
    * Get a type id by index.
    *
@@ -181,7 +181,7 @@ public:
    * \param [in] i The index.
    * \returns The type id.
    */
-  uint16_t GetRegistered (uint32_t i) const;
+  uint16_t GetRegistered (uint16_t i) const;
   /**
    * Record a new attribute in a type id.
    * \param [in] uid The id.
@@ -213,22 +213,22 @@ public:
    * \param [in] i The attribute to manipulate
    * \param [in] initialValue The new initial value to use for this attribute.
    */
-  void SetAttributeInitialValue(uint16_t uid,
-                                uint32_t i,
-                                Ptr<const AttributeValue> initialValue);
+  void SetAttributeInitialValue (uint16_t uid,
+                                 std::size_t i,
+                                 Ptr<const AttributeValue> initialValue);
   /**
    * Get the number of attributes.
    * \param [in] uid The id.
    * \returns The number of attributes associated to this TypeId
    */
-  uint32_t GetAttributeN (uint16_t uid) const;
+  std::size_t GetAttributeN (uint16_t uid) const;
   /**
    * Get Attribute information by index.
    * \param [in] uid The id.
    * \param [in] i Index into attribute array
    * \returns The information associated to attribute whose index is \p i.
    */
-  struct TypeId::AttributeInformation GetAttribute(uint16_t uid, uint32_t i) const;
+  struct TypeId::AttributeInformation GetAttribute (uint16_t uid, std::size_t i) const;
   /**
    * Record a new TraceSource.
    * \param [in] uid The id.
@@ -256,14 +256,14 @@ public:
    * \param [in] uid The id.
    * \returns The number of trace sources defined in this TypeId.
    */
-  uint32_t GetTraceSourceN (uint16_t uid) const;
+  std::size_t GetTraceSourceN (uint16_t uid) const;
   /**
    * Get the trace source by index.
    * \param [in] uid The id.
    * \param [in] i Index into trace source array.
    * \returns Detailed information about the requested trace source.
    */
-  struct TypeId::TraceSourceInformation GetTraceSource(uint16_t uid, uint32_t i) const;
+  struct TypeId::TraceSourceInformation GetTraceSource (uint16_t uid, std::size_t i) const;
   /**
    * Check if this TypeId should not be listed in documentation.
    * \param [in] uid The id.
@@ -423,7 +423,7 @@ IidManager::AllocateUid (std::string name)
     else
       { // chain old type
         NS_LOG_LOGIC (IIDL << "Old TypeId '" << hinfo->name << "' getting chained.");
-        uint32_t oldUid = GetUid (hinfo->hash);
+        uint16_t oldUid = GetUid (hinfo->hash);
         m_hashmap.erase (m_hashmap.find (hinfo->hash));
         hinfo->hash = hash | HashChainFlag;
         m_hashmap.insert (std::make_pair (hinfo->hash, oldUid));
@@ -440,14 +440,15 @@ IidManager::AllocateUid (std::string name)
   information.hasConstructor = false;
   information.mustHideFromDocumentation = false;
   m_information.push_back (information);
-  uint32_t uid = m_information.size ();
-  NS_ASSERT (uid <= 0xffff);
+  std::size_t tuid = m_information.size();
+  NS_ASSERT (tuid <= 0xffff);
+  uint16_t uid = static_cast<uint16_t> (tuid);
 
   // Add to both maps:
   m_namemap.insert (std::make_pair (name, uid));
   m_hashmap.insert (std::make_pair (hash, uid));
   NS_LOG_LOGIC (IIDL << uid);
-  return uid;
+  return static_cast<uint16_t> (uid);
 }
 
 struct IidManager::IidInformation *
@@ -594,14 +595,14 @@ IidManager::HasConstructor (uint16_t uid) const
   return hasC;
 }
 
-uint32_t 
+uint16_t 
 IidManager::GetRegisteredN (void) const
 {
   NS_LOG_FUNCTION (IID << m_information.size ());
-  return m_information.size ();
+  return static_cast<uint16_t> (m_information.size ());
 }
 uint16_t 
-IidManager::GetRegistered (uint32_t i) const
+IidManager::GetRegistered (uint16_t i) const
 {
   NS_LOG_FUNCTION (IID << i);
   return i + 1;
@@ -678,9 +679,9 @@ IidManager::AddAttribute (uint16_t uid,
   NS_LOG_LOGIC (IIDL << information->attributes.size () - 1);
 }
 void 
-IidManager::SetAttributeInitialValue(uint16_t uid,
-                                     uint32_t i,
-                                     Ptr<const AttributeValue> initialValue)
+IidManager::SetAttributeInitialValue (uint16_t uid,
+                                      std::size_t i,
+                                      Ptr<const AttributeValue> initialValue)
 {
   NS_LOG_FUNCTION (IID << uid << i << initialValue);
   struct IidInformation *information = LookupInformation (uid);
@@ -690,17 +691,17 @@ IidManager::SetAttributeInitialValue(uint16_t uid,
 
 
 
-uint32_t 
+std::size_t
 IidManager::GetAttributeN (uint16_t uid) const
 {
   NS_LOG_FUNCTION (IID << uid);
   struct IidInformation *information = LookupInformation (uid);
-  uint32_t size = information->attributes.size ();
+  std::size_t size = information->attributes.size ();
   NS_LOG_LOGIC (IIDL << size);
   return size;
 }
 struct TypeId::AttributeInformation 
-IidManager::GetAttribute(uint16_t uid, uint32_t i) const
+IidManager::GetAttribute (uint16_t uid, std::size_t i) const
 {
   NS_LOG_FUNCTION (IID << uid << i);
   struct IidInformation *information = LookupInformation (uid);
@@ -768,17 +769,17 @@ IidManager::AddTraceSource (uint16_t uid,
   information->traceSources.push_back (source);
   NS_LOG_LOGIC (IIDL << information->traceSources.size () - 1);
 }
-uint32_t 
+std::size_t
 IidManager::GetTraceSourceN (uint16_t uid) const
 {
   NS_LOG_FUNCTION (IID << uid);
   struct IidInformation *information = LookupInformation (uid);
-  uint32_t size = information->traceSources.size ();
+  std::size_t size = information->traceSources.size ();
   NS_LOG_LOGIC (IIDL << size);
   return size;
 }
 struct TypeId::TraceSourceInformation 
-IidManager::GetTraceSource(uint16_t uid, uint32_t i) const
+IidManager::GetTraceSource (uint16_t uid, std::size_t i) const
 {
   NS_LOG_FUNCTION (IID << uid << i);
   struct IidInformation *information = LookupInformation (uid);
@@ -859,14 +860,14 @@ TypeId::LookupByHashFailSafe (hash_t hash, TypeId *tid)
   return true;
 }
 
-uint32_t 
+uint16_t 
 TypeId::GetRegisteredN (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   return IidManager::Get ()->GetRegisteredN ();
 }
 TypeId 
-TypeId::GetRegistered (uint32_t i)
+TypeId::GetRegistered (uint16_t i)
 {
   NS_LOG_FUNCTION (i);
   return TypeId (IidManager::Get ()->GetRegistered (i));
@@ -880,9 +881,9 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInforma
   TypeId nextTid = *this;
   do {
       tid = nextTid;
-      for (uint32_t i = 0; i < tid.GetAttributeN (); i++)
+      for (std::size_t i = 0; i < tid.GetAttributeN (); i++)
         {
-          struct TypeId::AttributeInformation tmp = tid.GetAttribute(i);
+          struct TypeId::AttributeInformation tmp = tid.GetAttribute (i);
           if (tmp.name == name)
             {
               if (tmp.supportLevel == TypeId::SUPPORTED)
@@ -1039,8 +1040,8 @@ TypeId::AddAttribute (std::string name,
 }
 
 bool 
-TypeId::SetAttributeInitialValue(uint32_t i, 
-                                 Ptr<const AttributeValue> initialValue)
+TypeId::SetAttributeInitialValue (std::size_t i,
+                                  Ptr<const AttributeValue> initialValue)
 {
   NS_LOG_FUNCTION (this << i << initialValue);
   IidManager::Get ()->SetAttributeInitialValue (m_tid, i, initialValue);
@@ -1064,35 +1065,35 @@ TypeId::MustHideFromDocumentation (void) const
   return mustHide;
 }
 
-uint32_t 
+std::size_t
 TypeId::GetAttributeN (void) const
 {
   NS_LOG_FUNCTION (this);
-  uint32_t n = IidManager::Get ()->GetAttributeN (m_tid);
+  std::size_t n = IidManager::Get()->GetAttributeN (m_tid);
   return n;
 }
 struct TypeId::AttributeInformation 
-TypeId::GetAttribute(uint32_t i) const
+TypeId::GetAttribute (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
-  return IidManager::Get ()->GetAttribute(m_tid, i);
+  return IidManager::Get ()->GetAttribute (m_tid, i);
 }
 std::string 
-TypeId::GetAttributeFullName (uint32_t i) const
+TypeId::GetAttributeFullName (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
-  struct TypeId::AttributeInformation info = GetAttribute(i);
+  struct TypeId::AttributeInformation info = GetAttribute (i);
   return GetName () + "::" + info.name;
 }
 
-uint32_t 
+std::size_t
 TypeId::GetTraceSourceN (void) const
 {
   NS_LOG_FUNCTION (this);
   return IidManager::Get ()->GetTraceSourceN (m_tid);
 }
 struct TypeId::TraceSourceInformation 
-TypeId::GetTraceSource(uint32_t i) const
+TypeId::GetTraceSource (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   return IidManager::Get ()->GetTraceSource(m_tid, i);
@@ -1141,7 +1142,7 @@ TypeId::LookupTraceSourceByName (std::string name,
   struct TypeId::TraceSourceInformation tmp;
   do {
       tid = nextTid;
-      for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
+      for (std::size_t i = 0; i < tid.GetTraceSourceN(); i++)
         {
           tmp = tid.GetTraceSource (i);
           if (tmp.name == name)

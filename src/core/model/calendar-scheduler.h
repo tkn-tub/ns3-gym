@@ -90,7 +90,7 @@ private:
    *
    * \returns The new width.
    */
-  uint32_t CalculateNewWidth (void);
+  uint64_t CalculateNewWidth (void);
   /**
    * Initialize the calendar queue.
    *
@@ -116,7 +116,7 @@ private:
    * \param [in] newSize The number of buckets.
    * \param [in] newWidth The size of the new buckets.
    */
-  void DoResize (uint32_t newSize, uint32_t newWidth);
+  void DoResize (uint32_t newSize, uint64_t newWidth);
   /**
    * Remove the earliest event.
    *

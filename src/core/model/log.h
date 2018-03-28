@@ -511,6 +511,24 @@ template<>
 ParameterLogger&
 ParameterLogger::operator<< <const char *>(const char * param);
   
+/**
+ * Specialization for int8_t.
+ * \param [in] param The function parameter.
+ * \return This ParameterLogger, so it's chainable.
+ */
+template<>
+ParameterLogger&
+  ParameterLogger::operator<< <int8_t>(int8_t param);
+
+/**
+ * Specialization for uint8_t.
+ * \param [in] param The function parameter.
+ * \return This ParameterLogger, so it's chainable.
+ */
+template<>
+ParameterLogger&
+  ParameterLogger::operator<< <uint8_t>(uint8_t param);
+
 } // namespace ns3
 
 /**@}*/  // \ingroup logging

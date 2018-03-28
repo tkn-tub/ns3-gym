@@ -166,7 +166,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
-  Config::SetGlobal ("RngRun", IntegerValue (m_rngRun));
+  Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
 
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
@@ -230,8 +230,8 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   // Set UEs' position and power
   for (int i = 0; i < m_nUser; i++)
     {
-      Ptr<MobilityModel> mm = ueNodes.Get (i)->GetObject<MobilityModel> ();
-      mm->SetPosition (Vector (m_dist, 0.0, 1.0));
+      Ptr<MobilityModel> mm1 = ueNodes.Get (i)->GetObject<MobilityModel> ();
+      mm1->SetPosition (Vector (m_dist, 0.0, 1.0));
       Ptr<LteUeNetDevice> lteUeDev = ueDevs.Get (i)->GetObject<LteUeNetDevice> ();
       Ptr<LteUePhy> uePhy = lteUeDev->GetPhy ();
       uePhy->SetAttribute ("TxPower", DoubleValue (23.0));
@@ -270,7 +270,7 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
 
       // sanity check for whether the tx packets reported by the stats are correct
       // we expect one packet per TTI
-      double expectedDlTxPackets = statsDuration.GetMilliSeconds ();
+      double expectedDlTxPackets = static_cast<double> (statsDuration.GetMilliSeconds ());
       NS_TEST_ASSERT_MSG_EQ_TOL (dlTxPackets, expectedDlTxPackets, expectedDlTxPackets * 0.005, 
                                  " too different DL TX packets reported");
 
@@ -322,7 +322,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::CtrlErrorModelEnabled", BooleanValue (true));
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
-  Config::SetGlobal ("RngRun", IntegerValue (m_rngRun));
+  Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
 
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
@@ -426,7 +426,7 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
 
       // sanity check for whether the tx packets reported by the stats are correct
       // we expect one packet per TTI
-      double expectedDlTxPackets = statsDuration.GetMilliSeconds ();
+      double expectedDlTxPackets = static_cast<double> (statsDuration.GetMilliSeconds ());
       NS_TEST_ASSERT_MSG_EQ_TOL (dlTxPackets, expectedDlTxPackets, expectedDlTxPackets * 0.005, 
                                  " too different DL TX packets reported");
 
