@@ -107,13 +107,13 @@ public:
    *
    * \param tid the given TID
    * \param type the given address type
-   * \param addr the given destination
+   * \param dest the given destination
    *
    * \return the packet
    */
   Ptr<WifiMacQueueItem> DequeueByTidAndAddress (uint8_t tid,
                                                 WifiMacHeader::AddressType type,
-                                                Mac48Address addr);
+                                                Mac48Address dest);
   /**
    * Return first available packet for transmission. A packet could be no available
    * if it is a QoS packet with a tid and an address1 fields equal to <i>tid</i> and <i>addr</i>
@@ -141,13 +141,13 @@ public:
    *
    * \param tid the given TID
    * \param type the given address type
-   * \param addr the given destination
+   * \param dest the given destination
    *
    * \return packet
    */
   Ptr<const WifiMacQueueItem> PeekByTidAndAddress (uint8_t tid,
                                                    WifiMacHeader::AddressType type,
-                                                   Mac48Address addr);
+                                                   Mac48Address dest);
   /**
    * Return first available packet for transmission. The packet is not removed from queue.
    *
@@ -178,13 +178,13 @@ public:
    *
    * \param tid the given TID
    * \param type the given address type
-   * \param addr the given destination
+   * \param dest the given destination
    *
    * \return the number of QoS packets
    */
   uint32_t GetNPacketsByTidAndAddress (uint8_t tid,
                                        WifiMacHeader::AddressType type,
-                                       Mac48Address addr);
+                                       Mac48Address dest);
 
   /**
    * \return true if the queue is empty; false otherwise

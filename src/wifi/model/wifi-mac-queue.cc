@@ -176,7 +176,7 @@ WifiMacQueue::DequeueByTidAndAddress (uint8_t tid,
     {
       if (!TtlExceeded (it))
         {
-          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == dest
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetDestinationAddress () == dest
               && (*it)->GetHeader ().GetQosTid () == tid)
             {
               return DoDequeue (it);
@@ -239,7 +239,7 @@ WifiMacQueue::PeekByTidAndAddress (uint8_t tid,
     {
       if (!TtlExceeded (it))
         {
-          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == dest
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetDestinationAddress () == dest
               && (*it)->GetHeader ().GetQosTid () == tid)
             {
               return DoPeek (it);
@@ -314,9 +314,9 @@ WifiMacQueue::Remove (Ptr<const Packet> packet)
 
 uint32_t
 WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressType type,
-                                          Mac48Address addr)
+                                          Mac48Address dest)
 {
-  NS_LOG_FUNCTION (this << addr);
+  NS_LOG_FUNCTION (this << dest);
 
   uint32_t nPackets = 0;
 
@@ -324,7 +324,7 @@ WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressTyp
     {
       if (!TtlExceeded (it))
         {
-          if ((*it)->GetHeader ().IsQosData () && (*it)->GetAddress (type) == addr
+          if ((*it)->GetHeader ().IsQosData () && (*it)->GetDestinationAddress () == dest
               && (*it)->GetHeader ().GetQosTid () == tid)
             {
               nPackets++;
