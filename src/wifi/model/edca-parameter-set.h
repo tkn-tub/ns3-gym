@@ -59,12 +59,6 @@ public:
    */
   void SetBeAifsn (uint8_t aifsn);
   /**
-   * Set the AC_BE ACM field in the EdcaParameterSet information element.
-   *
-   * \param acm the AC_BE ACM field in the EdcaParameterSet information element
-   */
-  void SetBeAcm (uint8_t acm);
-  /**
    * Set the AC_BE ACI field in the EdcaParameterSet information element.
    *
    * \param aci the AC_BE ACI field in the EdcaParameterSet information element
@@ -94,12 +88,6 @@ public:
    * \param aifsn the AC_BB AIFSN field in the EdcaParameterSet information element
    */
   void SetBkAifsn (uint8_t aifsn);
-  /**
-   * Set the AC_BK ACM field in the EdcaParameterSet information element.
-   *
-   * \param acm the AC_BK ACM field in the EdcaParameterSet information element
-   */
-  void SetBkAcm (uint8_t acm);
   /**
    * Set the AC_BK ACI field in the EdcaParameterSet information element.
    *
@@ -131,12 +119,6 @@ public:
    */
   void SetViAifsn (uint8_t aifsn);
   /**
-   * Set the AC_VI ACM field in the EdcaParameterSet information element.
-   *
-   * \param acm the AC_VI ACM field in the EdcaParameterSet information element
-   */
-  void SetViAcm (uint8_t acm);
-  /**
    * Set the AC_VI ACI field in the EdcaParameterSet information element.
    *
    * \param aci the AC_VI ACI field in the EdcaParameterSet information element
@@ -166,12 +148,6 @@ public:
    * \param aifsn the AC_VO AIFSN field in the EdcaParameterSet information element
    */
   void SetVoAifsn (uint8_t aifsn);
-  /**
-   * Set the AC_VO ACM field in the EdcaParameterSet information element.
-   *
-   * \param acm the AC_VO ACM field in the EdcaParameterSet information element
-   */
-  void SetVoAcm (uint8_t acm);
   /**
    * Set the AC_VO ACI field in the EdcaParameterSet information element.
    *
@@ -210,12 +186,6 @@ public:
    */
   uint8_t GetBeAifsn (void) const;
   /**
-   * Return the AC_BE ACM field in the EdcaParameterSet information element.
-   *
-   * \return the AC_BE ACM field in the EdcaParameterSet information element
-   */
-  uint8_t GetBeAcm (void) const;
-  /**
    * Return the AC_BE ACI field in the EdcaParameterSet information element.
    *
    * \return the AC_BE ACI field in the EdcaParameterSet information element
@@ -245,12 +215,6 @@ public:
    * \return the AC_BK AIFSN field in the EdcaParameterSet information element
    */
   uint8_t GetBkAifsn (void) const;
-  /**
-   * Return the AC_BK ACM field in the EdcaParameterSet information element.
-   *
-   * \return the AC_BK ACM field in the EdcaParameterSet information element
-   */
-  uint8_t GetBkAcm (void) const;
   /**
    * Return the AC_BK ACI field in the EdcaParameterSet information element.
    *
@@ -282,12 +246,6 @@ public:
    */
   uint8_t GetViAifsn (void) const;
   /**
-   * Return the AC_VI ACM field in the EdcaParameterSet information element.
-   *
-   * \return the AC_VI ACM field in the EdcaParameterSet information element
-   */
-  uint8_t GetViAcm (void) const;
-  /**
    * Return the AC_VI ACI field in the EdcaParameterSet information element.
    *
    * \return the AC_VI ACI field in the EdcaParameterSet information element
@@ -317,12 +275,6 @@ public:
    * \return the AC_VO AIFSN field in the EdcaParameterSet information element
    */
   uint8_t GetVoAifsn (void) const;
-  /**
-   * Return the AC_VO ACM field in the EdcaParameterSet information element.
-   *
-   * \return the AC_VO ACM field in the EdcaParameterSet information element
-   */
-  uint8_t GetVoAcm (void) const;
   /**
    * Return the AC_VO ACI field in the EdcaParameterSet information element.
    *

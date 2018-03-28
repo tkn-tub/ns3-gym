@@ -260,12 +260,6 @@ SpectrumWifiPhy::StartRx (Ptr<SpectrumSignalParameters> rxParams)
   StartReceivePreambleAndHeader (packet, rxPowerW, rxDuration);
 }
 
-Ptr<WifiSpectrumPhyInterface>
-SpectrumWifiPhy::GetSpectrumPhy (void) const
-{
-  return m_wifiSpectrumPhyInterface;
-}
-
 Ptr<AntennaModel>
 SpectrumWifiPhy::GetRxAntenna (void) const
 {

@@ -157,12 +157,6 @@ InterferenceHelper::SetNoiseFigure (double value)
   m_noiseFigure = value;
 }
 
-double
-InterferenceHelper::GetNoiseFigure (void) const
-{
-  return m_noiseFigure;
-}
-
 void
 InterferenceHelper::SetErrorRateModel (const Ptr<ErrorRateModel> rate)
 {

@@ -124,12 +124,6 @@ private:
   void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
 
   /**
-   * Return the noise figure.
-   *
-   * \return the noise figure
-   */
-  double GetNoiseFigure (void) const;
-  /**
    * Return the error rate model.
    *
    * \return Error rate model

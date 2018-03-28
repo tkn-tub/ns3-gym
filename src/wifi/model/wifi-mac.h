@@ -131,12 +131,6 @@ public:
    */
   virtual Time GetAckTimeout (void) const = 0;
   /**
-   * \return the maximum lifetime of an MSDU.
-   *
-   * Unused for now.
-   */
-  Time GetMsduLifetime (void) const;
-  /**
    * \return the maximum propagation delay.
    *
    * Unused for now.

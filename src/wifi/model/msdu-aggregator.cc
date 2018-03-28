@@ -70,7 +70,7 @@ MsduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacke
   uint8_t padding = CalculatePadding (aggregatedPacket);
   uint32_t actualSize = aggregatedPacket->GetSize ();
 
-  if ((14 + packet->GetSize () + actualSize + padding) <= m_maxAmsduLength)
+  if ((14 + packet->GetSize () + actualSize + padding) <= GetMaxAmsduSize ())
     {
       if (padding)
         {

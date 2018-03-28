@@ -322,12 +322,6 @@ VhtCapabilities::SetTxHighestSupportedLgiDataRate (uint16_t supporteddatarate)
 }
 
 uint8_t
-VhtCapabilities::GetMaxMpduLength () const
-{
-  return m_maxMpduLength;
-}
-
-uint8_t
 VhtCapabilities::GetSupportedChannelWidthSet () const
 {
   return m_supportedChannelWidthSet;
@@ -340,18 +334,6 @@ VhtCapabilities::GetRxLdpc () const
 }
 
 uint8_t
-VhtCapabilities::GetShortGuardIntervalFor80Mhz () const
-{
-  return m_shortGuardIntervalFor80Mhz;
-}
-
-uint8_t
-VhtCapabilities::GetShortGuardIntervalFor160Mhz () const
-{
-  return m_shortGuardIntervalFor160Mhz;
-}
-
-uint8_t
 VhtCapabilities::GetRxStbc () const
 {
   return m_rxStbc;
@@ -361,12 +343,6 @@ uint8_t
 VhtCapabilities::GetTxStbc () const
 {
   return m_txStbc;
-}
-
-uint8_t
-VhtCapabilities::GetMaxAmpduLengthExponent () const
-{
-  return m_maxAmpduLengthExponent;
 }
 
 bool
@@ -389,41 +365,9 @@ VhtCapabilities::IsSupportedMcs (uint8_t mcs, uint8_t nss) const
 }
 
 uint16_t
-VhtCapabilities::GetRxMcsMap () const
-{
-  uint16_t val = 0;
-  uint8_t n;
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      n = i * 2;
-      val |= (m_rxMcsMap[i] & 0x03) << n;
-    }
-  return val;
-}
-
-uint16_t
-VhtCapabilities::GetTxMcsMap () const
-{
-  uint16_t val = 0;
-  uint8_t n;
-  for (uint8_t i = 0; i < 8; i++)
-    {
-      n = i * 2;
-      val |= (m_txMcsMap[i] & 0x03) << n;
-    }
-  return val;
-}
-
-uint16_t
 VhtCapabilities::GetRxHighestSupportedLgiDataRate () const
 {
   return m_rxHighestSupportedLongGuardIntervalDataRate;
-}
-
-uint16_t
-VhtCapabilities::GetTxHighestSupportedLgiDataRate () const
-{
-  return m_txHighestSupportedLongGuardIntervalDataRate;
 }
 
 /**

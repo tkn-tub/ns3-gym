@@ -1451,13 +1451,13 @@ Bug2831TestCase::DoRun (void)
   ObjectFactory mac;
   mac.SetTypeId ("ns3::ApWifiMac");
   Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
-  apMac->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  apMac->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
 
   Ptr<Node> staNode = CreateObject<Node> ();
   Ptr<WifiNetDevice> staDev = CreateObject<WifiNetDevice> ();
   mac.SetTypeId ("ns3::StaWifiMac");
   Ptr<WifiMac> staMac = mac.Create<WifiMac> ();
-  staMac->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  staMac->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
 
   Ptr<ConstantPositionMobilityModel> apMobility = CreateObject<ConstantPositionMobilityModel> ();
   apMobility->SetPosition (Vector (0.0, 0.0, 0.0));
@@ -1469,7 +1469,7 @@ Bug2831TestCase::DoRun (void)
   m_apPhy->SetChannel (channel);
   m_apPhy->SetMobility (apMobility);
   m_apPhy->SetDevice (apDev);
-  m_apPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211n_5GHZ);
+  m_apPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
   m_apPhy->SetChannelNumber (36);
   m_apPhy->SetChannelWidth (20);
 
@@ -1482,7 +1482,7 @@ Bug2831TestCase::DoRun (void)
   m_staPhy->SetChannel (channel);
   m_staPhy->SetMobility (staMobility);
   m_staPhy->SetDevice (apDev);
-  m_staPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ac);
+  m_staPhy->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
   m_staPhy->SetChannelNumber (36);
   m_staPhy->SetChannelWidth (20);
 

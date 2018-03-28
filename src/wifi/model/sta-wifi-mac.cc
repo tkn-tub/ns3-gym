@@ -198,6 +198,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       assoc.SetSsid (GetSsid ());
       assoc.SetSupportedRates (GetSupportedRates ());
       assoc.SetCapabilities (GetCapabilities ());
+      assoc.SetListenInterval (0);
       if (m_htSupported || m_vhtSupported || m_heSupported)
         {
           assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
@@ -220,6 +221,7 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       reassoc.SetSsid (GetSsid ());
       reassoc.SetSupportedRates (GetSupportedRates ());
       reassoc.SetCapabilities (GetCapabilities ());
+      reassoc.SetListenInterval (0);
       if (m_htSupported || m_vhtSupported || m_heSupported)
         {
           reassoc.SetExtendedCapabilities (GetExtendedCapabilities ());
@@ -272,7 +274,7 @@ StaWifiMac::TryToEnsureAssociated (void)
        * We try to initiate a probe request now.
        */
       m_linkDown ();
-      if (m_activeProbing)
+      if (GetActiveProbing ())
         {
           SetState (WAIT_PROBE_RESP);
           SendProbeRequest ();

@@ -47,16 +47,6 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * Set the CRC field.
-   *
-   * \param crc
-   */
-  void SetCrc (uint8_t crc);
-  /**
-   * Set the SIG field.
-   */
-  void SetSig ();
-  /**
    * Set the length field.
    *
    * \param length
@@ -68,18 +58,6 @@ public:
   * \param eof
   */
   void SetEof (bool eof);
-  /**
-   * Return the CRC field.
-   *
-   * \return the CRC field
-   */
-  uint8_t GetCrc (void) const;
-  /**
-   * Return the SIG field.
-   *
-   * \return the SIG field
-   */
-  uint8_t GetSig (void) const;
   /**
    * Return the length field.
    *
@@ -94,8 +72,6 @@ public:
   bool GetEof (void) const;
 
 private:
-  uint8_t m_crc;     //!< CRC field
-  uint8_t m_sig;     //!< SIG field
   uint16_t m_length; //!< length field
   bool m_eof;        //!< EOF field
 };

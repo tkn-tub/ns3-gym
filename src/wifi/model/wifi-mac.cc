@@ -196,7 +196,8 @@ WifiMac::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("MaxPropagationDelay", "The maximum propagation delay. Unused for now.",
                    TimeValue (GetDefaultMaxPropagationDelay ()),
-                   MakeTimeAccessor (&WifiMac::m_maxPropagationDelay),
+                   MakeTimeAccessor (&WifiMac::SetMaxPropagationDelay,
+                                     &WifiMac::GetMaxPropagationDelay),
                    MakeTimeChecker ())
     .AddAttribute ("Ssid", "The ssid we want to belong to.",
                    SsidValue (Ssid ("default")),
@@ -241,12 +242,6 @@ WifiMac::SetMaxPropagationDelay (Time delay)
 {
   NS_LOG_FUNCTION (this << delay);
   m_maxPropagationDelay = delay;
-}
-
-Time
-WifiMac::GetMsduLifetime (void) const
-{
-  return Seconds (10);
 }
 
 Time

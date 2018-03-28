@@ -1264,12 +1264,6 @@ public:
    */
   void SetRxNoiseFigure (double noiseFigureDb);
   /**
-   * Return the RX noise figure (dBm).
-   *
-   * \return the RX noise figure in dBm
-   */
-  double GetRxNoiseFigure (void) const;
-  /**
    * Sets the minimum available transmission power level (dBm).
    *
    * \param start the minimum transmission power level (dBm)

@@ -77,7 +77,7 @@ SimpleFrameCaptureModel::CaptureNewFrame (Ptr<InterferenceHelper::Event> current
 {
   NS_LOG_FUNCTION (this);
   if (newEvent->GetTxVector ().GetPreambleType () != WIFI_PREAMBLE_NONE
-      && (WToDbm (currentEvent->GetRxPowerW ()) + m_margin) < WToDbm (newEvent->GetRxPowerW ())
+      && (WToDbm (currentEvent->GetRxPowerW ()) + GetMargin ()) < WToDbm (newEvent->GetRxPowerW ())
       && ((currentEvent->GetStartTime () + WifiPhy::CalculatePlcpPreambleAndHeaderDuration (currentEvent->GetTxVector ())) > Simulator::Now ()))
     {
       return true;

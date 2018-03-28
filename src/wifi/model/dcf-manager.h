@@ -234,40 +234,6 @@ private:
    * \param a
    * \param b
    * \param c
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
-   * \param d
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c, Time d) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
-   * \param d
-   * \param e
-   * \param f
-   *
-   * \return the most recent time
-   */
-  Time MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const;
-  /**
-   * Return the most recent time.
-   *
-   * \param a
-   * \param b
-   * \param c
    * \param d
    * \param e
    * \param f

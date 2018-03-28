@@ -503,12 +503,6 @@ public:
    */
   uint8_t GetQosTid (void) const;
   /**
-   * Return the TXOP limit.
-   *
-   * \return the TXOP limit
-   */
-  uint8_t GetQosTxopLimit (void) const;
-  /**
    * Return the size of the WifiMacHeader in octets.
    * GetSerializedSize calls this function.
    *

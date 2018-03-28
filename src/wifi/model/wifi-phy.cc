@@ -219,8 +219,7 @@ WifiPhy::GetTypeId (void)
                    " ideal receiver with the same overall gain and bandwidth when the receivers "
                    " are connected to sources at the standard noise temperature T0 (usually 290 K)\".",
                    DoubleValue (7),
-                   MakeDoubleAccessor (&WifiPhy::SetRxNoiseFigure,
-                                       &WifiPhy::GetRxNoiseFigure),
+                   MakeDoubleAccessor (&WifiPhy::SetRxNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("State",
                    "The state of the PHY layer.",
@@ -498,12 +497,6 @@ WifiPhy::SetRxNoiseFigure (double noiseFigureDb)
   NS_LOG_FUNCTION (this << noiseFigureDb);
   m_interference.SetNoiseFigure (DbToRatio (noiseFigureDb));
   m_interference.SetNumberOfReceiveAntennas (GetNumberOfAntennas ());
-}
-
-double
-WifiPhy::GetRxNoiseFigure (void) const
-{
-  return RatioToDb (m_interference.GetNoiseFigure ());
 }
 
 void

@@ -72,16 +72,13 @@ CtrlBAckRequestHeader::GetSerializedSize () const
     {
       size += 2; //Starting sequence control
     }
+  else if (m_compressed)
+    {
+      size += (2 + 2) * (m_tidInfo + 1);  //Multi-tid block ack
+    }
   else
     {
-      if (m_compressed)
-        {
-          size += (2 + 2) * (m_tidInfo + 1);  //Multi-tid block ack
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Reserved configuration.");
-        }
+      NS_FATAL_ERROR ("Reserved configuration.");
     }
   return size;
 }
@@ -95,16 +92,13 @@ CtrlBAckRequestHeader::Serialize (Buffer::Iterator start) const
     {
       i.WriteHtolsbU16 (GetStartingSequenceControl ());
     }
+  else if (m_compressed)
+    {
+      NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+    }
   else
     {
-      if (m_compressed)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Reserved configuration.");
-        }
+      NS_FATAL_ERROR ("Reserved configuration.");
     }
 }
 
@@ -117,16 +111,13 @@ CtrlBAckRequestHeader::Deserialize (Buffer::Iterator start)
     {
       SetStartingSequenceControl (i.ReadLsbtohU16 ());
     }
+  else if (m_compressed)
+    {
+      NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+    }
   else
     {
-      if (m_compressed)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Reserved configuration.");
-        }
+      NS_FATAL_ERROR ("Reserved configuration.");
     }
   return i.GetDistanceFrom (start);
 }
@@ -332,16 +323,13 @@ CtrlBAckResponseHeader::Serialize (Buffer::Iterator start) const
       i.WriteHtolsbU16 (GetStartingSequenceControl ());
       i = SerializeBitmap (i);
     }
+  else if (m_compressed)
+    {
+      NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+    }
   else
     {
-      if (m_compressed)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Reserved configuration.");
-        }
+      NS_FATAL_ERROR ("Reserved configuration.");
     }
 }
 
@@ -355,16 +343,13 @@ CtrlBAckResponseHeader::Deserialize (Buffer::Iterator start)
       SetStartingSequenceControl (i.ReadLsbtohU16 ());
       i = DeserializeBitmap (i);
     }
+  else if (m_compressed)
+    {
+      NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
+    }
   else
     {
-      if (m_compressed)
-        {
-          NS_FATAL_ERROR ("Multi-tid block ack is not supported.");
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Reserved configuration.");
-        }
+      NS_FATAL_ERROR ("Reserved configuration.");
     }
   return i.GetDistanceFrom (start);
 }

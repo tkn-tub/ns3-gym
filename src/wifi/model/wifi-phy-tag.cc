@@ -58,6 +58,7 @@ WifiPhyTag::Deserialize (TagBuffer i)
   m_mpduType = static_cast<MpduType> (i.ReadU16 ());
   m_frameComplete = i.ReadU8 ();
 }
+
 void
 WifiPhyTag::Print (std::ostream &os) const
 {
@@ -92,5 +93,5 @@ WifiPhyTag::GetFrameComplete (void) const
 {
   return m_frameComplete;
 }
-    
+
 } // namespace ns3

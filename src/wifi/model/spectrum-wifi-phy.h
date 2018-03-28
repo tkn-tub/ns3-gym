@@ -119,10 +119,6 @@ public:
    */
   void CreateWifiSpectrumPhyInterface (Ptr<NetDevice> device);
   /**
-   * \return pointer to WifiSpectrumPhyInterface associated with this Phy
-   */
-  Ptr<WifiSpectrumPhyInterface> GetSpectrumPhy (void) const;
-  /**
    * \param antenna an AntennaModel to include in the transmitted
    * SpectrumSignalParameters (in case any objects downstream of the
    * SpectrumWifiPhy wish to adjust signal properties based on the

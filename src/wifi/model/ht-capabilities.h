@@ -244,44 +244,6 @@ public:
    */
   uint8_t GetShortGuardInterval20 (void) const;
   /**
-   * Return the short guard interval 40 value.
-   *
-   * \return the short guard interval 40 value
-   */
-  uint8_t GetShortGuardInterval40 (void) const;
-  /**
-   * Return the maximum AMSDU length.
-   *
-   * \return the maximum AMSDU length
-   */
-  uint8_t GetMaxAmsduLength (void) const;
-  /**
-   * Return the LSIG protection support.
-   *
-   * \return the LSIG protection support
-   */
-  uint8_t GetLSigProtectionSupport (void) const;
-
-  /**
-   * Return the maximum AMPDU length.
-   *
-   * \return the maximum AMPDU length
-   */
-  uint8_t GetMaxAmpduLength (void) const;
-  /**
-   * Return the minimum MPDU start space.
-   *
-   * \return the minimum MPDU start space
-   */
-  uint8_t GetMinMpduStartSpace (void) const;
-
-  /**
-   * Return the receive MCS bitmask.
-   *
-   * \return the receive MCS bitmask
-   */
-  uint8_t* GetRxMcsBitmask ();
-  /**
    * Return the is MCS supported flag.
    *
    * \param mcs is MCS supported flag
@@ -295,36 +257,6 @@ public:
    * \return the receive highest supported antennas
    */
   uint8_t GetRxHighestSupportedAntennas (void) const;
-  /**
-   * Return the receive highest supported data rate.
-   *
-   * \return the receive highest supported data rate
-   */
-  uint16_t GetRxHighestSupportedDataRate (void) const;
-  /**
-   * Return the transmit MCS set defined.
-   *
-   * \return the transmit MCS set defined
-   */
-  uint8_t GetTxMcsSetDefined (void) const;
-  /**
-   * Return the transmit / receive MCS set unequal.
-   *
-   * \return the transmit / receive MCS set unequal
-   */
-  uint8_t GetTxRxMcsSetUnequal (void) const;
-  /**
-   * Return the transmit maximum spatial streams.
-   *
-   * \return the transmit maximum spatial streams
-   */
-  uint8_t GetTxMaxNSpatialStreams (void) const;
-  /**
-   * Return the transmit unequal modulation.
-   *
-   * \return the transmit unequal modulation
-   */
-  uint8_t GetTxUnequalModulation (void) const;
 
   /**
    * Return the element ID.
