@@ -44,12 +44,6 @@ MacLowTransmissionParameters::DisableNextData (void)
 }
 
 void
-MacLowTransmissionParameters::EnableSuperFastAck (void)
-{
-  m_waitAck = ACK_SUPER_FAST;
-}
-
-void
 MacLowTransmissionParameters::EnableBasicBlockAck (void)
 {
   m_waitAck = BLOCK_ACK_BASIC;
@@ -65,12 +59,6 @@ void
 MacLowTransmissionParameters::EnableMultiTidBlockAck (void)
 {
   m_waitAck = BLOCK_ACK_MULTI_TID;
-}
-
-void
-MacLowTransmissionParameters::EnableFastAck (void)
-{
-  m_waitAck = ACK_FAST;
 }
 
 void
@@ -98,27 +86,9 @@ MacLowTransmissionParameters::DisableRts (void)
 }
 
 bool
-MacLowTransmissionParameters::MustWaitAck (void) const
-{
-  return (m_waitAck != ACK_NONE);
-}
-
-bool
 MacLowTransmissionParameters::MustWaitNormalAck (void) const
 {
   return (m_waitAck == ACK_NORMAL);
-}
-
-bool
-MacLowTransmissionParameters::MustWaitFastAck (void) const
-{
-  return (m_waitAck == ACK_FAST);
-}
-
-bool
-MacLowTransmissionParameters::MustWaitSuperFastAck (void) const
-{
-  return (m_waitAck == ACK_SUPER_FAST);
 }
 
 bool
@@ -171,12 +141,6 @@ std::ostream &operator << (std::ostream &os, const MacLowTransmissionParameters 
       break;
     case MacLowTransmissionParameters::ACK_NORMAL:
       os << "normal";
-      break;
-    case MacLowTransmissionParameters::ACK_FAST:
-      os << "fast";
-      break;
-    case MacLowTransmissionParameters::ACK_SUPER_FAST:
-      os << "super-fast";
       break;
     case MacLowTransmissionParameters::BLOCK_ACK_BASIC:
       os << "basic-block-ack";

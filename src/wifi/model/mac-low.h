@@ -612,18 +612,6 @@ private:
    */
   void NormalAckTimeout (void);
   /**
-   * Event handler when fast ACK timeout occurs (idle).
-   */
-  void FastAckTimeout (void);
-  /**
-   * Event handler when super fast ACK timeout occurs.
-   */
-  void SuperFastAckTimeout (void);
-  /**
-   * Event handler when fast ACK timeout occurs (busy).
-   */
-  void FastAckFailedTimeout (void);
-  /**
    * Event handler when block ACK timeout occurs.
    */
   void BlockAckTimeout (void);
@@ -851,9 +839,6 @@ private:
   DcfManagers m_dcfManagers; //!< List of DcfManager
 
   EventId m_normalAckTimeoutEvent;      //!< Normal ACK timeout event
-  EventId m_fastAckTimeoutEvent;        //!< Fast ACK timeout event
-  EventId m_superFastAckTimeoutEvent;   //!< Super fast ACK timeout event
-  EventId m_fastAckFailedTimeoutEvent;  //!< Fast ACK failed timeout event
   EventId m_blockAckTimeoutEvent;       //!< Block ACK timeout event
   EventId m_ctsTimeoutEvent;            //!< CTS timeout event
   EventId m_sendCtsEvent;               //!< Event to send CTS

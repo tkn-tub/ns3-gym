@@ -96,9 +96,6 @@ private:
 
 MacLow::MacLow ()
   : m_normalAckTimeoutEvent (),
-    m_fastAckTimeoutEvent (),
-    m_superFastAckTimeoutEvent (),
-    m_fastAckFailedTimeoutEvent (),
     m_blockAckTimeoutEvent (),
     m_ctsTimeoutEvent (),
     m_sendCtsEvent (),
@@ -162,9 +159,6 @@ MacLow::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
   m_normalAckTimeoutEvent.Cancel ();
-  m_fastAckTimeoutEvent.Cancel ();
-  m_superFastAckTimeoutEvent.Cancel ();
-  m_fastAckFailedTimeoutEvent.Cancel ();
   m_blockAckTimeoutEvent.Cancel ();
   m_ctsTimeoutEvent.Cancel ();
   m_sendCtsEvent.Cancel ();
@@ -194,21 +188,6 @@ MacLow::CancelAllEvents (void)
   if (m_normalAckTimeoutEvent.IsRunning ())
     {
       m_normalAckTimeoutEvent.Cancel ();
-      oneRunning = true;
-    }
-  if (m_fastAckTimeoutEvent.IsRunning ())
-    {
-      m_fastAckTimeoutEvent.Cancel ();
-      oneRunning = true;
-    }
-  if (m_superFastAckTimeoutEvent.IsRunning ())
-    {
-      m_superFastAckTimeoutEvent.Cancel ();
-      oneRunning = true;
-    }
-  if (m_fastAckFailedTimeoutEvent.IsRunning ())
-    {
-      m_fastAckFailedTimeoutEvent.Cancel ();
       oneRunning = true;
     }
   if (m_blockAckTimeoutEvent.IsRunning ())
@@ -605,12 +584,6 @@ MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
 {
   NS_LOG_FUNCTION (this << packet << rxSnr);
   NS_LOG_DEBUG ("rx failed");
-  if (m_txParams.MustWaitFastAck ())
-    {
-      NS_ASSERT (m_fastAckFailedTimeoutEvent.IsExpired ());
-      m_fastAckFailedTimeoutEvent = Simulator::Schedule (GetSifs (),
-                                                         &MacLow::FastAckFailedTimeout, this);
-    }
   return;
 }
 
@@ -738,10 +711,8 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
     }
   else if (hdr.IsAck ()
            && hdr.GetAddr1 () == m_self
-           && (m_normalAckTimeoutEvent.IsRunning ()
-               || m_fastAckTimeoutEvent.IsRunning ()
-               || m_superFastAckTimeoutEvent.IsRunning ())
-           && m_txParams.MustWaitAck ())
+           && m_normalAckTimeoutEvent.IsRunning ()
+           && m_txParams.MustWaitNormalAck ())
     {
       NS_LOG_DEBUG ("receive ack from=" << m_currentHdr.GetAddr1 ());
       SnrTag tag;
@@ -759,13 +730,6 @@ MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool
           && m_normalAckTimeoutEvent.IsRunning ())
         {
           m_normalAckTimeoutEvent.Cancel ();
-          NotifyAckTimeoutResetNow ();
-          gotAck = true;
-        }
-      if (m_txParams.MustWaitFastAck ()
-          && m_fastAckTimeoutEvent.IsRunning ())
-        {
-          m_fastAckTimeoutEvent.Cancel ();
           NotifyAckTimeoutResetNow ();
           gotAck = true;
         }
@@ -1114,7 +1078,7 @@ MacLow::CalculateOverallTxTime (Ptr<const Packet> packet,
     }
   txTime += m_phy->CalculateTxDuration (dataSize, dataTxVector, m_phy->GetFrequency ());
   txTime += GetSifs ();
-  if (params.MustWaitAck ())
+  if (params.MustWaitNormalAck ())
     {
       txTime += GetAckDuration (hdr->GetAddr1 (), dataTxVector);
     }
@@ -1399,24 +1363,6 @@ MacLow::NormalAckTimeout (void)
 }
 
 void
-MacLow::FastAckTimeout (void)
-{
-  NS_LOG_FUNCTION (this);
-  m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
-  Ptr<DcaTxop> dca = m_currentDca;
-  m_currentDca = 0;
-  if (m_phy->IsStateIdle ())
-    {
-      NS_LOG_DEBUG ("fast Ack idle missed");
-      dca->MissedAck ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("fast Ack ok");
-    }
-}
-
-void
 MacLow::BlockAckTimeout (void)
 {
   NS_LOG_FUNCTION (this);
@@ -1428,25 +1374,6 @@ MacLow::BlockAckTimeout (void)
   uint8_t nTxMpdus = m_aggregateQueue[tid]->GetNPackets ();
   FlushAggregateQueue (tid);
   dca->MissedBlockAck (nTxMpdus);
-}
-
-void
-MacLow::SuperFastAckTimeout ()
-{
-  NS_LOG_FUNCTION (this);
-  m_stationManager->ReportDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
-  Ptr<DcaTxop> dca = m_currentDca;
-  m_currentDca = 0;
-  if (m_phy->IsStateIdle ())
-    {
-      NS_LOG_DEBUG ("super fast Ack failed");
-      dca->MissedAck ();
-    }
-  else
-    {
-      NS_LOG_DEBUG ("super fast Ack ok");
-      dca->GotAck ();
-    }
 }
 
 void
@@ -1481,7 +1408,7 @@ MacLow::SendRtsForPacket (void)
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
       duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
     }
-  else if (m_txParams.MustWaitAck ())
+  else if (m_txParams.MustWaitNormalAck ())
     {
       duration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
     }
@@ -1489,7 +1416,7 @@ MacLow::SendRtsForPacket (void)
     {
       duration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (),
                                               m_currentTxVector, m_phy->GetFrequency ());
-      if (m_txParams.MustWaitAck ())
+      if (m_txParams.MustWaitNormalAck ())
         {
           duration += GetSifs ();
           duration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1521,21 +1448,6 @@ MacLow::StartDataTxTimers (WifiTxVector dataTxVector)
       NS_ASSERT (m_normalAckTimeoutEvent.IsExpired ());
       NotifyAckTimeoutStartNow (timerDelay);
       m_normalAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::NormalAckTimeout, this);
-    }
-  else if (m_txParams.MustWaitFastAck ())
-    {
-      Time timerDelay = txDuration + GetPifs ();
-      NS_ASSERT (m_fastAckTimeoutEvent.IsExpired ());
-      NotifyAckTimeoutStartNow (timerDelay);
-      m_fastAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::FastAckTimeout, this);
-    }
-  else if (m_txParams.MustWaitSuperFastAck ())
-    {
-      Time timerDelay = txDuration + GetPifs ();
-      NS_ASSERT (m_superFastAckTimeoutEvent.IsExpired ());
-      NotifyAckTimeoutStartNow (timerDelay);
-      m_superFastAckTimeoutEvent = Simulator::Schedule (timerDelay,
-                                                        &MacLow::SuperFastAckTimeout, this);
     }
   else if (m_txParams.MustWaitBasicBlockAck ())
     {
@@ -1605,7 +1517,7 @@ MacLow::SendDataPacket (void)
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
       duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
     }
-  else if (m_txParams.MustWaitAck ())
+  else if (m_txParams.MustWaitNormalAck ())
     {
       duration += GetSifs ();
       duration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1622,7 +1534,7 @@ MacLow::SendDataPacket (void)
         }
       duration += m_phy->CalculateTxDuration (m_txParams.GetNextPacketSize (),
                                               m_currentTxVector, m_phy->GetFrequency ());
-      if (m_txParams.MustWaitAck ())
+      if (m_txParams.MustWaitNormalAck ())
         {
           duration += GetSifs ();
           duration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1677,7 +1589,7 @@ MacLow::SendCtsToSelf (void)
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
       duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
     }
-  else if (m_txParams.MustWaitAck ())
+  else if (m_txParams.MustWaitNormalAck ())
     {
       duration += GetSifs ();
       duration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1693,7 +1605,7 @@ MacLow::SendCtsToSelf (void)
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
           duration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
         }
-      else if (m_txParams.MustWaitAck ())
+      else if (m_txParams.MustWaitNormalAck ())
         {
           duration += GetSifs ();
           duration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1786,7 +1698,7 @@ MacLow::SendDataAfterCts (Time duration)
       WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
       newDuration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
     }
-  else if (m_txParams.MustWaitAck ())
+  else if (m_txParams.MustWaitNormalAck ())
     {
       newDuration += GetSifs ();
       newDuration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1808,7 +1720,7 @@ MacLow::SendDataAfterCts (Time duration)
           WifiTxVector blockAckReqTxVector = GetBlockAckTxVector (m_currentHdr.GetAddr2 (), m_currentTxVector.GetMode ());
           newDuration += GetBlockAckDuration (blockAckReqTxVector, COMPRESSED_BLOCK_ACK);
         }
-      else if (m_txParams.MustWaitAck ())
+      else if (m_txParams.MustWaitNormalAck ())
         {
           newDuration += GetSifs ();
           newDuration += GetAckDuration (m_currentHdr.GetAddr1 (), m_currentTxVector);
@@ -1856,16 +1768,6 @@ MacLow::EndTxNoAck (void)
   Ptr<DcaTxop> dca = m_currentDca;
   m_currentDca = 0;
   dca->EndTxNoAck ();
-}
-
-void
-MacLow::FastAckFailedTimeout (void)
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<DcaTxop> dca = m_currentDca;
-  m_currentDca = 0;
-  dca->MissedAck ();
-  NS_LOG_DEBUG ("fast Ack busy but missed");
 }
 
 void
