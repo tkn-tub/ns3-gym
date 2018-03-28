@@ -500,9 +500,24 @@ HtOperation::DeserializeInformationField (Buffer::Iterator start,
 std::ostream &
 operator << (std::ostream &os, const HtOperation &htOperation)
 {
-  os <<  bool (htOperation.GetStaChannelWidth ())
+  os << bool (htOperation.GetPrimaryChannel ())
+     << "|" << +htOperation.GetSecondaryChannelOffset ()
+     << "|" << bool (htOperation.GetStaChannelWidth ())
      << "|" << bool (htOperation.GetRifsMode ())
-     << "|" << bool (htOperation.GetDualCtsProtection ());
+     << "|" << +htOperation.GetHtProtection ()
+     << "|" << bool (htOperation.GetNonGfHtStasPresent ())
+     << "|" << bool (htOperation.GetObssNonHtStasPresent ())
+     << "|" << bool (htOperation.GetDualBeacon ())
+     << "|" << bool (htOperation.GetDualCtsProtection ())
+     << "|" << bool (htOperation.GetStbcBeacon ())
+     << "|" << bool (htOperation.GetLSigTxopProtectionFullSupport ())
+     << "|" << bool (htOperation.GetPcoActive ())
+     << "|" << bool (htOperation.GetPhase ())
+     << "|" << htOperation.GetRxHighestSupportedDataRate ()
+     << "|" << bool (htOperation.GetTxMcsSetDefined ())
+     << "|" << bool (htOperation.GetTxRxMcsSetUnequal ())
+     << "|" << +htOperation.GetTxMaxNSpatialStreams ()
+     << "|" << bool (htOperation.GetTxUnequalModulation ());
 
   return os;
 }
