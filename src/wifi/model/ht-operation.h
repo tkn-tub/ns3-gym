@@ -443,9 +443,6 @@ private:
 };
 
 std::ostream &operator << (std::ostream &os, const HtOperation &htOperation);
-std::istream &operator >> (std::istream &is, HtOperation &htOperation);
-
-ATTRIBUTE_HELPER_HEADER (HtOperation);
 
 } //namespace ns3
 

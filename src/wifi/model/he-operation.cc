@@ -150,8 +150,6 @@ HeOperation::DeserializeInformationField (Buffer::Iterator start, uint8_t length
   return length;
 }
 
-ATTRIBUTE_HELPER_CPP (HeOperation);
-
 /**
  * output stream output operator
  *
@@ -166,22 +164,6 @@ operator << (std::ostream &os, const HeOperation &HeOperation)
   os << HeOperation.GetHeOperationParameters () << "|"
      << HeOperation.GetBasicHeMcsAndNssSet ();
   return os;
-}
-
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param HeOperation the HE operation
- *
- * \returns input stream
- */
-std::istream &operator >> (std::istream &is, HeOperation &HeOperation)
-{
-  uint32_t c1;
-  is >> c1;
-  HeOperation.SetHeOperationParameters (c1);
-  return is;
 }
 
 } //namespace ns3

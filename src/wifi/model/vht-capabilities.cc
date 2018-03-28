@@ -426,8 +426,6 @@ VhtCapabilities::GetTxHighestSupportedLgiDataRate () const
   return m_txHighestSupportedLongGuardIntervalDataRate;
 }
 
-ATTRIBUTE_HELPER_CPP (VhtCapabilities);
-
 /**
  * output stream output operator
  *
@@ -442,25 +440,6 @@ operator << (std::ostream &os, const VhtCapabilities &VhtCapabilities)
   os <<  VhtCapabilities.GetVhtCapabilitiesInfo () << "|" << VhtCapabilities.GetSupportedMcsAndNssSet ();
 
   return os;
-}
-
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param VhtCapabilities the VHT capabilities
- *
- * \returns input stream
- */
-std::istream &operator >> (std::istream &is,VhtCapabilities &VhtCapabilities)
-{
-  uint32_t c1;
-  uint64_t c2;
-  is >>  c1 >> c2;
-  VhtCapabilities.SetVhtCapabilitiesInfo (c1);
-  VhtCapabilities.SetSupportedMcsAndNssSet (c2);
-
-  return is;
 }
 
 } //namespace ns3

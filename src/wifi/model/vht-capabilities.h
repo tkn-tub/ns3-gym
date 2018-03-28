@@ -317,9 +317,6 @@ private:
 };
 
 std::ostream &operator << (std::ostream &os, const VhtCapabilities &vhtcapabilities);
-std::istream &operator >> (std::istream &is, VhtCapabilities &vhtcapabilities);
-
-ATTRIBUTE_HELPER_HEADER (VhtCapabilities);
 
 } //namespace ns3
 

@@ -143,17 +143,6 @@ private:
  * \returns output stream
  */
 std::ostream &operator << (std::ostream &os, const ErpInformation &erpinformation);
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param erpinformation
- *
- * \returns input stream
- */
-std::istream &operator >> (std::istream &is, ErpInformation &erpinformation);
-
-ATTRIBUTE_HELPER_HEADER (ErpInformation);
 
 } //namespace ns3
 

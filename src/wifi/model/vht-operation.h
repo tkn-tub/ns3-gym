@@ -162,9 +162,6 @@ private:
 };
 
 std::ostream &operator << (std::ostream &os, const VhtOperation &VhtOperation);
-std::istream &operator >> (std::istream &is, VhtOperation &VhtOperation);
-
-ATTRIBUTE_HELPER_HEADER (VhtOperation);
 
 } //namespace ns3
 

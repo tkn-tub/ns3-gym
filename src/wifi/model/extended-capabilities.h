@@ -212,7 +212,7 @@ private:
   uint8_t m_collocatedInterferenceReporting; ///< Collocated Interference Reporting
   uint8_t m_civicLocation; ///< Civic Location
   uint8_t m_geospatialLocation; ///< Geospatial Location
-  
+
   uint8_t m_tfs; ///< TFS
   uint8_t m_wnmSleepMode; ///< WNM Sleep Mode
   uint8_t m_timBroadcast; ///< TIM Broadcast
@@ -221,7 +221,7 @@ private:
   uint8_t m_acStationCount; ///< AC Station Count
   uint8_t m_multipleBssid; ///< Multiple BSSID
   uint8_t m_timingMeasurement; ///< Timing Measurement
-  
+
   uint8_t m_channelUsage; ///< Channel Usage
   uint8_t m_ssidList; ///< SSID List
   uint8_t m_dms; ///< DMS
@@ -230,7 +230,7 @@ private:
   uint8_t m_tdlsPeerPsmSupport; ///< TDLS Peer PSM Support
   uint8_t m_tdlsChannelSwitching; ///< TDLS Channel Switching
   uint8_t m_interworking; ///< Interworking
-  
+
   uint8_t m_qosMap; ///< QoS Map
   uint8_t m_ebr; ///< EBR
   uint8_t m_sspnInterface; ///< SSPN Interface
@@ -245,7 +245,7 @@ private:
   uint8_t m_uapsdCoexistence; ///< U-APSD Coexistence
   uint8_t m_wnmNotification; ///< WNM Notification
   uint8_t m_qabCapability; ///< QAB Capability
-  
+
   uint8_t m_utf8Ssid; ///< UTF-8 SSID
   uint8_t m_qmfActivated; ///< QMFActivated
   uint8_t m_qmfReconfigurationActivated; ///< QMFReconfigurationActivated
@@ -268,9 +268,6 @@ private:
 };
 
 std::ostream &operator << (std::ostream &os, const ExtendedCapabilities &extendedcapabilities);
-std::istream &operator >> (std::istream &is, ExtendedCapabilities &extendedcapabilities);
-
-ATTRIBUTE_HELPER_HEADER (ExtendedCapabilities);
 
 } //namespace ns3
 

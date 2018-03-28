@@ -390,8 +390,6 @@ ExtendedCapabilities::DeserializeInformationField (Buffer::Iterator start, uint8
   return length;
 }
 
-ATTRIBUTE_HELPER_CPP (ExtendedCapabilities);
-
 /**
  * output stream output operator
  *
@@ -404,19 +402,6 @@ std::ostream &
 operator << (std::ostream &os, const ExtendedCapabilities &extendedcapabilities)
 {
   return os;
-}
-
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param extendedcapabilities the extended capabilities
- *
- * \returns input stream
- */
-std::istream &operator >> (std::istream &is, ExtendedCapabilities &extendedcapabilities)
-{
-  return is;
 }
 
 } //namespace ns3

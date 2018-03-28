@@ -140,9 +140,6 @@ private:
 };
 
 std::ostream &operator << (std::ostream &os, const HeOperation &HeOperation);
-std::istream &operator >> (std::istream &is, HeOperation &HeOperation);
-
-ATTRIBUTE_HELPER_HEADER (HeOperation);
 
 } //namespace ns3
 

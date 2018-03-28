@@ -592,8 +592,6 @@ HtCapabilities::DeserializeInformationField (Buffer::Iterator start,
   return length;
 }
 
-ATTRIBUTE_HELPER_CPP (HtCapabilities);
-
 /**
  * output stream output operator
  *
@@ -614,26 +612,6 @@ operator << (std::ostream &os, const HtCapabilities &htcapabilities)
       os << htcapabilities.IsSupportedMcs (i) << " ";
     }
   return os;
-}
-
-/**
- * input stream input operator
- *
- * \param is input stream
- * \param htcapabilities the HT capabilities
- *
- * \returns input stream
- */
-std::istream &operator >> (std::istream &is, HtCapabilities &htcapabilities)
-{
-  bool c1, c2, c3, c4;
-  is >> c1 >> c2 >> c3 >> c4;
-  htcapabilities.SetLdpc (c1);
-  htcapabilities.SetSupportedChannelWidth (c2);
-  htcapabilities.SetGreenfield (c3);
-  htcapabilities.SetShortGuardInterval20 (c4);
-
-  return is;
 }
 
 } //namespace ns3
