@@ -154,14 +154,14 @@ IdealWifiManager::DoInitialize ()
                       guardInterval = GetPhy ()->GetGuardInterval ().GetNanoSeconds ();
                     }
                   txVector.SetGuardInterval (guardInterval);
-                  for (uint8_t i = 1; i <= GetPhy ()->GetMaxSupportedTxSpatialStreams (); i++)
+                  for (uint8_t k = 1; k <= GetPhy ()->GetMaxSupportedTxSpatialStreams (); k++)
                     {
                       NS_LOG_DEBUG ("Initialize, adding mode = " << mode.GetUniqueName () <<
                                     " channel width " << +j <<
-                                    " nss " << +i <<
+                                    " nss " << +k <<
                                     " GI " << guardInterval);
                       NS_LOG_DEBUG ("In SetupPhy, adding mode = " << mode.GetUniqueName ());
-                      txVector.SetNss (i);
+                      txVector.SetNss (k);
                       txVector.SetMode (mode);
                       AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
                     }

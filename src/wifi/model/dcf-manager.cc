@@ -356,10 +356,10 @@ DcfManager::DoGrantAccess (void)
            * the result of the calculations.
            */
           state->NotifyAccessGranted ();
-          for (std::vector<Ptr<DcfState> >::iterator k = internalCollisionStates.begin ();
-               k != internalCollisionStates.end (); k++)
+          for (std::vector<Ptr<DcfState> >::iterator l = internalCollisionStates.begin ();
+               l != internalCollisionStates.end (); l++)
             {
-              (*k)->NotifyInternalCollision ();
+              (*l)->NotifyInternalCollision ();
             }
           break;
         }

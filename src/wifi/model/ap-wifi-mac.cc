@@ -732,7 +732,7 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
   if (success)
     {
       code.SetSuccess ();
-      uint16_t aid;
+      uint16_t aid = 0;
       bool found = false;
       if (isReassoc)
         {

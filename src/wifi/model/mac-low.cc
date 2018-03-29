@@ -2352,6 +2352,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       Time tstamp;
       uint8_t tid = GetTid (packet, hdr);
       Ptr<WifiMacQueue> queue;
+      Ptr<Packet> aggPacket;
       AcIndex ac = QosUtilsMapTidToAc (tid);
       std::map<AcIndex, Ptr<EdcaTxopN> >::const_iterator edcaIt = m_edca.find (ac);
       NS_ASSERT (edcaIt != m_edca.end ());
@@ -2372,7 +2373,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               uint16_t blockAckSize = 0;
               bool aggregated = false;
               int i = 0;
-              Ptr<Packet> aggPacket = newPacket->Copy ();
+              aggPacket = newPacket->Copy ();
 
               if (!hdr.IsBlockAckReq ())
                 {
@@ -2455,7 +2456,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                     }
 
                   newPacket = peekedPacket->Copy ();
-                  Ptr<Packet> aggPacket = newPacket->Copy ();
+                  aggPacket = newPacket->Copy ();
 
                   newPacket->AddHeader (peekedHdr);
                   AddWifiMacTrailer (newPacket);
@@ -2566,7 +2567,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                     {
                       newPacket = packet->Copy ();
                       peekedHdr = hdr;
-                      Ptr<Packet> aggPacket = newPacket->Copy ();
+                      aggPacket = newPacket->Copy ();
                       m_aggregateQueue[tid]->Enqueue (Create<WifiMacQueueItem> (aggPacket, peekedHdr));
                       newPacket->AddHeader (peekedHdr);
                       AddWifiMacTrailer (newPacket);
