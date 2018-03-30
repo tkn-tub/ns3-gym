@@ -892,9 +892,16 @@ def build(bld):
                     if not dep.startswith('ns3-'):
                         continue
                     if dep not in modules and dep not in contribModules:
-                        if dep in env['NS3_MODULES']: modules.append(dep)
-                        elif dep in env['NS3_CONTRIBUTED_MODULES']: contribModules.append(dep)
-                        changed = True
+                        if dep in env['NS3_MODULES']: 
+                            modules.append(dep)
+                            changed = True
+                        elif dep in env['NS3_CONTRIBUTED_MODULES']: 
+                            contribModules.append(dep)
+                            changed = True
+                        else:
+                            Logs.error("Error:  Cannot find dependency \'" + dep[4:] + "\' of module \'"
+                                       + module[4:] + "\'; check the module wscript for errors.")
+                            raise SystemExit(1)
 
         env['NS3_ENABLED_MODULES'] = modules
 
