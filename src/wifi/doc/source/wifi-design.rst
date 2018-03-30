@@ -108,7 +108,7 @@ The **MAC low layer** is split into three main components:
    functions.
 #. ``ns3::DcaTxop`` and ``ns3::EdcaTxopN`` which handle the packet queue,
    packet fragmentation, and packet retransmissions if they are needed.
-   The ``ns3::DcaTxop`` object is used high MACs that are not QoS-enabled,
+   The ``ns3::DcaTxop`` object is used by high MACs that are not QoS-enabled,
    and for transmission of frames (e.g., of type Management)
    that the standard says should access the medium using the DCF. 
    ``ns3::EdcaTxopN`` is is used by QoS-enabled high MACs and also
