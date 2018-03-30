@@ -123,7 +123,7 @@ IdealWifiManager::DoInitialize ()
       nModes = GetPhy ()->GetNMcs ();
       for (uint8_t i = 0; i < nModes; i++)
         {
-          for (uint16_t j = 20; j <= GetPhy ()->GetChannelWidth (); j *= 2)
+          for (uint8_t j = 20; j <= GetPhy ()->GetChannelWidth (); j *= 2)
             {
               txVector.SetChannelWidth (j);
               mode = GetPhy ()->GetMcs (i);
@@ -165,6 +165,10 @@ IdealWifiManager::DoInitialize ()
                       txVector.SetMode (mode);
                       AddSnrThreshold (txVector, GetPhy ()->CalculateSnr (txVector, m_ber));
                     }
+                }
+              if (j == 160)
+                {
+                  break;
                 }
             }
         }
