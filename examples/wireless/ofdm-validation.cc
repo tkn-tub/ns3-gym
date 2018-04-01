@@ -33,8 +33,8 @@ using namespace ns3;
 int main (int argc, char *argv[])
 {
   uint32_t FrameSize = 1500; //bytes
-  std::ofstream yansfile ("yans-frame-success-rate.plt");
-  std::ofstream nistfile ("nist-frame-success-rate.plt");
+  std::ofstream yansfile ("yans-frame-success-rate-ofdm.plt");
+  std::ofstream nistfile ("nist-frame-success-rate-ofdm.plt");
   std::vector <std::string> modes;
 
   modes.push_back ("OfdmRate6Mbps");
@@ -50,8 +50,8 @@ int main (int argc, char *argv[])
   cmd.AddValue ("FrameSize", "The frame size in bytes", FrameSize);
   cmd.Parse (argc, argv);
 
-  Gnuplot yansplot = Gnuplot ("yans-frame-success-rate.eps");
-  Gnuplot nistplot = Gnuplot ("nist-frame-success-rate.eps");
+  Gnuplot yansplot = Gnuplot ("yans-frame-success-rate-ofdm.eps");
+  Gnuplot nistplot = Gnuplot ("nist-frame-success-rate-ofdm.eps");
 
   Ptr <YansErrorRateModel> yans = CreateObject<YansErrorRateModel> ();
   Ptr <NistErrorRateModel> nist = CreateObject<NistErrorRateModel> ();
@@ -67,17 +67,18 @@ int main (int argc, char *argv[])
       for (double snr = -5.0; snr <= 30.0; snr += 0.1)
         {
           double ps = yans->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0,snr / 10.0), FrameSize * 8);
-          yansdataset.Add (snr, ps);
-          if (ps < 0 || ps > 1)
+          if (ps < 0.0 || ps > 1.0)
             {
               //error
-              return 0;
+              exit (1);
             }
+          yansdataset.Add (snr, ps);
+
           ps = nist->GetChunkSuccessRate (WifiMode (modes[i]), txVector, std::pow (10.0,snr / 10.0), FrameSize * 8);
-          if (ps < 0 || ps > 1)
+          if (ps < 0.0 || ps > 1.0)
             {
               //error
-              return 0;
+              exit (1);
             }
           nistdataset.Add (snr, ps);
         }
