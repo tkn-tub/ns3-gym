@@ -141,10 +141,7 @@ void
 DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  if (m_phyListener != 0)
-    {
-      delete m_phyListener;
-    }
+  NS_ASSERT (m_phyListener == 0);
   m_phyListener = new PhyListener (this);
   phy->RegisterListener (m_phyListener);
 }
