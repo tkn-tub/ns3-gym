@@ -61,8 +61,7 @@ ApWifiMac::GetTypeId (void)
     .AddAttribute ("BeaconGeneration",
                    "Whether or not beacons are generated.",
                    BooleanValue (true),
-                   MakeBooleanAccessor (&ApWifiMac::SetBeaconGeneration,
-                                        &ApWifiMac::GetBeaconGeneration),
+                   MakeBooleanAccessor (&ApWifiMac::SetBeaconGeneration),
                    MakeBooleanChecker ())
     .AddAttribute ("EnableNonErpProtection", "Whether or not protection mechanism should be used when non-ERP STAs are present within the BSS."
                    "This parameter is only used when ERP is supported by the AP.",
@@ -136,13 +135,6 @@ ApWifiMac::SetBeaconGeneration (bool enable)
       m_beaconEvent = Simulator::ScheduleNow (&ApWifiMac::SendOneBeacon, this);
     }
   m_enableBeaconGeneration = enable;
-}
-
-bool
-ApWifiMac::GetBeaconGeneration (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_enableBeaconGeneration;
 }
 
 Time

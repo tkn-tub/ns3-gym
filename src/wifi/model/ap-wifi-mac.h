@@ -268,12 +268,6 @@ private:
    */
   void SetBeaconGeneration (bool enable);
   /**
-   * Return whether the AP is generating beacons.
-   *
-   * \return true if beacons are periodically generated, false otherwise
-   */
-  bool GetBeaconGeneration (void) const;
-  /**
    * Return whether protection for non-ERP stations is used in the BSS.
    *
    * \return true if protection for non-ERP stations is used in the BSS,
