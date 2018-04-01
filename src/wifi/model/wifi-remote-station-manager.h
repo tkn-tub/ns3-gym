@@ -121,30 +121,6 @@ public:
   virtual void SetupMac (const Ptr<WifiMac> mac);
 
   /**
-   * Return the maximum STA short retry count (SSRC).
-   *
-   * \return the maximum SSRC
-   */
-  uint32_t GetMaxSsrc (void) const;
-  /**
-   * Return the maximum STA long retry count (SLRC).
-   *
-   * \return the maximum SLRC
-   */
-  uint32_t GetMaxSlrc (void) const;
-  /**
-   * Return the RTS threshold.
-   *
-   * \return the RTS threshold
-   */
-  uint32_t GetRtsCtsThreshold (void) const;
-  /**
-   * Return the fragmentation threshold.
-   *
-   * \return the fragmentation threshold
-   */
-  uint32_t GetFragmentationThreshold (void) const;
-  /**
    * Sets the maximum STA short retry count (SSRC).
    *
    * \param maxSsrc the maximum SSRC
@@ -162,6 +138,13 @@ public:
    * \param threshold the RTS threshold
    */
   void SetRtsCtsThreshold (uint32_t threshold);
+
+  /**
+   * Return the fragmentation threshold.
+   *
+   * \return the fragmentation threshold
+   */
+  uint32_t GetFragmentationThreshold (void) const;
   /**
    * Sets a fragmentation threshold. The method calls a private method
    * DoSetFragmentationThreshold that checks the validity of the value given.
@@ -174,6 +157,7 @@ public:
    * This avoid that the fragmentation threshold gets changed during a transmission (see bug 730).
    */
   void UpdateFragmentationThreshold (void);
+
   /**
    * Records QoS support of the remote station.
    *
@@ -202,18 +186,6 @@ public:
    * \param hecapabilities the HE capabilities of the station
    */
   void AddStationHeCapabilities (Mac48Address from, HeCapabilities hecapabilities);
-  /**
-   * Enable or disable QoS support.
-   *
-   * \param enable enable or disable QoS support
-   */
-  virtual void SetQosSupported (bool enable);
-  /**
-   * Return whether the device has QoS support enabled.
-   *
-   * \return true if QoS support is enabled, false otherwise
-   */
-  bool HasQosSupported (void) const;
   /**
    * Enable or disable HT capability support.
    *
@@ -250,30 +222,6 @@ public:
    * \return true if HE capability support is enabled, false otherwise
    */
   bool HasHeSupported (void) const;
-  /**
-   * Sets the ERP protection mode.
-   *
-   * \param mode the ERP protection mode
-   */
-  void SetErpProtectionMode (ProtectionMode mode);
-  /**
-   * Return the ERP protection mode.
-   *
-   * \return the ERP protection mode
-   */
-  ProtectionMode GetErpProtectionMode (void) const;
-  /**
-   * Sets the HT protection mode.
-   *
-   * \param mode the HT protection mode
-   */
-  void SetHtProtectionMode (ProtectionMode mode);
-  /**
-   * Return the HT protection mode.
-   *
-   * \return the HT protection mode
-   */
-  ProtectionMode GetHtProtectionMode (void) const;
   /**
    * Enable or disable protection for non-ERP stations.
    *
@@ -1484,7 +1432,6 @@ private:
   WifiMode m_defaultTxMode; //!< The default transmission mode
   WifiMode m_defaultTxMcs;   //!< The default transmission modulation-coding scheme (MCS)
 
-  bool m_qosSupported;  //!< Flag if HT capability is supported
   bool m_htSupported;  //!< Flag if HT capability is supported
   bool m_vhtSupported; //!< Flag if VHT capability is supported
   bool m_heSupported;  //!< Flag if HE capability is supported
