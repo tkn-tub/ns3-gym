@@ -518,7 +518,6 @@ operator << (std::ostream &os, const HtOperation &htOperation)
      << "|" << bool (htOperation.GetTxRxMcsSetUnequal ())
      << "|" << +htOperation.GetTxMaxNSpatialStreams ()
      << "|" << bool (htOperation.GetTxUnequalModulation ());
-
   return os;
 }
 

@@ -162,6 +162,9 @@ int main (int argc, char *argv[])
   phy.EnablePcap ("SimpleHtHiddenStations_Sta1", staDevices.Get (0));
   phy.EnablePcap ("SimpleHtHiddenStations_Sta2", staDevices.Get (1));
 
+  AsciiTraceHelper ascii;
+  phy.EnableAsciiAll (ascii.CreateFileStream ("SimpleHtHiddenStations.tr"));
+
   Simulator::Stop (Seconds (simulationTime + 1));
 
   Simulator::Run ();
