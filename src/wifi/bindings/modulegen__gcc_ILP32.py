@@ -2767,7 +2767,7 @@ def register_Ns3HtRateInfo_methods(root_module, cls):
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::ewmsdProb [variable]
     cls.add_instance_attribute('ewmsdProb', 'double', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::mcsIndex [variable]
-    cls.add_instance_attribute('mcsIndex', 'uint32_t', is_const=False)
+    cls.add_instance_attribute('mcsIndex', 'uint8_t', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::numRateAttempt [variable]
     cls.add_instance_attribute('numRateAttempt', 'uint32_t', is_const=False)
     ## minstrel-ht-wifi-manager.h (module 'wifi'): ns3::HtRateInfo::numRateSuccess [variable]
@@ -8345,7 +8345,7 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('GetBasicBlockAckTimeout', 
                    'ns3::Time', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## wifi-mac.h (module 'wifi'): ns3::Mac48Address ns3::WifiMac::GetBssid() const [member function]
     cls.add_method('GetBssid', 
                    'ns3::Mac48Address', 
@@ -8355,7 +8355,7 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('GetCompressedBlockAckTimeout', 
                    'ns3::Time', 
                    [], 
-                   is_const=True, is_virtual=True)
+                   is_pure_virtual=True, is_const=True, is_virtual=True)
     ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetCtsTimeout() const [member function]
     cls.add_method('GetCtsTimeout', 
                    'ns3::Time', 
@@ -8366,11 +8366,6 @@ def register_Ns3WifiMac_methods(root_module, cls):
                    'ns3::Time', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetMaxPropagationDelay() const [member function]
-    cls.add_method('GetMaxPropagationDelay', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True)
     ## wifi-mac.h (module 'wifi'): ns3::Time ns3::WifiMac::GetPifs() const [member function]
     cls.add_method('GetPifs', 
                    'ns3::Time', 
@@ -8460,12 +8455,12 @@ def register_Ns3WifiMac_methods(root_module, cls):
     cls.add_method('SetBasicBlockAckTimeout', 
                    'void', 
                    [param('ns3::Time', 'blockAckTimeout')], 
-                   is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::SetCompressedBlockAckTimeout(ns3::Time blockAckTimeout) [member function]
     cls.add_method('SetCompressedBlockAckTimeout', 
                    'void', 
                    [param('ns3::Time', 'blockAckTimeout')], 
-                   is_virtual=True)
+                   is_pure_virtual=True, is_virtual=True)
     ## wifi-mac.h (module 'wifi'): void ns3::WifiMac::SetCtsTimeout(ns3::Time ctsTimeout) [member function]
     cls.add_method('SetCtsTimeout', 
                    'void', 
@@ -9097,11 +9092,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'double', 
                    [], 
                    is_const=True)
-    ## wifi-phy.h (module 'wifi'): double ns3::WifiPhy::GetEdThresholdW() const [member function]
-    cls.add_method('GetEdThresholdW', 
-                   'double', 
-                   [], 
-                   is_const=True)
     ## wifi-phy.h (module 'wifi'): static ns3::WifiMode ns3::WifiPhy::GetErpOfdmRate12Mbps() [member function]
     cls.add_method('GetErpOfdmRate12Mbps', 
                    'ns3::WifiMode', 
@@ -9142,16 +9132,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [], 
                    is_static=True)
-    ## wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::ErrorRateModel> ns3::WifiPhy::GetErrorRateModel() const [member function]
-    cls.add_method('GetErrorRateModel', 
-                   'ns3::Ptr< ns3::ErrorRateModel >', 
-                   [], 
-                   is_const=True)
-    ## wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::FrameCaptureModel> ns3::WifiPhy::GetFrameCaptureModel() const [member function]
-    cls.add_method('GetFrameCaptureModel', 
-                   'ns3::Ptr< ns3::FrameCaptureModel >', 
-                   [], 
-                   is_const=True)
     ## wifi-phy.h (module 'wifi'): uint16_t ns3::WifiPhy::GetFrequency() const [member function]
     cls.add_method('GetFrequency', 
                    'uint16_t', 
@@ -9422,10 +9402,6 @@ def register_Ns3WifiPhy_methods(root_module, cls):
                    'ns3::WifiMode', 
                    [param('uint8_t', 'mcs')], 
                    is_const=True)
-    ## wifi-phy.h (module 'wifi'): ns3::WifiModeList ns3::WifiPhy::GetMembershipSelectorModes(uint32_t selector) [member function]
-    cls.add_method('GetMembershipSelectorModes', 
-                   'ns3::WifiModeList', 
-                   [param('uint32_t', 'selector')])
     ## wifi-phy.h (module 'wifi'): ns3::Ptr<ns3::MobilityModel> ns3::WifiPhy::GetMobility() const [member function]
     cls.add_method('GetMobility', 
                    'ns3::Ptr< ns3::MobilityModel >', 
@@ -10224,11 +10200,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::ProtectionMode ns3::WifiRemoteStationManager::GetErpProtectionMode() const [member function]
-    cls.add_method('GetErpProtectionMode', 
-                   'ns3::WifiRemoteStationManager::ProtectionMode', 
-                   [], 
-                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetFragmentOffset(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet, uint32_t fragmentNumber) [member function]
     cls.add_method('GetFragmentOffset', 
                    'uint32_t', 
@@ -10247,11 +10218,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationManager::ProtectionMode ns3::WifiRemoteStationManager::GetHtProtectionMode() const [member function]
-    cls.add_method('GetHtProtectionMode', 
-                   'ns3::WifiRemoteStationManager::ProtectionMode', 
-                   [], 
-                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetHtSupported(ns3::Mac48Address address) const [member function]
     cls.add_method('GetHtSupported', 
                    'bool', 
@@ -10265,16 +10231,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('GetMaxNumberOfTransmitStreams', 
                    'uint8_t', 
                    [])
-    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetMaxSlrc() const [member function]
-    cls.add_method('GetMaxSlrc', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetMaxSsrc() const [member function]
-    cls.add_method('GetMaxSsrc', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): uint8_t ns3::WifiRemoteStationManager::GetNBasicMcs() const [member function]
     cls.add_method('GetNBasicMcs', 
                    'uint8_t', 
@@ -10322,11 +10278,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetRifsPermitted() const [member function]
     cls.add_method('GetRifsPermitted', 
                    'bool', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): uint32_t ns3::WifiRemoteStationManager::GetRtsCtsThreshold() const [member function]
-    cls.add_method('GetRtsCtsThreshold', 
-                   'uint32_t', 
                    [], 
                    is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiTxVector ns3::WifiRemoteStationManager::GetRtsTxVector(ns3::Mac48Address address, ns3::WifiMacHeader const * header, ns3::Ptr<const ns3::Packet> packet) [member function]
@@ -10390,11 +10341,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::HasHtSupported() const [member function]
     cls.add_method('HasHtSupported', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::HasQosSupported() const [member function]
-    cls.add_method('HasQosSupported', 
                    'bool', 
                    [], 
                    is_const=True)
@@ -10506,10 +10452,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('SetDefaultTxPowerLevel', 
                    'void', 
                    [param('uint8_t', 'txPower')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetErpProtectionMode(ns3::WifiRemoteStationManager::ProtectionMode mode) [member function]
-    cls.add_method('SetErpProtectionMode', 
-                   'void', 
-                   [param('ns3::WifiRemoteStationManager::ProtectionMode', 'mode')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetFragmentationThreshold(uint32_t threshold) [member function]
     cls.add_method('SetFragmentationThreshold', 
                    'void', 
@@ -10519,10 +10461,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'void', 
                    [param('bool', 'enable')], 
                    is_virtual=True)
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetHtProtectionMode(ns3::WifiRemoteStationManager::ProtectionMode mode) [member function]
-    cls.add_method('SetHtProtectionMode', 
-                   'void', 
-                   [param('ns3::WifiRemoteStationManager::ProtectionMode', 'mode')])
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetHtSupported(bool enable) [member function]
     cls.add_method('SetHtSupported', 
                    'void', 
@@ -10540,11 +10478,6 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
     cls.add_method('SetQosSupport', 
                    'void', 
                    [param('ns3::Mac48Address', 'from'), param('bool', 'qosSupported')])
-    ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetQosSupported(bool enable) [member function]
-    cls.add_method('SetQosSupported', 
-                   'void', 
-                   [param('bool', 'enable')], 
-                   is_virtual=True)
     ## wifi-remote-station-manager.h (module 'wifi'): void ns3::WifiRemoteStationManager::SetRifsPermitted(bool allow) [member function]
     cls.add_method('SetRifsPermitted', 
                    'void', 
@@ -13394,11 +13327,6 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
                    'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeAci() const [member function]
-    cls.add_method('GetBeAci', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
     ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBeAifsn() const [member function]
     cls.add_method('GetBeAifsn', 
                    'uint8_t', 
@@ -13417,11 +13345,6 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBeTXOPLimit() const [member function]
     cls.add_method('GetBeTXOPLimit', 
                    'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkAci() const [member function]
-    cls.add_method('GetBkAci', 
-                   'uint8_t', 
                    [], 
                    is_const=True)
     ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetBkAifsn() const [member function]
@@ -13459,11 +13382,6 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
                    'uint16_t', 
                    [], 
                    is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViAci() const [member function]
-    cls.add_method('GetViAci', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
     ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetViAifsn() const [member function]
     cls.add_method('GetViAifsn', 
                    'uint8_t', 
@@ -13482,11 +13400,6 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetViTXOPLimit() const [member function]
     cls.add_method('GetViTXOPLimit', 
                    'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoAci() const [member function]
-    cls.add_method('GetVoAci', 
-                   'uint8_t', 
                    [], 
                    is_const=True)
     ## edca-parameter-set.h (module 'wifi'): uint8_t ns3::EdcaParameterSet::GetVoAifsn() const [member function]
@@ -15263,10 +15176,11 @@ def register_Ns3HtOperation_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True)
-    ## ht-operation.h (module 'wifi'): bool ns3::HtOperation::IsSupportedMcs(uint8_t mcs) [member function]
+    ## ht-operation.h (module 'wifi'): bool ns3::HtOperation::IsSupportedMcs(uint8_t mcs) const [member function]
     cls.add_method('IsSupportedMcs', 
                    'bool', 
-                   [param('uint8_t', 'mcs')])
+                   [param('uint8_t', 'mcs')], 
+                   is_const=True)
     ## ht-operation.h (module 'wifi'): ns3::Buffer::Iterator ns3::HtOperation::Serialize(ns3::Buffer::Iterator start) const [member function]
     cls.add_method('Serialize', 
                    'ns3::Buffer::Iterator', 
@@ -17749,11 +17663,6 @@ def register_Ns3RegularWifiMac_methods(root_module, cls):
     cls.add_method('SetCtsToSelfSupported', 
                    'void', 
                    [param('bool', 'enable')])
-    ## regular-wifi-mac.h (module 'wifi'): bool ns3::RegularWifiMac::GetCtsToSelfSupported() const [member function]
-    cls.add_method('GetCtsToSelfSupported', 
-                   'bool', 
-                   [], 
-                   is_const=True)
     ## regular-wifi-mac.h (module 'wifi'): void ns3::RegularWifiMac::SetShortSlotTimeSupported(bool enable) [member function]
     cls.add_method('SetShortSlotTimeSupported', 
                    'void', 
