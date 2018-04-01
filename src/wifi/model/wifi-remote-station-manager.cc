@@ -1840,6 +1840,19 @@ WifiRemoteStationManager::AddStationHeCapabilities (Mac48Address from, HeCapabil
     {
       state->m_guardInterval = 3200;
     }
+  for (uint8_t i = 1; i <= m_wifiPhy->GetMaxSupportedTxSpatialStreams (); i++)
+    {
+      for (uint8_t j = 0; j < m_wifiPhy->GetNMcs (); j++)
+        {
+          WifiMode mcs = m_wifiPhy->GetMcs (j);
+          if (mcs.GetModulationClass () == WIFI_MOD_CLASS_HE
+              && heCapabilities.GetHighestNssSupported () >= i
+              && heCapabilities.GetHighestMcsSupported () >= j)
+            {
+              AddSupportedMcs (from, mcs);
+            }
+        }
+    }
   state->m_heSupported = true;
   SetQosSupport (from, true);
 }
