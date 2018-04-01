@@ -118,14 +118,6 @@ public:
    *               false otherwise
    */
   void SetCtsToSelfSupported (bool enable);
-  /**
-   * Return whether the device supports CTS-to-self
-   * capability.
-   *
-   * \return true if CTS-to-self is supported,
-   *         false otherwise.
-   */
-  bool GetCtsToSelfSupported () const;
 
   /**
    * Enable or disable short slot time feature.

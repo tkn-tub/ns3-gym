@@ -685,12 +685,6 @@ RegularWifiMac::SetCtsToSelfSupported (bool enable)
   m_low->SetCtsToSelfSupported (enable);
 }
 
-bool
-RegularWifiMac::GetCtsToSelfSupported () const
-{
-  return m_low->GetCtsToSelfSupported ();
-}
-
 void
 RegularWifiMac::SetSlot (Time slotTime)
 {
@@ -1108,8 +1102,7 @@ RegularWifiMac::GetTypeId (void)
     .AddAttribute ("CtsToSelfSupported",
                    "Use CTS to Self when using a rate that is not in the basic rate set.",
                    BooleanValue (false),
-                   MakeBooleanAccessor (&RegularWifiMac::SetCtsToSelfSupported,
-                                        &RegularWifiMac::GetCtsToSelfSupported),
+                   MakeBooleanAccessor (&RegularWifiMac::SetCtsToSelfSupported),
                    MakeBooleanChecker ())
     .AddAttribute ("VO_MaxAmsduSize",
                    "Maximum length in bytes of an A-MSDU for AC_VO access class. "
