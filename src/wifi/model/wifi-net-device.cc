@@ -172,19 +172,19 @@ WifiNetDevice::FlowControlConfig (void)
       m_queueInterface->CreateTxQueues ();
 
       mac->GetAttributeFailSafe ("BE_EdcaTxopN", ptr);
-      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      wmq = ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ();
       m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
 
       mac->GetAttributeFailSafe ("BK_EdcaTxopN", ptr);
-      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      wmq = ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ();
       m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 1);
 
       mac->GetAttributeFailSafe ("VI_EdcaTxopN", ptr);
-      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      wmq = ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ();
       m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 2);
 
       mac->GetAttributeFailSafe ("VO_EdcaTxopN", ptr);
-      wmq = ptr.Get<EdcaTxopN> ()->GetQueue ();
+      wmq = ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ();
       m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 3);
     }
   else
@@ -192,7 +192,7 @@ WifiNetDevice::FlowControlConfig (void)
       m_queueInterface->CreateTxQueues ();
 
       mac->GetAttributeFailSafe ("DcaTxop", ptr);
-      wmq = ptr.Get<DcaTxop> ()->GetQueue ();
+      wmq = ptr.Get<DcaTxop> ()->GetWifiMacQueue ();
       m_queueInterface->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
     }
 }

@@ -100,13 +100,13 @@ public:
    *
    * \param low MacLow.
    */
-  void SetLow (const Ptr<MacLow> low);
+  void SetMacLow (const Ptr<MacLow> low);
   /**
    * Set DcfManager this DcaTxop is associated to.
    *
    * \param manager DcfManager.
    */
-  void SetManager (const Ptr<DcfManager> manager);
+  void SetDcfManager (const Ptr<DcfManager> manager);
   /**
    * Set WifiRemoteStationsManager this DcaTxop is associated to.
    *
@@ -148,7 +148,7 @@ public:
    *
    * \return WifiMacQueue
    */
-  Ptr<WifiMacQueue > GetQueue () const;
+  Ptr<WifiMacQueue > GetWifiMacQueue () const;
 
   /**
    * Set the minimum contention window size.
@@ -405,8 +405,8 @@ protected:
    */
   void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
 
-  Ptr<DcfState> m_dcf; //!< the DCF state
-  Ptr<DcfManager> m_manager; //!< the DCF manager
+  Ptr<DcfState> m_dcfState; //!< the DCF state
+  Ptr<DcfManager> m_dcfManager; //!< the DCF manager
   TxOk m_txOkCallback; //!< the transmit OK callback
   TxFailed m_txFailedCallback; //!< the transmit failed callback
   TxDropped m_txDroppedCallback; //!< the packet dropped callback

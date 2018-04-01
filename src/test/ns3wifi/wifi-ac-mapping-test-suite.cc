@@ -214,19 +214,19 @@ WifiAcMappingTest::DoRun (void)
   // Get the four wifi mac queues and connect their Enqueue trace to the PacketEnqueuedInWifiMacQueue
   // method, which counts how many packets with the given ToS value have been enqueued
   apMac->GetAttribute ("BE_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount));
 
   apMac->GetAttribute ("BK_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+1));
 
   apMac->GetAttribute ("VI_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+2));
 
   apMac->GetAttribute ("VO_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetQueue ()->TraceConnectWithoutContext ("Enqueue",
+  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+3));
 
   Simulator::Run ();

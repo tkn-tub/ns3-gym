@@ -394,15 +394,15 @@ void EdcaTxopN::NotifyInternalCollision (void)
               NS_LOG_DEBUG ("Dequeueing and discarding head of queue");
               m_queue->Remove ();
             }
-          m_dcf->ResetCw ();
+          m_dcfState->ResetCw ();
         }
       else
         {
-          m_dcf->UpdateFailedCw ();
+          m_dcfState->UpdateFailedCw ();
         }
     }
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -410,8 +410,8 @@ void
 EdcaTxopN::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -465,16 +465,16 @@ EdcaTxopN::MissedCts (void)
         {
           m_currentPacket = 0;
         }
-      m_dcf->ResetCw ();
-      m_cwTrace = m_dcf->GetCw ();
+      m_dcfState->ResetCw ();
+      m_cwTrace = m_dcfState->GetCw ();
     }
   else
     {
-      m_dcf->UpdateFailedCw ();
-      m_cwTrace = m_dcf->GetCw ();
+      m_dcfState->UpdateFailedCw ();
+      m_cwTrace = m_dcfState->GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -513,16 +513,16 @@ EdcaTxopN::GotAck (void)
             }
         }
       m_currentPacket = 0;
-      m_dcf->ResetCw ();
+      m_dcfState->ResetCw ();
       if (!HasTxop ())
         {
           if (m_currentHdr.IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
             {
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
             }
-          m_cwTrace = m_dcf->GetCw ();
-          m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-          m_dcf->StartBackoffNow (m_backoffTrace);
+          m_cwTrace = m_dcfState->GetCw ();
+          m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+          m_dcfState->StartBackoffNow (m_backoffTrace);
           RestartAccessIfNeeded ();
         }
     }
@@ -534,9 +534,9 @@ EdcaTxopN::GotAck (void)
           if (m_currentHdr.IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
             {
               m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
-              m_cwTrace = m_dcf->GetCw ();
-              m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-              m_dcf->StartBackoffNow (m_backoffTrace);
+              m_cwTrace = m_dcfState->GetCw ();
+              m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+              m_dcfState->StartBackoffNow (m_backoffTrace);
               m_fragmentNumber++;
               RestartAccessIfNeeded ();
             }
@@ -594,18 +594,18 @@ EdcaTxopN::MissedAck (void)
         {
           m_currentPacket = 0;
         }
-      m_dcf->ResetCw ();
-      m_cwTrace = m_dcf->GetCw ();
+      m_dcfState->ResetCw ();
+      m_cwTrace = m_dcfState->GetCw ();
     }
   else
     {
       NS_LOG_DEBUG ("Retransmit");
       m_currentHdr.SetRetry ();
-      m_dcf->UpdateFailedCw ();
-      m_cwTrace = m_dcf->GetCw ();
+      m_dcfState->UpdateFailedCw ();
+      m_cwTrace = m_dcfState->GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -667,19 +667,19 @@ EdcaTxopN::MissedBlockAck (uint8_t nMpdus)
           m_currentPacket = request.bar;
           m_currentHdr = hdr;
         }
-      m_dcf->UpdateFailedCw ();
-      m_cwTrace = m_dcf->GetCw ();
+      m_dcfState->UpdateFailedCw ();
+      m_cwTrace = m_dcfState->GetCw ();
     }
   else
     {
       NS_LOG_DEBUG ("Block Ack Request Fail");
       //to reset the dcf.
       m_currentPacket = 0;
-      m_dcf->ResetCw ();
-      m_cwTrace = m_dcf->GetCw ();
+      m_dcfState->ResetCw ();
+      m_cwTrace = m_dcfState->GetCw ();
     }
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
   RestartAccessIfNeeded ();
 }
 
@@ -701,7 +701,7 @@ EdcaTxopN::RestartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0
        || !m_queue->IsEmpty () || m_baManager->HasPackets ())
-      && !m_dcf->IsAccessRequested ())
+      && !m_dcfState->IsAccessRequested ())
     {
       Ptr<const Packet> packet;
       WifiMacHeader hdr;
@@ -732,7 +732,7 @@ EdcaTxopN::RestartAccessIfNeeded (void)
         {
           m_isAccessRequestedForRts = false;
         }
-      m_manager->RequestAccess (m_dcf);
+      m_dcfManager->RequestAccess (m_dcfState);
     }
 }
 
@@ -742,7 +742,7 @@ EdcaTxopN::StartAccessIfNeeded (void)
   //NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
       && (!m_queue->IsEmpty () || m_baManager->HasPackets ())
-      && !m_dcf->IsAccessRequested ())
+      && !m_dcfState->IsAccessRequested ())
     {
       Ptr<const Packet> packet;
       WifiMacHeader hdr;
@@ -768,7 +768,7 @@ EdcaTxopN::StartAccessIfNeeded (void)
         {
           m_isAccessRequestedForRts = false;
         }
-      m_manager->RequestAccess (m_dcf);
+      m_dcfManager->RequestAccess (m_dcfState);
     }
 }
 
@@ -933,10 +933,10 @@ EdcaTxopN::EndTxNoAck (void)
       m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
     }
   m_currentPacket = 0;
-  m_dcf->ResetCw ();
-  m_cwTrace = m_dcf->GetCw ();
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_dcfState->ResetCw ();
+  m_cwTrace = m_dcfState->GetCw ();
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
   StartAccessIfNeeded ();
 }
 
@@ -1257,16 +1257,16 @@ EdcaTxopN::GotBlockAck (const CtrlBAckResponseHeader *blockAck, Mac48Address rec
       m_txOkCallback (m_currentHdr);
     }
   m_currentPacket = 0;
-  m_dcf->ResetCw ();
+  m_dcfState->ResetCw ();
   if (!HasTxop ())
     {
       if (m_currentHdr.IsQosData () && GetTxopLimit ().IsStrictlyPositive ())
         {
           m_txopTrace (m_startTxop, Simulator::Now () - m_startTxop);
         }
-      m_cwTrace = m_dcf->GetCw ();
-      m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-      m_dcf->StartBackoffNow (m_backoffTrace);
+      m_cwTrace = m_dcfState->GetCw ();
+      m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+      m_dcfState->StartBackoffNow (m_backoffTrace);
       RestartAccessIfNeeded ();
     }
 }
@@ -1533,10 +1533,10 @@ void
 EdcaTxopN::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  m_dcf->ResetCw ();
-  m_cwTrace = m_dcf->GetCw ();
-  m_backoffTrace = m_rng->GetInteger (0, m_dcf->GetCw ());
-  m_dcf->StartBackoffNow (m_backoffTrace);
+  m_dcfState->ResetCw ();
+  m_cwTrace = m_dcfState->GetCw ();
+  m_backoffTrace = m_rng->GetInteger (0, m_dcfState->GetCw ());
+  m_dcfState->StartBackoffNow (m_backoffTrace);
 }
 
 void

@@ -55,8 +55,8 @@ RegularWifiMac::RegularWifiMac ()
   m_dcfManager->SetupLow (m_low);
 
   m_dca = CreateObject<DcaTxop> ();
-  m_dca->SetLow (m_low);
-  m_dca->SetManager (m_dcfManager);
+  m_dca->SetMacLow (m_low);
+  m_dca->SetDcfManager (m_dcfManager);
   m_dca->SetTxMiddle (m_txMiddle);
   m_dca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   m_dca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));
@@ -462,8 +462,8 @@ RegularWifiMac::SetupEdcaQueue (AcIndex ac)
   NS_ASSERT (m_edca.find (ac) == m_edca.end ());
 
   Ptr<EdcaTxopN> edca = CreateObject<EdcaTxopN> ();
-  edca->SetLow (m_low);
-  edca->SetManager (m_dcfManager);
+  edca->SetMacLow (m_low);
+  edca->SetDcfManager (m_dcfManager);
   edca->SetTxMiddle (m_txMiddle);
   edca->SetTxOkCallback (MakeCallback (&RegularWifiMac::TxOk, this));
   edca->SetTxFailedCallback (MakeCallback (&RegularWifiMac::TxFailed, this));

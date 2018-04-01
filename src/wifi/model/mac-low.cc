@@ -2356,7 +2356,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
       AcIndex ac = QosUtilsMapTidToAc (tid);
       std::map<AcIndex, Ptr<EdcaTxopN> >::const_iterator edcaIt = m_edca.find (ac);
       NS_ASSERT (edcaIt != m_edca.end ());
-      queue = edcaIt->second->GetQueue ();
+      queue = edcaIt->second->GetWifiMacQueue ();
 
       if (!hdr.GetAddr1 ().IsBroadcast () && edcaIt->second->GetMpduAggregator () != 0)
         {
@@ -2671,7 +2671,7 @@ MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Ti
   AcIndex ac = QosUtilsMapTidToAc (GetTid (packet, *hdr));
   std::map<AcIndex, Ptr<EdcaTxopN> >::const_iterator edcaIt = m_edca.find (ac);
   NS_ASSERT (edcaIt != m_edca.end ());
-  queue = edcaIt->second->GetQueue ();
+  queue = edcaIt->second->GetWifiMacQueue ();
 
   Ptr<const WifiMacQueueItem> peekedItem = queue->DequeueByTidAndAddress (hdr->GetQosTid (),
                                                                           WifiMacHeader::ADDR1,
