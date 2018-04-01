@@ -323,7 +323,7 @@ public:
    *\
    * \return the MCS is supported
    */
-  bool IsSupportedMcs (uint8_t mcs);
+  bool IsSupportedMcs (uint8_t mcs) const;
   /**
    * Return receive highest supported data rate.
    *

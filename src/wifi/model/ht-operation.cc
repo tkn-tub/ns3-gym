@@ -270,7 +270,7 @@ HtOperation::GetPhase (void) const
 }
 
 bool
-HtOperation::IsSupportedMcs (uint8_t mcs)
+HtOperation::IsSupportedMcs (uint8_t mcs) const
 {
   if (m_rxMcsBitmask[mcs] == 1)
     {
@@ -517,7 +517,11 @@ operator << (std::ostream &os, const HtOperation &htOperation)
      << "|" << bool (htOperation.GetTxMcsSetDefined ())
      << "|" << bool (htOperation.GetTxRxMcsSetUnequal ())
      << "|" << +htOperation.GetTxMaxNSpatialStreams ()
-     << "|" << bool (htOperation.GetTxUnequalModulation ());
+     << "|" << bool (htOperation.GetTxUnequalModulation ()) << "|";
+  for (uint8_t i = 0; i < MAX_SUPPORTED_MCS; i++)
+    {
+      os << htOperation.IsSupportedMcs (i) << " ";
+    }
   return os;
 }
 
