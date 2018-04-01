@@ -438,20 +438,6 @@ public:
   */
   uint8_t GetBssMembershipSelector (uint8_t selector) const;
   /**
-   * The WifiPhy::GetMembershipSelectorModes() method is used
-   * (e.g., by a WifiRemoteStationManager) to determine the set of
-   * transmission/reception modes that this WifiPhy(-derived class)
-   * can support - a set of WifiMode objects which we call the
-   * BssMembershipSelectorSet, and which is stored as WifiPhy::m_bssMembershipSelectorSet.
-   *
-   * \param selector index in array of supported memberships
-   *
-   * \return a WifiModeList that contains the WifiModes associrated with the selected index.
-   *
-   * \sa WifiPhy::GetMembershipSelectorModes()
-   */
-  WifiModeList GetMembershipSelectorModes (uint32_t selector);
-  /**
    * The WifiPhy::GetNMcs() method is used
    * (e.g., by a WifiRemoteStationManager) to determine the set of
    * transmission/reception MCS indexes that this WifiPhy(-derived class)
@@ -1238,12 +1224,6 @@ public:
    */
   double GetEdThreshold (void) const;
   /**
-   * Return the energy detection threshold.
-   *
-   * \return the energy detection threshold.
-   */
-  double GetEdThresholdW (void) const;
-  /**
    * Sets the CCA threshold (dBm). The energy of a received signal
    * should be higher than this threshold to allow the PHY
    * layer to declare CCA BUSY state.
@@ -1467,25 +1447,11 @@ public:
    */
   void SetErrorRateModel (const Ptr<ErrorRateModel> rate);
   /**
-   * Return the error rate model this PHY is using.
-   *
-   * \return the error rate model this PHY is using
-   */
-  Ptr<ErrorRateModel> GetErrorRateModel (void) const;
-
-  /**
    * Sets the frame capture model.
    *
    * \param frameCaptureModel the frame capture model
    */
   void SetFrameCaptureModel (const Ptr<FrameCaptureModel> frameCaptureModel);
-  /**
-   * Return the frame capture model this PHY is using.
-   *
-   * \return the frame capture model this PHY is using
-   */
-  Ptr<FrameCaptureModel> GetFrameCaptureModel (void) const;
-
   /**
    * Sets the wifi radio energy model.
    *
