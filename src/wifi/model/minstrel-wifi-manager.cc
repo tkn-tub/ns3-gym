@@ -83,6 +83,11 @@ MinstrelWifiManager::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&MinstrelWifiManager::m_printStats),
                    MakeBooleanChecker ())
+    .AddAttribute ("PrintSamples",
+                   "Print samples table",
+                   BooleanValue (false),
+                   MakeBooleanAccessor (&MinstrelWifiManager::m_printSamples),
+                   MakeBooleanChecker ())
     .AddTraceSource ("Rate",
                      "Traced value for rate changes (b/s)",
                      MakeTraceSourceAccessor (&MinstrelWifiManager::m_currentRate),
@@ -691,6 +696,10 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
     {
       PrintTable (station);
     }
+  if (m_printSamples)
+    {
+      PrintSampleTable (station);
+    }
 }
 
 void
@@ -1005,7 +1014,6 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
 void
 MinstrelWifiManager::PrintSampleTable (MinstrelWifiRemoteStation *station)
 {
-  NS_LOG_FUNCTION (this << station);
   uint8_t numSampleRates = station->m_nModes;
   std::stringstream table;
   for (uint8_t i = 0; i < numSampleRates; i++)
@@ -1022,9 +1030,6 @@ MinstrelWifiManager::PrintSampleTable (MinstrelWifiRemoteStation *station)
 void
 MinstrelWifiManager::PrintTable (MinstrelWifiRemoteStation *station)
 {
-  NS_LOG_FUNCTION (this << station);
-  NS_LOG_DEBUG ("PrintTable=" << station);
-
   station->m_statsFile << "best   _______________rate________________    ________statistics________    ________last_______    ______sum-of________\n" <<
     "rate  [      name       idx airtime max_tp]  [avg(tp) avg(prob) sd(prob)]  [prob.|retry|suc|att]  [#success | #attempts]\n";
 
