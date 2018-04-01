@@ -186,12 +186,6 @@ public:
    */
   uint8_t GetBeAifsn (void) const;
   /**
-   * Return the AC_BE ACI field in the EdcaParameterSet information element.
-   *
-   * \return the AC_BE ACI field in the EdcaParameterSet information element
-   */
-  uint8_t GetBeAci (void) const;
-  /**
    * Return the AC_BE CWmin field in the EdcaParameterSet information element.
    *
    * \return the AC_BE CWmin field in the EdcaParameterSet information element
@@ -215,12 +209,6 @@ public:
    * \return the AC_BK AIFSN field in the EdcaParameterSet information element
    */
   uint8_t GetBkAifsn (void) const;
-  /**
-   * Return the AC_BK ACI field in the EdcaParameterSet information element.
-   *
-   * \return the AC_BK ACI field in the EdcaParameterSet information element
-   */
-  uint8_t GetBkAci (void) const;
   /**
    * Return the AC_BK CWmin field in the EdcaParameterSet information element.
    *
@@ -246,12 +234,6 @@ public:
    */
   uint8_t GetViAifsn (void) const;
   /**
-   * Return the AC_VI ACI field in the EdcaParameterSet information element.
-   *
-   * \return the AC_VI ACI field in the EdcaParameterSet information element
-   */
-  uint8_t GetViAci (void) const;
-  /**
    * Return the AC_VI CWmin field in the EdcaParameterSet information element.
    *
    * \return the AC_VI CWmin field in the EdcaParameterSet information element
@@ -275,12 +257,6 @@ public:
    * \return the AC_VO AIFSN field in the EdcaParameterSet information element
    */
   uint8_t GetVoAifsn (void) const;
-  /**
-   * Return the AC_VO ACI field in the EdcaParameterSet information element.
-   *
-   * \return the AC_VO ACI field in the EdcaParameterSet information element
-   */
-  uint8_t GetVoAci (void) const;
   /**
    * Return the AC_VO CWmin field in the EdcaParameterSet information element.
    *
