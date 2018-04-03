@@ -23,6 +23,7 @@
 #include <string>
 #include <sstream>
 #include <list>
+#include <vector>
 
 #include "callback.h"
 
@@ -283,6 +284,17 @@ public:
    * can be retrieved by GetName().
    */
   void Parse (int argc, char *argv[]);
+
+  /**
+   * Parse the program arguments.
+   *
+   * This version may be convenient when synthesizing arguments
+   * programmatically.  Other than the type of argument this behaves
+   * identically to Parse(int, char *)
+   *
+   * \param [in] args The vector of arguments.
+   */
+  void Parse (std::vector<std::string> args);
 
   /**
    * Get the program name

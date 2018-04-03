@@ -28,6 +28,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2901 - Add CommandLine::Parse (const std::vector<std::string>> args)
 
 Known issues
 ------------

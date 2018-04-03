@@ -110,16 +110,15 @@ CommandLine::Item::~Item ()
 }
 
 void
-CommandLine::Parse (int argc, char *argv[])
+CommandLine::Parse (std::vector<std::string> args)
 {
-  NS_LOG_FUNCTION (this << argc << argv);
+  NS_LOG_FUNCTION (this << args.size () << args);
 
-  m_name = SystemPath::Split (argv[0]).back ();
+  m_name = SystemPath::Split (args[0]).back ();
   
-  for (int iargc = 1; iargc < argc; iargc++)
+  for (auto param : args)
     {
       // remove "--" or "-" heading.
-      std::string param = argv[iargc];
       std::string::size_type cur = param.find ("--");
       if (cur == 0)
         {
@@ -157,6 +156,14 @@ CommandLine::Parse (int argc, char *argv[])
   DesMetrics::Get ()->Initialize (argc, argv);
 #endif
   
+}
+
+void
+CommandLine::Parse (int argc, char *argv[])
+{
+  NS_LOG_FUNCTION (this << argc);
+  std::vector<std::string> args (argv, argv + argc);
+  Parse (args);
 }
 
 void
