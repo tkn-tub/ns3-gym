@@ -25,6 +25,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <map>
+#include <vector>
 
 #include "log-macros-enabled.h"
 #include "log-macros-disabled.h"
@@ -475,6 +476,15 @@ public:
   template<typename T>
   ParameterLogger& operator<< (T param);
 
+  /**
+   * Overload for vectors, to print each element.
+   *
+   * \param [in] vector The vector of parameters
+   * \return This ParameterLogger, so it's chainable.
+   */
+  template<typename T>
+  ParameterLogger& operator<< (std::vector<T> vector);
+
 };
 
 template<typename T>
@@ -489,6 +499,17 @@ ParameterLogger::operator<< (T param)
   else
     {
       m_os << ", " << param;
+    }
+  return *this;
+}
+
+template<typename T>
+ParameterLogger&
+ParameterLogger::operator<< (std::vector<T> vector)
+{
+  for (auto i : vector)
+    {
+      *this << i;
     }
   return *this;
 }
