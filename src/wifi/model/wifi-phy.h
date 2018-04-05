@@ -1772,14 +1772,14 @@ private:
 
   std::vector<uint8_t> m_bssMembershipSelectorSet; //!< the BSS membership selector set
 
-  WifiPhyStandard m_standard;     //!< WifiPhyStandard
-  bool m_isConstructed;                //!< true when ready to set frequency
-  uint16_t m_channelCenterFrequency;   //!< Center frequency in MHz
-  uint16_t m_initialFrequency;         //!< Store frequency until initialization
+  WifiPhyStandard m_standard;               //!< WifiPhyStandard
+  bool m_isConstructed;                     //!< true when ready to set frequency
+  uint16_t m_channelCenterFrequency;        //!< Center frequency in MHz
+  uint16_t m_initialFrequency;              //!< Store frequency until initialization
   bool m_frequencyChannelNumberInitialized; //!< Store initialization state
-  uint8_t m_channelWidth;             //!< Channel width
+  uint8_t m_channelWidth;                   //!< Channel width
 
-  double m_edThresholdW;          //!< Energy detection threshold in watts
+  double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
   double   m_txGainDb;            //!< Transmission gain (dB)
   double   m_rxGainDb;            //!< Reception gain (dB)
@@ -1787,11 +1787,11 @@ private:
   double   m_txPowerEndDbm;       //!< Maximum transmission power (dBm)
   uint8_t  m_nTxPower;            //!< Number of available transmission power levels
 
-  bool     m_ldpc;                  //!< Flag if LDPC is used
-  bool     m_stbc;                  //!< Flag if STBC is used
-  bool     m_greenfield;            //!< Flag if GreenField format is supported
-  bool     m_shortGuardInterval;    //!< Flag if HT/VHT short guard interval is supported
-  bool     m_shortPreamble;         //!< Flag if short PLCP preamble is supported
+  bool     m_ldpc;               //!< Flag if LDPC is used
+  bool     m_stbc;               //!< Flag if STBC is used
+  bool     m_greenfield;         //!< Flag if GreenField format is supported
+  bool     m_shortGuardInterval; //!< Flag if HT/VHT short guard interval is supported
+  bool     m_shortPreamble;      //!< Flag if short PLCP preamble is supported
 
   Time m_guardInterval; //!< Supported HE guard interval
 
