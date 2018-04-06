@@ -68,13 +68,19 @@ namespace ns3 {
  * The more common \c --help is a synonym for \c --PrintHelp; an example
  * is given below.
  *
+ * CommandLine can also handle non-option arguments
+ * (often called simply "positional" parameters: arguments which don't begin
+ * with "-" or "--").  These can be parsed directly in to variables,
+ * by registering arguments with AddNonOption in the order expected.
+ * Additional non-option arguments encountered will be captured as strings.
+ *
  * Finally, CommandLine processes Attribute and GlobalValue arguments.
  * Default values for specific attributes can be set using a shorthand
  * argument name.
  *
  * In use, arguments are given in the form
  * \verbatim
-   --arg=value --toggle \endverbatim
+   --arg=value --toggle first-non-option\endverbatim
  * Most arguments expect a value, as in the first form, \c --arg=value.
  * Toggles, corresponding to boolean arguments, can be given in any of
  * the forms
@@ -83,6 +89,9 @@ namespace ns3 {
  * The first form changes the state of toggle1 from its default; 
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
+ * Option arguments can appear in any order on the command line,
+ * even intermixed with non-option arguments.
+ * The order of non-option arguments is preserved.
  *
  * Option arguments can be repeated on the command line; the last value given
  * will be the final value used.  For example,
@@ -116,6 +125,7 @@ namespace ns3 {
    --SchedulerType=HeapScheduler \endverbatim
  *
  * A simple example of CommandLine is in `src/core/example/``command-line-example.cc`
+ * See that file for an example of handling non-option arguments.
  *
  * The heart of that example is this code:
  *
@@ -265,6 +275,41 @@ public:
    */
   void AddValue (const std::string &name,
                  const std::string &attributePath);
+  
+  /**
+   * Add a non-option argument, assigning to POD
+   *
+   * \param [in] name The name of the program-supplied argument
+   * \param [in] help The help text used by \c \-\-PrintHelp
+   * \param [out] value A reference to the variable where the
+   *        value parsed will be stored (if no value
+   *        is parsed, this variable is not modified).
+   */
+  template <typename T>
+  void AddNonOption (const std::string name, const std::string help, T & value);
+
+  /**
+   * Get extra non-option arguments by index.
+   * This allows CommandLine to accept more non-option arguments than
+   * have been configured explictly with AddNonOption().
+   *
+   * This is only valid after calling Parse().
+   *
+   * \param [in] i The index of the non-option argument to return.
+   * \return The i'th non-option argument, as a string.
+   */
+  std::string GetExtraNonOption (std::size_t i) const;
+  
+  /**
+   * Get the total number of non-option arguments found,
+   * including those configured with AddNonOption() and extra non-option
+   * arguments.
+   *
+   * This is only valid after calling Parse().
+   *
+   * \returns the number of non-option arguments found.
+   */
+  std::size_t GetNExtraNonOptions (void) const;
 
   /**
    * Parse the program arguments
@@ -364,6 +409,16 @@ private:
     std::string m_default;    /**< String representation of default value */
   };  // class UserItem
 
+  class StringItem : public Item
+  {
+  public:
+    // Inherited
+    bool Parse (const std::string value);
+    bool HasDefault (void) const;
+    std::string GetDefault (void) const;
+    
+    std::string m_value;     /**< The argument value. */
+  };  // class StringItem
 
   /**
    * \ingroup commandline
@@ -383,6 +438,22 @@ private:
   };  // class CallbackItem
 
 
+  /**
+   * Handle an option in the form \c param=value.
+   *
+   * \param [in] param The option string. 
+   * \returns \c true if this was really an option.
+   */
+  bool HandleOption (const std::string & param) const;
+  
+  /**
+   * Handle a non-option
+   *
+   * \param [in] value The command line non-option value.
+   * \return \c true if \c value could be parsed correctly.
+   */
+  bool HandleNonOption (const std::string &value);
+  
   /**
    * Match name against the program or general arguments,
    * and dispatch to the appropriate handler.
@@ -440,10 +511,14 @@ private:
   /** Remove all arguments, Usage(), name */
   void Clear (void);
 
-  typedef std::list<Item *> Items;      /**< Argument list container */
-  Items m_items;                        /**< The list of arguments */
+  typedef std::vector<Item *> Items;    /**< Argument list container */
+  Items m_options;                      /**< The list of option arguments */
+  Items m_nonOptions;                   /**< The list of non-option arguments */
+  std::size_t m_NNonOptions;            /**< The expected number of non-option arguments */
+  std::size_t m_nonOptionCount;         /**< The number of actual non-option arguments seen so far. */
   std::string m_usage;                  /**< The Usage string */
   std::string m_name;                   /**< The program name */
+
 };  // class CommandLine
 
 
@@ -513,9 +588,27 @@ CommandLine::AddValue (const std::string &name,
   ss << value;
   ss >> item->m_default;
     
-  m_items.push_back (item);
+  m_options.push_back (item);
 }
 
+template <typename T>
+void
+CommandLine::AddNonOption (const std::string name,
+                           const std::string help,
+                           T & value)
+{
+  UserItem<T> *item = new UserItem<T> ();
+  item->m_name = name;
+  item->m_help = help;
+  item->m_valuePtr = &value;
+  
+  std::stringstream ss;
+  ss << value;
+  ss >> item->m_default;
+  m_nonOptions.push_back (item);
+  ++m_NNonOptions;
+    
+}
 
 template <typename T>
 bool

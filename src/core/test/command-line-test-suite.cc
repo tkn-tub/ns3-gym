@@ -344,6 +344,56 @@ CommandLineInvalidTestCase::DoRun (void)
 
 /**
  * \ingroup commandline-tests
+ * Test non-option arguments
+ */
+class CommandLineNonOptionTestCase : public CommandLineTestCaseBase
+{
+public:
+  CommandLineNonOptionTestCase ();              /**< Constructor */
+  virtual ~CommandLineNonOptionTestCase () {}   /**< Destructor */
+
+private:
+  virtual void DoRun (void);                 /**< Run the test */
+
+};
+
+CommandLineNonOptionTestCase::CommandLineNonOptionTestCase ()
+  : CommandLineTestCaseBase ("nonoption")
+{
+}
+
+void
+CommandLineNonOptionTestCase::DoRun (void)
+{
+  CommandLine cmd;
+  bool myBool = false;
+  int32_t myInt = 1;
+  std::string myStr = "MyStr";
+
+  cmd.AddNonOption ("my-bool", "help", myBool);
+  cmd.AddNonOption ("my-int", "help", myInt);
+  cmd.AddNonOption ("my-str", "help", myStr);
+
+  Parse (cmd, 2, "true", "5");
+
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "CommandLine did not correctly set a boolean non-option");
+  NS_TEST_ASSERT_MSG_EQ (myInt, 5, "CommandLine did not correctly set an integer non-option value to 5");
+  NS_TEST_ASSERT_MSG_EQ (myStr, "MyStr", "CommandLine did not leave a non-option unmodified.");
+
+  Parse (cmd, 5, "false", "6", "newValue", "extraVal1", "extraVal2");
+  
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "CommandLine did not correctly set a boolean non-option");
+  NS_TEST_ASSERT_MSG_EQ (myInt
+, 6, "CommandLine did not correctly set an integer non-option value to 5");
+  NS_TEST_ASSERT_MSG_EQ (myStr, "newValue", "CommandLine did not leave a non-option unmodified.");
+
+  NS_TEST_ASSERT_MSG_EQ (cmd.GetNExtraNonOptions (), 2, "CommandLine did not parse the correct number of extra non-options.");
+  NS_TEST_ASSERT_MSG_EQ (cmd.GetExtraNonOption (0), "extraVal1", "CommandLine did not correctly get one extra non-option");
+  NS_TEST_ASSERT_MSG_EQ (cmd.GetExtraNonOption (1), "extraVal2", "CommandLine did not correctly get two extra non-option");
+}
+
+/**
+ * \ingroup commandline-tests
  * The Test Suite that glues all of the Test Cases together.
  */
 class CommandLineTestSuite : public TestSuite
@@ -361,6 +411,7 @@ CommandLineTestSuite::CommandLineTestSuite ()
   AddTestCase (new CommandLineStringTestCase);
   AddTestCase (new CommandLineOrderTestCase);
   AddTestCase (new CommandLineInvalidTestCase);
+  AddTestCase (new CommandLineNonOptionTestCase);
 }
 
 /**

@@ -46,6 +46,8 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
 CommandLine::CommandLine ()
+  : m_NNonOptions (0),
+    m_nonOptionCount (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -70,11 +72,10 @@ CommandLine::Copy (const CommandLine &cmd)
 {
   NS_LOG_FUNCTION (&cmd);
 
-  for (Items::const_iterator i = cmd.m_items.begin (); 
-       i != cmd.m_items.end (); ++i)
-    {
-      m_items.push_back (*i);
-    }
+  std::copy (cmd.m_options.begin (), cmd.m_options.end (), m_options.end ());
+  std::copy (cmd.m_nonOptions.begin (), cmd.m_nonOptions.end (), m_nonOptions.end ());
+
+  m_NNonOptions = cmd.m_NNonOptions;
   m_usage = cmd.m_usage;
   m_name  = cmd.m_name;
 }
@@ -83,11 +84,17 @@ CommandLine::Clear (void)
 {
   NS_LOG_FUNCTION (this);
 
-  for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+  for (auto i : m_options)
     {
-      delete *i;
+      delete i;
     }
-  m_items.clear ();
+  for (auto i : m_nonOptions)
+    {
+      delete i;
+    }
+  m_options.clear ();
+  m_nonOptions.clear ();
+  m_NNonOptions = 0;
   m_usage = "";
   m_name  = "";
 }
@@ -114,42 +121,25 @@ CommandLine::Parse (std::vector<std::string> args)
 {
   NS_LOG_FUNCTION (this << args.size () << args);
 
-  m_name = SystemPath::Split (args[0]).back ();
-  
-  for (auto param : args)
+  m_nonOptionCount = 0;
+  m_name = "";
+
+  if (args.size () > 0)
     {
-      // remove "--" or "-" heading.
-      std::string::size_type cur = param.find ("--");
-      if (cur == 0)
+      m_name = SystemPath::Split (args[0]).back ();
+      args.erase (args.begin ());  // discard the program name
+      
+      for (auto param : args)
         {
-          param = param.substr (2, param.size () - 2);
+          if (HandleOption (param)) continue;
+          if (HandleNonOption (param)) continue;
+          
+          // is this possible?
+          NS_ASSERT_MSG (false,
+                         "unexpected error parsing command line parameter: '"
+                         << param << "'");
+
         }
-      else
-        {
-          cur = param.find ("-");
-          if (cur == 0)
-            {
-              param = param.substr (1, param.size () - 1);
-            }
-          else
-            {
-              // invalid argument. ignore.
-              continue;
-            }
-        }
-      cur = param.find ("=");
-      std::string name, value;
-      if (cur == std::string::npos)
-        {
-          name = param;
-          value = "";
-        }
-      else
-        {
-          name = param.substr (0, cur);
-          value = param.substr (cur + 1, param.size () - (cur+1));
-        }
-      HandleArgument (name, value);
     }
 
 #ifdef ENABLE_DES_METRICS
@@ -157,6 +147,78 @@ CommandLine::Parse (std::vector<std::string> args)
 #endif
   
 }
+
+bool
+CommandLine::HandleOption (const std::string & param) const
+{
+  // remove leading "--" or "-"
+  std::string arg = param;
+  std::string::size_type cur = arg.find ("--");
+  if (cur == 0)
+    {
+      arg = arg.substr (2, arg.size () - 2);
+    }
+  else
+    {
+      cur = arg.find ("-");
+      if (cur == 0)
+        {
+          arg = arg.substr (1, arg.size () - 1);
+        }
+      else
+        {
+          // non-option argument?
+          return false;
+        }
+    }
+  // find any value following '='
+  cur = arg.find ("=");
+  std::string name, value;
+  if (cur == std::string::npos)
+    {
+      name = arg;
+      value = "";
+    }
+  else
+    {
+      name = arg.substr (0, cur);
+      value = arg.substr (cur + 1, arg.size () - (cur+1));
+    }
+  HandleArgument (name, value);
+
+  return true;
+}
+
+bool
+CommandLine::HandleNonOption (const std::string &value)
+{
+  NS_LOG_FUNCTION (this << value);
+
+  if (m_nonOptionCount == m_nonOptions.size())
+    {
+      // Add an unspecified non-option as a string
+      NS_LOG_LOGIC ("adding StringItem, NOCount:" << m_nonOptionCount
+                    << ", NOSize:" << m_nonOptions.size ());
+      StringItem * item = new StringItem;
+      item->m_name = "extra-non-option-argument";
+      item->m_help = "Extra non-option argument encountered.";
+      item->m_value = value;
+      m_nonOptions.push_back (item);
+    }
+
+  auto i = m_nonOptions[m_nonOptionCount];
+  if (!i->Parse (value))
+    {
+      std::cerr << "Invalid non-option argument value "
+                << value << " for " << i->m_name
+                << std::endl;
+      std::exit (1);
+    }
+  ++m_nonOptionCount;
+  return true;
+}
+
+
 
 void
 CommandLine::Parse (int argc, char *argv[])
@@ -171,8 +233,14 @@ CommandLine::PrintHelp (std::ostream &os) const
 {
   NS_LOG_FUNCTION (this);
 
-  os << m_name << " [Program Arguments] [General Arguments]"
-            << std::endl;
+  // Hack to show just the declared non-options
+  Items nonOptions (m_nonOptions.begin (),
+                    m_nonOptions.begin () + m_NNonOptions);
+  os << m_name
+     << (m_options.size ()  ? " [Program Options]" : "")
+     << (nonOptions.size () ? " [Program Arguments]" : "")
+     << " [General Arguments]"
+     << std::endl;
   
   if (m_usage.length ())
     {
@@ -180,27 +248,51 @@ CommandLine::PrintHelp (std::ostream &os) const
       os << m_usage << std::endl;
     }
   
-  if (!m_items.empty ())
+  std::size_t width = 0;
+  for (auto it : m_options)
     {
-      size_t width = 0;
-      for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
-        {
-          width = std::max (width, (*i)->m_name.size ());
-        }
-      width += 3;
+      width = std::max (width, it->m_name.size ());
+    }
+  for (auto it : nonOptions)
+    {
+      width = std::max (width, it->m_name.size ());
+    }
+  width += 3;  // room for ":  " betwen option and help
 
+  if (!m_options.empty ())
+    {
       os << std::endl;
-      os << "Program Arguments:" << std::endl;
-      for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+      os << "Program Options:" << std::endl;
+      for (auto i : m_options)
         {
           os << "    --"
-                    << std::left << std::setw (width) << ( (*i)->m_name + ":")
-                    << std::right
-                    << (*i)->m_help;
+             << std::left << std::setw (width) << ( i->m_name + ":")
+             << std::right
+             << i->m_help;
 
-          if ( (*i)->HasDefault ())
+          if ( i->HasDefault ())
             {
-              os << " [" << (*i)->GetDefault () << "]";
+              os << " [" << i->GetDefault () << "]";
+            }
+          os << std::endl;
+        }
+    }
+
+  if (!nonOptions.empty ())
+    {
+      width += 2;  // account for "--" added above
+      os << std::endl;
+      os << "Program Arguments:" << std::endl;
+      for (auto i : nonOptions)
+        {
+          os << "    "
+             << std::left << std::setw (width) << ( i->m_name + ":")
+             << std::right
+             << i->m_help;
+
+          if ( i->HasDefault ())
+            {
+              os << " [" << i->GetDefault () << "]";
             }
           os << std::endl;
         }
@@ -368,6 +460,8 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
   NS_LOG_FUNCTION (this << name << value);
 
   NS_LOG_DEBUG ("Handle arg name=" << name << " value=" << value);
+
+  // Hard-coded options
   if (name == "PrintHelp" || name == "help")
     {
       // method below never returns.
@@ -406,11 +500,11 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
     }
   else
     {
-      for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+      for (auto i : m_options)
         {
-          if ((*i)->m_name == name)
+          if (i->m_name == name)
             {
-              if (!(*i)->Parse (value))
+              if (! i->Parse (value))
                 {
                   std::cerr << "Invalid argument value: "
                             << name << "=" << value << std::endl;
@@ -423,6 +517,7 @@ CommandLine::HandleArgument (const std::string &name, const std::string &value) 
             }
         }
     }
+  // Global or ConfigPath options
   if (!Config::SetGlobalFailSafe (name, StringValue (value))
       && !Config::SetDefaultFailSafe (name, StringValue (value)))
     {
@@ -451,7 +546,7 @@ CommandLine::AddValue (const std::string &name,
   item->m_name = name;
   item->m_help = help;
   item->m_callback = callback;
-  m_items.push_back (item);
+  m_options.push_back (item);
 }
 
 void
@@ -486,6 +581,35 @@ CommandLine::AddValue (const std::string &name,
             MakeBoundCallback (CommandLine::HandleAttribute, attributePath)) ;
 }
 
+std::string
+CommandLine::GetExtraNonOption (std::size_t i) const
+{
+  std::string value;
+  
+  if (m_nonOptions.size () >= i + m_NNonOptions)
+    {
+      auto ip = dynamic_cast<StringItem *> (m_nonOptions[i + m_NNonOptions]);
+      if (ip != NULL)
+        {
+          value = ip->m_value;
+        }
+    }
+  return value;
+}
+
+std::size_t
+CommandLine::GetNExtraNonOptions (void) const
+{
+  if (m_nonOptions.size () > m_NNonOptions)
+    {
+      return m_nonOptions.size () - m_NNonOptions;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
 
 /* static */
 bool
@@ -510,6 +634,25 @@ CommandLine::Item::HasDefault () const
 
 std::string
 CommandLine::Item::GetDefault () const
+{
+  return "";
+}
+
+bool
+CommandLine::StringItem::Parse (const std::string value)
+{
+  m_value = value;
+  return true;
+}
+
+bool
+CommandLine::StringItem::HasDefault (void) const
+{
+  return false;
+}
+ 
+std::string
+CommandLine::StringItem::GetDefault (void) const
 {
   return "";
 }
