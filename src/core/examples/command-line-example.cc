@@ -101,20 +101,21 @@ int main (int argc, char *argv[])
   std::cout << "Initial values:" << std::endl;
   
   std::cout << std::left << std::setw (10) << "intArg:"
-            <<                    intDef
+            <<                   intDef
             << std::endl;
   std::cout << std::setw (10)              << "boolArg:"
-            << std::boolalpha  << boolDef  << std::noboolalpha
+            << std::boolalpha << boolDef   << std::noboolalpha
             << std::endl;
   
   std::cout << std::setw (10)              << "strArg:"
-            << "\""            << strDef   << "\""
+            << "\""           << strDef    << "\""
             << std::endl;
   std::cout << std::setw (10)              << "anti:"
-            << "\""            << attrDef  << "\""
+            << "\""           << attrDef   << "\""
             << std::endl;
   std::cout << std::setw (10)              << "cbArg:"
-            << "\""            << cbDef    << "\""
+            << "\""           << cbDef     << "\""
+            << std::endl;
             << std::endl;
   std::cout << std::endl;
 
@@ -122,15 +123,14 @@ int main (int argc, char *argv[])
   // Show final values
   std::cout << "Final values:" << std::endl;
   std::cout << std::left << std::setw (10) << "intArg:"
-            <<                    intArg
+            <<                   intArg
             << std::endl;
   std::cout << std::setw (10)              << "boolArg:"
-            << std::boolalpha  << boolArg
-            << std::noboolalpha
+            << std::boolalpha << boolArg   << std::noboolalpha
             << std::endl;
   
   std::cout << std::setw (10)              << "strArg:"
-            << "\""            << strArg   << "\""
+            << "\""           << strArg    << "\""
             << std::endl;
 
   // Look up new default value for attribute
@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
               << std::endl;
   }
   std::cout << std::setw (10)              << "cbArg:"
-            << "\""            << g_cbArg  << "\""
+            << "\""           << g_cbArg   << "\""
             << std::endl;
 
   return 0;

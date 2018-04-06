@@ -147,22 +147,22 @@ CommandLineBooleanTestCase::DoRun (void)
   cmd.AddValue ("my-false-bool", "help", myDefaultFalseBool);
 
   Parse (cmd, 1, "--my-bool=0");
-  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to false");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "CommandLine did not correctly set a boolean value to false, given 0");
 
   Parse (cmd, 1, "--my-bool=1");
-  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true, given integer argument");
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "CommandLine did not correctly set a boolean value to true, given 1");
 
   Parse (cmd, 1, "--my-bool");
-  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly toggle a default true boolean value to false, given no argument");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "CommandLine did not correctly toggle a default true boolean value to false, given no argument");
 
   Parse (cmd, 1, "--my-false-bool");
-  NS_TEST_ASSERT_MSG_EQ (myDefaultFalseBool, true, "Command parser did not correctly toggle a default false boolean value to true, given no argument");
+  NS_TEST_ASSERT_MSG_EQ (myDefaultFalseBool, true, "CommandLine did not correctly toggle a default false boolean value to true, given no argument");
 
   Parse (cmd, 1, "--my-bool=t");
-  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true, given 't' argument");
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "CommandLine did not correctly set a boolean value to true, given 't' argument");
 
   Parse (cmd, 1, "--my-bool=true");
-  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true, given \"true\" argument");
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "CommandLine did not correctly set a boolean value to true, given \"true\" argument");
 }
 
 /**
@@ -196,12 +196,12 @@ CommandLineIntTestCase::DoRun (void)
   cmd.AddValue ("my-int32", "help", myInt32);
 
   Parse (cmd, 2, "--my-bool=0", "--my-int32=-3");
-  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to false");
-  NS_TEST_ASSERT_MSG_EQ (myInt32, -3, "Command parser did not correctly set an integer value to -3");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "CommandLine did not correctly set a boolean value to false");
+  NS_TEST_ASSERT_MSG_EQ (myInt32, -3, "CommandLine did not correctly set an integer value to -3");
 
   Parse (cmd, 2, "--my-bool=1", "--my-int32=+2");
-  NS_TEST_ASSERT_MSG_EQ (myBool, true, "Command parser did not correctly set a boolean value to true");
-  NS_TEST_ASSERT_MSG_EQ (myInt32, +2, "Command parser did not correctly set an integer value to +2");
+  NS_TEST_ASSERT_MSG_EQ (myBool, true, "CommandLine did not correctly set a boolean value to true");
+  NS_TEST_ASSERT_MSG_EQ (myInt32, +2, "CommandLine did not correctly set an integer value to +2");
 }
 
 /**
@@ -236,8 +236,8 @@ CommandLineUnsignedIntTestCase::DoRun (void)
 
   Parse (cmd, 2, "--my-bool=0", "--my-uint32=9");
 
-  NS_TEST_ASSERT_MSG_EQ (myBool, false, "Command parser did not correctly set a boolean value to true");
-  NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "Command parser did not correctly set an unsigned integer value to 9");
+  NS_TEST_ASSERT_MSG_EQ (myBool, false, "CommandLine did not correctly set a boolean value to false");
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "CommandLine did not correctly set an unsigned integer value to 9");
 }
 
 /**
@@ -272,8 +272,8 @@ CommandLineStringTestCase::DoRun (void)
 
   Parse (cmd, 2, "--my-uint32=9", "--my-str=XX");
 
-  NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "Command parser did not correctly set an unsigned integer value to 9");
-  NS_TEST_ASSERT_MSG_EQ (myStr, "XX", "Command parser did not correctly set an string value to \"XX\"");
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 9, "CommandLine did not correctly set an unsigned integer value to 9");
+  NS_TEST_ASSERT_MSG_EQ (myStr, "XX", "CommandLine did not correctly set a string value to \"XX\"");
 }
 
 /**
@@ -306,7 +306,7 @@ CommandLineOrderTestCase::DoRun (void)
 
   Parse (cmd, 2, "--my-uint32=1", "--my-uint32=2");
 
-  NS_TEST_ASSERT_MSG_EQ (myUint32, 2, "Command parser did not correctly set an unsigned integer value to 2");
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 2, "CommandLine did not correctly set an unsigned integer value to 2");
 }
 
 /**
@@ -339,7 +339,7 @@ CommandLineInvalidTestCase::DoRun (void)
 
   Parse (cmd, 2, "quack", "--my-uint32=5");
 
-  NS_TEST_ASSERT_MSG_EQ (myUint32, 5, "Command parser did not correctly set an unsigned integer value to 5");
+  NS_TEST_ASSERT_MSG_EQ (myUint32, 5, "CommandLine did not correctly set an unsigned integer value to 5");
 }
 
 /**

@@ -22,7 +22,6 @@
 
 #include <string>
 #include <sstream>
-#include <list>
 #include <vector>
 
 #include "callback.h"
@@ -53,8 +52,9 @@ namespace ns3 {
  * Instances of this class can be used to parse command-line 
  * arguments.  Programs can register a general usage message with
  * CommandLine::Usage, and arguments with CommandLine::AddValue.
- * POD argument variables will be set directly; more general arguments
- * can be processed via a Callback.
+ * Argument variable types with input streamers (`operator>>`)
+ * can be set directly; more complex argument parsing 
+ * can be accomplished by providing a Callback.
  *
  * CommandLine also provides handlers for these standard arguments:
  * \verbatim
@@ -69,7 +69,7 @@ namespace ns3 {
  * is given below.
  *
  * Finally, CommandLine processes Attribute and GlobalValue arguments.
- * Default values for chosen attributes can be set using a shorthand
+ * Default values for specific attributes can be set using a shorthand
  * argument name.
  *
  * In use, arguments are given in the form
@@ -84,7 +84,7 @@ namespace ns3 {
  * all the rest set the corresponding boolean variable to true.
  * \c 0, \c f and \c false are accepted to set the variable to false.
  *
- * Arguments can be repeated on the command line; the last value given
+ * Option arguments can be repeated on the command line; the last value given
  * will be the final value used.  For example,
  * \verbatim
    --arg=one --toggle=f --arg=another --toggle \endverbatim
@@ -115,7 +115,8 @@ namespace ns3 {
  * \verbatim
    --SchedulerType=HeapScheduler \endverbatim
  *
- * A simple example is in `src/core/example/``command-line-example.cc`
+ * A simple example of CommandLine is in `src/core/example/``command-line-example.cc`
+ *
  * The heart of that example is this code:
  *
  * \code
@@ -198,10 +199,6 @@ namespace ns3 {
  *       exit (-1);
  *     }
  * \endcode
- *
- * \bugid{2461} Treat non-option arguments like traditional \c getopt(), by
- * permuting non-option arguments to the end and providing a query function
- * for the equivalent of \c optind.
  */
 class CommandLine
 {
@@ -325,7 +322,7 @@ private:
 
   /**
    * \ingroup commandline
-   * \brief The argument base class
+   * \brief The argument abstract base class
    */
   class Item 
   {
@@ -341,14 +338,14 @@ private:
      */
     virtual bool Parse (const std::string value) = 0;
     /**
-     * \return \c true if this item have a default value?
+     * \return \c true if this item has a default value.
      */
     virtual bool HasDefault () const;
     /**
      * \return The default value
      */
     virtual std::string GetDefault () const;
-  };
+  };  // class Item
 
   /**
    * \ingroup commandline
@@ -358,20 +355,15 @@ private:
   class UserItem : public Item
   {
   public:
-    /**
-     * Parse from a string.
-     *
-     * \param [in] value The string representation
-     * \return \c true if parsing the value succeeded
-     */
+    // Inherited
     virtual bool Parse (const std::string value);
-
     bool HasDefault () const;
     std::string GetDefault () const;
       
     T *m_valuePtr;            /**< Pointer to the POD location */
     std::string m_default;    /**< String representation of default value */
-  };
+  };  // class UserItem
+
 
   /**
    * \ingroup commandline
@@ -388,7 +380,8 @@ private:
      */
     virtual bool Parse (const std::string value);
     Callback<bool, std::string> m_callback;  /**< The Callback */
-  };
+  };  // class CallbackItem
+
 
   /**
    * Match name against the program or general arguments,
