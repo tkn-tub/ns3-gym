@@ -153,7 +153,7 @@ CommandLine::Parse (std::vector<std::string> args)
     }
 
 #ifdef ENABLE_DES_METRICS
-  DesMetrics::Get ()->Initialize (argc, argv);
+  DesMetrics::Get ()->Initialize (args);
 #endif
   
 }

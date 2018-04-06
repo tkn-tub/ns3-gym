@@ -34,6 +34,7 @@
 #include <stdint.h>    // uint32_t
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace ns3 {
 
@@ -114,11 +115,10 @@ public:
    * The trace file will have the same base name as the main program, 
    * '.json' as the extension. 
    *
-   * \param argc [in] Command line argument count.
-   * \param argv [in] Command line arguments.
+   * \param args [in] Command line arguments.
    * \param outDir [in] Directory where the trace file should be written.
    */
-  void Initialize (int argc, char * argv[], std::string outDir = "");
+      void Initialize (std::vector<std::string> args, std::string outDir = "");
 
   /**
    * Trace an event to self at the time it is scheduled.
