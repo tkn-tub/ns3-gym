@@ -24,7 +24,6 @@
 #define AP_WIFI_MAC_H
 
 #include "regular-wifi-mac.h"
-#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 

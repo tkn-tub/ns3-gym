@@ -22,7 +22,6 @@
 #ifndef VHT_CAPABILITIES_H
 #define VHT_CAPABILITIES_H
 
-#include "ns3/buffer.h"
 #include "wifi-information-element.h"
 
 namespace ns3 {

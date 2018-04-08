@@ -22,7 +22,6 @@
 #define WIFI_NET_DEVICE_H
 
 #include "ns3/net-device.h"
-#include "ns3/queue-item.h"
 #include "ns3/traced-callback.h"
 
 namespace ns3 {
@@ -31,6 +30,7 @@ class WifiRemoteStationManager;
 class WifiPhy;
 class WifiMac;
 class NetDeviceQueueInterface;
+class QueueItem;
 
 /**
  * \defgroup wifi Wifi Models

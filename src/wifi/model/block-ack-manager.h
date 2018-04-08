@@ -24,15 +24,18 @@
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "ctrl-headers.h"
-#include "wifi-remote-station-manager.h"
+#include "ns3/nstime.h"
 #include <map>
 
 namespace ns3 {
 
+class WifiRemoteStationManager;
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
 class MacTxMiddle;
 class WifiMacQueue;
+class WifiMode;
+class Packet;
 
 /**
  * \ingroup wifi

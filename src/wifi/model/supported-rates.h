@@ -21,7 +21,6 @@
 #ifndef SUPPORTED_RATES_H
 #define SUPPORTED_RATES_H
 
-#include "ns3/buffer.h"
 #include "wifi-information-element.h"
 
 namespace ns3 {
