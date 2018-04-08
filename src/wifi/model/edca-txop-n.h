@@ -26,6 +26,7 @@
 #include "ns3/traced-value.h"
 #include "block-ack-manager.h"
 #include "dca-txop.h"
+#include "qos-utils.h"
 
 class AmpduAggregationTest;
 

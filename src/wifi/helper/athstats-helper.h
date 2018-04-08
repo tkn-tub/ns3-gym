@@ -25,6 +25,8 @@
 #include "ns3/net-device-container.h"
 #include "ns3/wifi-phy.h"
 
+#include "ns3/wifi-phy-state.h"
+
 namespace ns3 {
 
 class NetDevice;

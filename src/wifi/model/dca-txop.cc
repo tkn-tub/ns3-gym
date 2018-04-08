@@ -25,6 +25,7 @@
 #include "dcf-state.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
+#include "mac-low.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }

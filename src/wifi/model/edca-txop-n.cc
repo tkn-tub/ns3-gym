@@ -29,6 +29,7 @@
 #include "mgt-headers.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-mac-queue.h"
+#include "mac-low.h"
 #include "qos-blocked-destinations.h"
 #include "ns3/simulator.h"
 

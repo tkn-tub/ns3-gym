@@ -23,10 +23,11 @@
 // It outputs plots of the Frame Success Rate versus the Signal-to-noise ratio for
 // both NIST and YANS error rate models and for every OFDM mode.
 
+#include "ns3/gnuplot.h"
 #include "ns3/core-module.h"
 #include "ns3/yans-error-rate-model.h"
 #include "ns3/nist-error-rate-model.h"
-#include "ns3/gnuplot.h"
+#include "ns3/wifi-tx-vector.h"
 
 using namespace ns3;
 

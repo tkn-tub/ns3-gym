@@ -21,17 +21,22 @@
 #ifndef DCA_TXOP_H
 #define DCA_TXOP_H
 
-#include "mac-low.h"
+#include "mac-low-transmission-parameters.h"
 #include "wifi-mac-header.h"
-#include "wifi-remote-station-manager.h"
 
 namespace ns3 {
 
+class Packet;
 class DcfState;
 class DcfManager;
 class MacTxMiddle;
+class MacLow;
+class WifiMode;
+class WifiMacQueue;
+class WifiMacQueueItem;
 class UniformRandomVariable;
 class CtrlBAckResponseHeader;
+class WifiRemoteStationManager;
 
 /**
  * \brief handle packet fragmentation and retransmissions.
