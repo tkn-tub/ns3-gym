@@ -25,6 +25,7 @@
 #include "wifi-phy-state.h"
 #include "ns3/callback.h"
 #include "ns3/traced-callback.h"
+#include "ns3/nstime.h"
 #include "wifi-preamble.h"
 #include "wifi-phy-listener.h"
 

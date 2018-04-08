@@ -24,6 +24,7 @@
 #include "ns3/double.h"
 #include "wifi-utils.h"
 #include "wifi-phy.h"
+#include "interference-helper.h"
 
 namespace ns3 {
 
@@ -73,7 +74,7 @@ SimpleFrameCaptureModel::GetMargin (void) const
 }
 
 bool
-SimpleFrameCaptureModel::CaptureNewFrame (Ptr<InterferenceHelper::Event> currentEvent, Ptr<InterferenceHelper::Event> newEvent) const
+SimpleFrameCaptureModel::CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const
 {
   NS_LOG_FUNCTION (this);
   if (newEvent->GetTxVector ().GetPreambleType () != WIFI_PREAMBLE_NONE

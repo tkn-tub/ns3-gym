@@ -23,11 +23,12 @@
 
 #include "wifi-phy-standard.h"
 #include "wifi-remote-station-manager.h"
-#include "dca-txop.h"
-#include "ssid.h"
 #include "qos-utils.h"
 
 namespace ns3 {
+
+class Ssid;
+class DcaTxop;
 
 /**
  * \brief base class for all MAC-level wifi objects.

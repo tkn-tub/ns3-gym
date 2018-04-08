@@ -24,14 +24,18 @@
 #define AP_WIFI_MAC_H
 
 #include "regular-wifi-mac.h"
-#include "capability-information.h"
-#include "supported-rates.h"
-#include "dsss-parameter-set.h"
-#include "erp-information.h"
-#include "edca-parameter-set.h"
 #include "ns3/random-variable-stream.h"
 
 namespace ns3 {
+
+class SupportedRates;
+class CapabilityInformation;
+class DsssParameterSet;
+class ErpInformation;
+class EdcaParameterSet;
+class HtOperation;
+class VhtOperation;
+class HeOperation;
 
 /**
  * \brief Wi-Fi AP state machine

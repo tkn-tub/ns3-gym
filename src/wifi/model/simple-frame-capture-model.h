@@ -29,9 +29,9 @@ namespace ns3 {
  *
  * A simple threshold-based model for frame capture effect.
  * If the new incoming frame arrives while the receiver is
- * receiving the preamble of another frame and the SIR of 
- * the new incoming frame is above a fixed margin, then 
- * the current frame is dropped and the receiver locks 
+ * receiving the preamble of another frame and the SIR of
+ * the new incoming frame is above a fixed margin, then
+ * the current frame is dropped and the receiver locks
  * onto the new incoming frame.
  */
 class SimpleFrameCaptureModel : public FrameCaptureModel
@@ -69,7 +69,7 @@ public:
    * \return true if the reception should be switched to a new incoming frame,
    *         false otherwise
    */
-  bool CaptureNewFrame (Ptr<InterferenceHelper::Event> currentEvent, Ptr<InterferenceHelper::Event> newEvent) const;
+  bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const;
 
 
 private:

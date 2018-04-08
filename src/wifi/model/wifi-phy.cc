@@ -2356,7 +2356,7 @@ WifiPhy::StartReceivePreambleAndHeader (Ptr<Packet> packet, double rxPowerW, Tim
     }
 
   WifiTxVector txVector = tag.GetWifiTxVector ();
-  Ptr<InterferenceHelper::Event> event;
+  Ptr<Event> event;
   event = m_interference.Add (packet,
                               txVector,
                               rxDuration,
@@ -2493,7 +2493,7 @@ void
 WifiPhy::StartReceivePacket (Ptr<Packet> packet,
                              WifiTxVector txVector,
                              MpduType mpdutype,
-                             Ptr<InterferenceHelper::Event> event)
+                             Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << packet << txVector.GetMode () << txVector.GetPreambleType () << +mpdutype);
   NS_ASSERT (IsStateRx ());
@@ -2528,7 +2528,7 @@ WifiPhy::StartReceivePacket (Ptr<Packet> packet,
 }
 
 void
-WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event)
+WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << packet << event);
   NS_ASSERT (IsStateRx ());
@@ -3605,7 +3605,7 @@ WifiPhy::AbortCurrentReception ()
 }
 
 void
-WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, double rxPowerW, Time rxDuration, Ptr<InterferenceHelper::Event> event)
+WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, double rxPowerW, Time rxDuration, Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << packet << txVector << +mpdutype << rxPowerW << rxDuration);
   if (rxPowerW > DbmToW (GetEdThreshold ())) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)

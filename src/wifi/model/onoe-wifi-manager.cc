@@ -19,6 +19,7 @@
  */
 
 #include "onoe-wifi-manager.h"
+#include "wifi-tx-vector.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
@@ -130,7 +131,7 @@ OnoeWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 void
 OnoeWifiManager::DoReportRtsOk (WifiRemoteStation *station, double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  NS_LOG_FUNCTION (this << station<< ctsSnr << ctsMode << rtsSnr);
+  NS_LOG_FUNCTION (this << station << ctsSnr << ctsMode << rtsSnr);
 }
 
 void

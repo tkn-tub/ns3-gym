@@ -24,6 +24,7 @@
 #include "ns3/energy-source.h"
 #include "wifi-radio-energy-model.h"
 #include "wifi-tx-current-model.h"
+#include "wifi-phy.h"
 
 namespace ns3 {
 

@@ -24,6 +24,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "mac-low.h"
+#include "mgt-headers.h"
 
 /*
  * The state machine for this STA is:

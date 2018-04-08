@@ -26,6 +26,7 @@
 #include "dcf-manager.h"
 #include "dcf-state.h"
 #include "mac-tx-middle.h"
+#include "mgt-headers.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-mac-queue.h"
 #include "qos-blocked-destinations.h"

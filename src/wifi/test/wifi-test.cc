@@ -42,6 +42,8 @@
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-phy-tag.h"
+#include "ns3/yans-wifi-phy.h"
+#include "ns3/mgt-headers.h"
 #include <tuple>
 #include <vector>
 

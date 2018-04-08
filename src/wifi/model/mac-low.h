@@ -27,11 +27,12 @@
 #include "dcf-manager.h"
 #include "wifi-remote-station-manager.h"
 #include "block-ack-agreement.h"
-#include "qos-utils.h"
 #include "block-ack-cache.h"
 #include "mpdu-aggregator.h"
 #include "msdu-aggregator.h"
 #include "mac-low-transmission-parameters.h"
+#include "qos-utils.h"
+#include "wifi-mac-header.h"
 
 class TwoLevelAggregationTest;
 class AmpduAggregationTest;
@@ -43,6 +44,7 @@ class EdcaTxopN;
 class DcfManager;
 class WifiMacQueueItem;
 class WifiMacQueue;
+class MgtAddBaResponseHeader;
 
 /**
  * \ingroup wifi

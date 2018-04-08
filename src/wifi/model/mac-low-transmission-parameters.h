@@ -23,7 +23,6 @@
 #ifndef MAC_LOW_TRANSMISSION_PARAMETERS_H
 #define MAC_LOW_TRANSMISSION_PARAMETERS_H
 
-#include "ns3/nstime.h"
 #include "ns3/uinteger.h"
 
 namespace ns3 {

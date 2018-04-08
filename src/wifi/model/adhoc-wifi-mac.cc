@@ -21,6 +21,9 @@
  */
 
 #include "adhoc-wifi-mac.h"
+#include "ht-capabilities.h"
+#include "vht-capabilities.h"
+#include "he-capabilities.h"
 #include "ns3/log.h"
 #include "mac-low.h"
 

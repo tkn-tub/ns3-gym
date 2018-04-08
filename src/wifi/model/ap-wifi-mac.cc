@@ -27,6 +27,15 @@
 #include "ns3/pointer.h"
 #include "mac-low.h"
 #include "mac-tx-middle.h"
+#include "supported-rates.h"
+#include "capability-information.h"
+#include "erp-information.h"
+#include "dsss-parameter-set.h"
+#include "edca-parameter-set.h"
+#include "ht-operation.h"
+#include "vht-operation.h"
+#include "he-operation.h"
+#include "mgt-headers.h"
 
 namespace ns3 {
 

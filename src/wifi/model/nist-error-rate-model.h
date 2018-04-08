@@ -22,7 +22,6 @@
 #define NIST_ERROR_RATE_MODEL_H
 
 #include "error-rate-model.h"
-#include "dsss-error-rate-model.h"
 
 namespace ns3 {
 

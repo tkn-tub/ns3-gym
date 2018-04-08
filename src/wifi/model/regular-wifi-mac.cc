@@ -28,6 +28,14 @@
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
 #include "wifi-utils.h"
+#include "ht-capabilities.h"
+#include "vht-capabilities.h"
+#include "he-capabilities.h"
+#include "extended-capabilities.h"
+#include "ht-operation.h"
+#include "vht-operation.h"
+#include "he-operation.h"
+#include "mgt-headers.h"
 
 namespace ns3 {
 

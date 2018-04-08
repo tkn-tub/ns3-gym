@@ -25,11 +25,12 @@
 #include "ctrl-headers.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
-#include "ns3/nstime.h"
 #include "ns3/uinteger.h"
-#include "ns3/packet.h"
 
 namespace ns3 {
+
+class Packet;
+class Time;
 
 /**
  * Return the logarithm of the given value to base 2.

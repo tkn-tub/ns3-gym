@@ -24,6 +24,7 @@
 #include "mgt-headers.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
+#include "qos-utils.h"
 
 namespace ns3 {
 

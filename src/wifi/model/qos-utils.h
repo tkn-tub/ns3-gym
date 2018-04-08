@@ -21,13 +21,12 @@
 #ifndef QOS_UTILS_H
 #define QOS_UTILS_H
 
-#include "ns3/uinteger.h"
-#include "ns3/packet.h"
-#include "wifi-mac-header.h"
 #include "ctrl-headers.h"
-#include "mgt-headers.h"
 
 namespace ns3 {
+
+class Packet;
+class WifiMacHeader;
 
 /**
  * \ingroup wifi

@@ -27,7 +27,6 @@
 #include "ns3/queue.h"
 #include "wifi-mac-queue-item.h"
 
-
 namespace ns3 {
 
 class QosBlockedDestinations;

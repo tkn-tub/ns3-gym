@@ -19,6 +19,7 @@
  */
 
 #include "aarf-wifi-manager.h"
+#include "wifi-tx-vector.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/log.h"

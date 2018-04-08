@@ -22,9 +22,9 @@
 #ifndef WIFI_PHY_LISTENER_H
 #define WIFI_PHY_LISTENER_H
 
-#include "ns3/nstime.h"
-
 namespace ns3 {
+
+class Time;
 
 /**
  * \brief receive notifications about phy events.

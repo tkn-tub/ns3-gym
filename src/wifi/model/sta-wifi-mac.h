@@ -24,12 +24,12 @@
 #define STA_WIFI_MAC_H
 
 #include "regular-wifi-mac.h"
-#include "supported-rates.h"
-#include "capability-information.h"
 
 namespace ns3  {
 
 class MgtAddBaRequestHeader;
+class SupportedRates;
+class CapabilityInformation;
 
 /**
  * \ingroup wifi

@@ -22,12 +22,77 @@
 #define INTERFERENCE_HELPER_H
 
 #include "ns3/nstime.h"
-#include "ns3/packet.h"
 #include "wifi-tx-vector.h"
 #include "error-rate-model.h"
 #include <map>
 
 namespace ns3 {
+
+class Packet;
+
+/**
+ * \ingroup wifi
+ * \brief handles interference calculations
+ * \brief signal event for a packet.
+ */
+class Event : public SimpleRefCount<Event>
+{
+public:
+  /**
+   * Create an Event with the given parameters.
+   *
+   * \param packet the packet
+   * \param txVector TXVECTOR of the packet
+   * \param duration duration of the signal
+   * \param rxPower the receive power (w)
+   */
+  Event (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower);
+  ~Event ();
+
+  /** Return the packet.
+   *
+   * \return the packet
+   */
+  Ptr<const Packet> GetPacket (void) const;
+  /**
+   * Return the start time of the signal.
+   *
+   * \return the start time of the signal
+   */
+  Time GetStartTime (void) const;
+  /**
+   * Return the end time of the signal.
+   *
+   * \return the end time of the signal
+   */
+  Time GetEndTime (void) const;
+  /**
+   * Return the receive power (w).
+   *
+   * \return the receive power (w)
+   */
+  double GetRxPowerW (void) const;
+  /**
+   * Return the TXVECTOR of the packet.
+   *
+   * \return the TXVECTOR of the packet
+   */
+  WifiTxVector GetTxVector (void) const;
+  /**
+   * Return the Wi-Fi mode used for the payload.
+   *
+   * \return the Wi-Fi mode used for the payload
+   */
+  WifiMode GetPayloadMode (void) const;
+
+
+private:
+  Ptr<const Packet> m_packet; ///< packet
+  WifiTxVector m_txVector; ///< TXVECTOR
+  Time m_startTime; ///< start time
+  Time m_endTime; ///< end time
+  double m_rxPowerW; ///< receive power in watts
+};
 
 /**
  * \ingroup wifi
@@ -39,64 +104,6 @@ public:
   /**
    * Signal event for a packet.
    */
-  class Event : public SimpleRefCount<InterferenceHelper::Event>
-  {
-public:
-    /**
-     * Create an Event with the given parameters.
-     *
-     * \param packet the packet
-     * \param txVector TXVECTOR of the packet
-     * \param duration duration of the signal
-     * \param rxPower the receive power (w)
-     */
-    Event (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower);
-    ~Event ();
-
-    /** Return the packet.
-     *
-     * \return the packet
-     */
-    Ptr<const Packet> GetPacket (void) const;
-    /**
-     * Return the start time of the signal.
-     *
-     * \return the start time of the signal
-     */
-    Time GetStartTime (void) const;
-    /**
-     * Return the end time of the signal.
-     *
-     * \return the end time of the signal
-     */
-    Time GetEndTime (void) const;
-    /**
-     * Return the receive power (w).
-     *
-     * \return the receive power (w)
-     */
-    double GetRxPowerW (void) const;
-    /**
-     * Return the TXVECTOR of the packet.
-     *
-     * \return the TXVECTOR of the packet
-     */
-    WifiTxVector GetTxVector (void) const;
-    /**
-     * Return the Wi-Fi mode used for the payload.
-     *
-     * \return the Wi-Fi mode used for the payload
-     */
-    WifiMode GetPayloadMode (void) const;
-
-
-private:
-    Ptr<const Packet> m_packet; ///< packet
-    WifiTxVector m_txVector; ///< TXVECTOR
-    Time m_startTime; ///< start time
-    Time m_endTime; ///< end time
-    double m_rxPowerW; ///< receive power in watts
-  };
 
   /**
    * A struct for both SNR and PER
@@ -154,9 +161,9 @@ private:
    * \param duration the duration of the signal
    * \param rxPower receive power (W)
    *
-   * \return InterferenceHelper::Event
+   * \return Event
    */
-  Ptr<InterferenceHelper::Event> Add (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower);
+  Ptr<Event> Add (Ptr<const Packet> packet, WifiTxVector txVector, Time duration, double rxPower);
 
   /**
    * Add a non-Wifi signal to interference helper.
@@ -172,7 +179,7 @@ private:
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculatePlcpPayloadSnrPer (Ptr<InterferenceHelper::Event> event) const;
+  struct InterferenceHelper::SnrPer CalculatePlcpPayloadSnrPer (Ptr<Event> event) const;
   /**
    * Calculate the SNIR at the start of the plcp header and accumulate
    * all SNIR changes in the snir vector.
@@ -181,7 +188,7 @@ private:
    *
    * \return struct of SNR and PER
    */
-  struct InterferenceHelper::SnrPer CalculatePlcpHeaderSnrPer (Ptr<InterferenceHelper::Event> event) const;
+  struct InterferenceHelper::SnrPer CalculatePlcpHeaderSnrPer (Ptr<Event> event) const;
 
   /**
    * Notify that RX has started.
@@ -210,7 +217,7 @@ public:
      * \param power the power
      * \param event causes this NI change
      */
-    NiChange (double power, Ptr<InterferenceHelper::Event> event);
+    NiChange (double power, Ptr<Event> event);
     /**
      * Return the power
      *
@@ -228,12 +235,12 @@ public:
      *
      * \return the event
      */
-    Ptr<InterferenceHelper::Event> GetEvent (void) const;
+    Ptr<Event> GetEvent (void) const;
 
 
 private:
     double m_power; ///< power
-    Ptr<InterferenceHelper::Event> m_event; ///< event
+    Ptr<Event> m_event; ///< event
   };
 
   /**

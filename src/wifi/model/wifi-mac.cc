@@ -19,6 +19,8 @@
  */
 
 #include "wifi-mac.h"
+#include "dca-txop.h"
+#include "ssid.h"
 #include "ns3/log.h"
 
 namespace ns3 {

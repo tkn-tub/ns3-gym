@@ -29,6 +29,7 @@
 #include "ampdu-tag.h"
 #include "wifi-mac-queue.h"
 #include "wifi-utils.h"
+#include "mgt-headers.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "

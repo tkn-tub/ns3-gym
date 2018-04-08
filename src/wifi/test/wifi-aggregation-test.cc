@@ -29,6 +29,7 @@
 #include "ns3/dcf-manager.h"
 #include "ns3/msdu-aggregator.h"
 #include "ns3/mpdu-aggregator.h"
+#include "ns3/mgt-headers.h"
 
 using namespace ns3;
 
@@ -345,7 +346,7 @@ TwoLevelAggregationTest::DoRun (void)
   m_edca->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
 
   Ptr<const WifiMacQueueItem> peekedItem = m_edca->GetWifiMacQueue ()->PeekByTidAndAddress (0, WifiMacHeader::ADDR1,
-                                                                                     hdr.GetAddr1 ());
+                                                                                            hdr.GetAddr1 ());
   Ptr<const Packet> peekedPacket = peekedItem->GetPacket ();
   peekedHdr = peekedItem->GetHeader ();
   tstamp = peekedItem->GetTimeStamp ();

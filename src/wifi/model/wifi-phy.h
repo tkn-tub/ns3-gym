@@ -26,7 +26,6 @@
 #include "ns3/event-id.h"
 #include "ns3/mobility-model.h"
 #include "ns3/random-variable-stream.h"
-#include "ns3/channel.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
 #include "ns3/node.h"
@@ -39,19 +38,9 @@ namespace ns3 {
 #define VHT_PHY 126
 #define HT_PHY 127
 
-/**
- * WifiPhyStateHelper class
- */
+class Channel;
 class WifiPhyStateHelper;
-
-/**
- * FrameCaptureModel class
- */
 class FrameCaptureModel;
-
-/**
- * WifiRadioEnergyModel class
- */
 class WifiRadioEnergyModel;
 
 /**
@@ -152,7 +141,7 @@ public:
   void StartReceivePacket (Ptr<Packet> packet,
                            WifiTxVector txVector,
                            MpduType mpdutype,
-                           Ptr<InterferenceHelper::Event> event);
+                           Ptr<Event> event);
 
   /**
    * The last bit of the packet has arrived.
@@ -162,7 +151,7 @@ public:
    * \param mpdutype the type of the MPDU as defined in WifiPhy::MpduType.
    * \param event the corresponding event of the first time the packet arrives
    */
-  void EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<InterferenceHelper::Event> event);
+  void EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutype, Ptr<Event> event);
 
   /**
    * \param packet the packet to send
@@ -1654,7 +1643,7 @@ private:
                 MpduType mpdutype,
                 double rxPowerW,
                 Time rxDuration,
-                Ptr<InterferenceHelper::Event> event);
+                Ptr<Event> event);
 
   /**
    * The trace source fired when a packet begins the transmission process on
@@ -1813,7 +1802,7 @@ private:
   Ptr<NetDevice>     m_device;   //!< Pointer to the device
   Ptr<MobilityModel> m_mobility; //!< Pointer to the mobility model
 
-  Ptr<InterferenceHelper::Event> m_currentEvent; //!< Hold the current event
+  Ptr<Event> m_currentEvent; //!< Hold the current event
   Ptr<FrameCaptureModel> m_frameCaptureModel; //!< Frame capture model
   Ptr<WifiRadioEnergyModel> m_wifiRadioEnergyModel; //!< Wifi radio energy model
 

@@ -20,6 +20,8 @@
 
 #include "wifi-utils.h"
 #include "wifi-mac-header.h"
+#include "ns3/packet.h"
+#include "ns3/nstime.h"
 #include <cmath>
 
 namespace ns3 {

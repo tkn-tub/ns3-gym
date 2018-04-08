@@ -23,10 +23,16 @@
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
+#include "ns3/tag.h"
+#include "wifi-phy.h"
 #include "wifi-mac.h"
 #include "wifi-utils.h"
+#include "wifi-tx-vector.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
+#include "ht-capabilities.h"
+#include "vht-capabilities.h"
+#include "he-capabilities.h"
 
 /***************************************************************
  *           Packet Mode Tagger

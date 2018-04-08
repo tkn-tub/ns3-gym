@@ -22,14 +22,12 @@
 #define WIFI_REMOTE_STATION_MANAGER_H
 
 #include "ns3/traced-callback.h"
-#include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
-#include "wifi-tx-vector.h"
-#include "ht-capabilities.h"
-#include "vht-capabilities.h"
-#include "he-capabilities.h"
+#include "ns3/mac48-address.h"
+#include "wifi-mode.h"
+#include "wifi-preamble.h"
 
 namespace ns3 {
 
@@ -38,6 +36,11 @@ struct WifiRemoteStationState;
 class WifiPhy;
 class WifiMac;
 class WifiMacHeader;
+class Packet;
+class HtCapabilities;
+class VhtCapabilities;
+class HeCapabilities;
+class WifiTxVector;
 
 /**
  * \brief Tid independent remote station statistics

@@ -19,6 +19,7 @@
  */
 
 #include "ns3/mesh-wifi-beacon.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 

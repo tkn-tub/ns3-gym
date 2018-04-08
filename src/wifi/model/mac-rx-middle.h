@@ -22,13 +22,15 @@
 #define MAC_RX_MIDDLE_H
 
 #include <map>
-#include "ns3/packet.h"
 #include "ns3/simple-ref-count.h"
+#include "ns3/callback.h"
 
 namespace ns3 {
 
 class WifiMacHeader;
 class OriginatorRxStatus;
+class Packet;
+class Mac48Address;
 
 /**
  * \ingroup wifi

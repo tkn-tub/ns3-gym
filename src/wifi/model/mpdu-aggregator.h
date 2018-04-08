@@ -21,13 +21,13 @@
 #ifndef MPDU_AGGREGATOR_H
 #define MPDU_AGGREGATOR_H
 
-#include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ampdu-subframe-header.h"
 
 namespace ns3 {
 
 class WifiMacHeader;
+class Packet;
 
 /**
  * \brief Aggregator used to construct A-MPDUs

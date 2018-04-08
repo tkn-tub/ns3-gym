@@ -25,9 +25,10 @@
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
-#include "ns3/nstime.h"
 
 namespace ns3 {
+
+class Time;
 
 /**
  * Combination of valid MAC header type/subtype.

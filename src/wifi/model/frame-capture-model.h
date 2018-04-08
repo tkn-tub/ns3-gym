@@ -22,9 +22,10 @@
 #define FRAME_CAPTURE_MODEL_H
 
 #include "ns3/object.h"
-#include "interference-helper.h"
 
 namespace ns3 {
+
+class Event;
 
 /**
  * \ingroup wifi
@@ -51,7 +52,7 @@ public:
    * \return true if the reception should be switched to a new incoming frame,
    *         false otherwise
    */
-  virtual bool CaptureNewFrame (Ptr<InterferenceHelper::Event> currentEvent, Ptr<InterferenceHelper::Event> newEvent) const = 0;
+  virtual bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const = 0;
 };
 
 } //namespace ns3

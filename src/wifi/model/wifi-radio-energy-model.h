@@ -24,7 +24,10 @@
 
 #include "ns3/device-energy-model.h"
 #include "ns3/traced-value.h"
-#include "wifi-phy.h"
+#include "ns3/event-id.h"
+#include "ns3/nstime.h"
+#include "wifi-phy-listener.h"
+#include "wifi-phy-state.h"
 
 namespace ns3 {
 

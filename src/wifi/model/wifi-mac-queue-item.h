@@ -24,6 +24,7 @@
 #ifndef WIFI_MAC_QUEUE_ITEM_H
 #define WIFI_MAC_QUEUE_ITEM_H
 
+#include "ns3/nstime.h"
 #include "ns3/queue.h"
 #include "wifi-mac-header.h"
 

@@ -23,6 +23,7 @@
 #include "regular-wifi-mac.h"
 #include "wifi-mac-queue.h"
 #include "ns3/llc-snap-header.h"
+#include "ns3/channel.h"
 #include "ns3/socket.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"

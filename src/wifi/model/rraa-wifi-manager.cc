@@ -19,6 +19,7 @@
  */
 
 #include "rraa-wifi-manager.h"
+#include "wifi-phy.h"
 #include "wifi-mac.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"

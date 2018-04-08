@@ -22,8 +22,8 @@
 #define REGULAR_WIFI_MAC_H
 
 #include "wifi-mac.h"
-#include "dca-txop.h"
 #include "edca-txop-n.h"
+#include "ssid.h"
 
 namespace ns3 {
 
@@ -31,6 +31,7 @@ class MacLow;
 class MacRxMiddle;
 class MacTxMiddle;
 class DcfManager;
+class ExtendedCapabilities;
 
 /**
  * \brief base class for all MAC-level wifi objects.

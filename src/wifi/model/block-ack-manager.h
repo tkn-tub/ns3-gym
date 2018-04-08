@@ -24,7 +24,6 @@
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
 #include "ctrl-headers.h"
-#include "qos-utils.h"
 #include "wifi-remote-station-manager.h"
 #include <map>
 

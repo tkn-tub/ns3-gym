@@ -19,6 +19,7 @@
  */
 
 #include "amrr-wifi-manager.h"
+#include "wifi-tx-vector.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
