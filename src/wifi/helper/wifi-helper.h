@@ -29,7 +29,6 @@
 
 namespace ns3 {
 
-class WifiPhy;
 class WifiNetDevice;
 class Node;
 

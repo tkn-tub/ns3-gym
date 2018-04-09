@@ -21,15 +21,15 @@
 #ifndef ATHSTATS_HELPER_H
 #define ATHSTATS_HELPER_H
 
-#include "ns3/node-container.h"
-#include "ns3/net-device-container.h"
-#include "ns3/wifi-phy.h"
-
 #include "ns3/wifi-phy-state.h"
 
 namespace ns3 {
 
 class NetDevice;
+class NodeContainer;
+class NetDeviceContainer;
+class Packet;
+class Mac48Address;
 
 /**
  * @brief create AthstatsWifiTraceSink instances and connect them to wifi devices
