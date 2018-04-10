@@ -23,12 +23,12 @@
 
 #include "ns3/nstime.h"
 #include "wifi-tx-vector.h"
-#include "error-rate-model.h"
 #include <map>
 
 namespace ns3 {
 
 class Packet;
+class ErrorRateModel;
 
 /**
  * \ingroup wifi

@@ -424,8 +424,6 @@ def register_types(module):
     module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## erp-information.h (module 'wifi'): ns3::ErpInformation [class]
     module.add_class('ErpInformation', import_from_module='ns.wifi', parent=root_module['ns3::WifiInformationElement'])
-    ## error-rate-model.h (module 'wifi'): ns3::ErrorRateModel [class]
-    module.add_class('ErrorRateModel', import_from_module='ns.wifi', parent=root_module['ns3::Object'])
     ## interference-helper.h (module 'wifi'): ns3::Event [class]
     module.add_class('Event', import_from_module='ns.wifi', parent=root_module['ns3::SimpleRefCount< ns3::Event, ns3::empty, ns3::DefaultDeleter<ns3::Event> >'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
@@ -1028,7 +1026,6 @@ def register_methods(root_module):
     register_Ns3EnumValue_methods(root_module, root_module['ns3::EnumValue'])
     register_Ns3ErlangRandomVariable_methods(root_module, root_module['ns3::ErlangRandomVariable'])
     register_Ns3ErpInformation_methods(root_module, root_module['ns3::ErpInformation'])
-    register_Ns3ErrorRateModel_methods(root_module, root_module['ns3::ErrorRateModel'])
     register_Ns3Event_methods(root_module, root_module['ns3::Event'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3ExponentialRandomVariable_methods(root_module, root_module['ns3::ExponentialRandomVariable'])
@@ -11001,28 +10998,6 @@ def register_Ns3ErpInformation_methods(root_module, cls):
     cls.add_method('SetUseProtection', 
                    'void', 
                    [param('uint8_t', 'useProtection')])
-    return
-
-def register_Ns3ErrorRateModel_methods(root_module, cls):
-    ## error-rate-model.h (module 'wifi'): ns3::ErrorRateModel::ErrorRateModel() [constructor]
-    cls.add_constructor([])
-    ## error-rate-model.h (module 'wifi'): ns3::ErrorRateModel::ErrorRateModel(ns3::ErrorRateModel const & arg0) [constructor]
-    cls.add_constructor([param('ns3::ErrorRateModel const &', 'arg0')])
-    ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::CalculateSnr(ns3::WifiTxVector txVector, double ber) const [member function]
-    cls.add_method('CalculateSnr', 
-                   'double', 
-                   [param('ns3::WifiTxVector', 'txVector'), param('double', 'ber')], 
-                   is_const=True)
-    ## error-rate-model.h (module 'wifi'): double ns3::ErrorRateModel::GetChunkSuccessRate(ns3::WifiMode mode, ns3::WifiTxVector txVector, double snr, uint64_t nbits) const [member function]
-    cls.add_method('GetChunkSuccessRate', 
-                   'double', 
-                   [param('ns3::WifiMode', 'mode'), param('ns3::WifiTxVector', 'txVector'), param('double', 'snr'), param('uint64_t', 'nbits')], 
-                   is_pure_virtual=True, is_const=True, is_virtual=True)
-    ## error-rate-model.h (module 'wifi'): static ns3::TypeId ns3::ErrorRateModel::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
     return
 
 def register_Ns3Event_methods(root_module, cls):

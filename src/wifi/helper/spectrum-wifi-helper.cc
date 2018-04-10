@@ -19,10 +19,11 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/log.h"
+#include "ns3/names.h"
 #include "spectrum-wifi-helper.h"
 #include "ns3/spectrum-wifi-phy.h"
-#include "ns3/names.h"
-#include "ns3/log.h"
+#include "ns3/error-rate-model.h"
 
 namespace ns3 {
 

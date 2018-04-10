@@ -31,6 +31,7 @@
 #include "wifi-utils.h"
 #include "frame-capture-model.h"
 #include "wifi-radio-energy-model.h"
+#include "error-rate-model.h"
 
 namespace ns3 {
 
