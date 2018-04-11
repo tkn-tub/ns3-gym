@@ -34,23 +34,29 @@
  * \ingroup logging
  * Empty logging macro implementation, used when logging is disabled.
  */
-#define NS_LOG_NOOP_INTERNAL(msg)           \
-  do                                        \
-    {                                       \
-      if (false)                            \
-        {                                   \
-          std::clog << msg;                 \
-        }                                   \
-    }                                       \
-  while (false)
+#define NS_LOG_NOOP_INTERNAL(msg)               \
+  while (false)                                 \
+    {                                           \
+      std::clog << msg;                         \
+    }
 
 #define NS_LOG(level, msg) \
         NS_LOG_NOOP_INTERNAL (msg)
 
 #define NS_LOG_FUNCTION_NOARGS()
 
+/**
+ * \ingroup logging
+ * Empty logging macro implementation, used when logging is disabled.
+ */
+#define NS_LOG_NOOP_FUNC_INTERNAL(msg)          \
+  while (false)                                 \
+    {                                           \
+      ns3::ParameterLogger (std::clog) << msg;  \
+    }
+
 #define NS_LOG_FUNCTION(parameters) \
-        NS_LOG_NOOP_INTERNAL (parameters)
+        NS_LOG_NOOP_FUNC_INTERNAL (parameters)
 
 #define NS_LOG_UNCOND(msg) \
         NS_LOG_NOOP_INTERNAL (msg)
