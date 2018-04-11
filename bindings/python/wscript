@@ -195,6 +195,11 @@ def configure(conf):
                                 stdout=subprocess.PIPE).communicate()[0]
         pybindgen_version = maybe_decode(out.strip())
         conf.msg('Checking for pybindgen version', pybindgen_version)
+        if not pybindgen_version:
+            Logs.warn("pybindgen_version is an empty string")
+            conf.report_optional_feature("python", "Python Bindings", False,
+                                         "PyBindGen version not found")
+            return
         if not (split_version(pybindgen_version) >= split_version(REQUIRED_PYBINDGEN_VERSION)):
             Logs.warn("pybindgen (found %r), (need %r)" %
                       (pybindgen_version, REQUIRED_PYBINDGEN_VERSION))
