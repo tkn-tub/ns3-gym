@@ -29,6 +29,7 @@
 #include "mac-low-transmission-parameters.h"
 #include "qos-utils.h"
 #include "wifi-mac-header.h"
+#include "ctrl-headers.h"
 
 class TwoLevelAggregationTest;
 class AmpduAggregationTest;

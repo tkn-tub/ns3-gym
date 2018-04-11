@@ -36,6 +36,7 @@
 #include "vht-operation.h"
 #include "he-operation.h"
 #include "mgt-headers.h"
+#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 

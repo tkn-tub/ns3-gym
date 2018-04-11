@@ -20,8 +20,9 @@
 
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
-#include "msdu-aggregator.h"
 #include "ns3/packet.h"
+#include "msdu-aggregator.h"
+#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 

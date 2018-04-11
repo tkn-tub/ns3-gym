@@ -24,10 +24,11 @@
 
 #include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
-#include "ns3/random-variable-stream.h"
 #include <fstream>
 
 namespace ns3 {
+
+class UniformRandomVariable;
 
 /**
  * A struct to contain all information related to a data rate

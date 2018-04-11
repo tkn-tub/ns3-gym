@@ -23,10 +23,11 @@
 #define QOS_BLOCKED_DESTINATIONS_H
 
 #include <set>
-#include "ns3/mac48-address.h"
 #include "ns3/simple-ref-count.h"
 
 namespace ns3 {
+
+class Mac48Address;
 
 /**
  * Keep track of destination address - TID pairs that are waiting

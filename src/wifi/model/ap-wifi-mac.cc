@@ -37,6 +37,7 @@
 #include "he-operation.h"
 #include "mgt-headers.h"
 #include "msdu-aggregator.h"
+#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 

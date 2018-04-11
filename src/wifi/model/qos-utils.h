@@ -21,7 +21,7 @@
 #ifndef QOS_UTILS_H
 #define QOS_UTILS_H
 
-#include "ctrl-headers.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 

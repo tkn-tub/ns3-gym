@@ -23,6 +23,7 @@
 #include "wifi-mac-header.h"
 #include "mgt-headers.h"
 #include "ns3/socket.h"
+#include "ctrl-headers.h"
 
 namespace ns3 {
 

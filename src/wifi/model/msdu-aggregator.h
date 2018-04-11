@@ -22,10 +22,10 @@
 #define MSDU_AGGREGATOR_H
 
 #include "ns3/object.h"
-#include "amsdu-subframe-header.h"
 
 namespace ns3 {
 
+class AmsduSubframeHeader;
 class WifiMacHeader;
 class Packet;
 
