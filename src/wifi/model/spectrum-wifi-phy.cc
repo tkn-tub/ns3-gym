@@ -23,12 +23,14 @@
  * with Nicola Baldo and Dean Armstrong
  */
 
-#include "spectrum-wifi-phy.h"
+#include "ns3/spectrum-phy.h"
 #include "ns3/wifi-spectrum-value-helper.h"
 #include "ns3/abort.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
+#include "spectrum-wifi-phy.h"
 #include "wifi-spectrum-signal-parameters.h"
+#include "wifi-spectrum-phy-interface.h"
 #include "wifi-utils.h"
 
 namespace ns3 {

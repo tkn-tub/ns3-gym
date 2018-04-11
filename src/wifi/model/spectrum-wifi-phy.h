@@ -27,12 +27,13 @@
 #define SPECTRUM_WIFI_PHY_H
 
 #include "ns3/antenna-model.h"
-#include "wifi-phy.h"
-#include "wifi-spectrum-phy-interface.h"
 #include "ns3/spectrum-channel.h"
-#include "ns3/spectrum-interference.h"
+#include "ns3/spectrum-model.h"
+#include "wifi-phy.h"
 
 namespace ns3 {
+
+class WifiSpectrumPhyInterface;
 
 /**
  * \brief 802.11 PHY layer model
