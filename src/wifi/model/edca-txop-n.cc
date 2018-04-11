@@ -22,6 +22,7 @@
 
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/simulator.h"
 #include "edca-txop-n.h"
 #include "dcf-manager.h"
 #include "dcf-state.h"
@@ -31,7 +32,9 @@
 #include "wifi-mac-queue.h"
 #include "mac-low.h"
 #include "qos-blocked-destinations.h"
-#include "ns3/simulator.h"
+#include "wifi-remote-station-manager.h"
+#include "msdu-aggregator.h"
+#include "mpdu-aggregator.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }

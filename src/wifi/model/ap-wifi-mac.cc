@@ -36,6 +36,7 @@
 #include "vht-operation.h"
 #include "he-operation.h"
 #include "mgt-headers.h"
+#include "msdu-aggregator.h"
 
 namespace ns3 {
 

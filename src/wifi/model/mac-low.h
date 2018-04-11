@@ -25,11 +25,7 @@
 
 #include "wifi-phy.h"
 #include "dcf-manager.h"
-#include "wifi-remote-station-manager.h"
-#include "block-ack-agreement.h"
 #include "block-ack-cache.h"
-#include "mpdu-aggregator.h"
-#include "msdu-aggregator.h"
 #include "mac-low-transmission-parameters.h"
 #include "qos-utils.h"
 #include "wifi-mac-header.h"
@@ -39,12 +35,14 @@ class AmpduAggregationTest;
 
 namespace ns3 {
 
+class WifiPhy;
 class DcaTxop;
 class EdcaTxopN;
-class DcfManager;
 class WifiMacQueueItem;
 class WifiMacQueue;
+class BlockAckAgreement;
 class MgtAddBaResponseHeader;
+class WifiRemoteStationManager;
 
 /**
  * \ingroup wifi

@@ -30,6 +30,7 @@
 #include "ns3/msdu-aggregator.h"
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/mgt-headers.h"
+#include "ns3/wifi-remote-station-manager.h"
 
 using namespace ns3;
 

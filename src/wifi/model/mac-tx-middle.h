@@ -24,12 +24,12 @@
 #define MAC_TX_MIDDLE_H
 
 #include <map>
-#include "ns3/mac48-address.h"
 #include "ns3/simple-ref-count.h"
 
 namespace ns3 {
 
 class WifiMacHeader;
+class Mac48Address;
 
 /**
  * \ingroup wifi
