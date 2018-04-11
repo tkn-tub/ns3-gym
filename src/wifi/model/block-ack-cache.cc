@@ -18,11 +18,11 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
+#include "ns3/log.h"
 #include "block-ack-cache.h"
-#include "ctrl-headers.h"
 #include "qos-utils.h"
 #include "wifi-utils.h"
-#include "ns3/log.h"
+#include "wifi-mac-header.h"
 
 #define WINSIZE_ASSERT NS_ASSERT ((m_winEnd - m_winStart + 4096) % 4096 == m_winSize - 1)
 

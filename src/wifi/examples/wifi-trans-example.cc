@@ -18,8 +18,6 @@
  * Author: Rediet <getachew.redieteab@orange.com>
  */
 
-#include <iostream>
-#include <stdlib.h>
 #include "ns3/core-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/mobility-module.h"

@@ -18,8 +18,8 @@
  * Author: Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "block-ack-agreement.h"
 #include "ns3/log.h"
+#include "block-ack-agreement.h"
 
 namespace ns3 {
 

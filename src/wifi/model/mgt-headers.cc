@@ -20,8 +20,8 @@
  *          Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "mgt-headers.h"
 #include "ns3/simulator.h"
+#include "mgt-headers.h"
 
 namespace ns3 {
 

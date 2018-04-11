@@ -34,6 +34,8 @@
 #include "mpdu-aggregator.h"
 #include "msdu-aggregator.h"
 #include "ampdu-subframe-header.h"
+#include "wifi-phy-listener.h"
+#include "wifi-mac-trailer.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT std::clog << "[mac=" << m_self << "] "

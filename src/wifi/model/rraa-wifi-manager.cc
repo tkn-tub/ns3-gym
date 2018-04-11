@@ -18,14 +18,11 @@
  * Author: Federico Maguolo <maguolof@dei.unipd.it>
  */
 
+#include "ns3/log.h"
+#include "ns3/simulator.h"
 #include "rraa-wifi-manager.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"
-#include "ns3/log.h"
-#include "ns3/boolean.h"
-#include "ns3/double.h"
-#include "ns3/uinteger.h"
-#include "ns3/simulator.h"
 
 #define Min(a,b) ((a < b) ? a : b)
 

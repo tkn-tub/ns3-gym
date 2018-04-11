@@ -21,8 +21,8 @@
  *          Stefano Avallone <stavallo@unina.it>
  */
 
-#include "wifi-mac-queue-item.h"
 #include "ns3/simulator.h"
+#include "wifi-mac-queue-item.h"
 
 namespace ns3 {
 

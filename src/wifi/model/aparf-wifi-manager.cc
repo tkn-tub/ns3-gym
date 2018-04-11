@@ -18,10 +18,10 @@
  * Author: Matias Richart <mrichart@fing.edu.uy>
  */
 
-#include "aparf-wifi-manager.h"
-#include "wifi-phy.h"
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
+#include "aparf-wifi-manager.h"
+#include "wifi-phy.h"
 
 #define Min(a,b) ((a < b) ? a : b)
 

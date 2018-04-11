@@ -18,11 +18,11 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "ns3/string.h"
+#include "ns3/log.h"
 #include "constant-rate-wifi-manager.h"
 #include "wifi-tx-vector.h"
 #include "wifi-utils.h"
-#include "ns3/string.h"
-#include "ns3/log.h"
 
 #define Min(a,b) ((a < b) ? a : b)
 

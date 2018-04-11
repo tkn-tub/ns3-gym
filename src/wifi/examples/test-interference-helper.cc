@@ -57,7 +57,6 @@
 #include "ns3/nist-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/simple-frame-capture-model.h"
-#include "ns3/log.h"
 
 using namespace ns3;
 

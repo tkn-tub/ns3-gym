@@ -20,8 +20,8 @@
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "wifi-remote-station-manager.h"
 #include "block-ack-manager.h"
+#include "wifi-remote-station-manager.h"
 #include "mgt-headers.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"

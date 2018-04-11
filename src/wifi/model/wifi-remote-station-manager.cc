@@ -18,16 +18,14 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "wifi-remote-station-manager.h"
-#include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
-#include "ns3/tag.h"
+#include "ns3/simulator.h"
+#include "wifi-remote-station-manager.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"
 #include "wifi-utils.h"
-#include "wifi-tx-vector.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
 #include "ht-capabilities.h"

@@ -21,14 +21,13 @@
 #ifndef WIFI_UTILS_H
 #define WIFI_UTILS_H
 
-#include "wifi-mode.h"
-#include "ctrl-headers.h"
-#include "wifi-mac-header.h"
-#include "wifi-mac-trailer.h"
 #include "ns3/uinteger.h"
+#include "ctrl-headers.h"
 
 namespace ns3 {
 
+class WifiMacHeader;
+class WifiMode;
 class Packet;
 class Time;
 

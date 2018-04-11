@@ -19,10 +19,10 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include <cmath>
+#include "ns3/log.h"
 #include "wifi-mode.h"
 #include "wifi-tx-vector.h"
-#include "ns3/log.h"
-#include <cmath>
 
 namespace ns3 {
 

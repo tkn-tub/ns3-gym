@@ -34,14 +34,12 @@
  * reference: http://lwn.net/Articles/376765/
  */
 
-#include "minstrel-ht-wifi-manager.h"
+#include <iomanip>
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-#include "ns3/double.h"
-#include "ns3/boolean.h"
+#include "minstrel-ht-wifi-manager.h"
 #include "wifi-mac.h"
 #include "wifi-phy.h"
-#include <iomanip>
 
 #define Min(a,b) ((a < b) ? a : b)
 #define Max(a,b) ((a > b) ? a : b)

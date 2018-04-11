@@ -25,7 +25,6 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/adhoc-wifi-mac.h"
-#include "ns3/propagation-delay-model.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/yans-error-rate-model.h"
 #include "ns3/constant-position-mobility-model.h"
@@ -33,19 +32,15 @@
 #include "ns3/pointer.h"
 #include "ns3/rng-seed-manager.h"
 #include "ns3/config.h"
-#include "ns3/string.h"
 #include "ns3/packet-socket-server.h"
 #include "ns3/packet-socket-client.h"
 #include "ns3/packet-socket-helper.h"
 #include "ns3/spectrum-wifi-helper.h"
-#include "ns3/spectrum-value.h"
 #include "ns3/multi-model-spectrum-channel.h"
 #include "ns3/wifi-spectrum-signal-parameters.h"
 #include "ns3/wifi-phy-tag.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mgt-headers.h"
-#include <tuple>
-#include <vector>
 
 using namespace ns3;
 

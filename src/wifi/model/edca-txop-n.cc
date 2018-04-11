@@ -21,7 +21,6 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/pointer.h"
 #include "ns3/simulator.h"
 #include "edca-txop-n.h"
 #include "dcf-manager.h"

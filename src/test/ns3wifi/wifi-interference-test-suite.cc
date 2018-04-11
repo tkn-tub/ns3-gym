@@ -16,35 +16,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-
 #include "ns3/log.h"
-#include "ns3/callback.h"
-#include "ns3/abort.h"
 #include "ns3/test.h"
-#include "ns3/pcap-file.h"
 #include "ns3/config.h"
 #include "ns3/string.h"
-#include "ns3/uinteger.h"
 #include "ns3/double.h"
 #include "ns3/boolean.h"
-#include "ns3/data-rate.h"
-#include "ns3/inet-socket-address.h"
 #include "ns3/internet-stack-helper.h"
 #include "ns3/ipv4-address-helper.h"
-#include "ns3/tcp-socket-factory.h"
 #include "ns3/yans-wifi-helper.h"
-#include "ns3/propagation-loss-model.h"
-#include "ns3/propagation-delay-model.h"
 #include "ns3/yans-wifi-channel.h"
-#include "ns3/yans-wifi-phy.h"
-#include "ns3/wifi-net-device.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/constant-position-mobility-model.h"
-#include "ns3/simulator.h"
 
 using namespace ns3;
 

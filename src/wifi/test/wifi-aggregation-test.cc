@@ -18,7 +18,6 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-queue.h"
@@ -31,7 +30,6 @@
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/mgt-headers.h"
 #include "ns3/wifi-remote-station-manager.h"
-#include "ns3/ctrl-headers.h"
 
 using namespace ns3;
 

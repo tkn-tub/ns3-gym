@@ -18,10 +18,6 @@
  * Author: Tom Henderson <tomh@tomh.org>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/config-store-module.h"
-#include "ns3/wifi-module.h"
-
 // This example shows (and tests) some possible configurations for
 // the Wi-Fi physical layer, particularly the interaction between
 // WifiHelper.SetStandard () and the physical layer channel number,

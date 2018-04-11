@@ -22,9 +22,6 @@
  */
 
 #include "ns3/simulator.h"
-#include "ns3/uinteger.h"
-#include "ns3/enum.h"
-#include "ns3/assert.h"
 #include "wifi-mac-queue.h"
 #include "qos-blocked-destinations.h"
 

@@ -18,16 +18,16 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "wifi-net-device.h"
-#include "wifi-phy.h"
-#include "regular-wifi-mac.h"
-#include "wifi-mac-queue.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/channel.h"
 #include "ns3/socket.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
 #include "ns3/net-device-queue-interface.h"
+#include "wifi-net-device.h"
+#include "wifi-phy.h"
+#include "regular-wifi-mac.h"
+#include "wifi-mac-queue.h"
 
 namespace ns3 {
 

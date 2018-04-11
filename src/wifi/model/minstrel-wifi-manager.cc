@@ -29,14 +29,12 @@
  * http://linuxwireless.org/en/developers/Documentation/mac80211/RateControl/minstrel
  */
 
-#include "minstrel-wifi-manager.h"
+#include <iomanip>
 #include "ns3/simulator.h"
 #include "ns3/log.h"
-#include "ns3/double.h"
-#include "ns3/boolean.h"
+#include "minstrel-wifi-manager.h"
 #include "wifi-mac.h"
 #include "wifi-phy.h"
-#include <iomanip>
 
 #define Min(a,b) ((a < b) ? a : b)
 

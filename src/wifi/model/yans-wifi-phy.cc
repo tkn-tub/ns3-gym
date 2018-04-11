@@ -20,10 +20,9 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/log.h"
 #include "yans-wifi-phy.h"
 #include "yans-wifi-channel.h"
-#include "ns3/log.h"
-#include "wifi-utils.h"
 
 namespace ns3 {
 

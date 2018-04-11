@@ -21,9 +21,9 @@
  *          Ghada Badawy <gbadawy@gmail.com>
  */
 
+#include "ns3/log.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-header.h"
-#include "ns3/log.h"
 
 namespace ns3 {
 

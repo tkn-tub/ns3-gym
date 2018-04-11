@@ -18,13 +18,12 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "simple-frame-capture-model.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include "ns3/double.h"
+#include "simple-frame-capture-model.h"
 #include "wifi-utils.h"
 #include "wifi-phy.h"
-#include "interference-helper.h"
 
 namespace ns3 {
 

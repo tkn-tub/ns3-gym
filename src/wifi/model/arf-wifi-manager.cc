@@ -18,10 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "ns3/log.h"
 #include "arf-wifi-manager.h"
 #include "wifi-tx-vector.h"
-#include "ns3/log.h"
-#include "ns3/uinteger.h"
 
 #define Min(a,b) ((a < b) ? a : b)
 

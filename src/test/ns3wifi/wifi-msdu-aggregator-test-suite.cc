@@ -19,17 +19,11 @@
  */
 
 #include "ns3/test.h"
-#include "ns3/simulator.h"
-#include "ns3/log.h"
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"
-#include "ns3/string.h"
 #include "ns3/double.h"
 #include "ns3/ssid.h"
-#include "ns3/data-rate.h"
-#include "ns3/inet-socket-address.h"
 #include "ns3/packet-sink.h"
-#include "ns3/wifi-helper.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -38,8 +32,6 @@
 #include "ns3/on-off-helper.h"
 
 using namespace ns3;
-
-NS_LOG_COMPONENT_DEFINE ("WifiMsduAggregatorThroughputTest");
 
 class WifiMsduAggregatorThroughputTest : public TestCase
 {

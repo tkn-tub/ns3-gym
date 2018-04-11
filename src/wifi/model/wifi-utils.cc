@@ -18,11 +18,12 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "wifi-utils.h"
-#include "wifi-mac-header.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
-#include <cmath>
+#include "wifi-utils.h"
+#include "wifi-mac-header.h"
+#include "wifi-mac-trailer.h"
+#include "wifi-mode.h"
 
 namespace ns3 {
 

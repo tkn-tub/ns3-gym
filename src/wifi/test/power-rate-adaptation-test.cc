@@ -25,7 +25,6 @@
 #include "ns3/constant-position-mobility-model.h"
 #include "ns3/simulator.h"
 #include "ns3/test.h"
-#include "ns3/double.h"
 
 using namespace ns3;
 

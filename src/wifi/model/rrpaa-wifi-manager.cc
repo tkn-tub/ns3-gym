@@ -18,17 +18,14 @@
  * Author: Matías Richart <mrichart@fing.edu.uy>
  */
 
-#include "rrpaa-wifi-manager.h"
-#include "yans-wifi-phy.h"
-#include "wifi-phy.h"
-#include "wifi-mac.h"
-#include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/simulator.h"
-#include <cmath>
+#include "rrpaa-wifi-manager.h"
+#include "wifi-phy.h"
+#include "wifi-mac.h"
 
 NS_LOG_COMPONENT_DEFINE ("RrpaaWifiManager");
 

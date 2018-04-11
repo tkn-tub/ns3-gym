@@ -19,7 +19,6 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/uinteger.h"
 #include "ns3/packet.h"
 #include "mpdu-aggregator.h"
 #include "ampdu-subframe-header.h"

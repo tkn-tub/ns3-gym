@@ -33,6 +33,7 @@ namespace ns3 {
 
 struct WifiRemoteStation;
 struct WifiRemoteStationState;
+
 class WifiPhy;
 class WifiMac;
 class WifiMacHeader;

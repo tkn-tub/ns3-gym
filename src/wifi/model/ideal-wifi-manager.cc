@@ -18,9 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "ns3/log.h"
 #include "ideal-wifi-manager.h"
 #include "wifi-phy.h"
-#include "ns3/log.h"
 
 namespace ns3 {
 

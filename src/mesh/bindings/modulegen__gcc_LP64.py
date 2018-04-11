@@ -24,12 +24,12 @@ def register_types(module):
     module.add_enum('MpduType', ['NORMAL_MPDU', 'MPDU_IN_AGGREGATE', 'LAST_MPDU_IN_AGGREGATE'], import_from_module='ns.wifi')
     ## edca-txop-n.h (module 'wifi'): ns3::TypeOfStation [enumeration]
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA', 'MESH', 'HT_STA', 'HT_AP', 'HT_ADHOC_STA', 'OCB'], import_from_module='ns.wifi')
+    ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType [enumeration]
+    module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'], import_from_module='ns.wifi')
     ## wifi-mac-header.h (module 'wifi'): ns3::WifiMacType [enumeration]
     module.add_enum('WifiMacType', ['WIFI_MAC_CTL_CTLWRAPPER', 'WIFI_MAC_CTL_RTS', 'WIFI_MAC_CTL_CTS', 'WIFI_MAC_CTL_ACK', 'WIFI_MAC_CTL_BACKREQ', 'WIFI_MAC_CTL_BACKRESP', 'WIFI_MAC_MGT_BEACON', 'WIFI_MAC_MGT_ASSOCIATION_REQUEST', 'WIFI_MAC_MGT_ASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_DISASSOCIATION', 'WIFI_MAC_MGT_REASSOCIATION_REQUEST', 'WIFI_MAC_MGT_REASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_PROBE_REQUEST', 'WIFI_MAC_MGT_PROBE_RESPONSE', 'WIFI_MAC_MGT_AUTHENTICATION', 'WIFI_MAC_MGT_DEAUTHENTICATION', 'WIFI_MAC_MGT_ACTION', 'WIFI_MAC_MGT_ACTION_NO_ACK', 'WIFI_MAC_MGT_MULTIHOP_ACTION', 'WIFI_MAC_DATA', 'WIFI_MAC_DATA_CFACK', 'WIFI_MAC_DATA_CFPOLL', 'WIFI_MAC_DATA_CFACK_CFPOLL', 'WIFI_MAC_DATA_NULL', 'WIFI_MAC_DATA_NULL_CFACK', 'WIFI_MAC_DATA_NULL_CFPOLL', 'WIFI_MAC_DATA_NULL_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA', 'WIFI_MAC_QOSDATA_CFACK', 'WIFI_MAC_QOSDATA_CFPOLL', 'WIFI_MAC_QOSDATA_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA_NULL', 'WIFI_MAC_QOSDATA_NULL_CFPOLL', 'WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL'], import_from_module='ns.wifi')
     ## qos-utils.h (module 'wifi'): ns3::AcIndex [enumeration]
     module.add_enum('AcIndex', ['AC_BE', 'AC_BK', 'AC_VI', 'AC_VO', 'AC_BE_NQOS', 'AC_UNDEF'], import_from_module='ns.wifi')
-    ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType [enumeration]
-    module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'], import_from_module='ns.wifi')
     ## wifi-phy-standard.h (module 'wifi'): ns3::WifiPhyStandard [enumeration]
     module.add_enum('WifiPhyStandard', ['WIFI_PHY_STANDARD_80211a', 'WIFI_PHY_STANDARD_80211b', 'WIFI_PHY_STANDARD_80211g', 'WIFI_PHY_STANDARD_80211_10MHZ', 'WIFI_PHY_STANDARD_80211_5MHZ', 'WIFI_PHY_STANDARD_holland', 'WIFI_PHY_STANDARD_80211n_2_4GHZ', 'WIFI_PHY_STANDARD_80211n_5GHZ', 'WIFI_PHY_STANDARD_80211ac', 'WIFI_PHY_STANDARD_80211ax_2_4GHZ', 'WIFI_PHY_STANDARD_80211ax_5GHZ', 'WIFI_PHY_STANDARD_UNSPECIFIED'], import_from_module='ns.wifi')
     ## wifi-preamble.h (module 'wifi'): ns3::WifiPreamble [enumeration]
@@ -234,8 +234,6 @@ def register_types(module):
     module.add_class('WifiPhyHelper', import_from_module='ns.wifi', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
     ## wifi-helper.h (module 'wifi'): ns3::WifiPhyHelper::SupportedPcapDataLinkTypes [enumeration]
     module.add_enum('SupportedPcapDataLinkTypes', ['DLT_IEEE802_11', 'DLT_PRISM_HEADER', 'DLT_IEEE802_11_RADIO'], outer_class=root_module['ns3::WifiPhyHelper'], import_from_module='ns.wifi')
-    ## wifi-phy-listener.h (module 'wifi'): ns3::WifiPhyListener [class]
-    module.add_class('WifiPhyListener', allow_subclassing=True, import_from_module='ns.wifi')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStation [struct]
     module.add_class('WifiRemoteStation', import_from_module='ns.wifi')
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiRemoteStationInfo [class]
@@ -943,7 +941,6 @@ def register_methods(root_module):
     register_Ns3WifiMode_methods(root_module, root_module['ns3::WifiMode'])
     register_Ns3WifiModeFactory_methods(root_module, root_module['ns3::WifiModeFactory'])
     register_Ns3WifiPhyHelper_methods(root_module, root_module['ns3::WifiPhyHelper'])
-    register_Ns3WifiPhyListener_methods(root_module, root_module['ns3::WifiPhyListener'])
     register_Ns3WifiRemoteStation_methods(root_module, root_module['ns3::WifiRemoteStation'])
     register_Ns3WifiRemoteStationInfo_methods(root_module, root_module['ns3::WifiRemoteStationInfo'])
     register_Ns3WifiRemoteStationState_methods(root_module, root_module['ns3::WifiRemoteStationState'])
@@ -4447,63 +4444,6 @@ def register_Ns3WifiPhyHelper_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'prefix'), param('ns3::Ptr< ns3::NetDevice >', 'nd'), param('bool', 'promiscuous'), param('bool', 'explicitFilename')], 
                    visibility='private', is_virtual=True)
-    return
-
-def register_Ns3WifiPhyListener_methods(root_module, cls):
-    ## wifi-phy-listener.h (module 'wifi'): ns3::WifiPhyListener::WifiPhyListener() [constructor]
-    cls.add_constructor([])
-    ## wifi-phy-listener.h (module 'wifi'): ns3::WifiPhyListener::WifiPhyListener(ns3::WifiPhyListener const & arg0) [constructor]
-    cls.add_constructor([param('ns3::WifiPhyListener const &', 'arg0')])
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyMaybeCcaBusyStart(ns3::Time duration) [member function]
-    cls.add_method('NotifyMaybeCcaBusyStart', 
-                   'void', 
-                   [param('ns3::Time', 'duration')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyOff() [member function]
-    cls.add_method('NotifyOff', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyOn() [member function]
-    cls.add_method('NotifyOn', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyRxEndError() [member function]
-    cls.add_method('NotifyRxEndError', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyRxEndOk() [member function]
-    cls.add_method('NotifyRxEndOk', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyRxStart(ns3::Time duration) [member function]
-    cls.add_method('NotifyRxStart', 
-                   'void', 
-                   [param('ns3::Time', 'duration')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifySleep() [member function]
-    cls.add_method('NotifySleep', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifySwitchingStart(ns3::Time duration) [member function]
-    cls.add_method('NotifySwitchingStart', 
-                   'void', 
-                   [param('ns3::Time', 'duration')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyTxStart(ns3::Time duration, double txPowerDbm) [member function]
-    cls.add_method('NotifyTxStart', 
-                   'void', 
-                   [param('ns3::Time', 'duration'), param('double', 'txPowerDbm')], 
-                   is_pure_virtual=True, is_virtual=True)
-    ## wifi-phy-listener.h (module 'wifi'): void ns3::WifiPhyListener::NotifyWakeup() [member function]
-    cls.add_method('NotifyWakeup', 
-                   'void', 
-                   [], 
-                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3WifiRemoteStation_methods(root_module, cls):
