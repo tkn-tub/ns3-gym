@@ -1194,9 +1194,18 @@ LteRlcAm::ReassembleAndDeliver (Ptr<Packet> packet)
   std::list < Ptr<Packet> >::iterator it;
 
   // Current reassembling state
-  if      (m_reassemblingState == WAITING_S0_FULL)  NS_LOG_LOGIC ("Reassembling State = 'WAITING_S0_FULL'");
-  else if (m_reassemblingState == WAITING_SI_SF)    NS_LOG_LOGIC ("Reassembling State = 'WAITING_SI_SF'");
-  else                                              NS_LOG_LOGIC ("Reassembling State = Unknown state");
+  if (m_reassemblingState == WAITING_S0_FULL)
+    {  
+      NS_LOG_LOGIC ("Reassembling State = 'WAITING_S0_FULL'");
+    }
+  else if (m_reassemblingState == WAITING_SI_SF)
+    {  
+      NS_LOG_LOGIC ("Reassembling State = 'WAITING_SI_SF'");
+    }
+  else
+    {  
+      NS_LOG_LOGIC ("Reassembling State = Unknown state");
+    }
 
   // Received framing Info
   NS_LOG_LOGIC ("Framing Info = " << (uint16_t)framingInfo);
