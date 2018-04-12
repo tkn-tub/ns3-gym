@@ -202,7 +202,7 @@ main (int argc, char *argv[])
   auto dscpVec = classifier->GetDscpCounts (1);
   for (auto p : dscpVec)
     {
-      std::cout << "  DSCP value:   0x" << std::hex << static_cast<uint32_t>(p.first) << std::dec
+      std::cout << "  DSCP value:   0x" << std::hex << static_cast<uint32_t> (p.first) << std::dec
                 << "  count:   "<< p.second << std::endl;
     }
 
@@ -210,7 +210,7 @@ main (int argc, char *argv[])
 
   std::cout << std::endl << "*** Application statistics ***" << std::endl;
   double thr = 0;
-  uint32_t totalPacketsThr = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
+  uint64_t totalPacketsThr = DynamicCast<PacketSink> (sinkApp.Get (0))->GetTotalRx ();
   thr = totalPacketsThr * 8 / (simulationTime * 1000000.0); //Mbit/s
   std::cout << "  Rx Bytes: " << totalPacketsThr << std::endl;
   std::cout << "  Average Goodput: " << thr << " Mbit/s" << std::endl;

@@ -83,7 +83,7 @@ GoodputSampling (std::string fileName, ApplicationContainer app, Ptr<OutputStrea
 {
   Simulator::Schedule (Seconds (period), &GoodputSampling, fileName, app, stream, period);
   double goodput;
-  uint32_t totalPackets = DynamicCast<PacketSink> (app.Get (0))->GetTotalRx ();
+  uint64_t totalPackets = DynamicCast<PacketSink> (app.Get (0))->GetTotalRx ();
   goodput = totalPackets * 8 / (Simulator::Now ().GetSeconds () * 1024); // Kbit/s
   *stream->GetStream () << Simulator::Now ().GetSeconds () << " " << goodput << std::endl;
 }
@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   std::string flowsDatarate = "20Mbps";
   uint32_t flowsPacketsSize = 1000;
 
-  float startTime = 0.1; // in s
+  float startTime = 0.1f; // in s
   float simDuration = 60;
   float samplingPeriod = 1;
 
