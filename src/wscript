@@ -63,7 +63,7 @@ def configure(conf):
 
     # Append blddir to the module path before recursing into modules
     blddir = os.path.abspath(os.path.join(conf.bldnode.abspath(), conf.variant))
-    conf.env.append_value('NS3_MODULE_PATH', blddir)
+    conf.env.append_value('NS3_MODULE_PATH', blddir + "/lib")
 
     for module in all_modules:
         conf.recurse(module, mandatory=False)
