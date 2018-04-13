@@ -18,15 +18,22 @@
  * Author: Guangyu Pei <guangyu.pei@boeing.com>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/stats-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/gnuplot.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/mobility-model.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("Main");
+NS_LOG_COMPONENT_DEFINE ("ClearChannelCmu");
 
 class Experiment
 {

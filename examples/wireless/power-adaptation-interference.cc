@@ -55,13 +55,25 @@
  * \endcode
  */
 
-#include "ns3/core-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/stats-module.h"
-#include "ns3/flow-monitor-module.h"
+#include "ns3/gnuplot.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/double.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/wifi-mac.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/flow-monitor-helper.h"
+#include "ns3/ipv4-flow-classifier.h"
 
 using namespace ns3;
 using namespace std;

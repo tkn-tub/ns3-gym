@@ -31,12 +31,24 @@
 // The user can choose whether UDP or TCP should be used and can configure
 // some 802.11n parameters (frequency, channel width and guard interval).
 
-#include "ns3/core-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/internet-module.h"
 #include "ns3/gnuplot.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/boolean.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/udp-client-server-helper.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/packet-sink.h"
+#include "ns3/yans-wifi-channel.h"
 
 using namespace ns3;
 

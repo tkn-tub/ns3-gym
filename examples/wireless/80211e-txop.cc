@@ -18,11 +18,21 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/string.h"
+#include "ns3/pointer.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/udp-client-server-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/edca-txop-n.h"
+#include "ns3/wifi-mac.h"
 
 // This is an example that illustrates 802.11 QoS for different Access Categories.
 // It defines 4 independant Wi-Fi networks (working on different logical channels

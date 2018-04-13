@@ -18,11 +18,22 @@
  * Author: Sebastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/boolean.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/packet-sink.h"
+#include "ns3/yans-wifi-channel.h"
 
 // This is a simple example in order to show how to configure an IEEE 802.11n Wi-Fi network
 // with multiple TOS. It outputs the aggregated UDP throughput, which depends on the number of

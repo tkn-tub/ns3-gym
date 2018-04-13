@@ -18,11 +18,20 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/boolean.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/udp-client-server-helper.h"
+#include "ns3/yans-wifi-channel.h"
 
 // This example considers two hidden stations in an 802.11n network which supports MPDU aggregation.
 // The user can specify whether RTS/CTS is used and can set the number of aggregated MPDUs.

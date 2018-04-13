@@ -45,12 +45,22 @@
 // two for the remaining energy on each node and two for the state transitions
 // of each node.
 
-#include "ns3/core-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/energy-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/mobility-model.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/basic-energy-source-helper.h"
+#include "ns3/wifi-radio-energy-model-helper.h"
+#include "ns3/wifi-utils.h"
+#include "ns3/wifi-net-device.h"
 
 using namespace ns3;
 

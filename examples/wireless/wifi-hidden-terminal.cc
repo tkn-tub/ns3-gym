@@ -15,10 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Pavel Boyko <boyko@iitp.ru>
- */
-
-/*
+ * Author: Pavel Boyko <boyko@iitp.ru>
+ *
  * Classical hidden terminal problem and its RTS/CTS solution.
  *
  * Topology: [node 0] <-- -50 dB --> [node 1] <-- -50 dB --> [node 2]
@@ -30,13 +28,22 @@
  *  - IP flow monitor
  */
 
-#include "ns3/core-module.h"
-#include "ns3/propagation-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/flow-monitor-module.h"
-#include "ns3/wifi-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/boolean.h"
+#include "ns3/string.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/udp-echo-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/constant-position-mobility-model.h"
+#include "ns3/propagation-loss-model.h"
+#include "ns3/propagation-delay-model.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/flow-monitor-helper.h"
+#include "ns3/ipv4-flow-classifier.h"
 
 using namespace ns3;
 

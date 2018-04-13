@@ -51,10 +51,18 @@
 // tcpdump -r wifi-simple-infra-0-0.pcap -nn -tt
 //
 
-#include "ns3/core-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/mobility-model.h"
+#include "ns3/internet-stack-helper.h"
 
 using namespace ns3;
 
@@ -93,14 +101,12 @@ int main (int argc, char *argv[])
   bool verbose = false;
 
   CommandLine cmd;
-
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("rss", "received signal strength", rss);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
   cmd.AddValue ("numPackets", "number of packets generated", numPackets);
   cmd.AddValue ("interval", "interval (seconds) between packets", interval);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
-
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);

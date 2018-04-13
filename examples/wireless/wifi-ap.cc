@@ -18,11 +18,19 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/boolean.h"
+#include "ns3/string.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/mobility-model.h"
+#include "ns3/packet-socket-helper.h"
+#include "ns3/packet-socket-address.h"
+#include "ns3/athstats-helper.h"
 
 using namespace ns3;
 
@@ -109,7 +117,6 @@ int main (int argc, char *argv[])
 {
   CommandLine cmd;
   cmd.AddValue ("verbose", "Print trace information if true", g_verbose);
-
   cmd.Parse (argc, argv);
 
   Packet::EnablePrinting ();

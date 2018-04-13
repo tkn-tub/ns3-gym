@@ -79,10 +79,18 @@
 // that are no longer interfering:
 // ./waf --run "wifi-simple-interference --delta=30000"
 
-#include "ns3/core-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/mobility-model.h"
+#include "ns3/internet-stack-helper.h"
 
 using namespace ns3;
 
@@ -144,7 +152,6 @@ int main (int argc, char *argv[])
   double offset = 91;  // This is a magic number used to set the
                        // transmit power, based on other configuration
   CommandLine cmd;
-
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("Prss", "Intended primary received signal strength (dBm)", Prss);
   cmd.AddValue ("Irss", "Intended interfering received signal strength (dBm)", Irss);
@@ -152,7 +159,6 @@ int main (int argc, char *argv[])
   cmd.AddValue ("PpacketSize", "size of application packet sent", PpacketSize);
   cmd.AddValue ("IpacketSize", "size of interfering packet sent", IpacketSize);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
-
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);

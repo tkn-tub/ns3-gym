@@ -69,11 +69,21 @@
 // tcpdump -r wifi-simple-adhoc-grid-0-0.pcap -nn -tt
 //
 
-#include "ns3/core-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/double.h"
+#include "ns3/string.h"
+#include "ns3/log.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/mobility-model.h"
 #include "ns3/olsr-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/internet-stack-helper.h"
 
 using namespace ns3;
 
@@ -117,7 +127,6 @@ int main (int argc, char *argv[])
   bool tracing = false;
 
   CommandLine cmd;
-
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("distance", "distance (m)", distance);
   cmd.AddValue ("packetSize", "size of application packet sent", packetSize);
@@ -128,7 +137,6 @@ int main (int argc, char *argv[])
   cmd.AddValue ("numNodes", "number of nodes", numNodes);
   cmd.AddValue ("sinkNode", "Receiver node number", sinkNode);
   cmd.AddValue ("sourceNode", "Sender node number", sourceNode);
-
   cmd.Parse (argc, argv);
   // Convert to time object
   Time interPacketInterval = Seconds (interval);

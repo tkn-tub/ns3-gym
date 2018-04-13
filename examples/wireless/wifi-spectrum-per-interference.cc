@@ -24,12 +24,26 @@
  */
 
 #include <iomanip>
-#include "ns3/core-module.h"
-#include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/spectrum-module.h"
-#include "ns3/internet-module.h"
+#include "ns3/command-line.h"
+#include "ns3/config.h"
+#include "ns3/string.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/spectrum-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/internet-stack-helper.h"
+#include "ns3/ipv4-address-helper.h"
+#include "ns3/udp-client-server-helper.h"
+#include "ns3/packet-sink-helper.h"
+#include "ns3/on-off-helper.h"
+#include "ns3/packet-sink.h"
+#include "ns3/yans-wifi-channel.h"
+#include "ns3/multi-model-spectrum-channel.h"
+#include "ns3/propagation-loss-model.h"
+#include "ns3/waveform-generator.h"
+#include "ns3/waveform-generator-helper.h"
+#include "ns3/non-communicating-net-device.h"
+#include "ns3/wifi-net-device.h"
 
 // This is a simple example of an IEEE 802.11n Wi-Fi network with a
 // non-Wi-Fi interferer.  It is an adaptation of the wifi-spectrum-per-example
