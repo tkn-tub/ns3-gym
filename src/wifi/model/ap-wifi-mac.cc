@@ -20,15 +20,19 @@
  *          Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "ap-wifi-mac.h"
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/pointer.h"
+#include "ns3/string.h"
+#include "ns3/random-variable-stream.h"
+#include "ap-wifi-mac.h"
 #include "mac-low.h"
 #include "mac-tx-middle.h"
 #include "mgt-headers.h"
 #include "msdu-aggregator.h"
 #include "amsdu-subframe-header.h"
+#include "wifi-phy.h"
 
 namespace ns3 {
 

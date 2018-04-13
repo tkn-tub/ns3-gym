@@ -18,15 +18,16 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "ns3/packet.h"
+#include "ns3/constant-position-mobility-model.h"
+#include "ns3/simulator.h"
+#include "ns3/command-line.h"
+#include "ns3/flow-id-tag.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/nist-error-rate-model.h"
-#include "ns3/constant-position-mobility-model.h"
-#include "ns3/simulator.h"
-#include "ns3/command-line.h"
-#include "ns3/flow-id-tag.h"
 
 using namespace ns3;
 

@@ -21,6 +21,7 @@
  *          Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/string.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/wifi-net-device.h"

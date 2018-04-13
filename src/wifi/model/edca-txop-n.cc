@@ -22,6 +22,7 @@
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/random-variable-stream.h"
 #include "edca-txop-n.h"
 #include "dcf-manager.h"
 #include "dcf-state.h"
@@ -34,6 +35,7 @@
 #include "wifi-remote-station-manager.h"
 #include "msdu-aggregator.h"
 #include "mpdu-aggregator.h"
+#include "ctrl-headers.h"
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }

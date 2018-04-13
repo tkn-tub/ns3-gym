@@ -49,6 +49,7 @@
 // logs associated to the chosen scenario.
 //
 
+#include "ns3/packet.h"
 #include "ns3/core-module.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-phy.h"

@@ -19,7 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *         Junling Bu <linlinjavaer@gmail.com>
  */
+
 #include "ns3/log.h"
+#include "ns3/event-id.h"
+#include "ns3/wifi-phy.h"
 #include "wave-mac-low.h"
 #include "higher-tx-tag.h"
 

@@ -23,6 +23,7 @@
 #include "qos-utils.h"
 #include "wifi-utils.h"
 #include "wifi-mac-header.h"
+#include "ctrl-headers.h"
 
 #define WINSIZE_ASSERT NS_ASSERT ((m_winEnd - m_winStart + 4096) % 4096 == m_winSize - 1)
 

@@ -18,11 +18,13 @@
  * Author: Matías Richart <mrichart@fing.edu.uy>
  */
 
+#include "ns3/packet.h"
 #include "ns3/log.h"
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/simulator.h"
+#include "ns3/data-rate.h"
 #include "rrpaa-wifi-manager.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"

@@ -23,13 +23,16 @@
 #ifndef MAC_LOW_H
 #define MAC_LOW_H
 
-#include "wifi-phy.h"
+#include "ns3/object.h"
+#include "ns3/nstime.h"
 #include "dcf-manager.h"
 #include "block-ack-cache.h"
 #include "mac-low-transmission-parameters.h"
 #include "qos-utils.h"
 #include "wifi-mac-header.h"
-#include "ctrl-headers.h"
+#include "wifi-tx-vector.h"
+#include "block-ack-type.h"
+#include "wifi-mpdu-type.h"
 
 class TwoLevelAggregationTest;
 class AmpduAggregationTest;
@@ -44,6 +47,8 @@ class WifiMacQueue;
 class BlockAckAgreement;
 class MgtAddBaResponseHeader;
 class WifiRemoteStationManager;
+class CtrlBAckRequestHeader;
+class CtrlBAckResponseHeader;
 
 /**
  * \ingroup wifi

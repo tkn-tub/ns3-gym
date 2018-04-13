@@ -21,8 +21,10 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "sta-wifi-mac.h"
+#include "wifi-phy.h"
 #include "mac-low.h"
 #include "mgt-headers.h"
 

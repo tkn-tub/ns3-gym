@@ -22,7 +22,8 @@
 #define WIFI_PHY_TAG_H
 
 #include <ns3/tag.h>
-#include "wifi-phy.h"
+#include "wifi-mpdu-type.h"
+#include "wifi-tx-vector.h"
 
 namespace ns3 {
 

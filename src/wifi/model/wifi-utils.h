@@ -21,8 +21,7 @@
 #ifndef WIFI_UTILS_H
 #define WIFI_UTILS_H
 
-#include "ns3/uinteger.h"
-#include "ctrl-headers.h"
+#include "block-ack-type.h"
 
 namespace ns3 {
 

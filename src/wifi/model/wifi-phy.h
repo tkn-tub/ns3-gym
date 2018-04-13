@@ -22,14 +22,10 @@
 #ifndef WIFI_PHY_H
 #define WIFI_PHY_H
 
-#include <map>
 #include "ns3/event-id.h"
-#include "ns3/mobility-model.h"
-#include "ns3/random-variable-stream.h"
+#include "wifi-mpdu-type.h"
 #include "wifi-phy-standard.h"
 #include "interference-helper.h"
-#include "ns3/node.h"
-#include "ns3/string.h"
 #include "wifi-phy-state-helper.h"
 
 namespace ns3 {
@@ -39,23 +35,12 @@ namespace ns3 {
 #define HT_PHY 127
 
 class Channel;
+class NetDevice;
+class MobilityModel;
 class WifiPhyStateHelper;
 class FrameCaptureModel;
 class WifiRadioEnergyModel;
-
-/**
- * This enumeration defines the type of an MPDU.
- */
-/// MpduType enumeration
-enum MpduType
-{
-  /** The MPDU is not part of an A-MPDU */
-  NORMAL_MPDU = 0,
-  /** The MPDU is part of an A-MPDU, but is not the last aggregate */
-  MPDU_IN_AGGREGATE,
-  /** The MPDU is the last aggregate in an A-MPDU */
-  LAST_MPDU_IN_AGGREGATE
-};
+class UniformRandomVariable;
 
 /// SignalNoiseDbm structure
 struct SignalNoiseDbm

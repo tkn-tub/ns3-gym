@@ -20,6 +20,7 @@
 
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
+#include "ns3/data-rate.h"
 #include "aparf-wifi-manager.h"
 #include "wifi-phy.h"
 

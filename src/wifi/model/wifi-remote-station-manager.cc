@@ -20,8 +20,11 @@
 
 #include "ns3/log.h"
 #include "ns3/boolean.h"
+#include "ns3/uinteger.h"
 #include "ns3/enum.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
+#include "ns3/tag.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-phy.h"
 #include "wifi-mac.h"

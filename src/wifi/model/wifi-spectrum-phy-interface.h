@@ -21,7 +21,7 @@
 #ifndef WIFI_SPECTRUM_PHY_INTERFACE_H
 #define WIFI_SPECTRUM_PHY_INTERFACE_H
 
-#include <ns3/spectrum-phy.h>
+#include "ns3/spectrum-phy.h"
 
 namespace ns3 {
 

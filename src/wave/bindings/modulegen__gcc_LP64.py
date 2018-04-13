@@ -20,7 +20,7 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
-    ## wifi-phy.h (module 'wifi'): ns3::MpduType [enumeration]
+    ## wifi-mpdu-type.h (module 'wifi'): ns3::MpduType [enumeration]
     module.add_enum('MpduType', ['NORMAL_MPDU', 'MPDU_IN_AGGREGATE', 'LAST_MPDU_IN_AGGREGATE'], import_from_module='ns.wifi')
     ## channel-scheduler.h (module 'wave'): ns3::ChannelAccess [enumeration]
     module.add_enum('ChannelAccess', ['ContinuousAccess', 'AlternatingAccess', 'ExtendedAccess', 'DefaultCchAccess', 'NoAccess'])
@@ -32,7 +32,7 @@ def register_types(module):
     module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME', 'LOG_PREFIX_NODE', 'LOG_PREFIX_LEVEL', 'LOG_PREFIX_ALL'], import_from_module='ns.core')
     ## edca-txop-n.h (module 'wifi'): ns3::TypeOfStation [enumeration]
     module.add_enum('TypeOfStation', ['STA', 'AP', 'ADHOC_STA', 'MESH', 'HT_STA', 'HT_AP', 'HT_ADHOC_STA', 'OCB'], import_from_module='ns.wifi')
-    ## ctrl-headers.h (module 'wifi'): ns3::BlockAckType [enumeration]
+    ## block-ack-type.h (module 'wifi'): ns3::BlockAckType [enumeration]
     module.add_enum('BlockAckType', ['BASIC_BLOCK_ACK', 'COMPRESSED_BLOCK_ACK', 'MULTI_TID_BLOCK_ACK'], import_from_module='ns.wifi')
     ## wifi-mac-header.h (module 'wifi'): ns3::WifiMacType [enumeration]
     module.add_enum('WifiMacType', ['WIFI_MAC_CTL_CTLWRAPPER', 'WIFI_MAC_CTL_RTS', 'WIFI_MAC_CTL_CTS', 'WIFI_MAC_CTL_ACK', 'WIFI_MAC_CTL_BACKREQ', 'WIFI_MAC_CTL_BACKRESP', 'WIFI_MAC_MGT_BEACON', 'WIFI_MAC_MGT_ASSOCIATION_REQUEST', 'WIFI_MAC_MGT_ASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_DISASSOCIATION', 'WIFI_MAC_MGT_REASSOCIATION_REQUEST', 'WIFI_MAC_MGT_REASSOCIATION_RESPONSE', 'WIFI_MAC_MGT_PROBE_REQUEST', 'WIFI_MAC_MGT_PROBE_RESPONSE', 'WIFI_MAC_MGT_AUTHENTICATION', 'WIFI_MAC_MGT_DEAUTHENTICATION', 'WIFI_MAC_MGT_ACTION', 'WIFI_MAC_MGT_ACTION_NO_ACK', 'WIFI_MAC_MGT_MULTIHOP_ACTION', 'WIFI_MAC_DATA', 'WIFI_MAC_DATA_CFACK', 'WIFI_MAC_DATA_CFPOLL', 'WIFI_MAC_DATA_CFACK_CFPOLL', 'WIFI_MAC_DATA_NULL', 'WIFI_MAC_DATA_NULL_CFACK', 'WIFI_MAC_DATA_NULL_CFPOLL', 'WIFI_MAC_DATA_NULL_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA', 'WIFI_MAC_QOSDATA_CFACK', 'WIFI_MAC_QOSDATA_CFPOLL', 'WIFI_MAC_QOSDATA_CFACK_CFPOLL', 'WIFI_MAC_QOSDATA_NULL', 'WIFI_MAC_QOSDATA_NULL_CFPOLL', 'WIFI_MAC_QOSDATA_NULL_CFACK_CFPOLL'], import_from_module='ns.wifi')
@@ -476,10 +476,6 @@ def register_types(module):
     module.add_class('ChannelScheduler', parent=root_module['ns3::Object'])
     ## random-variable-stream.h (module 'core'): ns3::ConstantRandomVariable [class]
     module.add_class('ConstantRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
-    ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckRequestHeader [class]
-    module.add_class('CtrlBAckRequestHeader', import_from_module='ns.wifi', parent=root_module['ns3::Header'])
-    ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckResponseHeader [class]
-    module.add_class('CtrlBAckResponseHeader', import_from_module='ns.wifi', parent=root_module['ns3::Header'])
     ## data-rate.h (module 'network'): ns3::DataRateChecker [class]
     module.add_class('DataRateChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## data-rate.h (module 'network'): ns3::DataRateValue [class]
@@ -608,10 +604,6 @@ def register_types(module):
     module.add_class('SsidChecker', import_from_module='ns.wifi', parent=root_module['ns3::AttributeChecker'])
     ## ssid.h (module 'wifi'): ns3::SsidValue [class]
     module.add_class('SsidValue', import_from_module='ns.wifi', parent=root_module['ns3::AttributeValue'])
-    ## string.h (module 'core'): ns3::StringChecker [class]
-    module.add_class('StringChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
-    ## string.h (module 'core'): ns3::StringValue [class]
-    module.add_class('StringValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -1050,8 +1042,6 @@ def register_methods(root_module):
     register_Ns3ChannelManager_methods(root_module, root_module['ns3::ChannelManager'])
     register_Ns3ChannelScheduler_methods(root_module, root_module['ns3::ChannelScheduler'])
     register_Ns3ConstantRandomVariable_methods(root_module, root_module['ns3::ConstantRandomVariable'])
-    register_Ns3CtrlBAckRequestHeader_methods(root_module, root_module['ns3::CtrlBAckRequestHeader'])
-    register_Ns3CtrlBAckResponseHeader_methods(root_module, root_module['ns3::CtrlBAckResponseHeader'])
     register_Ns3DataRateChecker_methods(root_module, root_module['ns3::DataRateChecker'])
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3DcaTxop_methods(root_module, root_module['ns3::DcaTxop'])
@@ -1113,8 +1103,6 @@ def register_methods(root_module):
     register_Ns3Ssid_methods(root_module, root_module['ns3::Ssid'])
     register_Ns3SsidChecker_methods(root_module, root_module['ns3::SsidChecker'])
     register_Ns3SsidValue_methods(root_module, root_module['ns3::SsidValue'])
-    register_Ns3StringChecker_methods(root_module, root_module['ns3::StringChecker'])
-    register_Ns3StringValue_methods(root_module, root_module['ns3::StringValue'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
@@ -11248,218 +11236,6 @@ def register_Ns3ConstantRandomVariable_methods(root_module, cls):
                    is_virtual=True)
     return
 
-def register_Ns3CtrlBAckRequestHeader_methods(root_module, cls):
-    ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckRequestHeader::CtrlBAckRequestHeader(ns3::CtrlBAckRequestHeader const & arg0) [constructor]
-    cls.add_constructor([param('ns3::CtrlBAckRequestHeader const &', 'arg0')])
-    ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckRequestHeader::CtrlBAckRequestHeader() [constructor]
-    cls.add_constructor([])
-    ## ctrl-headers.h (module 'wifi'): uint32_t ns3::CtrlBAckRequestHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): ns3::TypeId ns3::CtrlBAckRequestHeader::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): uint32_t ns3::CtrlBAckRequestHeader::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): uint16_t ns3::CtrlBAckRequestHeader::GetStartingSequence() const [member function]
-    cls.add_method('GetStartingSequence', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): uint16_t ns3::CtrlBAckRequestHeader::GetStartingSequenceControl() const [member function]
-    cls.add_method('GetStartingSequenceControl', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): uint8_t ns3::CtrlBAckRequestHeader::GetTidInfo() const [member function]
-    cls.add_method('GetTidInfo', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): static ns3::TypeId ns3::CtrlBAckRequestHeader::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckRequestHeader::IsBasic() const [member function]
-    cls.add_method('IsBasic', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckRequestHeader::IsCompressed() const [member function]
-    cls.add_method('IsCompressed', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckRequestHeader::IsMultiTid() const [member function]
-    cls.add_method('IsMultiTid', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckRequestHeader::MustSendHtImmediateAck() const [member function]
-    cls.add_method('MustSendHtImmediateAck', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckRequestHeader::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckRequestHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckRequestHeader::SetHtImmediateAck(bool immediateAck) [member function]
-    cls.add_method('SetHtImmediateAck', 
-                   'void', 
-                   [param('bool', 'immediateAck')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckRequestHeader::SetStartingSequence(uint16_t seq) [member function]
-    cls.add_method('SetStartingSequence', 
-                   'void', 
-                   [param('uint16_t', 'seq')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckRequestHeader::SetTidInfo(uint8_t tid) [member function]
-    cls.add_method('SetTidInfo', 
-                   'void', 
-                   [param('uint8_t', 'tid')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckRequestHeader::SetType(ns3::BlockAckType type) [member function]
-    cls.add_method('SetType', 
-                   'void', 
-                   [param('ns3::BlockAckType', 'type')])
-    return
-
-def register_Ns3CtrlBAckResponseHeader_methods(root_module, cls):
-    ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckResponseHeader::CtrlBAckResponseHeader(ns3::CtrlBAckResponseHeader const & arg0) [constructor]
-    cls.add_constructor([param('ns3::CtrlBAckResponseHeader const &', 'arg0')])
-    ## ctrl-headers.h (module 'wifi'): ns3::CtrlBAckResponseHeader::CtrlBAckResponseHeader() [constructor]
-    cls.add_constructor([])
-    ## ctrl-headers.h (module 'wifi'): uint32_t ns3::CtrlBAckResponseHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
-    cls.add_method('Deserialize', 
-                   'uint32_t', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): uint16_t const * ns3::CtrlBAckResponseHeader::GetBitmap() const [member function]
-    cls.add_method('GetBitmap', 
-                   'uint16_t const *', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): uint64_t ns3::CtrlBAckResponseHeader::GetCompressedBitmap() const [member function]
-    cls.add_method('GetCompressedBitmap', 
-                   'uint64_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): ns3::TypeId ns3::CtrlBAckResponseHeader::GetInstanceTypeId() const [member function]
-    cls.add_method('GetInstanceTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): uint32_t ns3::CtrlBAckResponseHeader::GetSerializedSize() const [member function]
-    cls.add_method('GetSerializedSize', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): uint16_t ns3::CtrlBAckResponseHeader::GetStartingSequence() const [member function]
-    cls.add_method('GetStartingSequence', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): uint16_t ns3::CtrlBAckResponseHeader::GetStartingSequenceControl() const [member function]
-    cls.add_method('GetStartingSequenceControl', 
-                   'uint16_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): uint8_t ns3::CtrlBAckResponseHeader::GetTidInfo() const [member function]
-    cls.add_method('GetTidInfo', 
-                   'uint8_t', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): static ns3::TypeId ns3::CtrlBAckResponseHeader::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsBasic() const [member function]
-    cls.add_method('IsBasic', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsCompressed() const [member function]
-    cls.add_method('IsCompressed', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsFragmentReceived(uint16_t seq, uint8_t frag) const [member function]
-    cls.add_method('IsFragmentReceived', 
-                   'bool', 
-                   [param('uint16_t', 'seq'), param('uint8_t', 'frag')], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsMultiTid() const [member function]
-    cls.add_method('IsMultiTid', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::IsPacketReceived(uint16_t seq) const [member function]
-    cls.add_method('IsPacketReceived', 
-                   'bool', 
-                   [param('uint16_t', 'seq')], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): bool ns3::CtrlBAckResponseHeader::MustSendHtImmediateAck() const [member function]
-    cls.add_method('MustSendHtImmediateAck', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::Print(std::ostream & os) const [member function]
-    cls.add_method('Print', 
-                   'void', 
-                   [param('std::ostream &', 'os')], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::ResetBitmap() [member function]
-    cls.add_method('ResetBitmap', 
-                   'void', 
-                   [])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
-    cls.add_method('Serialize', 
-                   'void', 
-                   [param('ns3::Buffer::Iterator', 'start')], 
-                   is_const=True, is_virtual=True)
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetHtImmediateAck(bool immediateAck) [member function]
-    cls.add_method('SetHtImmediateAck', 
-                   'void', 
-                   [param('bool', 'immediateAck')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetReceivedFragment(uint16_t seq, uint8_t frag) [member function]
-    cls.add_method('SetReceivedFragment', 
-                   'void', 
-                   [param('uint16_t', 'seq'), param('uint8_t', 'frag')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetReceivedPacket(uint16_t seq) [member function]
-    cls.add_method('SetReceivedPacket', 
-                   'void', 
-                   [param('uint16_t', 'seq')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetStartingSequence(uint16_t seq) [member function]
-    cls.add_method('SetStartingSequence', 
-                   'void', 
-                   [param('uint16_t', 'seq')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetStartingSequenceControl(uint16_t seqControl) [member function]
-    cls.add_method('SetStartingSequenceControl', 
-                   'void', 
-                   [param('uint16_t', 'seqControl')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetTidInfo(uint8_t tid) [member function]
-    cls.add_method('SetTidInfo', 
-                   'void', 
-                   [param('uint8_t', 'tid')])
-    ## ctrl-headers.h (module 'wifi'): void ns3::CtrlBAckResponseHeader::SetType(ns3::BlockAckType type) [member function]
-    cls.add_method('SetType', 
-                   'void', 
-                   [param('ns3::BlockAckType', 'type')])
-    return
-
 def register_Ns3DataRateChecker_methods(root_module, cls):
     ## data-rate.h (module 'network'): ns3::DataRateChecker::DataRateChecker() [constructor]
     cls.add_constructor([])
@@ -15533,46 +15309,6 @@ def register_Ns3SsidValue_methods(root_module, cls):
     cls.add_method('Set', 
                    'void', 
                    [param('ns3::Ssid const &', 'value')])
-    return
-
-def register_Ns3StringChecker_methods(root_module, cls):
-    ## string.h (module 'core'): ns3::StringChecker::StringChecker() [constructor]
-    cls.add_constructor([])
-    ## string.h (module 'core'): ns3::StringChecker::StringChecker(ns3::StringChecker const & arg0) [constructor]
-    cls.add_constructor([param('ns3::StringChecker const &', 'arg0')])
-    return
-
-def register_Ns3StringValue_methods(root_module, cls):
-    ## string.h (module 'core'): ns3::StringValue::StringValue() [constructor]
-    cls.add_constructor([])
-    ## string.h (module 'core'): ns3::StringValue::StringValue(std::string const & value) [constructor]
-    cls.add_constructor([param('std::string const &', 'value')])
-    ## string.h (module 'core'): ns3::StringValue::StringValue(ns3::StringValue const & arg0) [constructor]
-    cls.add_constructor([param('ns3::StringValue const &', 'arg0')])
-    ## string.h (module 'core'): ns3::Ptr<ns3::AttributeValue> ns3::StringValue::Copy() const [member function]
-    cls.add_method('Copy', 
-                   'ns3::Ptr< ns3::AttributeValue >', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## string.h (module 'core'): bool ns3::StringValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
-    cls.add_method('DeserializeFromString', 
-                   'bool', 
-                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_virtual=True)
-    ## string.h (module 'core'): std::string ns3::StringValue::Get() const [member function]
-    cls.add_method('Get', 
-                   'std::string', 
-                   [], 
-                   is_const=True)
-    ## string.h (module 'core'): std::string ns3::StringValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
-    cls.add_method('SerializeToString', 
-                   'std::string', 
-                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
-                   is_const=True, is_virtual=True)
-    ## string.h (module 'core'): void ns3::StringValue::Set(std::string const & value) [member function]
-    cls.add_method('Set', 
-                   'void', 
-                   [param('std::string const &', 'value')])
     return
 
 def register_Ns3TimeValue_methods(root_module, cls):

@@ -23,6 +23,7 @@
 #ifndef MGT_HEADERS_H
 #define MGT_HEADERS_H
 
+#include "ns3/mac48-address.h"
 #include "status-code.h"
 #include "capability-information.h"
 #include "supported-rates.h"
@@ -37,7 +38,6 @@
 #include "edca-parameter-set.h"
 #include "he-capabilities.h"
 #include "he-operation.h"
-#include "ns3/address-utils.h"
 
 namespace ns3 {
 

@@ -23,6 +23,7 @@
 #include "dcf-manager.h"
 #include "dcf-state.h"
 #include "wifi-phy-listener.h"
+#include "wifi-phy.h"
 #include "mac-low.h"
 
 namespace ns3 {

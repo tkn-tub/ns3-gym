@@ -18,6 +18,7 @@
  * Author: Stefano Avallone <stavallo@unina.it>
  */
 
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/pointer.h"
 #include "ns3/ssid.h"

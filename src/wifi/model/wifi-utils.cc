@@ -21,6 +21,7 @@
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "wifi-utils.h"
+#include "ctrl-headers.h"
 #include "wifi-mac-header.h"
 #include "wifi-mac-trailer.h"
 #include "wifi-mode.h"

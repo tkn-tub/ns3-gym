@@ -18,6 +18,7 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "ns3/wifi-mac-queue.h"

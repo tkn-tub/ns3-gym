@@ -18,6 +18,7 @@
  * Author: Dean Armstrong <deanarm@gmail.com>
  */
 
+#include "ns3/string.h"
 #include "ns3/test.h"
 #include "ns3/uinteger.h"
 #include "ns3/boolean.h"

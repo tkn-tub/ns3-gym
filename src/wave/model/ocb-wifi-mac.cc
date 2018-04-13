@@ -19,6 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *         Junling Bu <linlinjavaer@gmail.com>
  */
+
+#include "ns3/event-id.h"
 #include "ns3/pointer.h"
 #include "ns3/log.h"
 #include "ns3/string.h"

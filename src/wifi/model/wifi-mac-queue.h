@@ -24,7 +24,6 @@
 #ifndef WIFI_MAC_QUEUE_H
 #define WIFI_MAC_QUEUE_H
 
-#include "ns3/queue.h"
 #include "wifi-mac-queue-item.h"
 
 namespace ns3 {

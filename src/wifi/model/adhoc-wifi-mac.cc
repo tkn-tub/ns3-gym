@@ -21,6 +21,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/packet.h"
 #include "adhoc-wifi-mac.h"
 #include "ht-capabilities.h"
 #include "vht-capabilities.h"

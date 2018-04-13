@@ -21,7 +21,7 @@
 #ifndef BLOCK_ACK_CACHE_H
 #define BLOCK_ACK_CACHE_H
 
-#include <stdint.h>
+//#include <stdint.h>
 
 namespace ns3 {
 

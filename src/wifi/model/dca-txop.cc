@@ -20,6 +20,7 @@
 
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/random-variable-stream.h"
 #include "dca-txop.h"
 #include "dcf-manager.h"
 #include "dcf-state.h"

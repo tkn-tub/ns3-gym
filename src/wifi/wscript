@@ -85,13 +85,13 @@ def build(bld):
         'model/simple-frame-capture-model.cc',
         'model/he-operation.cc',
         'model/extended-capabilities.cc',
+        'model/wifi-mac-queue-item.cc',
         'helper/wifi-radio-energy-model-helper.cc',
         'helper/athstats-helper.cc',
         'helper/wifi-helper.cc',
         'helper/yans-wifi-helper.cc',
         'helper/spectrum-wifi-helper.cc',
         'helper/wifi-mac-helper.cc',
-        'model/wifi-mac-queue-item.cc',
         ]
 
     obj_test = bld.create_ns3_module_test_library('wifi')
@@ -194,15 +194,17 @@ def build(bld):
         'model/qos-blocked-destinations.h',
         'model/he-operation.h',
         'model/extended-capabilities.h',
+        'model/wifi-mac-queue-item.h',
+        'model/wifi-phy-state.h',
+        'model/wifi-phy-listener.h',
+        'model/block-ack-type.h',
+        'model/wifi-mpdu-type.h',
         'helper/wifi-radio-energy-model-helper.h',
         'helper/athstats-helper.h',
         'helper/wifi-helper.h',
         'helper/yans-wifi-helper.h',
         'helper/spectrum-wifi-helper.h',
         'helper/wifi-mac-helper.h',
-        'model/wifi-mac-queue-item.h',
-        'model/wifi-phy-state.h',
-        'model/wifi-phy-listener.h',
         ]
 
     if bld.env['ENABLE_GSL']:

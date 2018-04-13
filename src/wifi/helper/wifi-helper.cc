@@ -20,17 +20,18 @@
  *          Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#include "wifi-helper.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/minstrel-ht-wifi-manager.h"
 #include "ns3/ap-wifi-mac.h"
 #include "ns3/ampdu-subframe-header.h"
+#include "ns3/mobility-model.h"
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "ns3/radiotap-header.h"
 #include "ns3/config.h"
 #include "ns3/names.h"
+#include "wifi-helper.h"
 
 namespace ns3 {
 

@@ -22,6 +22,7 @@
 #include "ns3/simulator.h"
 #include "block-ack-manager.h"
 #include "wifi-remote-station-manager.h"
+#include "ctrl-headers.h"
 #include "mgt-headers.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"

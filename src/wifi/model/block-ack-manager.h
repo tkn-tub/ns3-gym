@@ -21,17 +21,18 @@
 #ifndef BLOCK_ACK_MANAGER_H
 #define BLOCK_ACK_MANAGER_H
 
+#include <map>
+#include "ns3/nstime.h"
 #include "wifi-mac-header.h"
 #include "originator-block-ack-agreement.h"
-#include "ctrl-headers.h"
-#include "ns3/nstime.h"
-#include <map>
+#include "block-ack-type.h"
 
 namespace ns3 {
 
 class WifiRemoteStationManager;
 class MgtAddBaResponseHeader;
 class MgtAddBaRequestHeader;
+class CtrlBAckResponseHeader;
 class MacTxMiddle;
 class WifiMacQueue;
 class WifiMode;

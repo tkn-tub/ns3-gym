@@ -22,18 +22,9 @@
 #define CTRL_HEADERS_H
 
 #include "ns3/header.h"
+#include "block-ack-type.h"
 
 namespace ns3 {
-
-/**
- * Enumeration for different block ACK policies.
- */
-enum BlockAckType
-{
-  BASIC_BLOCK_ACK,
-  COMPRESSED_BLOCK_ACK,
-  MULTI_TID_BLOCK_ACK
-};
 
 /**
  * \ingroup wifi
