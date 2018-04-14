@@ -87,7 +87,7 @@ namespace SystemPath {
    *
    * \ingroup systempath
    * \param [in] begin Iterator to first element to join
-   * \param [in] end Iterator to last element to join
+   * \param [in] end Iterator to one past the last element to join
    * \return A path that is a concatenation of all the input elements.
    */
   std::string Join (std::list<std::string>::const_iterator begin,
