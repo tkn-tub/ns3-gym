@@ -20,10 +20,10 @@
 
 #include "ns3/log.h"
 #include "ns3/pointer.h"
+#include "ns3/simulator.h"
 #include "ns3/random-variable-stream.h"
 #include "dca-txop.h"
 #include "dcf-manager.h"
-#include "dcf-state.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "mac-low.h"
@@ -75,10 +75,15 @@ DcaTxop::GetTypeId (void)
 
 DcaTxop::DcaTxop ()
   : m_dcfManager (0),
+    m_cwMin (0),
+    m_cwMax (0),
+    m_cw (0),
+    m_accessRequested (false),
+    m_backoffSlots (0),
+    m_backoffStart (Seconds (0.0)),
     m_currentPacket (0)
 {
   NS_LOG_FUNCTION (this);
-  m_dcfState = CreateObject<DcfState> (this);
   m_queue = CreateObject<WifiMacQueue> ();
   m_rng = CreateObject<UniformRandomVariable> ();
 }
@@ -95,7 +100,6 @@ DcaTxop::DoDispose (void)
   m_queue = 0;
   m_low = 0;
   m_stationManager = 0;
-  m_dcfState = 0;
   m_rng = 0;
   m_txMiddle = 0;
 }
@@ -105,7 +109,7 @@ DcaTxop::SetDcfManager (const Ptr<DcfManager> manager)
 {
   NS_LOG_FUNCTION (this << manager);
   m_dcfManager = manager;
-  m_dcfManager->Add (m_dcfState);
+  m_dcfManager->Add (this);
 }
 
 void DcaTxop::SetTxMiddle (const Ptr<MacTxMiddle> txMiddle)
@@ -170,52 +174,121 @@ void
 DcaTxop::SetMinCw (uint32_t minCw)
 {
   NS_LOG_FUNCTION (this << minCw);
-  m_dcfState->SetCwMin (minCw);
+  bool changed = (m_cwMin != minCw);
+  m_cwMin = minCw;
+  if (changed == true)
+    {
+      ResetCw ();
+    }
 }
 
 void
 DcaTxop::SetMaxCw (uint32_t maxCw)
 {
   NS_LOG_FUNCTION (this << maxCw);
-  m_dcfState->SetCwMax (maxCw);
+  bool changed = (m_cwMax != maxCw);
+  m_cwMax = maxCw;
+  if (changed == true)
+    {
+      ResetCw ();
+    }
+}
+
+uint32_t
+DcaTxop::GetCw (void) const
+{
+  return m_cw;
+}
+
+void
+DcaTxop::ResetCw (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_cw = m_cwMin;
+}
+
+void
+DcaTxop::UpdateFailedCw (void)
+{
+  NS_LOG_FUNCTION (this);
+  //see 802.11-2012, section 9.19.2.5
+  m_cw = std::min ( 2 * (m_cw + 1) - 1, m_cwMax);
+}
+
+uint32_t
+DcaTxop::GetBackoffSlots (void) const
+{
+  return m_backoffSlots;
+}
+
+Time
+DcaTxop::GetBackoffStart (void) const
+{
+  return m_backoffStart;
+}
+
+void
+DcaTxop::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
+{
+  NS_LOG_FUNCTION (this << nSlots << backoffUpdateBound);
+  m_backoffSlots -= nSlots;
+  m_backoffStart = backoffUpdateBound;
+  NS_LOG_DEBUG ("update slots=" << nSlots << " slots, backoff=" << m_backoffSlots);
+}
+
+void
+DcaTxop::StartBackoffNow (uint32_t nSlots)
+{
+  NS_LOG_FUNCTION (this << nSlots);
+  if (m_backoffSlots != 0)
+    {
+      NS_LOG_DEBUG ("reset backoff from " << m_backoffSlots << " to " << nSlots << " slots");
+    }
+  else
+    {
+      NS_LOG_DEBUG ("start backoff=" << nSlots << " slots");
+    }
+  m_backoffSlots = nSlots;
+  m_backoffStart = Simulator::Now ();
 }
 
 void
 DcaTxop::SetAifsn (uint32_t aifsn)
 {
   NS_LOG_FUNCTION (this << aifsn);
-  m_dcfState->SetAifsn (aifsn);
+  m_aifsn = aifsn;
 }
 
 void
 DcaTxop::SetTxopLimit (Time txopLimit)
 {
   NS_LOG_FUNCTION (this << txopLimit);
-  m_dcfState->SetTxopLimit (txopLimit);
+  NS_ASSERT_MSG ((txopLimit.GetMicroSeconds () % 32 == 0), "The TXOP limit must be expressed in multiple of 32 microseconds!");
+  m_txopLimit = txopLimit;
 }
 
 uint32_t
 DcaTxop::GetMinCw (void) const
 {
-  return m_dcfState->GetCwMin ();
+  return m_cwMin;
 }
 
 uint32_t
 DcaTxop::GetMaxCw (void) const
 {
-  return m_dcfState->GetCwMax ();
+  return m_cwMax;
 }
 
 uint32_t
 DcaTxop::GetAifsn (void) const
 {
-  return m_dcfState->GetAifsn ();
+  return m_aifsn;
 }
 
 Time
 DcaTxop::GetTxopLimit (void) const
 {
-  return m_dcfState->GetTxopLimit ();
+  return m_txopLimit;
 }
 
 void
@@ -241,9 +314,9 @@ DcaTxop::RestartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if ((m_currentPacket != 0
        || !m_queue->IsEmpty ())
-      && !m_dcfState->IsAccessRequested ())
+      && !IsAccessRequested ())
     {
-      m_dcfManager->RequestAccess (m_dcfState);
+      m_dcfManager->RequestAccess (this);
     }
 }
 
@@ -253,9 +326,9 @@ DcaTxop::StartAccessIfNeeded (void)
   NS_LOG_FUNCTION (this);
   if (m_currentPacket == 0
       && !m_queue->IsEmpty ()
-      && !m_dcfState->IsAccessRequested ())
+      && !IsAccessRequested ())
     {
-      m_dcfManager->RequestAccess (m_dcfState);
+      m_dcfManager->RequestAccess (this);
     }
 }
 
@@ -270,8 +343,8 @@ void
 DcaTxop::DoInitialize ()
 {
   NS_LOG_FUNCTION (this);
-  m_dcfState->ResetCw ();
-  m_dcfState->StartBackoffNow (m_rng->GetInteger (0, m_dcfState->GetCw ()));
+  ResetCw ();
+  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
 }
 
 bool
@@ -356,10 +429,25 @@ DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
   return fragment;
 }
 
+bool
+DcaTxop::IsAccessRequested (void) const
+{
+  return m_accessRequested;
+}
+
+void
+DcaTxop::NotifyAccessRequested (void)
+{
+  NS_LOG_FUNCTION (this);
+  m_accessRequested = true;
+}
+
 void
 DcaTxop::NotifyAccessGranted (void)
 {
   NS_LOG_FUNCTION (this);
+  NS_ASSERT (m_accessRequested);
+  m_accessRequested = false;
   if (m_currentPacket == 0)
     {
       if (m_queue->IsEmpty ())
@@ -430,7 +518,7 @@ void
 DcaTxop::NotifyCollision (void)
 {
   NS_LOG_FUNCTION (this);
-  m_dcfState->StartBackoffNow (m_rng->GetInteger (0, m_dcfState->GetCw ()));
+  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
   RestartAccessIfNeeded ();
 }
 
@@ -490,13 +578,13 @@ DcaTxop::MissedCts (void)
         }
       //to reset the dcf.
       m_currentPacket = 0;
-      m_dcfState->ResetCw ();
+      ResetCw ();
     }
   else
     {
-      m_dcfState->UpdateFailedCw ();
+      UpdateFailedCw ();
     }
-  m_dcfState->StartBackoffNow (m_rng->GetInteger (0, m_dcfState->GetCw ()));
+  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
   RestartAccessIfNeeded ();
 }
 
@@ -517,8 +605,8 @@ DcaTxop::GotAck (void)
        * so we can get rid of that packet now.
        */
       m_currentPacket = 0;
-      m_dcfState->ResetCw ();
-      m_dcfState->StartBackoffNow (m_rng->GetInteger (0, m_dcfState->GetCw ()));
+      ResetCw ();
+      StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
       RestartAccessIfNeeded ();
     }
   else
@@ -542,15 +630,15 @@ DcaTxop::MissedAck (void)
         }
       //to reset the dcf.
       m_currentPacket = 0;
-      m_dcfState->ResetCw ();
+      ResetCw ();
     }
   else
     {
       NS_LOG_DEBUG ("Retransmit");
       m_currentHdr.SetRetry ();
-      m_dcfState->UpdateFailedCw ();
+      UpdateFailedCw ();
     }
-  m_dcfState->StartBackoffNow (m_rng->GetInteger (0, m_dcfState->GetCw ()));
+  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
   RestartAccessIfNeeded ();
 }
 
@@ -589,8 +677,8 @@ DcaTxop::EndTxNoAck (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("a transmission that did not require an ACK just finished");
   m_currentPacket = 0;
-  m_dcfState->ResetCw ();
-  m_dcfState->StartBackoffNow (m_rng->GetInteger (0, m_dcfState->GetCw ()));
+  ResetCw ();
+  StartBackoffNow (m_rng->GetInteger (0, GetCw ()));
   StartAccessIfNeeded ();
 }
 

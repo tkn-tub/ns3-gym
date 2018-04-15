@@ -29,22 +29,22 @@ namespace ns3 {
 
 class WifiPhy;
 class PhyListener;
-class DcfState;
+class DcaTxop;
 class MacLow;
 
 /**
- * \brief Manage a set of ns3::DcfState
+ * \brief Manage a set of ns3::DcaTxop
  * \ingroup wifi
  *
- * Handle a set of independent ns3::DcfState, each of which represents
- * a single DCF within a MAC stack. Each ns3::DcfState has a priority
+ * Handle a set of independent ns3::DcaTxop, each of which represents
+ * a single DCF within a MAC stack. Each ns3::DcaTxop has a priority
  * implicitely associated with it (the priority is determined when the
- * ns3::DcfState is added to the DcfManager: the first DcfState to be
+ * ns3::DcaTxop is added to the DcfManager: the first DcaTxop to be
  * added gets the highest priority, the second, the second highest
  * priority, and so on.) which is used to handle "internal" collisions.
- * i.e., when two local DcfState are expected to get access to the
- * medium at the same time, the highest priority local DcfState wins
- * access to the medium and the other DcfState suffers a "internal"
+ * i.e., when two local DcaTxop are expected to get access to the
+ * medium at the same time, the highest priority local DcaTxop wins
+ * access to the medium and the other DcaTxop suffers a "internal"
  * collision.
  */
 class DcfManager : public Object
@@ -100,26 +100,26 @@ public:
   Time GetEifsNoDifs () const;
 
   /**
-   * \param dcf a new DcfState.
+   * \param dcf a new DcaTxop.
    *
    * The DcfManager does not take ownership of this pointer so, the callee
-   * must make sure that the DcfState pointer will stay valid as long
-   * as the DcfManager is valid. Note that the order in which DcfState
-   * objects are added to a DcfManager matters: the first DcfState added
-   * has the highest priority, the second DcfState added, has the second
+   * must make sure that the DcaTxop pointer will stay valid as long
+   * as the DcfManager is valid. Note that the order in which DcaTxop
+   * objects are added to a DcfManager matters: the first DcaTxop added
+   * has the highest priority, the second DcaTxop added, has the second
    * highest priority, etc.
    */
-  void Add (Ptr<DcfState> dcf);
+  void Add (Ptr<DcaTxop> dcf);
 
   /**
-   * \param state a DcfState
+   * \param state a DcaTxop
    *
-   * Notify the DcfManager that a specific DcfState needs access to the
+   * Notify the DcfManager that a specific DcaTxop needs access to the
    * medium. The DcfManager is then responsible for starting an access
-   * timer and, invoking DcfState::DoNotifyAccessGranted when the access
+   * timer and, invoking DcaTxop::DoNotifyAccessGranted when the access
    * is granted if it ever gets granted.
    */
-  void RequestAccess (Ptr<DcfState> state);
+  void RequestAccess (Ptr<DcaTxop> state);
 
   /**
    * \param duration expected duration of reception
@@ -215,7 +215,7 @@ protected:
 
 private:
   /**
-   * Update backoff slots for all DcfStates.
+   * Update backoff slots for all DcaTxops.
    */
   void UpdateBackoff (void);
   /**
@@ -250,22 +250,22 @@ private:
   Time GetAccessGrantStart (void) const;
   /**
    * Return the time when the backoff procedure
-   * started for the given DcfState.
+   * started for the given DcaTxop.
    *
    * \param state
    *
    * \return the time when the backoff procedure started
    */
-  Time GetBackoffStartFor (Ptr<DcfState> state);
+  Time GetBackoffStartFor (Ptr<DcaTxop> state);
   /**
    * Return the time when the backoff procedure
-   * ended (or will ended) for the given DcfState.
+   * ended (or will ended) for the given DcaTxop.
    *
    * \param state
    *
    * \return the time when the backoff procedure ended (or will ended)
    */
-  Time GetBackoffEndFor (Ptr<DcfState> state);
+  Time GetBackoffEndFor (Ptr<DcaTxop> state);
 
   void DoRestartAccessTimeoutIfNeeded (void);
 
@@ -293,12 +293,12 @@ private:
    * \return true if the device is within AIFS,
    *         false otherwise
    */
-  bool IsWithinAifs (Ptr<DcfState> state) const;
+  bool IsWithinAifs (Ptr<DcaTxop> state) const;
 
   /**
-   * typedef for a vector of DcfStates
+   * typedef for a vector of DcaTxops
    */
-  typedef std::vector<Ptr<DcfState> > States;
+  typedef std::vector<Ptr<DcaTxop> > States;
 
   States m_states;              //!< the DCF states
   Time m_lastAckTimeoutEnd;     //!< the last ACK timeout end time

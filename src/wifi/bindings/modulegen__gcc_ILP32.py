@@ -526,8 +526,6 @@ def register_types(module):
     module.add_class('DcaTxop', parent=root_module['ns3::Object'])
     ## dcf-manager.h (module 'wifi'): ns3::DcfManager [class]
     module.add_class('DcfManager', parent=root_module['ns3::Object'])
-    ## dcf-state.h (module 'wifi'): ns3::DcfState [class]
-    module.add_class('DcfState', parent=root_module['ns3::Object'])
     ## random-variable-stream.h (module 'core'): ns3::DeterministicRandomVariable [class]
     module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## device-energy-model.h (module 'energy'): ns3::DeviceEnergyModel [class]
@@ -1206,7 +1204,6 @@ def register_methods(root_module):
     register_Ns3DataRateValue_methods(root_module, root_module['ns3::DataRateValue'])
     register_Ns3DcaTxop_methods(root_module, root_module['ns3::DcaTxop'])
     register_Ns3DcfManager_methods(root_module, root_module['ns3::DcfManager'])
-    register_Ns3DcfState_methods(root_module, root_module['ns3::DcfState'])
     register_Ns3DeterministicRandomVariable_methods(root_module, root_module['ns3::DeterministicRandomVariable'])
     register_Ns3DeviceEnergyModel_methods(root_module, root_module['ns3::DeviceEnergyModel'])
     register_Ns3DoubleValue_methods(root_module, root_module['ns3::DoubleValue'])
@@ -12441,6 +12438,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'bool', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::IsAccessRequested() const [member function]
+    cls.add_method('IsAccessRequested', 
+                   'bool', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## dca-txop.h (module 'wifi'): bool ns3::DcaTxop::IsEdca() [member function]
     cls.add_method('IsEdca', 
                    'bool', 
@@ -12536,6 +12538,10 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiRemoteStationManager > const', 'remoteManager')], 
                    is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartBackoffNow(uint32_t nSlots) [member function]
+    cls.add_method('StartBackoffNow', 
+                   'void', 
+                   [param('uint32_t', 'nSlots')])
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::StartNextFragment() [member function]
     cls.add_method('StartNextFragment', 
                    'void', 
@@ -12556,6 +12562,21 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetBackoffSlots() const [member function]
+    cls.add_method('GetBackoffSlots', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## dca-txop.h (module 'wifi'): ns3::Time ns3::DcaTxop::GetBackoffStart() const [member function]
+    cls.add_method('GetBackoffStart', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True, visibility='protected')
+    ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetCw() const [member function]
+    cls.add_method('GetCw', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, visibility='protected')
     ## dca-txop.h (module 'wifi'): uint32_t ns3::DcaTxop::GetFragmentOffset() const [member function]
     cls.add_method('GetFragmentOffset', 
                    'uint32_t', 
@@ -12606,6 +12627,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyAccessRequested() [member function]
+    cls.add_method('NotifyAccessRequested', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::NotifyCollision() [member function]
     cls.add_method('NotifyCollision', 
                    'void', 
@@ -12616,6 +12642,11 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::ResetCw() [member function]
+    cls.add_method('ResetCw', 
+                   'void', 
+                   [], 
+                   visibility='protected')
     ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::RestartAccessIfNeeded() [member function]
     cls.add_method('RestartAccessIfNeeded', 
                    'void', 
@@ -12631,6 +12662,16 @@ def register_Ns3DcaTxop_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WifiMacQueueItem const >', 'item')], 
                    visibility='protected')
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::UpdateBackoffSlotsNow(uint32_t nSlots, ns3::Time backoffUpdateBound) [member function]
+    cls.add_method('UpdateBackoffSlotsNow', 
+                   'void', 
+                   [param('uint32_t', 'nSlots'), param('ns3::Time', 'backoffUpdateBound')], 
+                   visibility='protected')
+    ## dca-txop.h (module 'wifi'): void ns3::DcaTxop::UpdateFailedCw() [member function]
+    cls.add_method('UpdateFailedCw', 
+                   'void', 
+                   [], 
+                   visibility='protected')
     return
 
 def register_Ns3DcfManager_methods(root_module, cls):
@@ -12638,10 +12679,10 @@ def register_Ns3DcfManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::DcfManager const &', 'arg0')])
     ## dcf-manager.h (module 'wifi'): ns3::DcfManager::DcfManager() [constructor]
     cls.add_constructor([])
-    ## dcf-manager.h (module 'wifi'): void ns3::DcfManager::Add(ns3::Ptr<ns3::DcfState> dcf) [member function]
+    ## dcf-manager.h (module 'wifi'): void ns3::DcfManager::Add(ns3::Ptr<ns3::DcaTxop> dcf) [member function]
     cls.add_method('Add', 
                    'void', 
-                   [param('ns3::Ptr< ns3::DcfState >', 'dcf')])
+                   [param('ns3::Ptr< ns3::DcaTxop >', 'dcf')])
     ## dcf-manager.h (module 'wifi'): ns3::Time ns3::DcfManager::GetEifsNoDifs() const [member function]
     cls.add_method('GetEifsNoDifs', 
                    'ns3::Time', 
@@ -12715,10 +12756,10 @@ def register_Ns3DcfManager_methods(root_module, cls):
     cls.add_method('RemovePhyListener', 
                    'void', 
                    [param('ns3::Ptr< ns3::WifiPhy >', 'phy')])
-    ## dcf-manager.h (module 'wifi'): void ns3::DcfManager::RequestAccess(ns3::Ptr<ns3::DcfState> state) [member function]
+    ## dcf-manager.h (module 'wifi'): void ns3::DcfManager::RequestAccess(ns3::Ptr<ns3::DcaTxop> state) [member function]
     cls.add_method('RequestAccess', 
                    'void', 
-                   [param('ns3::Ptr< ns3::DcfState >', 'state')])
+                   [param('ns3::Ptr< ns3::DcaTxop >', 'state')])
     ## dcf-manager.h (module 'wifi'): void ns3::DcfManager::SetEifsNoDifs(ns3::Time eifsNoDifs) [member function]
     cls.add_method('SetEifsNoDifs', 
                    'void', 
@@ -12744,146 +12785,6 @@ def register_Ns3DcfManager_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    return
-
-def register_Ns3DcfState_methods(root_module, cls):
-    ## dcf-state.h (module 'wifi'): ns3::DcfState::DcfState(ns3::DcfState const & arg0) [constructor]
-    cls.add_constructor([param('ns3::DcfState const &', 'arg0')])
-    ## dcf-state.h (module 'wifi'): ns3::DcfState::DcfState(ns3::Ptr<ns3::DcaTxop> txop) [constructor]
-    cls.add_constructor([param('ns3::Ptr< ns3::DcaTxop >', 'txop')])
-    ## dcf-state.h (module 'wifi'): uint32_t ns3::DcfState::GetAifsn() const [member function]
-    cls.add_method('GetAifsn', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): uint32_t ns3::DcfState::GetCw() const [member function]
-    cls.add_method('GetCw', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): uint32_t ns3::DcfState::GetCwMax() const [member function]
-    cls.add_method('GetCwMax', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): uint32_t ns3::DcfState::GetCwMin() const [member function]
-    cls.add_method('GetCwMin', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): ns3::Time ns3::DcfState::GetTxopLimit() const [member function]
-    cls.add_method('GetTxopLimit', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): static ns3::TypeId ns3::DcfState::GetTypeId() [member function]
-    cls.add_method('GetTypeId', 
-                   'ns3::TypeId', 
-                   [], 
-                   is_static=True)
-    ## dcf-state.h (module 'wifi'): bool ns3::DcfState::IsAccessRequested() const [member function]
-    cls.add_method('IsAccessRequested', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): bool ns3::DcfState::IsEdca() const [member function]
-    cls.add_method('IsEdca', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::ResetCw() [member function]
-    cls.add_method('ResetCw', 
-                   'void', 
-                   [])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::SetAifsn(uint32_t aifsn) [member function]
-    cls.add_method('SetAifsn', 
-                   'void', 
-                   [param('uint32_t', 'aifsn')])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::SetCwMax(uint32_t maxCw) [member function]
-    cls.add_method('SetCwMax', 
-                   'void', 
-                   [param('uint32_t', 'maxCw')])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::SetCwMin(uint32_t minCw) [member function]
-    cls.add_method('SetCwMin', 
-                   'void', 
-                   [param('uint32_t', 'minCw')])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::SetTxopLimit(ns3::Time txopLimit) [member function]
-    cls.add_method('SetTxopLimit', 
-                   'void', 
-                   [param('ns3::Time', 'txopLimit')])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::StartBackoffNow(uint32_t nSlots) [member function]
-    cls.add_method('StartBackoffNow', 
-                   'void', 
-                   [param('uint32_t', 'nSlots')])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::UpdateFailedCw() [member function]
-    cls.add_method('UpdateFailedCw', 
-                   'void', 
-                   [])
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::DoDispose() [member function]
-    cls.add_method('DoDispose', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## dcf-state.h (module 'wifi'): uint32_t ns3::DcfState::GetBackoffSlots() const [member function]
-    cls.add_method('GetBackoffSlots', 
-                   'uint32_t', 
-                   [], 
-                   is_const=True, visibility='protected')
-    ## dcf-state.h (module 'wifi'): ns3::Time ns3::DcfState::GetBackoffStart() const [member function]
-    cls.add_method('GetBackoffStart', 
-                   'ns3::Time', 
-                   [], 
-                   is_const=True, visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyAccessGranted() [member function]
-    cls.add_method('NotifyAccessGranted', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyAccessRequested() [member function]
-    cls.add_method('NotifyAccessRequested', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyChannelSwitching() [member function]
-    cls.add_method('NotifyChannelSwitching', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyCollision() [member function]
-    cls.add_method('NotifyCollision', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyInternalCollision() [member function]
-    cls.add_method('NotifyInternalCollision', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyOff() [member function]
-    cls.add_method('NotifyOff', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyOn() [member function]
-    cls.add_method('NotifyOn', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifySleep() [member function]
-    cls.add_method('NotifySleep', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::NotifyWakeUp() [member function]
-    cls.add_method('NotifyWakeUp', 
-                   'void', 
-                   [], 
-                   visibility='protected')
-    ## dcf-state.h (module 'wifi'): void ns3::DcfState::UpdateBackoffSlotsNow(uint32_t nSlots, ns3::Time backoffUpdateBound) [member function]
-    cls.add_method('UpdateBackoffSlotsNow', 
-                   'void', 
-                   [param('uint32_t', 'nSlots'), param('ns3::Time', 'backoffUpdateBound')], 
-                   visibility='protected')
     return
 
 def register_Ns3DeterministicRandomVariable_methods(root_module, cls):

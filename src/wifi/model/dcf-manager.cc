@@ -21,7 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "dcf-manager.h"
-#include "dcf-state.h"
+#include "dca-txop.h"
 #include "wifi-phy-listener.h"
 #include "wifi-phy.h"
 #include "mac-low.h"
@@ -134,7 +134,7 @@ void
 DcfManager::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Ptr<DcfState> i : m_states)
+  for (Ptr<DcaTxop> i : m_states)
     {
       i->Dispose ();
       i = 0;
@@ -198,7 +198,7 @@ DcfManager::GetEifsNoDifs () const
 }
 
 void
-DcfManager::Add (Ptr<DcfState> dcf)
+DcfManager::Add (Ptr<DcaTxop> dcf)
 {
   NS_LOG_FUNCTION (this << dcf);
   m_states.push_back (dcf);
@@ -252,7 +252,7 @@ DcfManager::IsBusy (void) const
 }
 
 bool
-DcfManager::IsWithinAifs (Ptr<DcfState> state) const
+DcfManager::IsWithinAifs (Ptr<DcaTxop> state) const
 {
   NS_LOG_FUNCTION (this << state);
   Time ifsEnd = GetAccessGrantStart () + MicroSeconds (state->GetAifsn () * m_slotTimeUs);
@@ -266,7 +266,7 @@ DcfManager::IsWithinAifs (Ptr<DcfState> state) const
 }
 
 void
-DcfManager::RequestAccess (Ptr<DcfState> state)
+DcfManager::RequestAccess (Ptr<DcaTxop> state)
 {
   NS_LOG_FUNCTION (this << state);
   //Deny access if in sleep mode or off
@@ -320,7 +320,7 @@ DcfManager::DoGrantAccess (void)
   uint32_t k = 0;
   for (States::iterator i = m_states.begin (); i != m_states.end (); k++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       if (state->IsAccessRequested ()
           && GetBackoffEndFor (state) <= Simulator::Now () )
         {
@@ -331,10 +331,10 @@ DcfManager::DoGrantAccess (void)
           NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots=" << state->GetBackoffSlots ());
           i++; //go to the next item in the list.
           k++;
-          std::vector<Ptr<DcfState> > internalCollisionStates;
+          std::vector<Ptr<DcaTxop> > internalCollisionStates;
           for (States::iterator j = i; j != m_states.end (); j++, k++)
             {
-              Ptr<DcfState> otherState = *j;
+              Ptr<DcaTxop> otherState = *j;
               if (otherState->IsAccessRequested ()
                   && GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
@@ -357,7 +357,7 @@ DcfManager::DoGrantAccess (void)
            * the result of the calculations.
            */
           state->NotifyAccessGranted ();
-          for (std::vector<Ptr<DcfState> >::iterator l = internalCollisionStates.begin ();
+          for (std::vector<Ptr<DcaTxop> >::iterator l = internalCollisionStates.begin ();
                l != internalCollisionStates.end (); l++)
             {
               (*l)->NotifyInternalCollision ();
@@ -417,7 +417,7 @@ DcfManager::GetAccessGrantStart (void) const
 }
 
 Time
-DcfManager::GetBackoffStartFor (Ptr<DcfState> state)
+DcfManager::GetBackoffStartFor (Ptr<DcaTxop> state)
 {
   NS_LOG_FUNCTION (this << state);
   Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
@@ -427,7 +427,7 @@ DcfManager::GetBackoffStartFor (Ptr<DcfState> state)
 }
 
 Time
-DcfManager::GetBackoffEndFor (Ptr<DcfState> state)
+DcfManager::GetBackoffEndFor (Ptr<DcaTxop> state)
 {
   NS_LOG_FUNCTION (this << state);
   NS_LOG_DEBUG ("Backoff start: " << GetBackoffStartFor (state).As (Time::US) <<
@@ -443,7 +443,7 @@ DcfManager::UpdateBackoff (void)
   uint32_t k = 0;
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++, k++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
 
       Time backoffStart = GetBackoffStartFor (state);
       if (backoffStart <= Simulator::Now ())
@@ -478,14 +478,14 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
   /**
-   * Is there a DcfState which needs to access the medium, and,
+   * Is there a DcaTxop which needs to access the medium, and,
    * if there is one, how many slots for AIFS+backoff does it require ?
    */
   bool accessTimeoutNeeded = false;
   Time expectedBackoffEnd = Simulator::GetMaximumSimulationTime ();
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       if (state->IsAccessRequested ())
         {
           Time tmp = GetBackoffEndFor (state);
@@ -617,7 +617,7 @@ DcfManager::NotifySwitchingStartNow (Time duration)
   //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
       if (remainingSlots > 0)
         {
@@ -649,7 +649,7 @@ DcfManager::NotifySleepNow (void)
   //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       state->NotifySleep ();
     }
 }
@@ -668,7 +668,7 @@ DcfManager::NotifyOffNow (void)
   //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       state->NotifyOff ();
     }
 }
@@ -680,7 +680,7 @@ DcfManager::NotifyWakeupNow (void)
   m_sleeping = false;
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
       if (remainingSlots > 0)
         {
@@ -700,7 +700,7 @@ DcfManager::NotifyOnNow (void)
   m_off = false;
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcfState> state = *i;
+      Ptr<DcaTxop> state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
       if (remainingSlots > 0)
         {

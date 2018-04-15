@@ -20,56 +20,12 @@
 
 #include "ns3/test.h"
 #include "ns3/simulator.h"
-#include "ns3/dcf-state.h"
 #include "ns3/dcf-manager.h"
 #include "ns3/dca-txop.h"
 
 using namespace ns3;
 
 class DcfManagerTest;
-
-/**
- * \ingroup wifi-test
- * \ingroup tests
- *
- * \brief Dcf State Test
- */
-class DcfStateTest : public DcfState
-{
-public:
-  /**
-   * Constructor
-   *
-   * \param dca the DCA TXOP
-   */
-  DcfStateTest (Ptr<DcaTxop> dca);
-  /**
-   * Queue transmit function
-   * \param txTime the transmit time
-   * \param expectedGrantTime the expected grant time
-   */
-  void QueueTx (uint64_t txTime, uint64_t expectedGrantTime);
-
-
-private:
-  /// allow DcfManagerTest class access
-  friend class DcfManagerTest;
-
-  typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
-  typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
-  /// ExpectedCollision structure
-  struct ExpectedCollision
-  {
-    uint64_t at; //!< at
-    uint32_t nSlots; //!< number of slots
-  };
-  typedef std::list<struct ExpectedCollision> ExpectedCollisions; //!< expected collisions typedef
-
-  ExpectedCollisions m_expectedInternalCollision; //!< expected internal collisions
-  ExpectedCollisions m_expectedCollision; //!< expected collision
-  ExpectedGrants m_expectedGrants; //!< expected grants
-};
-
 
 /**
  * \ingroup wifi-test
@@ -88,8 +44,33 @@ public:
    */
   DcaTxopTest (DcfManagerTest *test, uint32_t i);
 
+  /**
+   * Queue transmit function
+   * \param txTime the transmit time
+   * \param expectedGrantTime the expected grant time
+   */
+  void QueueTx (uint64_t txTime, uint64_t expectedGrantTime);
 
 private:
+  /// allow DcfManagerTest class access
+  friend class DcfManagerTest;
+
+  typedef std::pair<uint64_t,uint64_t> ExpectedGrant; //!< the expected grant typedef
+  typedef std::list<ExpectedGrant> ExpectedGrants; //!< the collection of expected grants typedef
+  /// ExpectedCollision structure
+  struct ExpectedCollision
+  {
+    uint64_t at; //!< at
+    uint32_t nSlots; //!< number of slots
+  };
+  typedef std::list<struct ExpectedCollision> ExpectedCollisions; //!< expected collisions typedef
+
+  ExpectedCollisions m_expectedInternalCollision; //!< expected internal collisions
+  ExpectedCollisions m_expectedCollision; //!< expected collision
+  ExpectedGrants m_expectedGrants; //!< expected grants
+
+  bool IsAccessRequested (void) const;
+  void NotifyAccessRequested (void);
   void NotifyAccessGranted (void);
   void NotifyInternalCollision (void);
   void NotifyCollision (void);
@@ -100,6 +81,7 @@ private:
 
   DcfManagerTest *m_test; //!< the test DCF manager
   uint32_t m_i; //!< the DCF state
+  bool m_accessRequested; //!< true if access requested
 };
 
 
@@ -222,7 +204,7 @@ private:
    * \param at time to schedule DoAccessRequest event
    * \param txTime DoAccessRequest txTime
    * \param expectedGrantTime DoAccessRequest expectedGrantTime
-   * \param from DoAccessRequest DcfStateTest
+   * \param from DoAccessRequest DcaTxopTest
    */
   void AddAccessRequestWithAckTimeout (uint64_t at, uint64_t txTime,
                                        uint64_t expectedGrantTime, uint32_t from);
@@ -232,7 +214,7 @@ private:
    * \param txTime DoAccessRequest txTime
    * \param expectedGrantTime DoAccessRequest expectedGrantTime
    * \param ackDelay is delay of the ack after txEnd
-   * \param from DoAccessRequest DcfStateTest
+   * \param from DoAccessRequest DcaTxopTest
    */
   void AddAccessRequestWithSuccessfullAck (uint64_t at, uint64_t txTime,
                                            uint64_t expectedGrantTime, uint32_t ackDelay, uint32_t from);
@@ -240,9 +222,9 @@ private:
    * Add access request with successful ack
    * \param txTime DoAccessRequest txTime
    * \param expectedGrantTime DoAccessRequest expectedGrantTime
-   * \param state DcfStateTest
+   * \param state DcaTxopTest
    */
-  void DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Ptr<DcfStateTest> state);
+  void DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Ptr<DcaTxopTest> state);
   /**
    * Add CCA busy event function
    * \param at the event time
@@ -262,29 +244,23 @@ private:
    */
   void AddRxStartEvt (uint64_t at, uint64_t duration);
 
-  typedef std::vector<Ptr<DcfStateTest> > DcfStates; //!< the DCF test states typedef
   typedef std::vector<Ptr<DcaTxopTest> > Dca; //!< the DCA TXOP tests typedef
 
   Ptr<DcfManager> m_dcfManager; //!< the DCF manager
-  DcfStates m_dcfStates; //!< the DCF states
   Dca m_dca; //!< the DCA
   uint32_t m_ackTimeoutValue; //!< the ack timeout value
 };
 
-DcfStateTest::DcfStateTest (Ptr<DcaTxop> dca)
-  : DcfState (dca)
-{
-}
-
 void
-DcfStateTest::QueueTx (uint64_t txTime, uint64_t expectedGrantTime)
+DcaTxopTest::QueueTx (uint64_t txTime, uint64_t expectedGrantTime)
 {
   m_expectedGrants.push_back (std::make_pair (txTime, expectedGrantTime));
 }
 
 DcaTxopTest::DcaTxopTest (DcfManagerTest *test, uint32_t i)
   : m_test (test),
-    m_i (i)
+    m_i (i),
+    m_accessRequested (false)
 {
 }
 
@@ -295,9 +271,22 @@ DcaTxopTest::DoDispose (void)
   DcaTxop::DoDispose ();
 }
 
+bool
+DcaTxopTest::IsAccessRequested (void) const
+{
+  return m_accessRequested;
+}
+
+void
+DcaTxopTest::NotifyAccessRequested (void)
+{
+  m_accessRequested = true;
+}
+
 void
 DcaTxopTest::NotifyAccessGranted (void)
 {
+  m_accessRequested = false;
   m_test->NotifyAccessGranted (m_i);
 }
 
@@ -337,7 +326,7 @@ DcfManagerTest::DcfManagerTest ()
 void
 DcfManagerTest::NotifyAccessGranted (uint32_t i)
 {
-  Ptr<DcfStateTest> state = m_dcfStates[i];
+  Ptr<DcaTxopTest> state = m_dca[i];
   NS_TEST_EXPECT_MSG_EQ (state->m_expectedGrants.empty (), false, "Have expected grants");
   if (!state->m_expectedGrants.empty ())
     {
@@ -360,11 +349,11 @@ DcfManagerTest::AddTxEvt (uint64_t at, uint64_t duration)
 void
 DcfManagerTest::NotifyInternalCollision (uint32_t i)
 {
-  Ptr<DcfStateTest> state = m_dcfStates[i];
+  Ptr<DcaTxopTest> state = m_dca[i];
   NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), false, "Have expected internal collisions");
   if (!state->m_expectedInternalCollision.empty ())
     {
-      struct DcfStateTest::ExpectedCollision expected = state->m_expectedInternalCollision.front ();
+      struct DcaTxopTest::ExpectedCollision expected = state->m_expectedInternalCollision.front ();
       state->m_expectedInternalCollision.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected internal collision time is now");
       state->StartBackoffNow (expected.nSlots);
@@ -374,11 +363,11 @@ DcfManagerTest::NotifyInternalCollision (uint32_t i)
 void
 DcfManagerTest::NotifyCollision (uint32_t i)
 {
-  Ptr<DcfStateTest> state = m_dcfStates[i];
+  Ptr<DcaTxopTest> state = m_dca[i];
   NS_TEST_EXPECT_MSG_EQ (state->m_expectedCollision.empty (), false, "Have expected collisions");
   if (!state->m_expectedCollision.empty ())
     {
-      struct DcfStateTest::ExpectedCollision expected = state->m_expectedCollision.front ();
+      struct DcaTxopTest::ExpectedCollision expected = state->m_expectedCollision.front ();
       state->m_expectedCollision.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.at), "Expected collision is now");
       state->StartBackoffNow (expected.nSlots);
@@ -388,20 +377,21 @@ DcfManagerTest::NotifyCollision (uint32_t i)
 void
 DcfManagerTest::NotifyChannelSwitching (uint32_t i)
 {
-  Ptr<DcfStateTest> state = m_dcfStates[i];
+  Ptr<DcaTxopTest> state = m_dca[i];
   if (!state->m_expectedGrants.empty ())
     {
       std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
       state->m_expectedGrants.pop_front ();
       NS_TEST_EXPECT_MSG_EQ (Simulator::Now (), MicroSeconds (expected.second), "Expected grant is now");
     }
+  state->m_accessRequested = false;
 }
 
 void
 DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
-  Ptr<DcfStateTest> state = m_dcfStates[from];
-  struct DcfStateTest::ExpectedCollision col;
+  Ptr<DcaTxopTest> state = m_dca[from];
+  struct DcaTxopTest::ExpectedCollision col;
   col.at = time;
   col.nSlots = nSlots;
   state->m_expectedInternalCollision.push_back (col);
@@ -410,8 +400,8 @@ DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_
 void
 DcfManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
-  Ptr<DcfStateTest> state = m_dcfStates[from];
-  struct DcfStateTest::ExpectedCollision col;
+  Ptr<DcaTxopTest> state = m_dca[from];
+  struct DcaTxopTest::ExpectedCollision col;
   col.at = time;
   col.nSlots = nSlots;
   state->m_expectedCollision.push_back (col);
@@ -430,12 +420,10 @@ DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifs
 void
 DcfManagerTest::AddDcfState (uint32_t aifsn)
 {
-  Ptr<DcaTxopTest> dca = CreateObject<DcaTxopTest> (this, m_dcfStates.size ());
+  Ptr<DcaTxopTest> dca = CreateObject<DcaTxopTest> (this, m_dca.size ());
+  dca->SetAifsn (aifsn);
   m_dca.push_back (dca);
-  Ptr<DcfStateTest> state = CreateObject<DcfStateTest> (dca);
-  state->SetAifsn (aifsn);
-  m_dcfStates.push_back (state);
-  m_dcfManager->Add (state);
+  m_dcfManager->Add (dca);
 }
 
 void
@@ -444,15 +432,15 @@ DcfManagerTest::EndTest (void)
   Simulator::Run ();
   Simulator::Destroy ();
 
-  for (DcfStates::const_iterator i = m_dcfStates.begin (); i != m_dcfStates.end (); i++)
+  for (Dca::const_iterator i = m_dca.begin (); i != m_dca.end (); i++)
     {
-      Ptr<DcfStateTest> state = *i;
+      Ptr<DcaTxopTest> state = *i;
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedGrants.empty (), true, "Have no expected grants");
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedInternalCollision.empty (), true, "Have no internal collisions");
       NS_TEST_EXPECT_MSG_EQ (state->m_expectedCollision.empty (), true, "Have no expected collisions");
       state = 0;
     }
-  m_dcfStates.clear ();
+  m_dca.clear ();
 
   for (Dca::const_iterator i = m_dca.begin (); i != m_dca.end (); i++)
     {
@@ -529,7 +517,7 @@ DcfManagerTest::AddAccessRequestWithAckTimeout (uint64_t at, uint64_t txTime,
 {
   Simulator::Schedule (MicroSeconds (at) - Now (),
                        &DcfManagerTest::DoAccessRequest, this,
-                       txTime, expectedGrantTime, m_dcfStates[from]);
+                       txTime, expectedGrantTime, m_dca[from]);
 }
 
 void
@@ -539,12 +527,12 @@ DcfManagerTest::AddAccessRequestWithSuccessfullAck (uint64_t at, uint64_t txTime
   NS_ASSERT (ackDelay < m_ackTimeoutValue);
   Simulator::Schedule (MicroSeconds (at) - Now (),
                        &DcfManagerTest::DoAccessRequest, this,
-                       txTime, expectedGrantTime, m_dcfStates[from]);
+                       txTime, expectedGrantTime, m_dca[from]);
   AddAckTimeoutReset (expectedGrantTime + txTime + ackDelay);
 }
 
 void
-DcfManagerTest::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Ptr<DcfStateTest> state)
+DcfManagerTest::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, Ptr<DcaTxopTest> state)
 {
   state->QueueTx (txTime, expectedGrantTime);
   m_dcfManager->RequestAccess (state);
