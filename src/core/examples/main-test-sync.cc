@@ -27,8 +27,8 @@
 #include "ns3/global-value.h"
 #include "ns3/ptr.h"
 
-#include <unistd.h>
-#include <sys/time.h>
+#include <chrono>  // seconds, milliseconds
+#include <thread>  // sleep_for
 
 /**
  * \file
@@ -96,14 +96,15 @@ void
 FakeNetDevice::Doit3 (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  sleep (1);
+  std::this_thread::sleep_for (std::chrono::seconds(1));
+
   for (uint32_t i = 0; i < 10000; ++i)
     {
       //
       // Exercise the realtime relative now path
       //
       Simulator::ScheduleWithContext(Simulator::NO_CONTEXT, Seconds(0.0), MakeEvent (&inserted_function));
-      usleep (1000);
+      std::this_thread::sleep_for (std::chrono::milliseconds(1));
     }
 }
 
