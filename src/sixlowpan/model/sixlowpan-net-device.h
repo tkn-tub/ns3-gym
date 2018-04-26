@@ -26,16 +26,14 @@
 #include <string>
 #include <map>
 #include "ns3/traced-callback.h"
-#include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
-#include "ns3/packet.h"
-#include "sixlowpan-header.h"
-#include "ns3/random-variable-stream.h"
 
 namespace ns3 {
 
 class Node;
+class UniformRandomVariable;
+class EventId;
 
 /**
  * \defgroup sixlowpan 6LoWPAN

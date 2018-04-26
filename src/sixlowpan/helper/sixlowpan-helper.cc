@@ -18,13 +18,16 @@
  * Author: Tommaso Pecorella <tommaso.pecorella@unifi.it>
  */
 
-#include "sixlowpan-helper.h"
 #include "ns3/log.h"
 #include "ns3/sixlowpan-net-device.h"
+#include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/names.h"
+#include "sixlowpan-helper.h"
 
 namespace ns3 {
+
+class Address;
 
 NS_LOG_COMPONENT_DEFINE ("SixLowPanHelper");
 
