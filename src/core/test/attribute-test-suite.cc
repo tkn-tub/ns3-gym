@@ -54,9 +54,6 @@ public:
    */
   typedef void (* TracedValueCallback)(const ValueClassTest oldValue,
                                        const ValueClassTest newValue);
-
-private:
-  int m_v;
 };
 
 

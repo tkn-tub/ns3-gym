@@ -306,7 +306,6 @@ SNRToBlockErrorRateManager::GetBlockErrorRate (double SNR, uint8_t modulation)
       return 0;
     }
 
-  std::vector<SNRToBlockErrorRateRecord*>::const_iterator iter;
   unsigned int i;
   for (i = 0; i < record->size (); i++)
     {
@@ -346,7 +345,6 @@ SNRToBlockErrorRateManager::GetSNRToBlockErrorRateRecord (double SNR,
         record->at (record->size () - 1)->Copy ();
     }
 
-  std::vector<SNRToBlockErrorRateRecord*>::const_iterator iter;
   unsigned int i;
   for (i = 0; i < record->size (); i++)
     {

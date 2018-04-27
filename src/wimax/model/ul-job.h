@@ -154,12 +154,6 @@ private:
   uint32_t m_size; ///< Number of minislots requested
   enum ServiceFlow::SchedulingType m_schedulingType; ///< Scheduling type of flow
 
-  uint8_t m_flag; ///< To delete or not
-  uint8_t m_retryCount; ///< retry count
-  double m_ugsJitter; ///< The jitter in the grant, valid only for UGS flows
-  int m_jitterSamples; ///< jitter samples
-  double m_last_jitterCalTime; ///< Last time avg jitter was calculated
-
   SSRecord *m_ssRecord; ///< Pointer to SSRecord
 
   ReqType m_type; ///< Type of request, DATA or Unicast req slots

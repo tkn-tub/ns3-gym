@@ -222,7 +222,6 @@ private:
   uint8_t m_ttg; ///< TTG
   uint8_t m_rtg; ///< RTG
 
-  uint32_t m_chnlSwitchFrameNr; ///< channel switch frame number
   Mac48Address m_baseStationId; ///< base station ID
   uint8_t m_frameDurationCode; ///< frame duration code
   uint32_t m_frameNumber; ///< frame number

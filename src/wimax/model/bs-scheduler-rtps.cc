@@ -491,7 +491,6 @@ BSSchedulerRtps::BSSchedulerRTPSConnection (uint32_t &availableSymbols)
 
   Time currentTime = Simulator::Now ();
 
-  std::vector<Ptr<WimaxConnection> >::const_iterator iter;
   std::vector<Ptr<WimaxConnection> > connections;
   std::vector<ServiceFlow*>::iterator iter2;
   ServiceFlowRecord *serviceFlowRecord;
