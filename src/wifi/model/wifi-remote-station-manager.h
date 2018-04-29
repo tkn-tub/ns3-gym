@@ -429,7 +429,7 @@ public:
    *
    * \return the channel width supported by the station
    */
-  uint8_t GetChannelWidthSupported (Mac48Address address) const;
+  uint16_t GetChannelWidthSupported (Mac48Address address) const;
   /**
    * Return whether the station supports HT/VHT short guard interval.
    *
@@ -967,7 +967,7 @@ protected:
    *
    * \return the channel width (in MHz) supported by the station
    */
-  uint8_t GetChannelWidth (const WifiRemoteStation *station) const;
+  uint16_t GetChannelWidth (const WifiRemoteStation *station) const;
   /**
    * Return whether the given station supports HT/VHT short guard interval.
    *
@@ -1038,7 +1038,7 @@ protected:
    * \param maxSupportedChannelWidth maximum channel width supported by the PHY layer
    * \return channel width adapted to the selected mode
    */
-  static uint8_t GetChannelWidthForTransmission (WifiMode mode, uint8_t maxSupportedChannelWidth);
+  static uint16_t GetChannelWidthForTransmission (WifiMode mode, uint16_t maxSupportedChannelWidth);
 
   /**
    * Return the WifiPhy.
@@ -1165,7 +1165,7 @@ private:
    *
    * \return the CTS transmit channel width
    */
-  virtual uint8_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  virtual uint16_t DoGetCtsTxChannelWidth (Mac48Address address, WifiMode ctsMode);
   /**
    * \param address the address of the recipient
    * \param ctsMode the mode to be used
@@ -1193,7 +1193,7 @@ private:
    *
    * \return the ack transmit channel width
    */
-  virtual uint8_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  virtual uint16_t DoGetAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
   /**
    * \param address the address of the recipient
    * \param ackMode the mode to be used
@@ -1221,7 +1221,7 @@ private:
    *
    * \return the block ack transmit channel width
    */
-  virtual uint8_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
+  virtual uint16_t DoGetBlockAckTxChannelWidth (Mac48Address address, WifiMode ctsMode);
   /**
    * \param address the address of the recipient
    * \param blockAckMode the mode to be used
@@ -1505,7 +1505,7 @@ struct WifiRemoteStationState
   Mac48Address m_address;  //!< Mac48Address of the remote station
   WifiRemoteStationInfo m_info; //!< remote station info
 
-  uint8_t m_channelWidth;     //!< Channel width (in MHz) supported by the remote station
+  uint16_t m_channelWidth;    //!< Channel width (in MHz) supported by the remote station
   bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
   uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
   uint8_t m_streams;          //!< Number of supported streams by the remote station

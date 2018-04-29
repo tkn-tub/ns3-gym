@@ -96,10 +96,10 @@ private:
 
   /**
    * Convenience function for selecting a channel width for legacy mode
-   * \param mode non-(V)HT WifiMode
+   * \param mode legacy WifiMode
    * \return the channel width (MHz) for the selected mode
    */
-  uint8_t GetChannelWidthForMode (WifiMode mode) const;
+  uint16_t GetChannelWidthForMode (WifiMode mode) const;
 
   /**
    * A vector of <snr, WifiTxVector> pair holding the minimum SNR for the

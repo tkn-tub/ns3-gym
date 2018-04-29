@@ -243,7 +243,7 @@ RrpaaWifiManager::CheckInit (RrpaaWifiRemoteStation *station)
       station->m_prevPowerLevel = m_maxPowerLevel;
       station->m_powerLevel = m_maxPowerLevel;
       WifiMode mode = GetSupported (station, 0);
-      uint8_t channelWidth = GetChannelWidth (station);
+      uint16_t channelWidth = GetChannelWidth (station);
       DataRate rate = DataRate (mode.GetDataRate (channelWidth));
       double power = GetPhy ()->GetPowerDbm (station->m_powerLevel);
       m_rateChange (rate, rate, station->m_state->m_address);
@@ -375,7 +375,7 @@ RrpaaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   RrpaaWifiRemoteStation *station = (RrpaaWifiRemoteStation *) st;
-  uint8_t channelWidth = GetChannelWidth (station);
+  uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
@@ -404,7 +404,7 @@ RrpaaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   RrpaaWifiRemoteStation *station = (RrpaaWifiRemoteStation *) st;
-  uint8_t channelWidth = GetChannelWidth (station);
+  uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac

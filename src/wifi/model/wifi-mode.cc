@@ -69,7 +69,7 @@ std::istream & operator >> (std::istream &is, WifiMode &mode)
 }
 
 bool
-WifiMode::IsAllowed (uint8_t channelWidth, uint8_t nss) const
+WifiMode::IsAllowed (uint16_t channelWidth, uint8_t nss) const
 {
   WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   if (item->modClass == WIFI_MOD_CLASS_VHT)
@@ -93,7 +93,7 @@ WifiMode::IsAllowed (uint8_t channelWidth, uint8_t nss) const
 }
 
 uint64_t
-WifiMode::GetPhyRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss) const
+WifiMode::GetPhyRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const
 {
   //TODO: nss > 4 not supported yet
   NS_ASSERT (nss <= 4);
@@ -128,7 +128,7 @@ WifiMode::GetPhyRate (WifiTxVector txVector) const
 }
 
 uint64_t
-WifiMode::GetDataRate (uint8_t channelWidth) const
+WifiMode::GetDataRate (uint16_t channelWidth) const
 {
   return GetDataRate (channelWidth, 800, 1);
 }
@@ -140,7 +140,7 @@ WifiMode::GetDataRate (WifiTxVector txVector) const
 }
 
 uint64_t
-WifiMode::GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss) const
+WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t nss) const
 {
   //TODO: nss > 4 not supported yet
   NS_ASSERT (nss <= 4);
@@ -198,7 +198,7 @@ WifiMode::GetDataRate (uint8_t channelWidth, uint16_t guardInterval, uint8_t nss
     {
       if (item->modClass == WIFI_MOD_CLASS_VHT)
         {
-          NS_ASSERT_MSG (IsAllowed (channelWidth, nss), "VHT MCS " << +item->mcsValue << " forbidden at " << +channelWidth << " MHz when NSS is " << +nss);
+          NS_ASSERT_MSG (IsAllowed (channelWidth, nss), "VHT MCS " << +item->mcsValue << " forbidden at " << channelWidth << " MHz when NSS is " << +nss);
         }
 
       NS_ASSERT (guardInterval == 800 || guardInterval == 400);

@@ -219,7 +219,7 @@ InterferenceHelper::AppendEvent (Ptr<Event> event)
 }
 
 double
-InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint8_t channelWidth) const
+InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint16_t channelWidth) const
 {
   //thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
@@ -229,7 +229,7 @@ InterferenceHelper::CalculateSnr (double signal, double noiseInterference, uint8
   double noiseFloor = m_noiseFigure * Nt;
   double noise = noiseFloor + noiseInterference;
   double snr = signal / noise; //linear scale
-  NS_LOG_DEBUG ("bandwidth(MHz)=" << +channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
+  NS_LOG_DEBUG ("bandwidth(MHz)=" << channelWidth << ", signal(W)= " << signal << ", noise(W)=" << noiseFloor << ", interference(W)=" << noiseInterference << ", snr(linear)=" << snr);
   return snr;
 }
 

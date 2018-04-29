@@ -130,7 +130,7 @@ public:
    *
    * \returns the VHT operational channel width (in MHz).
    */
-  uint8_t GetVhtOperationalChannelWidth (void) const;
+  uint16_t GetVhtOperationalChannelWidth (void) const;
 
   /**
    * Assign a fixed random variable stream number to the random variables

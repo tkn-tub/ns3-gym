@@ -58,7 +58,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
+  bool CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint16_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
 
   /**
    * Check if the overall tx duration returned by InterferenceHelper
@@ -73,7 +73,7 @@ private:
    *
    * @return true if values correspond, false otherwise
    */
-  bool CheckTxDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
+  bool CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration);
 
 };
 
@@ -87,7 +87,7 @@ TxDurationTest::~TxDurationTest ()
 }
 
 bool
-TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
+TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint16_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
 {
   WifiTxVector txVector;
   txVector.SetMode (payloadMode);
@@ -129,7 +129,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint8
         {
           std::cerr << "size=" << size
                     << " mode=" << payloadMode
-                    << " channelWidth=" << +channelWidth
+                    << " channelWidth=" << channelWidth
                     << " guardInterval=" << guardInterval
                     << " datarate=" << payloadMode.GetDataRate (channelWidth, guardInterval, 1)
                     << " known=" << knownDuration
@@ -142,7 +142,7 @@ TxDurationTest::CheckPayloadDuration (uint32_t size, WifiMode payloadMode, uint8
 }
 
 bool
-TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint8_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
+TxDurationTest::CheckTxDuration (uint32_t size, WifiMode payloadMode, uint16_t channelWidth, uint16_t guardInterval, WifiPreamble preamble, Time knownDuration)
 {
   WifiTxVector txVector;
   txVector.SetMode (payloadMode);

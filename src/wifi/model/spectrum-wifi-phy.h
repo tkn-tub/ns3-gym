@@ -160,7 +160,7 @@ public:
    * to the current channel bandwidth (which can be different from devices max
    * channel width).
    */
-  uint8_t GetGuardBandwidth (uint8_t currentChannelWidth) const;
+  uint16_t GetGuardBandwidth (uint16_t currentChannelWidth) const;
 
   /**
    * Callback invoked when the Phy model starts to process a signal
@@ -181,7 +181,7 @@ public:
 
   virtual void SetFrequency (uint16_t freq);
 
-  virtual void SetChannelWidth (uint8_t channelwidth);
+  virtual void SetChannelWidth (uint16_t channelwidth);
 
   virtual void ConfigureStandard (WifiPhyStandard standard);
 
@@ -202,7 +202,7 @@ private:
    * This is a helper function to create the right Tx PSD corresponding
    * to the standard in use.
    */
-  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint8_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const;
+  Ptr<SpectrumValue> GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t channelWidth, double txPowerW, WifiModulationClass modulationClass) const;
 
   /**
    * Perform run-time spectrum model change

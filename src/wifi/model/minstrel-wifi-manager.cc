@@ -357,7 +357,7 @@ WifiTxVector
 MinstrelWifiManager::GetDataTxVector (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  uint8_t channelWidth = GetChannelWidth (station);
+  uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
@@ -381,7 +381,7 @@ MinstrelWifiManager::GetRtsTxVector (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
   NS_LOG_DEBUG ("DoGetRtsMode m_txrate=" << station->m_txrate);
-  uint8_t channelWidth = GetChannelWidth (station);
+  uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac

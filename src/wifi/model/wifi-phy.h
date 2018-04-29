@@ -487,7 +487,7 @@ public:
    *
    * \return true if the channel definition succeeded
    */
-  bool DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint8_t channelWidth);
+  bool DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, uint16_t frequency, uint16_t channelWidth);
 
   /**
    * A pair of a ChannelNumber and WifiPhyStandard
@@ -1436,19 +1436,19 @@ public:
   /**
    * \return the channel width
    */
-  uint8_t GetChannelWidth (void) const;
+  uint16_t GetChannelWidth (void) const;
   /**
    * \param channelwidth channel width
    */
-  virtual void SetChannelWidth (uint8_t channelwidth);
+  virtual void SetChannelWidth (uint16_t channelwidth);
   /**
    * \param channelwidth channel width (in MHz) to support
    */
-  void AddSupportedChannelWidth (uint8_t channelwidth);
+  void AddSupportedChannelWidth (uint16_t channelwidth);
   /**
    * \return a vector containing the supported channel widths, values in MHz
    */
-  std::vector<uint8_t> GetSupportedChannelWidthSet (void) const;
+  std::vector<uint16_t> GetSupportedChannelWidthSet (void) const;
 
   /**
    * Get the power of the given power level in dBm.
@@ -1751,7 +1751,7 @@ private:
   uint16_t m_channelCenterFrequency;        //!< Center frequency in MHz
   uint16_t m_initialFrequency;              //!< Store frequency until initialization
   bool m_frequencyChannelNumberInitialized; //!< Store initialization state
-  uint8_t m_channelWidth;                   //!< Channel width
+  uint16_t m_channelWidth;                  //!< Channel width
 
   double   m_edThresholdW;        //!< Energy detection threshold in watts
   double   m_ccaMode1ThresholdW;  //!< Clear channel assessment (CCA) threshold in watts
@@ -1776,9 +1776,9 @@ private:
   typedef std::map<ChannelNumberStandardPair,FrequencyWidthPair> ChannelToFrequencyWidthMap; //!< channel to frequency width map typedef
   static ChannelToFrequencyWidthMap m_channelToFrequencyWidth; //!< the channel to frequency width map
 
-  std::vector<uint8_t> m_supportedChannelWidthSet; //!< Supported channel width
-  uint8_t              m_channelNumber;            //!< Operating channel number
-  uint8_t              m_initialChannelNumber;     //!< Initial channel number
+  std::vector<uint16_t> m_supportedChannelWidthSet; //!< Supported channel width
+  uint8_t               m_channelNumber;            //!< Operating channel number
+  uint8_t               m_initialChannelNumber;     //!< Initial channel number
 
   Time m_channelSwitchDelay;     //!< Time required to switch between channel
   uint32_t m_totalAmpduSize;     //!< Total size of the previously transmitted MPDUs in an A-MPDU, used for the computation of the number of symbols needed for the last MPDU in the A-MPDU

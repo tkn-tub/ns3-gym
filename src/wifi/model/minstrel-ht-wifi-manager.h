@@ -47,7 +47,7 @@ struct McsGroup
 {
   uint8_t streams; ///< streams
   uint8_t sgi; ///< short guard interval (0 or 1)
-  uint8_t chWidth; ///< channel width (MHz)
+  uint16_t chWidth; ///< channel width (MHz)
   bool isVht; ///< is VHT?
   bool isSupported; ///< is supported?
   // To accurately account for TX times, we separate the TX time of the first
@@ -253,7 +253,7 @@ private:
    * \param mode the wifi mode
    * \returns true if the combination is valid
    */
-  bool IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint8_t chWidth, WifiMode mode);
+  bool IsValidMcs (Ptr<WifiPhy> phy, uint8_t streams, uint16_t chWidth, WifiMode mode);
 
   /**
    * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
@@ -265,7 +265,7 @@ private:
    * \param mode the wifi mode
    * \returns the transmit time
    */
-  Time CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode);
+  Time CalculateMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint16_t chWidth, WifiMode mode);
 
   /**
    * Estimates the TxTime of a frame with a given mode and group (stream, guard interval and channel width).
@@ -277,7 +277,7 @@ private:
    * \param mode the wifi mode
    * \returns the transmit time
    */
-  Time CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint8_t chWidth, WifiMode mode);
+  Time CalculateFirstMpduTxDuration (Ptr<WifiPhy> phy, uint8_t streams, uint8_t sgi, uint16_t chWidth, WifiMode mode);
 
   /**
    * Obtain the TXtime saved in the group information.
@@ -541,7 +541,7 @@ private:
    * \param chWidth the channel width (MHz)
    * \returns the HT group ID
    */
-  uint32_t GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth);
+  uint32_t GetHtGroupId (uint8_t txstreams, uint8_t sgi, uint16_t chWidth);
 
   /**
    * Returns the groupId of a VHT MCS with the given number of streams, if using sgi and the channel width used.
@@ -551,7 +551,7 @@ private:
    * \param chWidth the channel width (MHz)
    * \returns the VHT group ID
    */
-  uint32_t GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint8_t chWidth);
+  uint32_t GetVhtGroupId (uint8_t txstreams, uint8_t sgi, uint16_t chWidth);
 
   /**
    * Returns the lowest global index of the rates supported by the station.

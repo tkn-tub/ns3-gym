@@ -334,7 +334,7 @@ RraaWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
-  uint8_t channelWidth = GetChannelWidth (station);
+  uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac
@@ -355,7 +355,7 @@ RraaWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   RraaWifiRemoteStation *station = (RraaWifiRemoteStation *) st;
-  uint8_t channelWidth = GetChannelWidth (station);
+  uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
       //avoid to use legacy rate adaptation algorithms for IEEE 802.11n/ac

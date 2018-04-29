@@ -1183,7 +1183,7 @@ private:
   /**
    * A tuple of {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation type}
    */
-  typedef std::tuple<double, uint8_t, uint32_t, WifiModulationClass> FreqWidthSubbandModulationTuple;
+  typedef std::tuple<double, uint16_t, uint32_t, WifiModulationClass> FreqWidthSubbandModulationTuple;
   std::vector<FreqWidthSubbandModulationTuple> m_distinctTuples; ///< vector of distinct {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation type} tuples
 
   /**
@@ -1229,7 +1229,7 @@ Bug2483TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
       return;
     }
   WifiTxVector txVector = tag.GetWifiTxVector ();
-  uint8_t channelWidth = txVector.GetChannelWidth ();
+  uint16_t channelWidth = txVector.GetChannelWidth ();
   WifiModulationClass modulationClass = txVector.GetMode ().GetModulationClass ();
 
   // Build a tuple and check if seen before (if so store it)
@@ -1266,7 +1266,7 @@ Bug2483TestCase::DoRun (void)
   Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("500")); // so as to force RTS/CTS for data frames
   Config::SetDefault ("ns3::WifiPhy::CcaMode1Threshold", DoubleValue (-62.0));
 
-  uint8_t channelWidth = 40; // at least 40 MHz expected here
+  uint16_t channelWidth = 40; // at least 40 MHz expected here
 
   NodeContainer wifiStaNode;
   wifiStaNode.Create (1);
