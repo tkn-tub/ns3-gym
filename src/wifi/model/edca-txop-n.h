@@ -55,17 +55,38 @@ enum TypeOfStation
 };
 
 /**
+ * \brief Handle packet fragmentation and retransmissions for QoS data frames as well
+ * as MSDU aggregation (A-MSDU) and block ack sessions, for a given access class.
  * \ingroup wifi
+ *
+ * This class implements the packet fragmentation and retransmission policy for
+ * QoS data frames. It uses the ns3::MacLow and ns3::DcfManager helper classes
+ * to respectively send packets and decide when to send them. Packets are stored
+ * in a ns3::WifiMacQueue until they can be sent.
+ *
  * This queue contains packets for a particular access class.
- * possibles access classes are:
+ * Possibles access classes are:
+ *   - AC_VO : voice, tid = 6,7
+ *   - AC_VI : video, tid = 4,5
+ *   - AC_BE : best-effort, tid = 0,3
+ *   - AC_BK : background, tid = 1,2
  *
- *   -AC_VO : voice, tid = 6,7         ^
- *   -AC_VI : video, tid = 4,5         |
- *   -AC_BE : best-effort, tid = 0,3   |  priority
- *   -AC_BK : background, tid = 1,2    |
+ * This class also implements block ack sessions and MSDU aggregation (A-MSDU).
+ * If A-MSDU is enabled for that access class, it picks several packets from the
+ * queue instead of a single one and sends the aggregated packet to ns3::MacLow.
  *
- * For more details see section 9.1.3.1 in 802.11 standard.
+ * The fragmentation policy currently implemented uses a simple
+ * threshold: any packet bigger than this threshold is fragmented
+ * in fragments whose size is smaller than the threshold.
+ *
+ * The retransmission policy is also very simple: every packet is
+ * retransmitted until it is either successfully transmitted or
+ * it has been retransmitted up until the ssrc or slrc thresholds.
+ *
+ * The rts/cts policy is similar to the fragmentation policy: when
+ * a packet is bigger than a threshold, the rts/cts protocol is used.
  */
+
 class EdcaTxopN : public DcaTxop
 {
 public:

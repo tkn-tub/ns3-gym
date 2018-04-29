@@ -38,14 +38,16 @@ class CtrlBAckResponseHeader;
 class WifiRemoteStationManager;
 
 /**
- * \brief handle packet fragmentation and retransmissions.
+ * \brief Handle packet fragmentation and retransmissions
+ * for data and management frames.
  * \ingroup wifi
  *
  * This class implements the packet fragmentation and
- * retransmission policy. It uses the ns3::MacLow and ns3::DcfManager
- * helper classes to respectively send packets and decide when
- * to send them. Packets are stored in a ns3::WifiMacQueue until
- * they can be sent.
+ * retransmission policy for data and management frames.
+ * It uses the ns3::MacLow and ns3::DcfManager helper
+ * classes to respectively send packets and decide when
+ * to send them. Packets are stored in a ns3::WifiMacQueue
+ * until they can be sent.
  *
  * The policy currently implemented uses a simple fragmentation
  * threshold: any packet bigger than this threshold is fragmented
