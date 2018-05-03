@@ -144,22 +144,16 @@ Time
 MinstrelWifiManager::GetCalcTxTime (WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << mode);
-  for (TxTime::const_iterator i = m_calcTxTime.begin (); i != m_calcTxTime.end (); i++)
-    {
-      if (mode == i->second)
-        {
-          return i->first;
-        }
-    }
-  NS_ASSERT (false);
-  return Seconds (0);
+  auto it = m_calcTxTime.find (mode);
+  NS_ASSERT (it != m_calcTxTime.end ());
+  return it->second;
 }
 
 void
 MinstrelWifiManager::AddCalcTxTime (WifiMode mode, Time t)
 {
   NS_LOG_FUNCTION (this << mode << t);
-  m_calcTxTime.push_back (std::make_pair (t, mode));
+  m_calcTxTime.insert (std::make_pair (mode, t));
 }
 
 WifiRemoteStation *

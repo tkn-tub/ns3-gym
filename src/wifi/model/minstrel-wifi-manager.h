@@ -25,6 +25,7 @@
 #include "ns3/traced-value.h"
 #include "wifi-remote-station-manager.h"
 #include <fstream>
+#include <map>
 
 namespace ns3 {
 
@@ -346,10 +347,10 @@ private:
 
   /**
    * typedef for a vector of a pair of Time, WifiMode.
-   * (Essentially a list for WifiMode and its corresponding transmission time
+   * Essentially a map from WifiMode to its corresponding transmission time
    * to transmit a reference packet.
    */
-  typedef std::vector<std::pair<Time,WifiMode> > TxTime;
+  typedef std::map<WifiMode,Time> TxTime;
 
   TxTime m_calcTxTime;      ///< to hold all the calculated TxTime for all modes
   Time m_updateStats;       ///< how frequent do we calculate the stats (1/10 seconds)
