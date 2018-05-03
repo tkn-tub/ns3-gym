@@ -293,8 +293,8 @@ WifiPhy::GetTypeId (void)
                    MakeBooleanChecker ())
     .AddAttribute ("FrameCaptureModel",
                    "Ptr to an object that implements the frame capture model",
-                   PointerValue (0),
-                   MakePointerAccessor (&WifiPhy::SetFrameCaptureModel),
+                   PointerValue (),
+                   MakePointerAccessor (&WifiPhy::m_frameCaptureModel),
                    MakePointerChecker <FrameCaptureModel> ())
     .AddTraceSource ("PhyTxBegin",
                      "Trace source indicating a packet "
