@@ -186,7 +186,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
     }
  
   close (mtufd);
-  device->SetMtu (ifr.ifr_mtu);
+  device->SetMtu (ifr2.ifr_mtu);
 }
 
 int
