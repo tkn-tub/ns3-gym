@@ -48,7 +48,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
         module = bld(features='cxx cxxstlib ns3module')
     else:
         module = bld(features='cxx cxxshlib ns3module')
-    module.target = '%s/ns%s-%s%s' % (bld.srcnode.path_from(module.path), wutils.VERSION,
+    module.target = '%s/lib/ns%s-%s%s' % (bld.srcnode.path_from(module.path), wutils.VERSION,
                                        name, bld.env.BUILD_SUFFIX)
     linkflags = []
     cxxflags = []
