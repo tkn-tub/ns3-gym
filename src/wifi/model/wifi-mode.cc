@@ -40,6 +40,19 @@ bool operator == (const WifiMode &a, const WifiMode &b)
   return a.GetUid () == b.GetUid ();
 }
 /**
+ * Compare two WifiModes
+ *
+ * \param a WifiMode
+ * \param b WifiMode
+ *
+ * \return true if a is less than b,
+ *         false otherwise
+ */
+bool operator < (const WifiMode &a, const WifiMode &b)
+{
+  return a.GetUid () < b.GetUid ();
+}
+/**
  * Serialize WifiMode to ostream (human-readable).
  *
  * \param os std::ostream

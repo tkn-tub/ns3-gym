@@ -237,6 +237,7 @@ private:
 
 /// equality operator
 bool operator == (const WifiMode &a, const WifiMode &b);
+bool operator < (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 std::istream & operator >> (std::istream &is, WifiMode &mode);
 
