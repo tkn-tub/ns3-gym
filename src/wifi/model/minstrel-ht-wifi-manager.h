@@ -33,9 +33,8 @@ namespace ns3 {
 
 /**
  * Data structure to save transmission time calculations per rate.
- * A vector of Time, WifiMode pairs.
  */
-typedef std::vector<std::pair<Time, WifiMode> > TxTime;
+typedef std::map<WifiMode, Time> TxTime;
 
 /**
  * Data structure to contain the information that defines a group.

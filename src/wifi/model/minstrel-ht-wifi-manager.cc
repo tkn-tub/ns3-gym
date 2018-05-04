@@ -339,44 +339,32 @@ Time
 MinstrelHtWifiManager::GetFirstMpduTxTime (uint32_t groupId, WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << groupId << mode);
-  for (TxTime::const_iterator i = m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.begin (); i != m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.end (); i++)
-    {
-      if (mode == i->second)
-        {
-          return i->first;
-        }
-    }
-  NS_ASSERT (false);
-  return Seconds (0);
+  auto it = m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.find (mode);
+  NS_ASSERT (it != m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.end ());
+  return it->second;
 }
 
 void
 MinstrelHtWifiManager::AddFirstMpduTxTime (uint32_t groupId, WifiMode mode, Time t)
 {
   NS_LOG_FUNCTION (this << groupId << mode << t);
-  m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.push_back (std::make_pair (t, mode));
+  m_minstrelGroups[groupId].ratesFirstMpduTxTimeTable.insert (std::make_pair (mode, t));
 }
 
 Time
 MinstrelHtWifiManager::GetMpduTxTime (uint32_t groupId, WifiMode mode) const
 {
   NS_LOG_FUNCTION (this << groupId << mode);
-  for (TxTime::const_iterator i = m_minstrelGroups[groupId].ratesTxTimeTable.begin (); i != m_minstrelGroups[groupId].ratesTxTimeTable.end (); i++)
-    {
-      if (mode == i->second)
-        {
-          return i->first;
-        }
-    }
-  NS_ASSERT (false);
-  return Seconds (0);
+  auto it = m_minstrelGroups[groupId].ratesTxTimeTable.find (mode);
+  NS_ASSERT (it != m_minstrelGroups[groupId].ratesTxTimeTable.end ());
+  return it->second;
 }
 
 void
 MinstrelHtWifiManager::AddMpduTxTime (uint32_t groupId, WifiMode mode, Time t)
 {
   NS_LOG_FUNCTION (this << groupId << mode << t);
-  m_minstrelGroups[groupId].ratesTxTimeTable.push_back (std::make_pair (t, mode));
+  m_minstrelGroups[groupId].ratesTxTimeTable.insert (std::make_pair (mode, t));
 }
 
 WifiRemoteStation *
