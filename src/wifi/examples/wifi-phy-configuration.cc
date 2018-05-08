@@ -23,6 +23,10 @@
 // WifiHelper.SetStandard () and the physical layer channel number,
 // center frequency, and channel width.
 
+#include "ns3/config-store.h"
+#include "ns3/core-module.h"
+#include "ns3/wifi-module.h"
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhyConfigurationExample");

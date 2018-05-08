@@ -19,3 +19,7 @@ def build(bld):
     obj = bld.create_ns3_program('wifi-trans-example',
         ['core', 'mobility', 'spectrum', 'wifi'])
     obj.source = 'wifi-trans-example.cc'
+
+    obj = bld.create_ns3_program('wifi-phy-configuration',
+        ['core', 'wifi', 'config-store'])
+    obj.source = 'wifi-phy-configuration.cc'
