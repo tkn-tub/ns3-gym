@@ -1030,9 +1030,9 @@ WifiPhy::DefineChannelNumber (uint8_t channelNumber, WifiPhyStandard standard, u
 }
 
 uint8_t
-WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) const
+WifiPhy::FindChannelNumberForFrequencyWidth (uint16_t frequency, uint16_t width) const
 {
-  NS_LOG_FUNCTION (this << frequency << +width);
+  NS_LOG_FUNCTION (this << frequency << width);
   bool found = false;
   FrequencyWidthPair f = std::make_pair (frequency, width);
   ChannelToFrequencyWidthMap::const_iterator it = m_channelToFrequencyWidth.begin ();

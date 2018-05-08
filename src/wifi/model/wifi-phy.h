@@ -496,7 +496,7 @@ public:
   /**
    * A pair of a center Frequency and a ChannelWidth
    */
-  typedef std::pair<uint16_t, uint8_t> FrequencyWidthPair;
+  typedef std::pair<uint16_t, uint16_t> FrequencyWidthPair;
 
   /**
    * Return the Channel this WifiPhy is connected to.
@@ -1593,7 +1593,7 @@ private:
    * \param width The channel width to use
    * \return the channel number if found, zero if not
    */
-  uint8_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint8_t width) const;
+  uint8_t FindChannelNumberForFrequencyWidth (uint16_t frequency, uint16_t width) const;
   /**
    * Lookup frequency/width pair for channelNumber/standard pair
    * \param channelNumber The channel number to check
