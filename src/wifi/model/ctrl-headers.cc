@@ -674,10 +674,10 @@ CtrlBAckResponseHeader::IsFragmentReceived (uint16_t seq, uint8_t frag) const
   return false;
 }
 
-uint8_t
+uint16_t
 CtrlBAckResponseHeader::IndexInBitmap (uint16_t seq) const
 {
-  uint8_t index;
+  uint16_t index;
   if (seq >= m_startingSeq)
     {
       index = seq - m_startingSeq;
