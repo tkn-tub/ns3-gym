@@ -314,17 +314,17 @@ SpectrumWifiPhy::GetTxPowerSpectralDensity (uint16_t centerFrequency, uint16_t c
   return v;
 }
 
-uint32_t
+uint16_t
 SpectrumWifiPhy::GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const
 {
   NS_LOG_FUNCTION (this << txVector);
-  uint32_t centerFrequencyForSupportedWidth = GetFrequency ();
+  uint16_t centerFrequencyForSupportedWidth = GetFrequency ();
   uint16_t supportedWidth = GetChannelWidth ();
   uint16_t currentWidth = txVector.GetChannelWidth ();
   if (currentWidth != supportedWidth)
     {
-      uint32_t startingFrequency = centerFrequencyForSupportedWidth - static_cast<uint32_t> (supportedWidth / 2);
-      return startingFrequency + static_cast<uint32_t> (currentWidth / 2); // primary channel is in the lower part (for the time being)
+      uint16_t startingFrequency = centerFrequencyForSupportedWidth - (supportedWidth / 2);
+      return startingFrequency + (currentWidth / 2); // primary channel is in the lower part (for the time being)
     }
   return centerFrequencyForSupportedWidth;
 }

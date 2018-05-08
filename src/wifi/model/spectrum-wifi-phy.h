@@ -109,7 +109,7 @@ public:
    * \param txVector the TXVECTOR that has the channel width that is to be used
    * \return the center frequency corresponding to the channel width to be used
    */
-  uint32_t GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const;
+  uint16_t GetCenterFrequencyForChannelWidth (WifiTxVector txVector) const;
 
   /**
    * Method to encapsulate the creation of the WifiSpectrumPhyInterface
