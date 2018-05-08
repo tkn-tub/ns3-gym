@@ -2414,7 +2414,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               /// \todo We should also handle Ack and BlockAck
               bool retry = false;
               //looks for other packets to the same destination with the same Tid need to extend that to include MSDUs
-              Ptr<const Packet> peekedPacket = edcaIt->second->PeekNextRetransmitPacket (peekedHdr, peekedHdr.GetAddr1 (), tid, &tstamp);
+              Ptr<const Packet> peekedPacket = edcaIt->second->PeekNextRetransmitPacket (peekedHdr, tid, &tstamp);
               if (peekedPacket == 0)
                 {
                   Ptr<const WifiMacQueueItem> item = queue->PeekByTidAndAddress (tid,
@@ -2511,7 +2511,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
                     }
                   if (retry == true)
                     {
-                      peekedPacket = edcaIt->second->PeekNextRetransmitPacket (peekedHdr, hdr.GetAddr1 (), tid, &tstamp);
+                      peekedPacket = edcaIt->second->PeekNextRetransmitPacket (peekedHdr, tid, &tstamp);
                       if (peekedPacket == 0)
                         {
                           //I reached the first packet that I added to this A-MPDU

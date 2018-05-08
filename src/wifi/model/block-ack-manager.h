@@ -344,13 +344,12 @@ public:
    * This method doesn't remove the packet from this queue.
    *
    * \param hdr wifi mac header
-   * \param recipient mac address
    * \param tid Traffic ID
    * \param timestamp timestamp
    *
    * \returns Ptr<const Packet>
    */
-  Ptr<const Packet> PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, Mac48Address recipient, uint8_t tid, Time *timestamp);
+  Ptr<const Packet> PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, uint8_t tid, Time *timestamp);
   /**
    * This function returns true if the lifetime of the packets a BAR refers to didn't expire yet else it returns false.
    * If it return false then the BAR will be discarded (i.e. will not be re-transmitted)

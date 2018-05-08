@@ -336,11 +336,12 @@ BlockAckManager::GetNextPacket (WifiMacHeader &hdr, bool removePacket)
 }
 
 Ptr<const Packet>
-BlockAckManager::PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, Mac48Address recipient, uint8_t tid, Time *tstamp)
+BlockAckManager::PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, uint8_t tid, Time *tstamp)
 {
   NS_LOG_FUNCTION (this);
   Ptr<const Packet> packet = 0;
   CleanupBuffers ();
+  Mac48Address recipient = hdr.GetAddr1 ();
   AgreementsI agreement = m_agreements.find (std::make_pair (recipient, tid));
   NS_ASSERT (agreement != m_agreements.end ());
   std::list<PacketQueueI>::const_iterator it = m_retryPackets.begin ();
@@ -370,7 +371,6 @@ BlockAckManager::PeekNextPacketByTidAndAddress (WifiMacHeader &hdr, Mac48Address
           hdr.SetRetry ();
           *tstamp = (*it)->timestamp;
           NS_LOG_INFO ("Retry packet seq = " << hdr.GetSequenceNumber ());
-          Mac48Address recipient = hdr.GetAddr1 ();
           if (!agreement->second.first.IsHtSupported ()
               && (ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::ESTABLISHED)
                   || SwitchToBlockAckIfNeeded (recipient, tid, hdr.GetSequenceNumber ())))
@@ -410,7 +410,6 @@ BlockAckManager::RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seq
         {
           WifiMacHeader hdr = (*it)->hdr;
           uint8_t tid = hdr.GetQosTid ();
-          Mac48Address recipient = hdr.GetAddr1 ();
 
           AgreementsI i = m_agreements.find (std::make_pair (recipient, tid));
           i->second.second.erase ((*it));
