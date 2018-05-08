@@ -18,11 +18,15 @@
  * Author: Rediet <getachew.redieteab@orange.com>
  */
 
-#include "ns3/core-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/spectrum-module.h"
 #include "ns3/gnuplot.h"
+#include "ns3/command-line.h"
+#include "ns3/string.h"
+#include "ns3/ssid.h"
+#include "ns3/spectrum-helper.h"
+#include "ns3/spectrum-wifi-helper.h"
+#include "ns3/spectrum-analyzer-helper.h"
+#include "ns3/spectrum-channel.h"
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 

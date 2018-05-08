@@ -37,13 +37,23 @@
 // --broadcast instead of unicast (default is unicast)
 // --rtsThreshold (by default, value of 99999 disables it)
 
-#include "ns3/core-module.h"
-#include "ns3/network-module.h"
-#include "ns3/wifi-module.h"
-#include "ns3/stats-module.h"
-#include "ns3/mobility-module.h"
-#include "ns3/propagation-module.h"
+#include "ns3/log.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/boolean.h"
+#include "ns3/double.h"
+#include "ns3/gnuplot.h"
+#include "ns3/command-line.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/ssid.h"
+#include "ns3/propagation-loss-model.h"
+#include "ns3/propagation-delay-model.h"
 #include "ns3/rng-seed-manager.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/wifi-net-device.h"
+#include "ns3/packet-socket-helper.h"
+#include "ns3/packet-socket-client.h"
+#include "ns3/packet-socket-server.h"
 
 using namespace ns3;
 
@@ -317,7 +327,7 @@ int main (int argc, char *argv[])
   NS_ABORT_IF (clientSelectedStandard.m_name == "none");
   std::cout << "Testing " << serverSelectedStandard.m_name << " with " << wifiManager << " ..." << std::endl;
   NS_ABORT_MSG_IF (clientSelectedStandard.m_snrLow >= clientSelectedStandard.m_snrHigh, "SNR values in wrong order");
-  steps = static_cast<uint32_t> (std::abs<double> ((clientSelectedStandard.m_snrHigh - clientSelectedStandard.m_snrLow ) / stepSize) + 1);
+  steps = static_cast<uint32_t> (std::abs (static_cast<double> (clientSelectedStandard.m_snrHigh - clientSelectedStandard.m_snrLow ) / stepSize) + 1);
   NS_LOG_DEBUG ("Using " << steps << " steps for SNR range " << clientSelectedStandard.m_snrLow << ":" << clientSelectedStandard.m_snrHigh);
   Ptr<Node> clientNode = CreateObject<Node> ();
   Ptr<Node> serverNode = CreateObject<Node> ();

@@ -23,14 +23,21 @@
 // WifiHelper.SetStandard () and the physical layer channel number,
 // center frequency, and channel width.
 
+#include "ns3/log.h"
+#include "ns3/command-line.h"
 #include "ns3/config-store.h"
-#include "ns3/core-module.h"
-#include "ns3/wifi-module.h"
+#include "ns3/config.h"
+#include "ns3/boolean.h"
+#include "ns3/uinteger.h"
+#include "ns3/string.h"
+#include "ns3/ssid.h"
+#include "ns3/yans-wifi-phy.h"
+#include "ns3/yans-wifi-helper.h"
+#include "ns3/wifi-net-device.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhyConfigurationExample");
-
 
 Ptr<YansWifiPhy>
 GetYansWifiPhyPtr (const NetDeviceContainer &nc)
