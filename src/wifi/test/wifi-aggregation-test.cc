@@ -26,7 +26,6 @@
 #include "ns3/edca-txop-n.h"
 #include "ns3/yans-wifi-phy.h"
 #include "ns3/mac-tx-middle.h"
-#include "ns3/dcf-manager.h"
 #include "ns3/msdu-aggregator.h"
 #include "ns3/mpdu-aggregator.h"
 #include "ns3/mgt-headers.h"
