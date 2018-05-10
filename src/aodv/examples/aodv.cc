@@ -20,16 +20,16 @@
  * Authors: Pavel Boyko <boyko@iitp.ru>
  */
 
+#include <iostream>
+#include <cmath>
 #include "ns3/aodv-module.h"
 #include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/point-to-point-module.h"
-#include "ns3/wifi-module.h" 
 #include "ns3/v4ping-helper.h"
-#include <iostream>
-#include <cmath>
+#include "ns3/yans-wifi-helper.h"
 
 using namespace ns3;
 

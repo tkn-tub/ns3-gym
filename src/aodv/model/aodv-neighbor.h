@@ -29,17 +29,21 @@
 #ifndef AODVNEIGHBOR_H
 #define AODVNEIGHBOR_H
 
+#include <vector>
 #include "ns3/simulator.h"
 #include "ns3/timer.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
-#include "ns3/wifi-mac-header.h"
 #include "ns3/arp-cache.h"
-#include <vector>
 
 namespace ns3 {
+
+class WifiMacHeader;
+
 namespace aodv {
+
 class RoutingProtocol;
+
 /**
  * \ingroup aodv
  * \brief maintain list of active neighbors
