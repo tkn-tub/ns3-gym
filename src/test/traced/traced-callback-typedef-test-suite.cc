@@ -18,9 +18,12 @@
  * Author:  Peter D. Barnes, Jr. <pdbarnes@llnl.gov>
  */
 
+#include <iostream>
+#include <sstream>
+#include <set>
+#include <string>
 #include "ns3/test.h"
 #include "ns3/core-module.h"
-
 #include "ns3/dsr-module.h"       // DsrOPtionSRHeader
 #include "ns3/internet-module.h"  // Ipv4, Ipv4L3Protocol, Ipv4PacketProbe
                                   // Ipv6L3Protocol, Ipv6PacketProbe
@@ -36,13 +39,6 @@
 #include "ns3/spectrum-module.h"  // SpectrumValue
 #include "ns3/stats-module.h"     // TimeSeriesAdapter
 #include "ns3/uan-module.h"       // UanPhy
-#include "ns3/wifi-module.h"      // WifiMacHeader, WifiPhyStateHelper
-
-
-#include <iostream>
-#include <sstream>
-#include <set>
-#include <string>
 
 using namespace ns3;
 
