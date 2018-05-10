@@ -52,12 +52,14 @@
 #include "ns3/net-device.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/callback.h"
-#include "ns3/wifi-mac-header.h"
 #include "ns3/arp-cache.h"
 #include "dsr-option-header.h"
 
 namespace ns3 {
+
 class Time;
+class WifiMacHeader;
+
 namespace dsr {
 
 /**
