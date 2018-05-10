@@ -23,11 +23,13 @@
 
 #include "ns3/object.h"
 #include "ns3/packet.h"
-#include "ns3/mgt-headers.h"        // from wifi module
-#include "ns3/wifi-mac-header.h"
+#include "ns3/mgt-headers.h"
 #include "ns3/mesh-information-element-vector.h"
 
 namespace ns3 {
+
+class WifiMacHeader;
+class Time;
 
 /**
  * \brief Beacon is beacon header + list of arbitrary information elements

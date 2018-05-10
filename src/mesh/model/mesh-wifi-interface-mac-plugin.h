@@ -21,7 +21,6 @@
 #ifndef MESH_WIFI_INTERFACE_MAC_PLUGIN_H
 #define MESH_WIFI_INTERFACE_MAC_PLUGIN_H
 
-#include "ns3/wifi-mac-header.h"
 #include "ns3/packet.h"
 #include "ns3/mac48-address.h"
 #include "ns3/mesh-wifi-beacon.h"

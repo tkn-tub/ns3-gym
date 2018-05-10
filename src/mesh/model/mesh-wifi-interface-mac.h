@@ -29,16 +29,12 @@
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
-#include "ns3/wifi-remote-station-manager.h"
 #include "ns3/regular-wifi-mac.h"
 #include "ns3/mesh-wifi-interface-mac-plugin.h"
 #include "ns3/event-id.h"
-#include "qos-utils.h"
 
 namespace ns3 {
 
-class WifiMacHeader;
-class DcaTxop;
 class UniformRandomVariable;
 /**
  * \ingroup mesh

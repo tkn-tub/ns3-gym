@@ -26,7 +26,6 @@
 #include "peer-link-frame.h"
 #include "ns3/mesh-wifi-interface-mac.h"
 #include "ns3/simulator.h"
-#include "ns3/wifi-mac-header.h"
 #include "ns3/mesh-information-element-vector.h"
 #include "ns3/log.h"
 

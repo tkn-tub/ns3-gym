@@ -39,6 +39,7 @@
 #include "ns3/spectrum-module.h"  // SpectrumValue
 #include "ns3/stats-module.h"     // TimeSeriesAdapter
 #include "ns3/uan-module.h"       // UanPhy
+#include "ns3/wifi-phy-state-helper.h"
 
 using namespace ns3;
 

@@ -22,6 +22,7 @@
 #ifndef L2ROUTING_NET_DEVICE_H
 #define L2ROUTING_NET_DEVICE_H
 
+#include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/mac48-address.h"
 #include "ns3/bridge-channel.h"
@@ -29,7 +30,6 @@
 
 namespace ns3 {
 
-class Node;
 /**
  * \ingroup mesh
  *

@@ -23,7 +23,6 @@
 #define MESH_INFORMATION_ELEMENT_VECTOR_H
 
 #include "ns3/wifi-information-element-vector.h"
-#include "ns3/wifi-information-element.h"
 
 namespace ns3 {
 

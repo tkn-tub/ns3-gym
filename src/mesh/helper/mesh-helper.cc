@@ -18,15 +18,16 @@
  * Author: Kirill Andreev <andreev@iitp.ru>
  *         Pavel Boyko <boyko@iitp.ru>
  */
+ 
 #include "mesh-helper.h"
 #include "ns3/simulator.h"
 #include "ns3/pointer.h"
 #include "ns3/mesh-point-device.h"
-#include "ns3/dca-txop.h"
-#include "ns3/edca-txop-n.h"
 #include "ns3/wifi-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/mesh-wifi-interface-mac.h"
+#include "ns3/wifi-helper.h"
+
 namespace ns3
 {
 MeshHelper::MeshHelper () :

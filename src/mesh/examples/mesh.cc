@@ -43,19 +43,17 @@
  *  parameters.
  */
 
-
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #include "ns3/core-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/network-module.h"
 #include "ns3/applications-module.h"
-#include "ns3/wifi-module.h"
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/mesh-helper.h"
-
-#include <iostream>
-#include <sstream>
-#include <fstream>
+#include "ns3/yans-wifi-helper.h"
 
 using namespace ns3;
 
