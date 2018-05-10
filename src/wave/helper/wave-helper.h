@@ -15,6 +15,7 @@
  *
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
+
 #ifndef WAVE_HELPER_H
 #define WAVE_HELPER_H
 
@@ -27,8 +28,7 @@
 #include "ns3/yans-wifi-helper.h"
 
 namespace ns3 {
-class WifiPhy;
-class WifiMac;
+
 class WaveNetDevice;
 class Node;
 

@@ -15,16 +15,13 @@
  *
  * Author: Junling Bu <linlinjavaer@gmail.com>
  */
-#include "ns3/wifi-mac.h"
-#include "ns3/wifi-phy.h"
+
 #include "ns3/log.h"
 #include "ns3/pointer.h"
 #include "ns3/string.h"
-#include "ns3/wifi-mode.h"
 #include "ns3/config.h"
 #include "ns3/names.h"
 #include "ns3/abort.h"
-#include "ns3/ampdu-subframe-header.h"
 #include "ns3/wave-net-device.h"
 #include "ns3/minstrel-wifi-manager.h"
 #include "ns3/radiotap-header.h"

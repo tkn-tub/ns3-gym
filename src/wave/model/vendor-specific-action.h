@@ -27,9 +27,10 @@
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
 #include "ns3/address.h"
-#include "ns3/wifi-mac.h"
 
 namespace ns3 {
+
+class WifiMac;
 class VendorSpecificContentManager;
 
 /**

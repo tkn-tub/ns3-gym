@@ -26,8 +26,8 @@
 #include "ns3/wifi-tx-vector.h"
 
 namespace ns3 {
+
 class Tag;
-class WifiTxVector;
 class TypeId;
 
 /**

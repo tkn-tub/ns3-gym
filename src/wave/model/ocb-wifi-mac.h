@@ -25,13 +25,14 @@
 #include "ns3/object-factory.h"
 #include "ns3/regular-wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
-#include "ns3/qos-utils.h"
 #include "vendor-specific-action.h"
 #include "wave-net-device.h"
 
 namespace ns3 {
+
 class OrganizationIdentifier;
 class WaveNetDevice;
+
 /**
  * \brief STAs communicate with each directly outside the context of a BSS
  * \ingroup wave
