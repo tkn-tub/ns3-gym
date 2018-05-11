@@ -162,7 +162,7 @@ WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t ns
   uint16_t usableSubCarriers = 0;
   double symbolRate = 0;
   double codingRate = 0;
-  uint32_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
+  uint16_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
   if (item->modClass == WIFI_MOD_CLASS_DSSS)
     {
       dataRate = ((11000000 / 11) * numberOfBitsPerSubcarrier);
