@@ -193,6 +193,9 @@ public:
 
   Time                   m_minRtt  {Time::Max ()};   //!< Minimum RTT observed throughout the connection
 
+  TracedValue<uint32_t>  m_bytesInFlight {0};        //!< Bytes in flight
+  TracedValue<Time>      m_lastRtt {Seconds (0.0)};  //!< Last RTT sample collected
+
   /**
    * \brief Get cwnd in segments rather than bytes
    *
@@ -477,6 +480,16 @@ public:
   TracedCallback<SequenceNumber32, SequenceNumber32> m_nextTxSequenceTrace;
 
   /**
+   * \brief Callback pointer for bytesInFlight trace chaining
+   */
+  TracedCallback<uint32_t, uint32_t> m_bytesInFlightTrace;
+
+  /**
+   * \brief Callback pointer for RTT trace chaining
+   */
+  TracedCallback<Time, Time> m_lastRttTrace;
+
+  /**
    * \brief Callback function to hook to TcpSocketState congestion window
    * \param oldValue old cWnd value
    * \param newValue new cWnd value
@@ -511,6 +524,20 @@ public:
    * \param newValue new nextTxSeq value
    */
   void UpdateNextTxSequence (SequenceNumber32 oldValue, SequenceNumber32 newValue);
+
+  /**
+   * \brief Callback function to hook to TcpSocketState bytes inflight
+   * \param oldValue old bytesInFlight value
+   * \param newValue new bytesInFlight value
+   */
+  void UpdateBytesInFlight (uint32_t oldValue, uint32_t newValue);
+
+  /**
+   * \brief Callback function to hook to TcpSocketState rtt
+   * \param oldValue old rtt value
+   * \param newValue new rtt value
+   */
+  void UpdateRtt (Time oldValue, Time newValue);
 
   /**
    * \brief Install a congestion control algorithm on this socket
@@ -1166,7 +1193,6 @@ protected:
   // Timeouts
   TracedValue<Time> m_rto     {Seconds (0.0)}; //!< Retransmit timeout
   Time              m_minRto  {Time::Max ()};   //!< minimum value of the Retransmit timeout
-  TracedValue<Time> m_lastRtt {Seconds (0.0)}; //!< Last RTT sample collected
   Time              m_clockGranularity {Seconds (0.001)}; //!< Clock Granularity used in RTO calcs
   Time              m_delAckTimeout    {Seconds (0.0)};   //!< Time to delay an ACK
   Time              m_persistTimeout   {Seconds (0.0)};   //!< Time between sending 1-byte probes
@@ -1207,7 +1233,6 @@ protected:
   TracedValue<uint32_t> m_advWnd             {0};  //!< Advertised Window size
   TracedValue<SequenceNumber32> m_highRxMark {0};  //!< Highest seqno received
   TracedValue<SequenceNumber32> m_highRxAckMark {0}; //!< Highest ack received
-  TracedValue<uint32_t>         m_bytesInFlight {0}; //!< Bytes in flight
 
   // Options
   bool    m_sackEnabled       {true}; //!< RFC SACK option enabled

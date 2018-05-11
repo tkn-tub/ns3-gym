@@ -143,7 +143,7 @@ TcpSocketBase::GetTypeId (void)
                      "ns3::TracedValueCallback::Time")
     .AddTraceSource ("RTT",
                      "Last RTT sample",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_lastRtt),
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_lastRttTrace),
                      "ns3::TracedValueCallback::Time")
     .AddTraceSource ("NextTxSequence",
                      "Next sequence number to send (SND.NXT)",
@@ -171,7 +171,7 @@ TcpSocketBase::GetTypeId (void)
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("BytesInFlight",
                      "Socket estimation of bytes in flight",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_bytesInFlight),
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_bytesInFlightTrace),
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("HighestRxSequence",
                      "Highest sequence number received from peer",
@@ -248,6 +248,14 @@ TcpSocketState::GetTypeId (void)
                      "Next sequence number to send (SND.NXT)",
                      MakeTraceSourceAccessor (&TcpSocketState::m_nextTxSequence),
                      "ns3::SequenceNumber32TracedValueCallback")
+    .AddTraceSource ("BytesInFlight",
+                     "The TCP connection's congestion window",
+                     MakeTraceSourceAccessor (&TcpSocketState::m_bytesInFlight),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("RTT",
+                     "Last RTT sample",
+                     MakeTraceSourceAccessor (&TcpSocketState::m_lastRtt),
+                     "ns3::TracedValue::TimeCallback")
   ;
   return tid;
 }
@@ -268,7 +276,9 @@ TcpSocketState::TcpSocketState (const TcpSocketState &other)
     m_pacing (other.m_pacing),
     m_maxPacingRate (other.m_maxPacingRate),
     m_currentPacingRate (other.m_currentPacingRate),
-    m_minRtt (other.m_minRtt)
+    m_minRtt (other.m_minRtt),
+    m_bytesInFlight (other.m_bytesInFlight),
+    m_lastRtt (other.m_lastRtt)
 {
 }
 
@@ -310,6 +320,14 @@ TcpSocketBase::TcpSocketBase (void)
   ok = m_tcb->TraceConnectWithoutContext ("HighestSequence",
                                           MakeCallback (&TcpSocketBase::UpdateHighTxMark, this));
   NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("BytesInFlight",
+                                          MakeCallback (&TcpSocketBase::UpdateBytesInFlight, this));
+  NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("RTT",
+                                          MakeCallback (&TcpSocketBase::UpdateRtt, this));
+  NS_ASSERT (ok == true);
 }
 
 TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
@@ -325,7 +343,6 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_dataRetries (sock.m_dataRetries),
     m_rto (sock.m_rto),
     m_minRto (sock.m_minRto),
-    m_lastRtt (sock.m_lastRtt),
     m_clockGranularity (sock.m_clockGranularity),
     m_delAckTimeout (sock.m_delAckTimeout),
     m_persistTimeout (sock.m_persistTimeout),
@@ -347,7 +364,6 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
     m_rWnd (sock.m_rWnd),
     m_highRxMark (sock.m_highRxMark),
     m_highRxAckMark (sock.m_highRxAckMark),
-    m_bytesInFlight (sock.m_bytesInFlight),
     m_sackEnabled (sock.m_sackEnabled),
     m_winScalingEnabled (sock.m_winScalingEnabled),
     m_rcvWindShift (sock.m_rcvWindShift),
@@ -409,6 +425,14 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
 
   ok = m_tcb->TraceConnectWithoutContext ("HighestSequence",
                                           MakeCallback (&TcpSocketBase::UpdateHighTxMark, this));
+  NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("BytesInFlight",
+                                          MakeCallback (&TcpSocketBase::UpdateBytesInFlight, this));
+  NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("RTT",
+                                          MakeCallback (&TcpSocketBase::UpdateRtt, this));
   NS_ASSERT (ok == true);
 }
 
@@ -1688,7 +1712,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
   else if (ackNumber == oldHeadSequence)
     {
       // DupAck. Artificially call PktsAcked: after all, one segment has been ACKed.
-      m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
+      m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
     }
   else if (ackNumber > oldHeadSequence)
     {
@@ -1752,7 +1776,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
           // This partial ACK acknowledge the fact that one segment has been
           // previously lost and now successfully received. All others have
           // been processed when they come under the form of dupACKs
-          m_congestionControl->PktsAcked (m_tcb, 1, m_lastRtt);
+          m_congestionControl->PktsAcked (m_tcb, 1, m_tcb->m_lastRtt);
           NewAck (ackNumber, m_isFirstPartialAck);
 
           if (m_isFirstPartialAck)
@@ -1779,7 +1803,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
       // of RecoveryPoint.
       else if (ackNumber < m_recover && m_tcb->m_congState == TcpSocketState::CA_LOSS)
         {
-          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+          m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
           m_congestionControl->IncreaseWindow (m_tcb, segsAcked);
 
           NS_LOG_DEBUG (" Cong Control Called, cWnd=" << m_tcb->m_cWnd <<
@@ -1796,13 +1820,13 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
         {
           if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
             {
-              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
             }
           else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
             {
               if (segsAcked >= oldDupAckCount)
                 {
-                  m_congestionControl->PktsAcked (m_tcb, segsAcked - oldDupAckCount, m_lastRtt);
+                  m_congestionControl->PktsAcked (m_tcb, segsAcked - oldDupAckCount, m_tcb->m_lastRtt);
                 }
 
               if (!isDupack)
@@ -1837,7 +1861,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
               // (which are the ones we have not passed to PktsAcked and that
               // can increase cWnd)
               segsAcked = static_cast<uint32_t>(ackNumber - m_recover) / m_tcb->m_segmentSize;
-              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
               m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_COMPLETE_CWR);
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
@@ -1856,7 +1880,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
               // can increase cWnd)
               segsAcked = (ackNumber - m_recover) / m_tcb->m_segmentSize;
 
-              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_lastRtt);
+              m_congestionControl->PktsAcked (m_tcb, segsAcked, m_tcb->m_lastRtt);
 
               m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
               m_tcb->m_congState = TcpSocketState::CA_OPEN;
@@ -2882,7 +2906,7 @@ TcpSocketBase::SendPendingData (bool withAck)
             {
               m_tcb->m_nextTxSequence = next;
             }
-          if (m_bytesInFlight.Get () == 0)
+          if (m_tcb->m_bytesInFlight.Get () == 0)
             {
               m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_TX_START);
             }
@@ -2956,7 +2980,7 @@ TcpSocketBase::BytesInFlight () const
   uint32_t bytesInFlight = m_txBuffer->BytesInFlight ();
   // Ugly, but we are not modifying the state; m_bytesInFlight is used
   // only for tracing purpose.
-  const_cast<TcpSocketBase*> (this)->m_bytesInFlight = bytesInFlight;
+  m_tcb->m_bytesInFlight = bytesInFlight;
 
   NS_LOG_DEBUG ("Returning calculated bytesInFlight: " << bytesInFlight);
   return bytesInFlight;
@@ -3124,9 +3148,9 @@ TcpSocketBase::EstimateRtt (const TcpHeader& tcpHeader)
       m_rtt->Measurement (m);                // Log the measurement
       // RFC 6298, clause 2.4
       m_rto = Max (m_rtt->GetEstimate () + Max (m_clockGranularity, m_rtt->GetVariation () * 4), m_minRto);
-      m_lastRtt = m_rtt->GetEstimate ();
-      m_tcb->m_minRtt = m_lastRtt.Get () < m_tcb->m_minRtt ? m_lastRtt.Get () : m_tcb->m_minRtt;
-      NS_LOG_INFO (this << m_lastRtt << m_tcb->m_minRtt);
+      m_tcb->m_lastRtt = m_rtt->GetEstimate ();
+      m_tcb->m_minRtt = std::min (m_tcb->m_lastRtt.Get (), m_tcb->m_minRtt);
+      NS_LOG_INFO (this << m_tcb->m_lastRtt << m_tcb->m_minRtt);
     }
 }
 
@@ -3892,6 +3916,18 @@ void
 TcpSocketBase::UpdateHighTxMark (SequenceNumber32 oldValue, SequenceNumber32 newValue)
 {
   m_highTxMarkTrace (oldValue, newValue);
+}
+
+void
+TcpSocketBase::UpdateBytesInFlight (uint32_t oldValue, uint32_t newValue)
+{
+  m_bytesInFlightTrace (oldValue, newValue);
+}
+
+void
+TcpSocketBase::UpdateRtt (Time oldValue, Time newValue)
+{
+  m_lastRttTrace (oldValue, newValue);
 }
 
 void
