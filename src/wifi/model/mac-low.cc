@@ -2301,7 +2301,7 @@ MacLow::DeaggregateAmpduAndReceive (Ptr<Packet> aggregatedPacket, double rxSnr, 
 }
 
 bool
-MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint16_t size) const
+MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peekedHdr, Ptr<Packet> aggregatedPacket, uint8_t blockAckSize) const
 {
   if (peekedPacket == 0)
     {
@@ -2326,7 +2326,7 @@ MacLow::StopMpduAggregation (Ptr<const Packet> peekedPacket, WifiMacHeader peeke
       return true;
     }
 
-  if (!edcaIt->second->GetMpduAggregator ()->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, size))
+  if (!edcaIt->second->GetMpduAggregator ()->CanBeAggregated (peekedPacket->GetSize () + peekedHdr.GetSize () + WIFI_MAC_FCS_LENGTH, aggregatedPacket, blockAckSize))
     {
       NS_LOG_DEBUG ("no more packets can be aggregated because the maximum A-MPDU size has been reached");
       return true;
@@ -2379,9 +2379,9 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               uint16_t startingSequenceNumber = 0;
               uint16_t currentSequenceNumber = 0;
               uint8_t qosPolicy = 0;
-              uint16_t blockAckSize = 0;
+              uint8_t blockAckSize = 0;
               bool aggregated = false;
-              int i = 0;
+              uint8_t i = 0;
               aggPacket = newPacket->Copy ();
 
               if (!hdr.IsBlockAckReq ())
@@ -2669,7 +2669,7 @@ MacLow::InsertInTxQueue (Ptr<const Packet> packet, const WifiMacHeader &hdr, Tim
 }
 
 Ptr<Packet>
-MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Time *tstamp, Ptr<Packet> currentAmpduPacket, uint16_t blockAckSize)
+MacLow::PerformMsduAggregation (Ptr<const Packet> packet, WifiMacHeader *hdr, Time *tstamp, Ptr<Packet> currentAmpduPacket, uint8_t blockAckSize)
 {
   bool msduAggregation = false;
   bool isAmsdu = false;
