@@ -63,7 +63,9 @@ nodes to be placed outside of buildings defined in the scenario.</li>
 <h2>Changes to existing API:</h2>
 <ul>
   <li>TrafficControlHelper::Install now only includes root queue discs in the returned
-  QueueDiscContainer.</li>
+    QueueDiscContainer.</li>
+  <li>Recovery algorithms are now in a different class, instead of being tied to TcpSocketBase.
+    Take a look to TcpRecoveryOps for more information.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>

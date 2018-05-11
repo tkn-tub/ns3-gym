@@ -23,6 +23,7 @@
 #include "ns3/error-model.h"
 #include "ns3/tcp-socket-base.h"
 #include "ns3/tcp-congestion-ops.h"
+#include "ns3/tcp-recovery-ops.h"
 #include "ns3/test.h"
 
 namespace ns3 {
@@ -321,6 +322,18 @@ protected:
    */
   virtual Ptr<TcpSocketMsgBase> CreateSocket (Ptr<Node> node, TypeId socketType,
                                               TypeId congControl);
+
+  /**
+   * \brief Create a socket
+   *
+   * \param node associated node
+   * \param socketType Type of the TCP socket
+   * \param congControl congestion control
+   * \param recoveryAlgorithm recovery algorithm
+   * \return a pointer to the newer created socket
+   */
+  virtual Ptr<TcpSocketMsgBase> CreateSocket (Ptr<Node> node, TypeId socketType,
+                                              TypeId congControl, TypeId recoveryAlgorithm);
 
   /**
    * \brief Get the pointer to a previously created sender socket
@@ -624,6 +637,13 @@ protected:
   void SetCongestionControl (TypeId congControl) { m_congControlTypeId = congControl; }
 
   /**
+   * \brief recovery algorithm of the sender socket
+   *
+   * \param recovery typeid of the recovery algorithm
+   */
+  void SetRecoveryAlgorithm (TypeId reccovery) { m_recoveryTypeId = reccovery; }
+
+  /**
    * \brief MTU of the bottleneck link
    *
    * \param mtu MTU
@@ -649,6 +669,18 @@ protected:
    * \param newValue new value
    */
   virtual void CWndTrace (uint32_t oldValue, uint32_t newValue)
+  {
+    NS_UNUSED (oldValue);
+    NS_UNUSED (newValue);
+  }
+
+  /**
+   * \brief Tracks the inflated congestion window changes
+   *
+   * \param oldValue old value
+   * \param newValue new value
+   */
+  virtual void CWndInflTrace (uint32_t oldValue, uint32_t newValue)
   {
     NS_UNUSED (oldValue);
     NS_UNUSED (newValue);
@@ -943,6 +975,7 @@ protected:
   }
 
   TypeId   m_congControlTypeId;      //!< Congestion control
+  TypeId   m_recoveryTypeId;         //!< Recovery
 
 private:
   // Member variables, accessible through getters

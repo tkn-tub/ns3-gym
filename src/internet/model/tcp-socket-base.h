@@ -45,6 +45,7 @@ class Packet;
 class TcpL4Protocol;
 class TcpHeader;
 class TcpCongestionOps;
+class TcpRecoveryOps;
 class RttEstimator;
 class TcpRxBuffer;
 class TcpTxBuffer;
@@ -170,6 +171,7 @@ public:
 
   // Congestion control
   TracedValue<uint32_t>  m_cWnd             {0}; //!< Congestion window
+  TracedValue<uint32_t>  m_cWndInfl         {0}; //!< Inflated congestion window trace (used only for backward compatibility purpose)
   TracedValue<uint32_t>  m_ssThresh         {0}; //!< Slow start threshold
   uint32_t               m_initialCWnd      {0}; //!< Initial cWnd value
   uint32_t               m_initialSsThresh  {0}; //!< Initial Slow Start Threshold value
@@ -460,6 +462,11 @@ public:
   TracedCallback<uint32_t, uint32_t> m_cWndTrace;
 
   /**
+   * \brief Callback pointer for cWndInfl trace chaining
+   */
+  TracedCallback<uint32_t, uint32_t> m_cWndInflTrace;
+
+  /**
    * \brief Callback pointer for ssTh trace chaining
    */
   TracedCallback<uint32_t, uint32_t> m_ssThTrace;
@@ -495,6 +502,13 @@ public:
    * \param newValue new cWnd value
    */
   void UpdateCwnd (uint32_t oldValue, uint32_t newValue);
+
+  /**
+   * \brief Callback function to hook to TcpSocketState inflated congestion window
+   * \param oldValue old cWndInfl value
+   * \param newValue new cWndInfl value
+   */
+  void UpdateCwndInfl (uint32_t oldValue, uint32_t newValue);
 
   /**
    * \brief Callback function to hook to TcpSocketState slow start threshold
@@ -545,6 +559,13 @@ public:
    * \param algo Algorithm to be installed
    */
   void SetCongestionControlAlgorithm (Ptr<TcpCongestionOps> algo);
+
+  /**
+   * \brief Install a recovery algorithm on this socket
+   *
+   * \param recovery Algorithm to be installed
+   */
+  void SetRecoveryAlgorithm (Ptr<TcpRecoveryOps> recovery);
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -1046,7 +1067,7 @@ protected:
   void AddOptions (TcpHeader& tcpHeader);
 
   /**
-   * \brief Read TCP options begore Ack processing
+   * \brief Read TCP options before Ack processing
    *
    * Timestamp and Window scale are managed in other pieces of code.
    *
@@ -1252,6 +1273,7 @@ protected:
   // Transmission Control Block
   Ptr<TcpSocketState>    m_tcb {nullptr};               //!< Congestion control informations
   Ptr<TcpCongestionOps>  m_congestionControl {nullptr}; //!< Congestion control
+  Ptr<TcpRecoveryOps>    m_recoveryOps {nullptr};       //!< Recovery Algorithm
 
   // Guesses over the other connection end
   bool m_isFirstPartialAck {true}; //!< First partial ACK during RECOVERY
@@ -1265,11 +1287,6 @@ protected:
 
   // Pacing related variable
   Timer m_pacingTimer {Timer::REMOVE_ON_DESTROY}; //!< Pacing Event
-
-  /**
-   * \brief Inflated congestion window trace (not used in the real code, deprecated)
-   */
-  TracedValue<uint32_t> m_cWndInfl {0};
 };
 
 /**

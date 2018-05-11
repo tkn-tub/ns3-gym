@@ -37,6 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpGeneralTest");
 TcpGeneralTest::TcpGeneralTest (const std::string &desc)
   : TestCase (desc),
     m_congControlTypeId (TcpNewReno::GetTypeId ()),
+    m_recoveryTypeId (ClassicRecovery::GetTypeId ()),
     m_remoteAddr (Ipv4Address::GetAny (), 4477)
 {
   NS_LOG_FUNCTION (this << desc);
@@ -96,6 +97,7 @@ TcpGeneralTest::ConfigureEnvironment ()
   NS_LOG_FUNCTION (this);
 
   SetCongestionControl (m_congControlTypeId);
+  SetRecoveryAlgorithm (m_recoveryTypeId);
   SetPropagationDelay (MilliSeconds (500));
   SetTransmitStart (Seconds (10));
   SetAppPktSize (500);
@@ -197,6 +199,8 @@ TcpGeneralTest::DoRun (void)
   m_senderSocket->SetUpdateRttHistoryCb (MakeCallback (&TcpGeneralTest::UpdateRttHistoryCb, this));
   m_senderSocket->TraceConnectWithoutContext ("CongestionWindow",
                                               MakeCallback (&TcpGeneralTest::CWndTrace, this));
+  m_senderSocket->TraceConnectWithoutContext ("CongestionWindowInflated",
+                                              MakeCallback (&TcpGeneralTest::CWndInflTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("SlowStartThreshold",
                                               MakeCallback (&TcpGeneralTest::SsThreshTrace, this));
   m_senderSocket->TraceConnectWithoutContext ("CongState",
@@ -265,23 +269,33 @@ Ptr<TcpSocketMsgBase>
 TcpGeneralTest::CreateSocket (Ptr<Node> node, TypeId socketType,
                               TypeId congControl)
 {
+  return CreateSocket (node, socketType, congControl, m_recoveryTypeId);
+}
+
+Ptr<TcpSocketMsgBase>
+TcpGeneralTest::CreateSocket (Ptr<Node> node, TypeId socketType,
+                              TypeId congControl, TypeId recoveryAlgorithm)
+{
   ObjectFactory rttFactory;
   ObjectFactory congestionAlgorithmFactory;
+  ObjectFactory recoveryAlgorithmFactory;
   ObjectFactory socketFactory;
 
   rttFactory.SetTypeId (RttMeanDeviation::GetTypeId ());
   congestionAlgorithmFactory.SetTypeId (congControl);
+  recoveryAlgorithmFactory.SetTypeId (recoveryAlgorithm);
   socketFactory.SetTypeId (socketType);
 
   Ptr<RttEstimator> rtt = rttFactory.Create<RttEstimator> ();
   Ptr<TcpSocketMsgBase> socket = DynamicCast<TcpSocketMsgBase> (socketFactory.Create ());
   Ptr<TcpCongestionOps> algo = congestionAlgorithmFactory.Create<TcpCongestionOps> ();
+  Ptr<TcpRecoveryOps> recovery = recoveryAlgorithmFactory.Create<TcpRecoveryOps> ();
 
   socket->SetNode (node);
   socket->SetTcp (node->GetObject<TcpL4Protocol> ());
   socket->SetRtt (rtt);
   socket->SetCongestionControlAlgorithm (algo);
-
+  socket->SetRecoveryAlgorithm (recovery);
   return socket;
 }
 
@@ -300,13 +314,13 @@ TcpGeneralTest::CreateReceiverErrorModel ()
 Ptr<TcpSocketMsgBase>
 TcpGeneralTest::CreateSenderSocket (Ptr<Node> node)
 {
-  return CreateSocket (node, TcpSocketMsgBase::GetTypeId (), m_congControlTypeId);
+  return CreateSocket (node, TcpSocketMsgBase::GetTypeId (), m_congControlTypeId, m_recoveryTypeId);
 }
 
 Ptr<TcpSocketMsgBase>
 TcpGeneralTest::CreateReceiverSocket (Ptr<Node> node)
 {
-  return CreateSocket (node, TcpSocketMsgBase::GetTypeId (), m_congControlTypeId);
+  return CreateSocket (node, TcpSocketMsgBase::GetTypeId (), m_congControlTypeId, m_recoveryTypeId);
 }
 
 void

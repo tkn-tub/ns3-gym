@@ -54,6 +54,7 @@
 #include "tcp-option-sack-permitted.h"
 #include "tcp-option-sack.h"
 #include "tcp-congestion-ops.h"
+#include "tcp-recovery-ops.h"
 
 #include <math.h>
 #include <algorithm>
@@ -187,7 +188,7 @@ TcpSocketBase::GetTypeId (void)
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("CongestionWindowInflated",
                      "The TCP connection's congestion window inflates as in older RFC",
-                     MakeTraceSourceAccessor (&TcpSocketBase::m_cWndInfl),
+                     MakeTraceSourceAccessor (&TcpSocketBase::m_cWndInflTrace),
                      "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
@@ -231,6 +232,10 @@ TcpSocketState::GetTypeId (void)
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketState::m_cWnd),
+                     "ns3::TracedValue::Uint32Callback")
+    .AddTraceSource ("CongestionWindowInflated",
+                     "The TCP connection's inflated congestion window",
+                     MakeTraceSourceAccessor (&TcpSocketState::m_cWndInfl),
                      "ns3::TracedValue::Uint32Callback")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
@@ -303,6 +308,10 @@ TcpSocketBase::TcpSocketBase (void)
 
   ok = m_tcb->TraceConnectWithoutContext ("CongestionWindow",
                                           MakeCallback (&TcpSocketBase::UpdateCwnd, this));
+  NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("CongestionWindowInflated",
+                                          MakeCallback (&TcpSocketBase::UpdateCwndInfl, this));
   NS_ASSERT (ok == true);
 
   ok = m_tcb->TraceConnectWithoutContext ("SlowStartThreshold",
@@ -405,10 +414,19 @@ TcpSocketBase::TcpSocketBase (const TcpSocketBase& sock)
       m_congestionControl = sock.m_congestionControl->Fork ();
     }
 
+  if (sock.m_recoveryOps)
+    {
+      m_recoveryOps = sock.m_recoveryOps->Fork ();
+    }
+
   bool ok;
 
   ok = m_tcb->TraceConnectWithoutContext ("CongestionWindow",
                                           MakeCallback (&TcpSocketBase::UpdateCwnd, this));
+  NS_ASSERT (ok == true);
+
+  ok = m_tcb->TraceConnectWithoutContext ("CongestionWindowInflated",
+                                          MakeCallback (&TcpSocketBase::UpdateCwndInfl, this));
   NS_ASSERT (ok == true);
 
   ok = m_tcb->TraceConnectWithoutContext ("SlowStartThreshold",
@@ -1250,7 +1268,7 @@ TcpSocketBase::DoForwardUp (Ptr<Packet> packet, const Address &fromAddress,
 
       // Initialize cWnd and ssThresh
       m_tcb->m_cWnd = GetInitialCwnd () * GetSegSize ();
-      m_cWndInfl = m_tcb->m_cWnd;
+      m_tcb->m_cWndInfl = m_tcb->m_cWnd;
       m_tcb->m_ssThresh = GetInitialSSThresh ();
 
       if (tcpHeader.GetFlags () & TcpHeader::ACK)
@@ -1489,7 +1507,7 @@ TcpSocketBase::EnterRecovery ()
     }
   else
     {
-      if (! m_txBuffer->IsLost (m_txBuffer->HeadSequence ()))
+      if (!m_txBuffer->IsLost (m_txBuffer->HeadSequence ()))
         {
           // We received 3 dupacks, but the head is not marked as lost
           // (received less than 3 SACK block ahead).
@@ -1511,8 +1529,7 @@ TcpSocketBase::EnterRecovery ()
   // compatibility with old ns-3 versions
   uint32_t bytesInFlight = m_sackEnabled ? BytesInFlight () : BytesInFlight () + m_tcb->m_segmentSize;
   m_tcb->m_ssThresh = m_congestionControl->GetSsThresh (m_tcb, bytesInFlight);
-  m_tcb->m_cWnd = m_tcb->m_ssThresh;
-  m_cWndInfl = m_tcb->m_ssThresh + m_dupAckCount * m_tcb->m_segmentSize;
+  m_recoveryOps->EnterRecovery (m_tcb, m_dupAckCount);
 
   NS_LOG_INFO (m_dupAckCount << " dupack. Enter fast recovery mode." <<
                "Reset cwnd to " << m_tcb->m_cWnd << ", ssthresh to " <<
@@ -1550,15 +1567,6 @@ TcpSocketBase::DupAck ()
       ++m_dupAckCount;
     }
 
-  if (!m_sackEnabled && m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
-    {
-      // If we are in recovery and we receive a dupack, one segment
-      // has left the network. This is equivalent to a SACK of one block.
-      m_txBuffer->AddRenoSack ();
-
-      m_cWndInfl += m_tcb->m_segmentSize;
-    }
-
   if (m_tcb->m_congState == TcpSocketState::CA_OPEN)
     {
       // From Open we go Disorder
@@ -1571,7 +1579,19 @@ TcpSocketBase::DupAck ()
       NS_LOG_DEBUG ("CA_OPEN -> CA_DISORDER");
     }
 
-  if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
+  if (m_tcb->m_congState == TcpSocketState::CA_RECOVERY)
+    {
+      if (!m_sackEnabled)
+        {
+          // If we are in recovery and we receive a dupack, one segment
+          // has left the network. This is equivalent to a SACK of one block.
+          m_txBuffer->AddRenoSack ();
+        }
+      m_recoveryOps->DoRecovery (m_tcb);
+      NS_LOG_INFO (m_dupAckCount << " Dupack received in fast recovery mode."
+                   "Increase cwnd to " << m_tcb->m_cWnd);
+    }
+  else if (m_tcb->m_congState == TcpSocketState::CA_DISORDER)
     {
       // RFC 6675, Section 5, continuing:
       // ... and take the following steps:
@@ -1674,9 +1694,9 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
    */
 
   bool isDupack = m_sackEnabled ?
-        scoreboardUpdated
-      : ackNumber == oldHeadSequence &&
-        ackNumber < m_tcb->m_highTxMark;
+    scoreboardUpdated
+    : ackNumber == oldHeadSequence &&
+    ackNumber < m_tcb->m_highTxMark;
 
   NS_LOG_DEBUG ("ACK of " << ackNumber <<
                 " SND.UNA=" << oldHeadSequence <<
@@ -1767,10 +1787,10 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
               m_txBuffer->DeleteRetransmittedFlagFromHead ();
             }
           DoRetransmit (); // Assume the next seq is lost. Retransmit lost packet
-          m_cWndInfl = SafeSubtraction (m_cWndInfl, bytesAcked);
+          m_tcb->m_cWndInfl = SafeSubtraction (m_tcb->m_cWndInfl, bytesAcked);
           if (segsAcked >= 1)
             {
-              m_cWndInfl += m_tcb->m_segmentSize;
+              m_recoveryOps->DoRecovery (m_tcb);
             }
 
           // This partial ACK acknowledge the fact that one segment has been
@@ -1891,12 +1911,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
           if (exitedFastRecovery)
             {
               NewAck (ackNumber, true);
-              // Follow NewReno procedures to exit FR if SACK is disabled
-              // (RFC2582 sec.3 bullet #5 paragraph 2, option 2)
-              m_cWndInfl = m_tcb->m_ssThresh.Get ();
-              // For SACK connections, we maintain the cwnd = ssthresh. In fact,
-              // this ACK was received in RECOVERY phase, not in OPEN. So we
-              // are not allowed to increase the window
+              m_recoveryOps->ExitRecovery (m_tcb);
               NS_LOG_DEBUG ("Leaving Fast Recovery; BytesInFlight() = " <<
                             BytesInFlight () << "; cWnd = " << m_tcb->m_cWnd);
             }
@@ -1904,7 +1919,7 @@ TcpSocketBase::ProcessAck (const SequenceNumber32 &ackNumber, bool scoreboardUpd
             {
               m_congestionControl->IncreaseWindow (m_tcb, segsAcked);
 
-              m_cWndInfl = m_tcb->m_cWnd;
+              m_tcb->m_cWndInfl = m_tcb->m_cWnd;
 
               NS_LOG_LOGIC ("Congestion control called: " <<
                             " cWnd: " << m_tcb->m_cWnd <<
@@ -3306,7 +3321,7 @@ TcpSocketBase::ReTxTimeout ()
 
   // Cwnd set to 1 MSS
   m_tcb->m_cWnd = m_tcb->m_segmentSize;
-  m_cWndInfl = m_tcb->m_cWnd;
+  m_tcb->m_cWndInfl = m_tcb->m_cWnd;
   m_congestionControl->CwndEvent (m_tcb, TcpSocketState::CA_EVENT_LOSS);
   m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_LOSS);
   m_tcb->m_congState = TcpSocketState::CA_LOSS;
@@ -3892,6 +3907,12 @@ TcpSocketBase::UpdateCwnd (uint32_t oldValue, uint32_t newValue)
 }
 
 void
+TcpSocketBase::UpdateCwndInfl (uint32_t oldValue, uint32_t newValue)
+{
+  m_cWndInflTrace (oldValue, newValue);
+}
+
+void
 TcpSocketBase::UpdateSsThresh (uint32_t oldValue, uint32_t newValue)
 {
   m_ssThTrace (oldValue, newValue);
@@ -3935,6 +3956,13 @@ TcpSocketBase::SetCongestionControlAlgorithm (Ptr<TcpCongestionOps> algo)
 {
   NS_LOG_FUNCTION (this << algo);
   m_congestionControl = algo;
+}
+
+void
+TcpSocketBase::SetRecoveryAlgorithm (Ptr<TcpRecoveryOps> recovery)
+{
+  NS_LOG_FUNCTION (this << recovery);
+  m_recoveryOps = recovery;
 }
 
 Ptr<TcpSocketBase>

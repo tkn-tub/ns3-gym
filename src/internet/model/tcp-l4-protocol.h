@@ -113,7 +113,7 @@ public:
    *
    * \param congestionTypeId the congestion control algorithm TypeId
    */
-  Ptr<Socket> CreateSocket (TypeId congestionTypeId);
+  Ptr<Socket> CreateSocket (TypeId congestionTypeId, TypeId recoveryTypeId);
 
   /**
    * \brief Allocate an IPv4 Endpoint
@@ -306,6 +306,7 @@ private:
   Ipv6EndPointDemux *m_endPoints6; //!< A list of IPv6 end points.
   TypeId m_rttTypeId;              //!< The RTT Estimator TypeId
   TypeId m_congestionTypeId;       //!< The socket TypeId
+  TypeId m_recoveryTypeId;         //!< The recovery TypeId
   std::vector<Ptr<TcpSocketBase> > m_sockets;      //!< list of sockets
   IpL4Protocol::DownTargetCallback m_downTarget;   //!< Callback to send packets over IPv4
   IpL4Protocol::DownTargetCallback6 m_downTarget6; //!< Callback to send packets over IPv6

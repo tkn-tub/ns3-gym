@@ -867,11 +867,63 @@ provided by TcpTxBuffer to query the scoreboard; please refer to the Doxygen
 documentation (and to in-code comments) if you want to learn more about this
 implementation.
 
+Loss Recovery Algorithms
+++++++++++++++++++++++++
+The following loss recovery algorithms are supported in ns-3 TCP:
+
+Classic Recovery
+^^^^^^^^^^^^^^^^
+Classic Recovery refers to the combination of NewReno algorithm described in
+RFC 6582 along with SACK based loss recovery algorithm mentioned in RFC 6675.
+SACK based loss recovery is used when sender and receiver support SACK options.
+In the case when SACK options are disabled, the NewReno modification handles
+the recovery.
+
+At the start of recovery phase the congestion window is reduced diffently for
+NewReno and SACK based recovery. For NewReno the reduction is done as given below:
+
+.. math::  cWnd = ssThresh
+
+For SACK based recovery, this is done as follows:
+
+.. math::   cWnd = ssThresh + (dupAckCount * segmentSize)
+
+While in the recovery phase, the congestion window is inflated by segmentSize
+on arrival of every ACK when NewReno is used. The congestion window is kept
+same when SACK based loss recovery is used.
+
+Adding a new loss recovery algorithm in ns-3
+++++++++++++++++++++++++++++++++++++++++++++
+
+Writing (or porting) a loss recovery algorithms from scratch (or from
+other systems) is a process completely separated from the internals of
+TcpSocketBase.
+
+All operations that are delegated to a loss recovery are contained in
+the class TcpRecoveryOps and are given below:
+
+.. code-block:: c++
+
+  virtual std::string GetName () const;
+  virtual void EnterRecovery (Ptr<const TcpSocketState> tcb, uint32_t unAckDataCount,
+                              bool isSackEnabled, uint32_t dupAckCount,
+                              uint32_t bytesInFlight, uint32_t lastDeliveredBytes);
+  virtual void DoRecovery (Ptr<const TcpSocketState> tcb, uint32_t unAckDataCount,
+                           bool isSackEnabled, uint32_t dupAckCount,
+                           uint32_t bytesInFlight, uint32_t lastDeliveredBytes);
+  virtual void ExitRecovery (Ptr<TcpSocketState> tcb, uint32_t bytesInFlight);
+  virtual Ptr<TcpRecoveryOps> Fork ();
+
+EnterRecovery is called when packet loss is detected and recovery is triggered.
+While in recovery phase, each time when an ACK arrives, DoRecovery is called which
+performs the necessary congestion window changes as per the recovery algorithm.
+ExitRecovery is called just prior to exiting recovery phase in order to perform the
+required congestion window ajustments.
+
 Current limitations
 +++++++++++++++++++
 
 * TcpCongestionOps interface does not contain every possible Linux operation
-* Fast retransmit / fast recovery are bound with TcpSocketBase, thereby preventing easy simulation of TCP Tahoe
 
 .. _Writing-tcp-tests:
 

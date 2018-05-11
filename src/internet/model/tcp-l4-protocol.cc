@@ -42,6 +42,7 @@
 #include "tcp-socket-factory-impl.h"
 #include "tcp-socket-base.h"
 #include "tcp-congestion-ops.h"
+#include "tcp-recovery-ops.h"
 #include "rtt-estimator.h"
 
 #include <vector>
@@ -79,6 +80,11 @@ TcpL4Protocol::GetTypeId (void)
                    "Socket type of TCP objects.",
                    TypeIdValue (TcpNewReno::GetTypeId ()),
                    MakeTypeIdAccessor (&TcpL4Protocol::m_congestionTypeId),
+                   MakeTypeIdChecker ())
+    .AddAttribute ("RecoveryType",
+                   "Recovery type of TCP objects.",
+                   TypeIdValue (ClassicRecovery::GetTypeId ()),
+                   MakeTypeIdAccessor (&TcpL4Protocol::m_recoveryTypeId),
                    MakeTypeIdChecker ())
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",
                    ObjectVectorValue (),
@@ -175,22 +181,26 @@ TcpL4Protocol::DoDispose (void)
 }
 
 Ptr<Socket>
-TcpL4Protocol::CreateSocket (TypeId congestionTypeId)
+TcpL4Protocol::CreateSocket (TypeId congestionTypeId, TypeId recoveryTypeId)
 {
   NS_LOG_FUNCTION (this << congestionTypeId.GetName ());
   ObjectFactory rttFactory;
   ObjectFactory congestionAlgorithmFactory;
+  ObjectFactory recoveryAlgorithmFactory;
   rttFactory.SetTypeId (m_rttTypeId);
   congestionAlgorithmFactory.SetTypeId (congestionTypeId);
+  recoveryAlgorithmFactory.SetTypeId (recoveryTypeId);
 
   Ptr<RttEstimator> rtt = rttFactory.Create<RttEstimator> ();
   Ptr<TcpSocketBase> socket = CreateObject<TcpSocketBase> ();
   Ptr<TcpCongestionOps> algo = congestionAlgorithmFactory.Create<TcpCongestionOps> ();
+  Ptr<TcpRecoveryOps> recovery = recoveryAlgorithmFactory.Create<TcpRecoveryOps> ();
 
   socket->SetNode (m_node);
   socket->SetTcp (this);
   socket->SetRtt (rtt);
   socket->SetCongestionControlAlgorithm (algo);
+  socket->SetRecoveryAlgorithm (recovery);
 
   m_sockets.push_back (socket);
   return socket;
@@ -199,7 +209,7 @@ TcpL4Protocol::CreateSocket (TypeId congestionTypeId)
 Ptr<Socket>
 TcpL4Protocol::CreateSocket (void)
 {
-  return CreateSocket (m_congestionTypeId);
+  return CreateSocket (m_congestionTypeId, m_recoveryTypeId);
 }
 
 Ipv4EndPoint *
