@@ -49,7 +49,7 @@ AparfWifiRemoteStation : public WifiRemoteStation
   uint8_t m_critRateIndex;              //!< Critical rate.
   uint8_t m_prevPowerLevel;             //!< Power level of the previous transmission.
   uint8_t m_powerLevel;                 //!< Current power level.
-  uint32_t m_nSupported;                //!< Number of supported rates by the remote station.
+  uint8_t m_nSupported;                 //!< Number of supported rates by the remote station.
   bool m_initialized;                   //!< For initializing variables.
   AparfWifiManager::State m_aparfState; //!< The estimated state of the channel.
 };
