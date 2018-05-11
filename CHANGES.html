@@ -53,15 +53,17 @@ us a note on ns-developers mailing list.</p>
 <hr>
 <h1>Changes from ns-3.28 to ns-3-dev</h1>
 <h2>New API:</h2>
+<ul>
   <li> CommandLine can now handle non-option (positional) arguments. </li>
   <li> Added CommandLine::Parse (const std::vector<std::string>> args) </li>
   <li> NS_LOG_FUNCTION can now log the contents of vectors </li>
   <li> A new position allocator has been added to the buildings module, allowing
 nodes to be placed outside of buildings defined in the scenario.</li>
-<ul>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
+  <li>TrafficControlHelper::Install now only includes root queue discs in the returned
+  QueueDiscContainer.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
