@@ -442,7 +442,7 @@ private:
    * \param weight the weight
    * \returns the EWMSD
    */
-  double CalculateEwmsd (double oldEwmsd, double currentProb, double ewmaProb, uint32_t weight);
+  double CalculateEwmsd (double oldEwmsd, double currentProb, double ewmaProb, double weight);
 
   /**
    * Initialize Sample Table.

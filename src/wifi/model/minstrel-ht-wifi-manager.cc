@@ -1580,7 +1580,7 @@ MinstrelHtWifiManager::CalculateRetransmits (MinstrelHtWifiRemoteStation *statio
 }
 
 double
-MinstrelHtWifiManager::CalculateEwmsd (double oldEwmsd, double currentProb, double ewmaProb, uint32_t weight)
+MinstrelHtWifiManager::CalculateEwmsd (double oldEwmsd, double currentProb, double ewmaProb, double weight)
 {
   double diff, incr, tmp;
 

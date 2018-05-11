@@ -1866,7 +1866,7 @@ MacLow::StoreMpduIfNeeded (Ptr<Packet> packet, WifiMacHeader hdr)
       BufferedPacket bufferedPacket (packet, hdr);
 
       uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
-      uint16_t mappedSeqControl = QosUtilsMapSeqControlToUniqueInteger (hdr.GetSequenceControl (), endSequence);
+      uint32_t mappedSeqControl = QosUtilsMapSeqControlToUniqueInteger (hdr.GetSequenceControl (), endSequence);
 
       BufferedPacketI i = (*it).second.second.begin ();
       for (; i != (*it).second.second.end ()
@@ -1949,7 +1949,7 @@ MacLow::RxCompleteBufferedPacketsWithSmallerSequence (uint16_t seq, Mac48Address
   if (it != m_bAckAgreements.end ())
     {
       uint16_t endSequence = ((*it).second.first.GetStartingSequence () + 2047) % 4096;
-      uint16_t mappedStart = QosUtilsMapSeqControlToUniqueInteger (seq, endSequence);
+      uint32_t mappedStart = QosUtilsMapSeqControlToUniqueInteger (seq, endSequence);
       BufferedPacketI last = (*it).second.second.begin ();
       uint16_t guard = 0;
       if (last != (*it).second.second.end ())
