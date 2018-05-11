@@ -48,17 +48,17 @@ public:
   virtual void DoRun (void);
 
 private:
-  static void PacketEnqueuedInQueueDisc (uint8_t tos, uint8_t* count, Ptr<const QueueDiscItem> item);
-  static void PacketEnqueuedInWifiMacQueue (uint8_t tos, uint8_t* count, Ptr<const WifiMacQueueItem> item);
+  static void PacketEnqueuedInQueueDisc (uint8_t tos, uint16_t* count, Ptr<const QueueDiscItem> item);
+  static void PacketEnqueuedInWifiMacQueue (uint8_t tos, uint16_t* count, Ptr<const WifiMacQueueItem> item);
   uint8_t m_tos;
-  uint8_t m_expectedQueue;
-  uint8_t m_QueueDiscCount[4];
-  uint8_t m_WifiMacQueueCount[4];
+  uint16_t m_expectedQueue;
+  uint16_t m_QueueDiscCount[4];
+  uint16_t m_WifiMacQueueCount[4];
 };
 
 WifiAcMappingTest::WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue)
-  : TestCase ("User priority to Access Category mapping test. Checks that packets are"
-              "enqueued in the correct child queue disc of the mq root queue disc and"
+  : TestCase ("User priority to Access Category mapping test. Checks that packets are "
+              "enqueued in the correct child queue disc of the mq root queue disc and "
               "in the correct wifi MAC queue"),
     m_tos (tos),
     m_expectedQueue (expectedQueue)
@@ -71,7 +71,7 @@ WifiAcMappingTest::WifiAcMappingTest (uint8_t tos, uint8_t expectedQueue)
 }
 
 void
-WifiAcMappingTest::PacketEnqueuedInQueueDisc (uint8_t tos, uint8_t* count, Ptr<const QueueDiscItem> item)
+WifiAcMappingTest::PacketEnqueuedInQueueDisc (uint8_t tos, uint16_t* count, Ptr<const QueueDiscItem> item)
 {
   uint8_t val;
   if (item->GetUint8Value (QueueItem::IP_DSFIELD, val) && val == tos)
@@ -81,7 +81,7 @@ WifiAcMappingTest::PacketEnqueuedInQueueDisc (uint8_t tos, uint8_t* count, Ptr<c
 }
 
 void
-WifiAcMappingTest::PacketEnqueuedInWifiMacQueue (uint8_t tos, uint8_t* count, Ptr<const WifiMacQueueItem> item)
+WifiAcMappingTest::PacketEnqueuedInWifiMacQueue (uint8_t tos, uint16_t* count, Ptr<const WifiMacQueueItem> item)
 {
   LlcSnapHeader llc;
   Ptr<Packet> packet = item->GetPacket ()->Copy ();
