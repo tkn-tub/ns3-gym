@@ -162,7 +162,7 @@ WifiMode::GetDataRate (uint16_t channelWidth, uint16_t guardInterval, uint8_t ns
   uint16_t usableSubCarriers = 0;
   double symbolRate = 0;
   double codingRate = 0;
-  uint16_t numberOfBitsPerSubcarrier = log2 (GetConstellationSize ());
+  uint16_t numberOfBitsPerSubcarrier = static_cast<uint16_t> (log2 (GetConstellationSize ()));
   if (item->modClass == WIFI_MOD_CLASS_DSSS)
     {
       dataRate = ((11000000 / 11) * numberOfBitsPerSubcarrier);
@@ -799,7 +799,7 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
         }
       j++;
     }
-  uint32_t uid = m_itemList.size ();
+  uint32_t uid = static_cast<uint32_t> (m_itemList.size ());
   m_itemList.push_back (WifiModeItem ());
   return uid;
 }

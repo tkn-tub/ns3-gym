@@ -249,7 +249,7 @@ RraaWifiManager::InitThresholds (RraaWifiRemoteStation *station)
           mtl = 1;
         }
       WifiRraaThresholds th;
-      th.m_ewnd = ceil (m_tau / totalTxTime.GetSeconds ());
+      th.m_ewnd = static_cast<uint32_t> (ceil (m_tau / totalTxTime.GetSeconds ()));
       th.m_ori = ori;
       th.m_mtl = mtl;
       station->m_thresholds.push_back (std::make_pair (th, mode));

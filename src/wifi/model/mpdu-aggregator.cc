@@ -77,7 +77,7 @@ MpduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacke
           Ptr<Packet> pad = Create<Packet> (padding);
           aggregatedPacket->AddAtEnd (pad);
         }
-      currentHdr.SetLength (packet->GetSize ());
+      currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
       currentPacket = packet->Copy ();
 
       currentPacket->AddHeader (currentHdr);
@@ -102,7 +102,7 @@ MpduAggregator::AggregateSingleMpdu (Ptr<const Packet> packet, Ptr<Packet> aggre
     }
 
   currentHdr.SetEof (1);
-  currentHdr.SetLength (packet->GetSize ());
+  currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
   currentPacket = packet->Copy ();
 
   currentPacket->AddHeader (currentHdr);
@@ -117,7 +117,7 @@ MpduAggregator::AddHeaderAndPad (Ptr<Packet> packet, bool last, bool isSingleMpd
 
   //This is called to prepare packets from the aggregate queue to be sent so no need to check total size since it has already been
   //done before when deciding how many packets to add to the queue
-  currentHdr.SetLength (packet->GetSize ());
+  currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
   if (isSingleMpdu)
     {
       currentHdr.SetEof (1);

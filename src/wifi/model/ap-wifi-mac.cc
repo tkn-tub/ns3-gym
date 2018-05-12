@@ -583,7 +583,7 @@ ApWifiMac::GetHtOperation (void) const
                 }
             }
         }
-      operation.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
+      operation.SetRxHighestSupportedDataRate (static_cast<uint16_t> (maxSupportedRate / 1e6)); //in Mbit/s
       operation.SetTxMcsSetDefined (nMcs > 0);
       operation.SetTxMaxNSpatialStreams (maxSpatialStream);
       //To be filled in once supported

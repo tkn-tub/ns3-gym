@@ -87,7 +87,7 @@ ConvertGuardIntervalToNanoSeconds (WifiMode mode, bool htShortGuardInterval, Tim
   uint16_t gi;
   if (mode.GetModulationClass () == WIFI_MOD_CLASS_HE)
     {
-      gi = heGuardInterval.GetNanoSeconds ();
+      gi = static_cast<uint16_t> (heGuardInterval.GetNanoSeconds ());
     }
   else if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT || mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
     {

@@ -498,7 +498,7 @@ WifiNetDevice::SelectQueue (Ptr<QueueItem> item) const
   // if the admission control were implemented, here we should check whether
   // the access category assigned to the packet should be downgraded
 
-  return QosUtilsMapTidToAc (priority);
+  return static_cast<uint8_t> (QosUtilsMapTidToAc (priority));
 }
 
 } //namespace ns3

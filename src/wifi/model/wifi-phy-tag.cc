@@ -47,7 +47,7 @@ void
 WifiPhyTag::Serialize (TagBuffer i) const
 {
   i.Write ((uint8_t *)&m_wifiTxVector, sizeof (WifiTxVector));
-  i.WriteU16 (m_mpduType);
+  i.WriteU16 (static_cast<uint16_t> (m_mpduType));
   i.WriteU8 (m_frameComplete);
 }
 

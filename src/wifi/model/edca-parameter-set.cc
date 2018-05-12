@@ -73,14 +73,14 @@ EdcaParameterSet::SetBeAci (uint8_t aci)
 void
 EdcaParameterSet::SetBeCWmin (uint32_t cwMin)
 {
-  uint8_t ECWmin = log2 (cwMin + 1);
+  uint8_t ECWmin = static_cast<uint8_t> (log2 (cwMin + 1));
   m_acBE |= (ECWmin & 0x0f) << 8;
 }
 
 void
 EdcaParameterSet::SetBeCWmax (uint32_t cwMax)
 {
-  uint8_t ECWmax = log2 (cwMax + 1);
+  uint8_t ECWmax = static_cast<uint8_t> (log2 (cwMax + 1));
   m_acBE |= (ECWmax & 0x0f) << 12;
 }
 
@@ -105,14 +105,14 @@ EdcaParameterSet::SetBkAci (uint8_t aci)
 void
 EdcaParameterSet::SetBkCWmin (uint32_t cwMin)
 {
-  uint8_t ECWmin = log2 (cwMin + 1);
+  uint8_t ECWmin = static_cast<uint8_t> (log2 (cwMin + 1));
   m_acBK |= (ECWmin & 0x0f) << 8;
 }
 
 void
 EdcaParameterSet::SetBkCWmax (uint32_t cwMax)
 {
-  uint8_t ECWmax = log2 (cwMax + 1);
+  uint8_t ECWmax = static_cast<uint8_t> (log2 (cwMax + 1));
   m_acBK |= (ECWmax & 0x0f) << 12;
 }
 
@@ -137,14 +137,14 @@ EdcaParameterSet::SetViAci (uint8_t aci)
 void
 EdcaParameterSet::SetViCWmin (uint32_t cwMin)
 {
-  uint8_t ECWmin = log2 (cwMin + 1);
+  uint8_t ECWmin = static_cast<uint8_t> (log2 (cwMin + 1));
   m_acVI |= (ECWmin & 0x0f) << 8;
 }
 
 void
 EdcaParameterSet::SetViCWmax (uint32_t cwMax)
 {
-  uint8_t ECWmax = log2 (cwMax + 1);
+  uint8_t ECWmax = static_cast<uint8_t> (log2 (cwMax + 1));
   m_acVI |= (ECWmax & 0x0f) << 12;
 }
 
@@ -169,14 +169,14 @@ EdcaParameterSet::SetVoAci (uint8_t aci)
 void
 EdcaParameterSet::SetVoCWmin (uint32_t cwMin)
 {
-  uint8_t ECWmin = log2 (cwMin + 1);
+  uint8_t ECWmin = static_cast<uint8_t> (log2 (cwMin + 1));
   m_acVO |= (ECWmin & 0x0f) << 8;
 }
 
 void
 EdcaParameterSet::SetVoCWmax (uint32_t cwMax)
 {
-  uint8_t ECWmax = log2 (cwMax + 1);
+  uint8_t ECWmax = static_cast<uint8_t> (log2 (cwMax + 1));
   m_acVO |= (ECWmax & 0x0f) << 12;
 }
 

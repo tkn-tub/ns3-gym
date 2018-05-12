@@ -151,7 +151,7 @@ IdealWifiManager::DoInitialize ()
                     }
                   else
                     {
-                      guardInterval = GetPhy ()->GetGuardInterval ().GetNanoSeconds ();
+                      guardInterval = static_cast<uint16_t> (GetPhy ()->GetGuardInterval ().GetNanoSeconds ());
                     }
                   txVector.SetGuardInterval (guardInterval);
                   for (uint8_t k = 1; k <= GetPhy ()->GetMaxSupportedTxSpatialStreams (); k++)
@@ -321,7 +321,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
               txVector.SetMode (mode);
               if (mode.GetModulationClass () == WIFI_MOD_CLASS_HT)
                 {
-                  guardInterval = std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800);
+                  guardInterval = static_cast<uint16_t> (std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800));
                   txVector.SetGuardInterval (guardInterval);
                   // If the node and peer are both VHT capable, only search VHT modes
                   if (HasVhtSupported () && GetVhtSupported (station))
@@ -365,7 +365,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                 }
               else if (mode.GetModulationClass () == WIFI_MOD_CLASS_VHT)
                 {
-                  guardInterval = std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800);
+                  guardInterval = static_cast<uint16_t> (std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800));
                   txVector.SetGuardInterval (guardInterval);
                   // If the node and peer are both HE capable, only search HE modes
                   if (HasHeSupported () && GetHeSupported (station))
@@ -488,7 +488,7 @@ IdealWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
     }
   else
     {
-      guardInterval = std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800);
+      guardInterval = static_cast<uint16_t> (std::max (GetShortGuardInterval (station) ? 400 : 800, GetPhy ()->GetShortGuardInterval () ? 400 : 800));
     }
   if (m_currentRate != maxMode.GetDataRate (channelWidth, guardInterval, selectedNss))
     {

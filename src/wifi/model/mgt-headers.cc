@@ -441,7 +441,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   //ibss parameter set
   Buffer::Iterator i = start;
   i.WriteHtolsbU64 (Simulator::Now ().GetMicroSeconds ());
-  i.WriteHtolsbU16 (m_beaconInterval / 1024);
+  i.WriteHtolsbU16 (static_cast<uint16_t> (m_beaconInterval / 1024));
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);

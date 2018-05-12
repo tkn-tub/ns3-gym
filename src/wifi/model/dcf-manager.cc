@@ -173,7 +173,7 @@ void
 DcfManager::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
-  m_slotTimeUs = slotTime.GetMicroSeconds ();
+  m_slotTimeUs = static_cast<uint32_t> (slotTime.GetMicroSeconds ());
 }
 
 void
@@ -448,7 +448,7 @@ DcfManager::UpdateBackoff (void)
       Time backoffStart = GetBackoffStartFor (state);
       if (backoffStart <= Simulator::Now ())
         {
-          uint32_t nus = (Simulator::Now () - backoffStart).GetMicroSeconds ();
+          uint32_t nus = static_cast<uint32_t> ((Simulator::Now () - backoffStart).GetMicroSeconds ());
           uint32_t nIntSlots = nus / m_slotTimeUs;
           /*
            * EDCA behaves slightly different to DCA. For EDCA we

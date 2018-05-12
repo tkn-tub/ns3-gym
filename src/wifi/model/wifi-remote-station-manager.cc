@@ -1615,7 +1615,7 @@ WifiRemoteStationManager::LookupState (Mac48Address address) const
   state->m_operationalMcsSet.push_back (GetDefaultMcs ());
   state->m_channelWidth = m_wifiPhy->GetChannelWidth ();
   state->m_shortGuardInterval = m_wifiPhy->GetShortGuardInterval ();
-  state->m_guardInterval = m_wifiPhy->GetGuardInterval ().GetNanoSeconds ();
+  state->m_guardInterval = static_cast<uint16_t> (m_wifiPhy->GetGuardInterval ().GetNanoSeconds ());
   state->m_greenfield = m_wifiPhy->GetGreenfield ();
   state->m_streams = 1;
   state->m_ness = 0;
@@ -1861,7 +1861,7 @@ WifiRemoteStationManager::AddBasicMode (WifiMode mode)
 uint8_t
 WifiRemoteStationManager::GetNBasicModes (void) const
 {
-  return m_bssBasicRateSet.size ();
+  return static_cast<uint8_t> (m_bssBasicRateSet.size ());
 }
 
 WifiMode
@@ -1928,7 +1928,7 @@ WifiRemoteStationManager::AddBasicMcs (WifiMode mcs)
 uint8_t
 WifiRemoteStationManager::GetNBasicMcs (void) const
 {
-  return m_bssBasicMcsSet.size ();
+  return static_cast<uint8_t> (m_bssBasicMcsSet.size ());
 }
 
 WifiMode
@@ -2097,7 +2097,7 @@ WifiRemoteStationManager::GetMac (void) const
 uint8_t
 WifiRemoteStationManager::GetNSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_operationalRateSet.size ();
+  return static_cast<uint8_t> (station->m_state->m_operationalRateSet.size ());
 }
 
 bool
@@ -2127,7 +2127,7 @@ WifiRemoteStationManager::GetHeSupported (const WifiRemoteStation *station) cons
 uint8_t
 WifiRemoteStationManager::GetNMcsSupported (const WifiRemoteStation *station) const
 {
-  return station->m_state->m_operationalMcsSet.size ();
+  return static_cast<uint8_t> (station->m_state->m_operationalMcsSet.size ());
 }
 
 uint32_t
@@ -2166,7 +2166,7 @@ WifiRemoteStationManager::GetNumberOfSupportedStreams (Mac48Address address) con
 uint8_t
 WifiRemoteStationManager::GetNMcsSupported (Mac48Address address) const
 {
-  return LookupState (address)->m_operationalMcsSet.size ();
+  return static_cast<uint8_t> (LookupState (address)->m_operationalMcsSet.size ());
 }
 
 bool

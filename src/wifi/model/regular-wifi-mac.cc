@@ -204,7 +204,7 @@ RegularWifiMac::GetHtCapabilities (void) const
               NS_LOG_DEBUG ("Updating maxSupportedRate to " << maxSupportedRate);
             }
         }
-      capabilities.SetRxHighestSupportedDataRate (maxSupportedRate / 1e6); //in Mbit/s
+      capabilities.SetRxHighestSupportedDataRate (static_cast<uint16_t> (maxSupportedRate / 1e6)); //in Mbit/s
       capabilities.SetTxMcsSetDefined (m_phy->GetNMcs () > 0);
       capabilities.SetTxMaxNSpatialStreams (m_phy->GetMaxSupportedTxSpatialStreams ());
       //we do not support unequal modulations
@@ -271,8 +271,8 @@ RegularWifiMac::GetVhtCapabilities (void) const
               NS_LOG_DEBUG ("Updating maxSupportedRateLGI to " << maxSupportedRateLGI);
             }
         }
-      capabilities.SetRxHighestSupportedLgiDataRate (maxSupportedRateLGI / 1e6); //in Mbit/s
-      capabilities.SetTxHighestSupportedLgiDataRate (maxSupportedRateLGI / 1e6); //in Mbit/s
+      capabilities.SetRxHighestSupportedLgiDataRate (static_cast<uint16_t> (maxSupportedRateLGI / 1e6)); //in Mbit/s
+      capabilities.SetTxHighestSupportedLgiDataRate (static_cast<uint16_t> (maxSupportedRateLGI / 1e6)); //in Mbit/s
       //To be filled in once supported
       capabilities.SetRxStbc (0);
       capabilities.SetTxStbc (0);

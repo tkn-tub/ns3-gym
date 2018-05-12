@@ -80,7 +80,7 @@ MsduAggregator::Aggregate (Ptr<const Packet> packet, Ptr<Packet> aggregatedPacke
         }
       currentHdr.SetDestinationAddr (dest);
       currentHdr.SetSourceAddr (src);
-      currentHdr.SetLength (packet->GetSize ());
+      currentHdr.SetLength (static_cast<uint16_t> (packet->GetSize ()));
       currentPacket = packet->Copy ();
 
       currentPacket->AddHeader (currentHdr);

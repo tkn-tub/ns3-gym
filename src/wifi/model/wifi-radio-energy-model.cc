@@ -302,22 +302,22 @@ WifiRadioEnergyModel::GetMaximumTimeInState (int state) const
   switch (state)
     {
     case WifiPhyState::IDLE:
-      remainingTime = NanoSeconds (1e9 * (remainingEnergy / (m_idleCurrentA * supplyVoltage)));
+      remainingTime = NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (m_idleCurrentA * supplyVoltage))));
       break;
     case WifiPhyState::CCA_BUSY:
-      remainingTime = NanoSeconds (1e9 * (remainingEnergy / (m_ccaBusyCurrentA * supplyVoltage)));
+      remainingTime = NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (m_ccaBusyCurrentA * supplyVoltage))));
       break;
     case WifiPhyState::TX:
-      remainingTime = NanoSeconds (1e9 * (remainingEnergy / (m_txCurrentA * supplyVoltage)));
+      remainingTime = NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (m_txCurrentA * supplyVoltage))));
       break;
     case WifiPhyState::RX:
-      remainingTime = NanoSeconds (1e9 * (remainingEnergy / (m_rxCurrentA * supplyVoltage)));
+      remainingTime = NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (m_rxCurrentA * supplyVoltage))));
       break;
     case WifiPhyState::SWITCHING:
-      remainingTime = NanoSeconds (1e9 * (remainingEnergy / (m_switchingCurrentA * supplyVoltage)));
+      remainingTime = NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (m_switchingCurrentA * supplyVoltage))));
       break;
     case WifiPhyState::SLEEP:
-      remainingTime = NanoSeconds (1e9 * (remainingEnergy / (m_sleepCurrentA * supplyVoltage)));
+      remainingTime = NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (m_sleepCurrentA * supplyVoltage))));
       break;
     default:
       NS_FATAL_ERROR ("WifiRadioEnergyModel: undefined radio state " << state);
