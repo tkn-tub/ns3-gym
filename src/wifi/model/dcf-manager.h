@@ -320,7 +320,7 @@ private:
   bool m_off;                   //!< flag whether it is in off state
   Time m_eifsNoDifs;            //!< EIFS no DIFS time
   EventId m_accessTimeout;      //!< the access timeout ID
-  uint32_t m_slotTimeUs;        //!< the slot time in microseconds
+  Time m_slot;                  //!< the slot time
   Time m_sifs;                  //!< the SIFS time
   PhyListener* m_phyListener;   //!< the phy listener
 };

@@ -116,7 +116,7 @@ DcfManager::DcfManager ()
     m_rxing (false),
     m_sleeping (false),
     m_off (false),
-    m_slotTimeUs (0),
+    m_slot (Seconds (0.0)),
     m_sifs (Seconds (0.0)),
     m_phyListener (0)
 {
@@ -173,7 +173,7 @@ void
 DcfManager::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
-  m_slotTimeUs = static_cast<uint32_t> (slotTime.GetMicroSeconds ());
+  m_slot = slotTime;
 }
 
 void
@@ -255,7 +255,7 @@ bool
 DcfManager::IsWithinAifs (Ptr<DcaTxop> state) const
 {
   NS_LOG_FUNCTION (this << state);
-  Time ifsEnd = GetAccessGrantStart () + MicroSeconds (state->GetAifsn () * m_slotTimeUs);
+  Time ifsEnd = GetAccessGrantStart () + (state->GetAifsn () * m_slot);
   if (ifsEnd > Simulator::Now ())
     {
       NS_LOG_DEBUG ("IsWithinAifs () true; ifsEnd is at " << ifsEnd.GetSeconds ());
@@ -421,7 +421,7 @@ DcfManager::GetBackoffStartFor (Ptr<DcaTxop> state)
 {
   NS_LOG_FUNCTION (this << state);
   Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
-                                     GetAccessGrantStart () + MicroSeconds (state->GetAifsn () * m_slotTimeUs));
+                                     GetAccessGrantStart () + (state->GetAifsn () * m_slot));
 
   return mostRecentEvent;
 }
@@ -431,9 +431,8 @@ DcfManager::GetBackoffEndFor (Ptr<DcaTxop> state)
 {
   NS_LOG_FUNCTION (this << state);
   NS_LOG_DEBUG ("Backoff start: " << GetBackoffStartFor (state).As (Time::US) <<
-                " end: " << (GetBackoffStartFor (state) +
-                             MicroSeconds (state->GetBackoffSlots () * m_slotTimeUs)).As (Time::US));
-  return GetBackoffStartFor (state) + MicroSeconds (state->GetBackoffSlots () * m_slotTimeUs);
+                " end: " << (GetBackoffStartFor (state) + state->GetBackoffSlots () * m_slot).As (Time::US));
+  return GetBackoffStartFor (state) + (state->GetBackoffSlots () * m_slot);
 }
 
 void
@@ -448,8 +447,7 @@ DcfManager::UpdateBackoff (void)
       Time backoffStart = GetBackoffStartFor (state);
       if (backoffStart <= Simulator::Now ())
         {
-          uint32_t nus = static_cast<uint32_t> ((Simulator::Now () - backoffStart).GetMicroSeconds ());
-          uint32_t nIntSlots = nus / m_slotTimeUs;
+          uint32_t nIntSlots = (Simulator::Now () - backoffStart) / m_slot;
           /*
            * EDCA behaves slightly different to DCA. For EDCA we
            * decrement once at the slot boundary at the end of AIFS as
@@ -467,7 +465,7 @@ DcfManager::UpdateBackoff (void)
             }
           uint32_t n = std::min (nIntSlots, state->GetBackoffSlots ());
           NS_LOG_DEBUG ("dcf " << k << " dec backoff slots=" << n);
-          Time backoffUpdateBound = backoffStart + MicroSeconds (n * m_slotTimeUs);
+          Time backoffUpdateBound = backoffStart + (n * m_slot);
           state->UpdateBackoffSlotsNow (n, backoffUpdateBound);
         }
     }
