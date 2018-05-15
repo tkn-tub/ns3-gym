@@ -28,6 +28,11 @@
 #include "ns3/tcp-l4-protocol.h"
 #include "../model/ipv4-end-point.h"
 #include "../model/ipv6-end-point.h"
+#include "ns3/tcp-header.h"
+#include "ns3/tcp-tx-buffer.h"
+#include "ns3/tcp-rx-buffer.h"
+#include "ns3/rtt-estimator.h"
+
 #include "tcp-general-test.h"
 
 using namespace ns3;

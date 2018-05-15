@@ -31,10 +31,6 @@
 #include "ns3/sequence-number.h"
 #include "ns3/data-rate.h"
 #include "ns3/node.h"
-#include "tcp-rx-buffer.h"
-#include "tcp-tx-buffer.h"
-#include "rtt-estimator.h"
-#include "tcp-l4-protocol.h"
 
 namespace ns3 {
 
@@ -1225,16 +1221,16 @@ protected:
   // Connections to other layers of TCP/IP
   Ipv4EndPoint*       m_endPoint  {nullptr}; //!< the IPv4 endpoint
   Ipv6EndPoint*       m_endPoint6 {nullptr}; //!< the IPv6 endpoint
-  Ptr<Node>           m_node      {nullptr}; //!< the associated node
-  Ptr<TcpL4Protocol>  m_tcp       {nullptr}; //!< the associated TCP L4 protocol
+  Ptr<Node>           m_node;                //!< the associated node
+  Ptr<TcpL4Protocol>  m_tcp;                 //!< the associated TCP L4 protocol
   Callback<void, Ipv4Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback;  //!< ICMP callback
   Callback<void, Ipv6Address,uint8_t,uint8_t,uint8_t,uint32_t> m_icmpCallback6; //!< ICMPv6 callback
 
-  Ptr<RttEstimator> m_rtt {nullptr}; //!< Round trip time estimator
+  Ptr<RttEstimator> m_rtt; //!< Round trip time estimator
 
   // Rx and Tx buffer management
-  Ptr<TcpRxBuffer> m_rxBuffer {nullptr}; //!< Rx buffer (reordering buffer)
-  Ptr<TcpTxBuffer> m_txBuffer {nullptr}; //!< Tx buffer
+  Ptr<TcpRxBuffer> m_rxBuffer; //!< Rx buffer (reordering buffer)
+  Ptr<TcpTxBuffer> m_txBuffer; //!< Tx buffer
 
   // State-related attributes
   TracedValue<TcpStates_t> m_state {CLOSED};         //!< TCP state
@@ -1271,9 +1267,9 @@ protected:
   bool                   m_limitedTx  {true}; //!< perform limited transmit
 
   // Transmission Control Block
-  Ptr<TcpSocketState>    m_tcb {nullptr};               //!< Congestion control informations
-  Ptr<TcpCongestionOps>  m_congestionControl {nullptr}; //!< Congestion control
-  Ptr<TcpRecoveryOps>    m_recoveryOps {nullptr};       //!< Recovery Algorithm
+  Ptr<TcpSocketState>    m_tcb;               //!< Congestion control informations
+  Ptr<TcpCongestionOps>  m_congestionControl; //!< Congestion control
+  Ptr<TcpRecoveryOps>    m_recoveryOps;       //!< Recovery Algorithm
 
   // Guesses over the other connection end
   bool m_isFirstPartialAck {true}; //!< First partial ACK during RECOVERY

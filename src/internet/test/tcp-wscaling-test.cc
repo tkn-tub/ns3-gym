@@ -21,6 +21,9 @@
 #include "tcp-general-test.h"
 #include "ns3/node.h"
 #include "ns3/log.h"
+#include "ns3/tcp-header.h"
+#include "ns3/tcp-tx-buffer.h"
+#include "ns3/tcp-rx-buffer.h"
 
 using namespace ns3;
 

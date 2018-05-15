@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "tcp-error-model.h"
 #include "ns3/random-variable-stream.h"
+#include "ns3/tcp-rx-buffer.h"
 
 using namespace ns3;
 

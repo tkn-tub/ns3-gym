@@ -24,6 +24,7 @@
 
 #include "tcp-option-sack-permitted.h"
 #include "ns3/log.h"
+#include "ns3/tcp-header.h"
 
 namespace ns3 {
 

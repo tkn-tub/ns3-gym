@@ -25,7 +25,9 @@
 #include "ns3/object.h"
 
 namespace ns3 {
+
 class TcpSocketState;
+
 /**
  * \ingroup tcp
  * \defgroup recoveryOps Recovery Algorithms.
