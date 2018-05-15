@@ -359,7 +359,7 @@ int main (int argc, char *argv[])
   wifiStaDevices.Add (wifi.Install (wifiPhy, wifiMac, wifiStaNodes.Get (0)));
 
   //Configure the AP node
-  wifi.SetRemoteStationManager (manager, "DefaultTxPowerLevel", UintegerValue (maxPower), "RtsCtsThreshold", UintegerValue (rtsThreshold));
+  wifi.SetRemoteStationManager (manager, "DefaultTxPowerLevel", UintegerValue (powerLevels - 1), "RtsCtsThreshold", UintegerValue (rtsThreshold));
   wifiPhy.Set ("TxPowerStart", DoubleValue (minPower));
   wifiPhy.Set ("TxPowerEnd", DoubleValue (maxPower));
   wifiPhy.Set ("TxPowerLevels", UintegerValue (powerLevels));
