@@ -30,7 +30,8 @@ class TcpSocketState;
  * \ingroup tcp
  * \defgroup recoveryOps Recovery Algorithms.
  *
- * The various recovery algorithms used in recovery phase of TCP.
+ * The various recovery algorithms used in recovery phase of TCP. The interface
+ * is defined in class TcpRecoveryOps.
  */
 
 /**
@@ -40,10 +41,17 @@ class TcpSocketState;
  *
  * The design is inspired by the TcpCongestionOps class in ns-3. The fast
  * recovery is splitted from the main socket code, and it is a pluggable
- * component. An interface has been defined; variables are maintained in the
- * TcpSocketState class, while subclasses of TcpRecoveryOps operate over an
- * instance of that class.
+ * component. Subclasses of TcpRecoveryOps should modify TcpSocketState variables
+ * upon three condition:
  *
+ * - EnterRecovery (when the first loss is guessed)
+ * - DoRecovery (each time a duplicate ACK or an ACK with SACK information is received)
+ * - ExitRecovery (when the sequence transmitted when the socket entered the
+ * Recovery phase is ACKed, therefore ending phase).
+ *
+ * Each condition is represented by a pure virtual method.
+ *
+ * \see TcpClassicRecovery
  * \see DoRecovery
  */
 class TcpRecoveryOps : public Object
