@@ -59,37 +59,37 @@ TcpRecoveryOps::~TcpRecoveryOps ()
 
 // Classic recovery
 
-NS_OBJECT_ENSURE_REGISTERED (ClassicRecovery);
+NS_OBJECT_ENSURE_REGISTERED (TcpClassicRecovery);
 
 TypeId
-ClassicRecovery::GetTypeId (void)
+TcpClassicRecovery::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::ClassicRecovery")
+  static TypeId tid = TypeId ("ns3::TcpClassicRecovery")
     .SetParent<TcpRecoveryOps> ()
     .SetGroupName ("Internet")
-    .AddConstructor<ClassicRecovery> ()
+    .AddConstructor<TcpClassicRecovery> ()
   ;
   return tid;
 }
 
-ClassicRecovery::ClassicRecovery (void) : TcpRecoveryOps ()
+TcpClassicRecovery::TcpClassicRecovery (void) : TcpRecoveryOps ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-ClassicRecovery::ClassicRecovery (const ClassicRecovery& sock)
+TcpClassicRecovery::TcpClassicRecovery (const TcpClassicRecovery& sock)
   : TcpRecoveryOps (sock)
 {
   NS_LOG_FUNCTION (this);
 }
 
-ClassicRecovery::~ClassicRecovery (void)
+TcpClassicRecovery::~TcpClassicRecovery (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-ClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+TcpClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
                                 uint32_t unAckDataCount, uint32_t lastSackedBytes)
 {
   NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount << lastSackedBytes);
@@ -100,7 +100,7 @@ ClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
 }
 
 void
-ClassicRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
+TcpClassicRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
                              uint32_t lastSackedBytes)
 {
   NS_LOG_FUNCTION (this << tcb << lastAckedBytes << lastSackedBytes);
@@ -110,7 +110,7 @@ ClassicRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
 }
 
 void
-ClassicRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
+TcpClassicRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
   // Follow NewReno procedures to exit FR if SACK is disabled
@@ -122,15 +122,15 @@ ClassicRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
 }
 
 std::string
-ClassicRecovery::GetName () const
+TcpClassicRecovery::GetName () const
 {
-  return "ClassicRecovery";
+  return "TcpClassicRecovery";
 }
 
 Ptr<TcpRecoveryOps>
-ClassicRecovery::Fork ()
+TcpClassicRecovery::Fork ()
 {
-  return CopyObject<ClassicRecovery> (this);
+  return CopyObject<TcpClassicRecovery> (this);
 }
 
 } // namespace ns3

@@ -83,7 +83,7 @@ TcpL4Protocol::GetTypeId (void)
                    MakeTypeIdChecker ())
     .AddAttribute ("RecoveryType",
                    "Recovery type of TCP objects.",
-                   TypeIdValue (ClassicRecovery::GetTypeId ()),
+                   TypeIdValue (TcpClassicRecovery::GetTypeId ()),
                    MakeTypeIdAccessor (&TcpL4Protocol::m_recoveryTypeId),
                    MakeTypeIdChecker ())
     .AddAttribute ("SocketList", "The list of sockets associated to this protocol.",

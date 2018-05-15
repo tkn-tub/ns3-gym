@@ -153,7 +153,7 @@ public:
  *
  * \see DoRecovery
  */
-class ClassicRecovery : public TcpRecoveryOps
+class TcpClassicRecovery : public TcpRecoveryOps
 {
 public:
   /**
@@ -165,18 +165,18 @@ public:
   /**
    * \brief Constructor
    */
-  ClassicRecovery ();
+  TcpClassicRecovery ();
 
   /**
    * \brief Copy constructor.
    * \param recovery object to copy.
    */
-  ClassicRecovery (const ClassicRecovery& recovery);
+  TcpClassicRecovery (const TcpClassicRecovery& recovery);
 
   /**
    * \brief Constructor
    */
-  virtual ~ClassicRecovery () override;
+  virtual ~TcpClassicRecovery () override;
 
   virtual std::string GetName () const override;
 

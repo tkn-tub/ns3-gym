@@ -108,7 +108,7 @@ PrrRecoveryTest::DoRun ()
   m_state->m_ssThresh = m_ssThresh;
   m_state->m_bytesInFlight = m_bytesInFlight;
 
-  Ptr<PrrRecovery> recovery = CreateObject <PrrRecovery> ();
+  Ptr<TcpPrrRecovery> recovery = CreateObject <TcpPrrRecovery> ();
   recovery->SetAttribute ("ReductionBound", StringValue (m_reductionBound));
 
   recovery->EnterRecovery (m_state, 3, m_unAckDataCount, 0);

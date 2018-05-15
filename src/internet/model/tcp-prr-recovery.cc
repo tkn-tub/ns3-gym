@@ -28,33 +28,33 @@
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("PrrRecovery");
-NS_OBJECT_ENSURE_REGISTERED (PrrRecovery);
+NS_LOG_COMPONENT_DEFINE ("TcpPrrRecovery");
+NS_OBJECT_ENSURE_REGISTERED (TcpPrrRecovery);
 
 TypeId
-PrrRecovery::GetTypeId (void)
+TcpPrrRecovery::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::PrrRecovery")
-    .SetParent<ClassicRecovery> ()
-    .AddConstructor<PrrRecovery> ()
+  static TypeId tid = TypeId ("ns3::TcpPrrRecovery")
+    .SetParent<TcpClassicRecovery> ()
+    .AddConstructor<TcpPrrRecovery> ()
     .SetGroupName ("Internet")
     .AddAttribute ("ReductionBound", "Type of Reduction Bound",
                    EnumValue (SSRB),
-                   MakeEnumAccessor (&PrrRecovery::m_reductionBoundMode),
+                   MakeEnumAccessor (&TcpPrrRecovery::m_reductionBoundMode),
                    MakeEnumChecker (CRB, "CRB",
                                     SSRB, "SSRB"))
   ;
   return tid;
 }
 
-PrrRecovery::PrrRecovery (void)
-  : ClassicRecovery ()
+TcpPrrRecovery::TcpPrrRecovery (void)
+  : TcpClassicRecovery ()
 {
   NS_LOG_FUNCTION (this);
 }
 
-PrrRecovery::PrrRecovery (const PrrRecovery& recovery)
-  : ClassicRecovery (recovery),
+TcpPrrRecovery::TcpPrrRecovery (const TcpPrrRecovery& recovery)
+  : TcpClassicRecovery (recovery),
     m_prrDelivered (recovery.m_prrDelivered),
     m_prrOut (recovery.m_prrOut),
     m_recoveryFlightSize (recovery.m_recoveryFlightSize),
@@ -64,13 +64,13 @@ PrrRecovery::PrrRecovery (const PrrRecovery& recovery)
   NS_LOG_FUNCTION (this);
 }
 
-PrrRecovery::~PrrRecovery (void)
+TcpPrrRecovery::~TcpPrrRecovery (void)
 {
   NS_LOG_FUNCTION (this);
 }
 
 void
-PrrRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+TcpPrrRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
                             uint32_t unAckDataCount, uint32_t lastSackedBytes)
 {
   NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount << lastSackedBytes);
@@ -85,7 +85,7 @@ PrrRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
 }
 
 void
-PrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
+TcpPrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
                          uint32_t lastSackedBytes)
 {
   NS_LOG_FUNCTION (this << tcb << lastAckedBytes << lastSackedBytes);
@@ -121,7 +121,7 @@ PrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
 }
 
 void
-PrrRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
+TcpPrrRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
   tcb->m_cWnd = tcb->m_ssThresh.Get ();
@@ -129,20 +129,20 @@ PrrRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
 }
 
 void
-PrrRecovery::UpdateBytesSent (uint32_t bytesSent)
+TcpPrrRecovery::UpdateBytesSent (uint32_t bytesSent)
 {
   NS_LOG_FUNCTION (this << bytesSent);
   m_prrOut += bytesSent;
 }
 
 Ptr<TcpRecoveryOps>
-PrrRecovery::Fork (void)
+TcpPrrRecovery::Fork (void)
 {
-  return CopyObject<PrrRecovery> (this);
+  return CopyObject<TcpPrrRecovery> (this);
 }
 
 std::string
-PrrRecovery::GetName () const
+TcpPrrRecovery::GetName () const
 {
   return "PrrRecovery";
 }

@@ -38,7 +38,7 @@ namespace ns3 {
  * algorithm. PRR also improves accuracy of the amount of data sent
  * during loss recovery.
  */
-class PrrRecovery : public ClassicRecovery
+class TcpPrrRecovery : public TcpClassicRecovery
 {
 public:
   /**
@@ -50,15 +50,15 @@ public:
   /**
    * Create an unbound tcp socket.
    */
-  PrrRecovery (void);
+  TcpPrrRecovery (void);
 
   /**
    * \brief Copy constructor
    * \param sock the object to copy
    */
-  PrrRecovery (const PrrRecovery& sock);
+  TcpPrrRecovery (const TcpPrrRecovery& sock);
 
-  virtual ~PrrRecovery (void) override;
+  virtual ~TcpPrrRecovery (void) override;
 
   /**
    * \brief Reduction Bound variant (CRB or SSRB)

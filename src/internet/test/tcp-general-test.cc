@@ -37,7 +37,7 @@ NS_LOG_COMPONENT_DEFINE ("TcpGeneralTest");
 TcpGeneralTest::TcpGeneralTest (const std::string &desc)
   : TestCase (desc),
     m_congControlTypeId (TcpNewReno::GetTypeId ()),
-    m_recoveryTypeId (ClassicRecovery::GetTypeId ()),
+    m_recoveryTypeId (TcpClassicRecovery::GetTypeId ()),
     m_remoteAddr (Ipv4Address::GetAny (), 4477)
 {
   NS_LOG_FUNCTION (this << desc);

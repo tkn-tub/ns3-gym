@@ -85,10 +85,10 @@ ClassicRecoveryTest::DoRun ()
   m_state->m_segmentSize = m_segmentSize;
   m_state->m_ssThresh = m_ssThresh;
 
-  Ptr<ClassicRecovery> recovery = CreateObject <ClassicRecovery> ();
+  Ptr<TcpClassicRecovery> recovery = CreateObject <TcpClassicRecovery> ();
 
-  NS_TEST_ASSERT_MSG_EQ (recovery->GetName (), "ClassicRecovery",
-                         "The name of recovery used should be ClassicRecovery");
+  NS_TEST_ASSERT_MSG_EQ (recovery->GetName (), "TcpClassicRecovery",
+                         "The name of recovery used should be TcpClassicRecovery");
 
   recovery->EnterRecovery (m_state, m_dupAckCount, 1000, 0);
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd, m_state->m_ssThresh,
@@ -122,7 +122,8 @@ class ClassicRecoveryTestSuite : public TestSuite
 public:
   ClassicRecoveryTestSuite () : TestSuite ("tcp-classic-recovery-test", UNIT)
   {
-    AddTestCase (new ClassicRecoveryTest (3000, 500, 2500, 3, "Classic recovery test on cWnd and cWndInfl with 500 bytes segmentSize"),
+    AddTestCase (new ClassicRecoveryTest (3000, 500, 2500, 3,
+                                          "Classic recovery test on cWnd and cWndInfl with 500 bytes segmentSize"),
                  TestCase::QUICK);
   }
 };
