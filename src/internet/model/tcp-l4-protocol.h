@@ -95,6 +95,8 @@ public:
    */
   void SetNode (Ptr<Node> node);
 
+  // NOTE: API from here should not be removed, only added. Be backward-compatible!
+
   /**
    * \brief Create a TCP socket using the TypeId set by SocketType attribute
    *
@@ -112,8 +114,19 @@ public:
    * \warning using a congestionTypeId other than TCP is a bad idea.
    *
    * \param congestionTypeId the congestion control algorithm TypeId
+   * \param recoveryTypeId the recovery algorithm TypeId
    */
   Ptr<Socket> CreateSocket (TypeId congestionTypeId, TypeId recoveryTypeId);
+
+  /**
+    * \brief Create a TCP socket using the specified congestion control algorithm
+    * \return A smart Socket pointer to a TcpSocket allocated by this instance
+    * of the TCP protocol
+    *
+    * \param congestionTypeId the congestion control algorithm TypeId
+    *
+    */
+  Ptr<Socket> CreateSocket (TypeId congestionTypeId);
 
   /**
    * \brief Allocate an IPv4 Endpoint

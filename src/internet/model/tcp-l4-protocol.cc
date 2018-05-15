@@ -181,6 +181,12 @@ TcpL4Protocol::DoDispose (void)
 }
 
 Ptr<Socket>
+TcpL4Protocol::CreateSocket (TypeId congestionTypeId)
+{
+  return CreateSocket (congestionTypeId, m_recoveryTypeId);
+}
+
+Ptr<Socket>
 TcpL4Protocol::CreateSocket (TypeId congestionTypeId, TypeId recoveryTypeId)
 {
   NS_LOG_FUNCTION (this << congestionTypeId.GetName ());
