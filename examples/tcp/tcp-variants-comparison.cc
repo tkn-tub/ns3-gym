@@ -223,6 +223,7 @@ int main (int argc, char *argv[])
   bool pcap = false;
   bool sack = true;
   std::string queue_disc_type = "ns3::PfifoFastQueueDisc";
+  std::string recovery = "ns3::TcpClassicRecovery";
 
 
   CommandLine cmd;
@@ -246,6 +247,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("pcap_tracing", "Enable or disable PCAP tracing", pcap);
   cmd.AddValue ("queue_disc_type", "Queue disc type for gateway (e.g. ns3::CoDelQueueDisc)", queue_disc_type);
   cmd.AddValue ("sack", "Enable or disable SACK option", sack);
+  cmd.AddValue ("recovery", "Recovery algorithm type to use (e.g., ns3::TcpPrrRecovery", recovery);
   cmd.Parse (argc, argv);
 
   transport_prot = std::string ("ns3::") + transport_prot;
@@ -279,6 +281,8 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
 
+  Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
+                      TypeIdValue (TypeId::LookupByName (recovery)));
   // Select TCP variant
   if (transport_prot.compare ("ns3::TcpWestwoodPlus") == 0)
     { 
