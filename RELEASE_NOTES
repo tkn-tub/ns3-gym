@@ -28,6 +28,7 @@ New user-visible features
 - (buildings) A new position allocator has been added to the buildings module.
   The allocator places nodes randomly but in a manner that rejects positions
   that are located within buildings defined in the scenario.
+- (tcp) Added PRR as recovery algorithm
 
 Bugs fixed
 ----------

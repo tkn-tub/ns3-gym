@@ -22,7 +22,7 @@
  */
 #include "tcp-recovery-ops.h"
 #include "tcp-socket-base.h"
-#include "tcp-congestion-ops.h"
+#include "ns3/tcp-congestion-ops.h"
 #include "ns3/log.h"
 
 namespace ns3 {
@@ -43,14 +43,17 @@ TcpRecoveryOps::GetTypeId (void)
 
 TcpRecoveryOps::TcpRecoveryOps () : Object ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TcpRecoveryOps::TcpRecoveryOps (const TcpRecoveryOps &other) : Object (other)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TcpRecoveryOps::~TcpRecoveryOps ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 
@@ -82,24 +85,34 @@ ClassicRecovery::ClassicRecovery (const ClassicRecovery& sock)
 
 ClassicRecovery::~ClassicRecovery (void)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 void
-ClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount)
+ClassicRecovery::EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+                                uint32_t unAckDataCount, uint32_t lastSackedBytes)
 {
+  NS_LOG_FUNCTION (this << tcb << dupAckCount << unAckDataCount << lastSackedBytes);
+  NS_UNUSED (unAckDataCount);
+  NS_UNUSED (lastSackedBytes);
   tcb->m_cWnd = tcb->m_ssThresh;
   tcb->m_cWndInfl = tcb->m_ssThresh + (dupAckCount * tcb->m_segmentSize);
 }
 
 void
-ClassicRecovery::DoRecovery (Ptr<TcpSocketState> tcb)
+ClassicRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
+                             uint32_t lastSackedBytes)
 {
+  NS_LOG_FUNCTION (this << tcb << lastAckedBytes << lastSackedBytes);
+  NS_UNUSED (lastAckedBytes);
+  NS_UNUSED (lastSackedBytes);
   tcb->m_cWndInfl += tcb->m_segmentSize;
 }
 
 void
 ClassicRecovery::ExitRecovery (Ptr<TcpSocketState> tcb)
 {
+  NS_LOG_FUNCTION (this << tcb);
   // Follow NewReno procedures to exit FR if SACK is disabled
   // (RFC2582 sec.3 bullet #5 paragraph 2, option 2)
   // For SACK connections, we maintain the cwnd = ssthresh. In fact,

@@ -90,7 +90,7 @@ ClassicRecoveryTest::DoRun ()
   NS_TEST_ASSERT_MSG_EQ (recovery->GetName (), "ClassicRecovery",
                          "The name of recovery used should be ClassicRecovery");
 
-  recovery->EnterRecovery (m_state, m_dupAckCount);
+  recovery->EnterRecovery (m_state, m_dupAckCount, 1000, 0);
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd, m_state->m_ssThresh,
                          "cWnd should be set to ssThresh on entering recovery");
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWndInfl, (m_state->m_ssThresh + (m_dupAckCount * m_state->m_segmentSize)),
@@ -98,7 +98,7 @@ ClassicRecoveryTest::DoRun ()
 
   uint32_t cWndInflPrevious = m_state->m_cWndInfl;
   uint32_t cWndPrevious = m_state->m_cWnd;
-  recovery->DoRecovery (m_state);
+  recovery->DoRecovery (m_state, 0, 500);
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWndInfl, (cWndInflPrevious + m_state->m_segmentSize),
                          "m_cWndInfl should be incresed by one segmentSize on calling DoRecovery");
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd, cWndPrevious,

@@ -20,13 +20,12 @@
  *         Mohit P. Tahiliani <tahiliani@nitk.edu.in>
  *
  */
-#ifndef TCPRECOVERYOPS_H
-#define TCPRECOVERYOPS_H
+#pragma once
 
-#include "ns3/tcp-socket-base.h"
+#include "ns3/object.h"
 
 namespace ns3 {
-
+class TcpSocketState;
 /**
  * \ingroup tcp
  * \defgroup recoveryOps Recovery Algorithms.
@@ -86,12 +85,11 @@ public:
    *
    * \param tcb internal congestion state
    * \param dupAckCount duplicate acknowldgement count
+   * \param unAckDataCount total bytes of data unacknowledged
+   * \param lastSackedBytes bytes acknowledged via SACK in the last ACK
    */
-  virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount)
-  {
-    NS_UNUSED (tcb);
-    NS_UNUSED (dupAckCount);
-  }
+  virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+                              uint32_t unAckDataCount, uint32_t lastSackedBytes) = 0;
 
   /**
    * \brief Performs recovery based on the recovery algorithm
@@ -100,12 +98,15 @@ public:
    * is set to CA_RECOVERY. It performs the necessary cwnd changes
    * as per the recovery algorithm.
    *
+   * TODO: lastAckedBytes and lastSackedBytes should be one parameter
+   * that indicates how much data has been ACKed or SACKed.
+   *
    * \param tcb internal congestion state
+   * \param lastAckedBytes bytes acknowledged in the last ACK
+   * \param lastSackedBytes bytes acknowledged via SACK in the last ACK
    */
-  virtual void DoRecovery (Ptr<TcpSocketState> tcb)
-  {
-    NS_UNUSED (tcb);
-  }
+  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
+                           uint32_t lastSackedBytes) = 0;
 
   /**
    * \brief Performs cwnd adjustments at the end of recovery
@@ -115,9 +116,19 @@ public:
    * \param tcb internal congestion state
    * \param isSackEnabled
    */
-  virtual void ExitRecovery (Ptr<TcpSocketState> tcb)
+  virtual void ExitRecovery (Ptr<TcpSocketState> tcb) = 0;
+
+  /**
+   * \brief Keeps track of bytes sent during recovery phase
+   *
+   * The function is called whenever a data packet is sent during recovery phase
+   * (optional).
+   *
+   * \param bytesSent bytes sent
+   */
+  virtual void UpdateBytesSent (uint32_t bytesSent)
   {
-    NS_UNUSED (tcb);
+    NS_UNUSED (bytesSent);
   }
 
   /**
@@ -165,13 +176,15 @@ public:
   /**
    * \brief Constructor
    */
-  ~ClassicRecovery ();
+  virtual ~ClassicRecovery () override;
 
   virtual std::string GetName () const override;
 
-  virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount) override;
+  virtual void EnterRecovery (Ptr<TcpSocketState> tcb, uint32_t dupAckCount,
+                              uint32_t unAckDataCount, uint32_t lastSackedBytes) override;
 
-  virtual void DoRecovery (Ptr<TcpSocketState> tcb) override;
+  virtual void DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
+                           uint32_t lastSackedBytes) override;
 
   virtual void ExitRecovery (Ptr<TcpSocketState> tcb) override;
 
@@ -179,5 +192,3 @@ public:
 };
 
 } // namespace ns3
-
-#endif // TCPRECOVERYOPS_H
