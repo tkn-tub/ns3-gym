@@ -102,7 +102,7 @@ TcpPrrRecovery::DoRecovery (Ptr<TcpSocketState> tcb, uint32_t lastAckedBytes,
     }
   else
     {
-      int limit;
+      int limit = static_cast<int> (tcb->m_ssThresh - tcb->m_bytesInFlight);
       if (m_reductionBoundMode == CRB)
         {
           limit = m_prrDelivered - m_prrOut;
