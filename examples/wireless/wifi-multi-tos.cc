@@ -134,7 +134,7 @@ int main (int argc, char *argv[])
   ApplicationContainer sourceApplications, sinkApplications;
   std::vector<uint8_t> tosValues = {0x70, 0x28, 0xb8, 0xc0}; //AC_BE, AC_BK, AC_VI, AC_VO
   uint32_t portNumber = 9;
-  for (uint8_t index = 0; index < nWifi; ++index)
+  for (uint32_t index = 0; index < nWifi; ++index)
     {
       for (uint8_t tosValue : tosValues)
         {
@@ -165,7 +165,7 @@ int main (int argc, char *argv[])
   Simulator::Destroy ();
 
   double throughput = 0;
-  for (unsigned index = 0; index < sinkApplications.GetN (); ++index)
+  for (uint32_t index = 0; index < sinkApplications.GetN (); ++index)
     {
       uint64_t totalPacketsThrough = DynamicCast<PacketSink> (sinkApplications.Get (index))->GetTotalRx ();
       throughput += ((totalPacketsThrough * 8) / (simulationTime * 1000000.0)); //Mbit/s
