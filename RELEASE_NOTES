@@ -32,6 +32,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2911 - aodv:  Binary exponential backoff can become unlimited
 - Bug 2901 - Add CommandLine::Parse (const std::vector<std::string>> args)
 - Bug 2461 - CommandLine should handle non-option arguments
 - Bug 2801 - FdNetDevice device MTU is not set correctly

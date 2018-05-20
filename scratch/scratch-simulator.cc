@@ -25,6 +25,10 @@ main (int argc, char *argv[])
 {
   NS_LOG_UNCOND ("Scratch Simulator");
 
+  Time retry = std::pow<uint16_t> (2, 3 - 1) * Seconds (3);
+  uint16_t backoffFactor  = 3 - 1;
+  Time retry2 = Seconds (3) * (1 << backoffFactor);
+  std::cout << "Retry " << retry.GetSeconds () << " " << retry2.GetSeconds () << std::endl;
   Simulator::Run ();
   Simulator::Destroy ();
 }

@@ -1100,8 +1100,10 @@ RoutingProtocol::ScheduleRreqRetry (Ipv4Address dst)
     }
   else
     {
-      // Binary exponential backoff
-      retry = std::pow<uint16_t> (2, rt.GetRreqCnt () - 1) * m_netTraversalTime;
+      NS_ABORT_MSG_UNLESS (rt.GetRreqCnt () > 0, "Unexpected value for GetRreqCount ()");
+      uint16_t backoffFactor = rt.GetRreqCnt () - 1;
+      NS_LOG_LOGIC ("Applying binary exponential backoff factor " << backoffFactor);
+      retry = m_netTraversalTime * (1 << backoffFactor);
     }
   m_addressReqTimer[dst].Schedule (retry);
   NS_LOG_LOGIC ("Scheduled RREQ retry in " << retry.GetSeconds () << " seconds");
