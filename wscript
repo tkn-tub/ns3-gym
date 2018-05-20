@@ -30,11 +30,8 @@ modules_enabled  = ['all_modules']
 examples_enabled = False
 tests_enabled    = False
 
-# Compiler warning suppressions
-
-# Bug 1868:  be conservative about -Wstrict-overflow for optimized builds
-# on older compilers; it can generate spurious warnings.  
-gcc_version_warn_strict_overflow = ('4', '8', '2')
+# GCC minimum version requirements for C++11 support
+gcc_min_version = (4, 9, 2)
 
 # Bug 2181:  clang warnings about unused local typedefs and potentially
 # evaluated expressions affecting darwin clang/LLVM version 7.0.0 (Xcode 7)
@@ -391,6 +388,11 @@ def configure(conf):
     env['APPNAME'] = wutils.APPNAME
     env['VERSION'] = wutils.VERSION
 
+    if conf.env['CXX_NAME'] in ['gcc']:
+        if tuple(map(int, conf.env['CC_VERSION'])) < gcc_min_version:
+            conf.fatal('gcc version %s older than minimum supported version %s' %
+                       ('.'.join(conf.env['CC_VERSION']), '.'.join(map(str, gcc_min_version))))
+
     if conf.env['CXX_NAME'] in ['gcc', 'icc']:
         if Options.options.build_profile == 'release': 
             env.append_value('CXXFLAGS', '-fomit-frame-pointer') 
@@ -398,7 +400,7 @@ def configure(conf):
             if conf.check_compilation_flag('-march=native'):
                 env.append_value('CXXFLAGS', '-march=native') 
             env.append_value('CXXFLAGS', '-fstrict-overflow')
-            if conf.env['CC_VERSION'] >= gcc_version_warn_strict_overflow:
+            if conf.env['CXX_NAME'] in ['gcc']:
                 env.append_value('CXXFLAGS', '-Wstrict-overflow=2')
 
         if sys.platform == 'win32':
