@@ -537,7 +537,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   NS_LOG_DEBUG ("Currently using rate: " << +station->m_txrate << " (" << GetSupported (station, station->m_txrate) << ")");
 
   Time txTime;
-  uint8_t tempProb;
+  uint32_t tempProb;
 
   NS_LOG_DEBUG ("Index-Rate\t\tAttempt\tSuccess");
   for (uint8_t i = 0; i < station->m_nModes; i++)
@@ -576,14 +576,13 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
           else
             {
               //ewma probability (cast for gcc 3.4 compatibility)
-              tempProb = static_cast<uint8_t> (((tempProb * (100 - m_ewmaLevel)) + (station->m_minstrelTable[i].ewmaProb * m_ewmaLevel) ) / 100);
+              tempProb = ((tempProb * (100 - m_ewmaLevel)) + (station->m_minstrelTable[i].ewmaProb * m_ewmaLevel) ) / 100;
 
               station->m_minstrelTable[i].ewmaProb = tempProb;
             }
 
           //calculating throughput
-          station->m_minstrelTable[i].throughput = tempProb * (1000000 / txTime.GetMicroSeconds ());
-
+          station->m_minstrelTable[i].throughput = tempProb * static_cast<uint32_t> ((1000000 / txTime.GetMicroSeconds ()));
         }
       else
         {
