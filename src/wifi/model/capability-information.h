@@ -61,6 +61,11 @@ public:
    *
    */
   void SetShortSlotTime (bool shortSlotTime);
+  /**
+   * Set the CF-Pollable bit
+   * in the capability information field.
+   */
+  void SetCfPollable (void);
 
   /**
    * Check if the Extended Service Set (ESS) bit
@@ -94,6 +99,14 @@ public:
    *         field is set to 1
    */
   bool IsShortSlotTime (void) const;
+  /**
+   * Check if the CF-Pollable bit
+   * in the capability information field is set to 1.
+   *
+   * \return CF-Pollable bit in the capability information
+   *         field is set to 1
+   */
+  bool IsCfPollable (void) const;
 
   /**
    * Return the serialized size of capability

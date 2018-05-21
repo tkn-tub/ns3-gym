@@ -406,6 +406,7 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
   : m_htSupported (false),
     m_vhtSupported (false),
     m_heSupported (false),
+    m_pcfSupported (false),
     m_useNonErpProtection (false),
     m_useNonHtProtection (false),
     m_useGreenfieldProtection (false),
@@ -559,6 +560,18 @@ bool
 WifiRemoteStationManager::HasHeSupported (void) const
 {
   return m_heSupported;
+}
+
+void
+WifiRemoteStationManager::SetPcfSupported (bool enable)
+{
+  m_pcfSupported = enable;
+}
+
+bool
+WifiRemoteStationManager::HasPcfSupported (void) const
+{
+  return m_pcfSupported;
 }
 
 uint32_t

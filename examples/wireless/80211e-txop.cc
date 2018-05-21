@@ -31,7 +31,7 @@
 #include "ns3/on-off-helper.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/wifi-net-device.h"
-#include "ns3/edca-txop-n.h"
+#include "ns3/qos-txop.h"
 #include "ns3/wifi-mac.h"
 
 // This is an example that illustrates 802.11 QoS for different Access Categories.
@@ -132,9 +132,9 @@ int main (int argc, char *argv[])
   Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
   Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
   PointerValue ptr;
-  Ptr<EdcaTxopN> edca;
-  wifi_mac->GetAttribute ("BE_EdcaTxopN", ptr);
-  edca = ptr.Get<EdcaTxopN> ();
+  Ptr<QosTxop> edca;
+  wifi_mac->GetAttribute ("BE_Txop", ptr);
+  edca = ptr.Get<QosTxop> ();
   edca->SetTxopLimit (MicroSeconds (3008));
 
   //Network C
@@ -171,8 +171,8 @@ int main (int argc, char *argv[])
   dev = wifiApNodes.Get (3)->GetDevice (0);
   wifi_dev = DynamicCast<WifiNetDevice> (dev);
   wifi_mac = wifi_dev->GetMac ();
-  wifi_mac->GetAttribute ("VI_EdcaTxopN", ptr);
-  edca = ptr.Get<EdcaTxopN> ();
+  wifi_mac->GetAttribute ("VI_Txop", ptr);
+  edca = ptr.Get<QosTxop> ();
   edca->SetTxopLimit (MicroSeconds (0));
 
   /* Setting mobility model */

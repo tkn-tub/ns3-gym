@@ -158,6 +158,27 @@ WifiMacQueue::Dequeue (void)
 }
 
 Ptr<WifiMacQueueItem>
+WifiMacQueue::DequeueByAddress (WifiMacHeader::AddressType type, Mac48Address dest)
+{
+  NS_LOG_FUNCTION (this << dest);
+
+  for (auto it = Head (); it != Tail (); )
+    {
+      if (!TtlExceeded (it))
+        {
+          if ((*it)->GetHeader ().IsData () && (*it)->GetDestinationAddress () == dest)
+            {
+              return DoDequeue (it);
+            }
+
+          it++;
+        }
+    }
+  NS_LOG_DEBUG ("The queue is empty");
+  return 0;
+}
+
+Ptr<WifiMacQueueItem>
 WifiMacQueue::DequeueByTidAndAddress (uint8_t tid,
                                       WifiMacHeader::AddressType type, Mac48Address dest)
 {
@@ -295,6 +316,30 @@ WifiMacQueue::Remove (Ptr<const Packet> packet)
     }
   NS_LOG_DEBUG ("Packet " << packet << " not found in the queue");
   return false;
+}
+
+uint32_t
+WifiMacQueue::GetNPacketsByAddress (WifiMacHeader::AddressType type,
+                                    Mac48Address dest)
+{
+  NS_LOG_FUNCTION (this << dest);
+
+  uint32_t nPackets = 0;
+
+  for (auto it = Head (); it != Tail (); )
+    {
+      if (!TtlExceeded (it))
+        {
+          if ((*it)->GetHeader ().IsData () && (*it)->GetDestinationAddress () == dest)
+            {
+              nPackets++;
+            }
+
+          it++;
+        }
+    }
+  NS_LOG_DEBUG ("returns " << nPackets);
+  return nPackets;
 }
 
 uint32_t

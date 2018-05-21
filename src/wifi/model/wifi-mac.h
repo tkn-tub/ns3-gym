@@ -28,7 +28,7 @@
 namespace ns3 {
 
 class Ssid;
-class DcaTxop;
+class Txop;
 
 /**
  * \brief base class for all MAC-level wifi objects.
@@ -309,7 +309,7 @@ protected:
    *
    * Configure the DCF with appropriate values depending on the given access category.
    */
-  void ConfigureDcf (Ptr<DcaTxop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac);
+  void ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac);
 
 
 private:

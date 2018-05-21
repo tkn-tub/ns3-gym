@@ -112,3 +112,6 @@ def build(bld):
 
     obj = bld.create_ns3_program('wifi-backward-compatibility', ['wifi', 'applications'])
     obj.source = 'wifi-backward-compatibility.cc'
+
+    obj = bld.create_ns3_program('wifi-pcf', ['wifi', 'applications'])
+    obj.source = 'wifi-pcf.cc'

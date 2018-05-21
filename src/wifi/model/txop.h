@@ -18,8 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef DCA_TXOP_H
-#define DCA_TXOP_H
+#ifndef TXOP_H
+#define TXOP_H
 
 #include "mac-low-transmission-parameters.h"
 #include "wifi-mac-header.h"
@@ -27,7 +27,7 @@
 namespace ns3 {
 
 class Packet;
-class DcfManager;
+class ChannelAccessManager;
 class MacTxMiddle;
 class MacLow;
 class WifiMode;
@@ -44,7 +44,7 @@ class WifiRemoteStationManager;
  *
  * This class implements the packet fragmentation and
  * retransmission policy for data and management frames.
- * It uses the ns3::MacLow and ns3::DcfManager helper
+ * It uses the ns3::MacLow and ns3::ChannelAccessManager helper
  * classes to respectively send packets and decide when
  * to send them. Packets are stored in a ns3::WifiMacQueue
  * until they can be sent.
@@ -61,7 +61,7 @@ class WifiRemoteStationManager;
  * a packet is bigger than a threshold, the rts/cts protocol is used.
  */
 
-class DcaTxop : public Object
+class Txop : public Object
 {
 public:
   /// allow DcfListener class access
@@ -69,8 +69,8 @@ public:
   /// allow MacLowTransmissionListener class access
   friend class MacLowTransmissionListener;
 
-  DcaTxop ();
-  virtual ~DcaTxop ();
+  Txop ();
+  virtual ~Txop ();
 
   /**
    * \brief Get the type ID.
@@ -95,32 +95,32 @@ public:
   typedef Callback <void, Ptr<const Packet> > TxDropped;
 
   /**
-   * Check for EDCA.
+   * Check for QoS TXOP.
    *
-   * \returns true if EDCA.
+   * \returns true if QoS TXOP.
    */
-  virtual bool IsEdca ();
+  virtual bool IsQosTxop () const;
 
   /**
-   * Set MacLow associated with this DcaTxop.
+   * Set MacLow associated with this Txop.
    *
    * \param low MacLow.
    */
   void SetMacLow (const Ptr<MacLow> low);
   /**
-   * Set DcfManager this DcaTxop is associated to.
+   * Set ChannelAccessManager this Txop is associated to.
    *
-   * \param manager DcfManager.
+   * \param manager ChannelAccessManager.
    */
-  void SetDcfManager (const Ptr<DcfManager> manager);
+  void SetChannelAccessManager (const Ptr<ChannelAccessManager> manager);
   /**
-   * Set WifiRemoteStationsManager this DcaTxop is associated to.
+   * Set WifiRemoteStationsManager this Txop is associated to.
    *
    * \param remoteManager WifiRemoteStationManager.
    */
   virtual void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> remoteManager);
   /**
-   * Set MacTxMiddle this DcaTxop is associated to.
+   * Set MacTxMiddle this Txop is associated to.
    *
    * \param txMiddle MacTxMiddle.
    */
@@ -143,14 +143,14 @@ public:
   void SetTxDroppedCallback (TxDropped callback);
 
   /**
-   * Return the MacLow associated with this DcaTxop.
+   * Return the MacLow associated with this Txop.
    *
    * \return MacLow
    */
   Ptr<MacLow> GetLow (void) const;
 
   /**
-   * Return the packet queue associated with this DcaTxop.
+   * Return the packet queue associated with this Txop.
    *
    * \return WifiMacQueue
    */
@@ -238,6 +238,14 @@ public:
    */
   virtual void Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr);
 
+  /**
+   * Sends CF frame to sta with address <i>addr</i>.
+   *
+   * \param frameType the type of frame to be transmitted.
+   * \param addr address of the recipient.
+   */
+  void SendCfFrame (WifiMacType frameType, Mac48Address addr);
+
   /* Event handlers */
   /**
    * Event handler when a CTS timeout has occurred.
@@ -251,6 +259,16 @@ public:
    * Event handler when an ACK is missed.
    */
   virtual void MissedAck (void);
+  /**
+   * Event handler when a CF-END frame is received.
+   */
+  void GotCfEnd (void);
+  /**
+   * Event handler when a response to a CF-POLL frame is missed.
+   *
+   * \param expectedCfAck flag to indicate whether a CF-ACK was expected in the response.
+   */
+  void MissedCfPollResponse (bool expectedCfAck);
   /**
    * Event handler when a Block ACK is received.
    *
@@ -295,6 +313,15 @@ public:
   virtual bool HasTxop (void) const;
 
   /**
+   * Check if the next PCF transmission can fit in the remaining CFP duration.
+   *
+   * \return true if the next PCF transmission can fit in the remaining CFP duration,
+   *         false otherwise
+   */
+  bool CanStartNextPolling (void) const;
+
+
+  /**
    * Assign a fixed random variable stream number to the random variables
    * used by this model. Return the number of streams (possibly zero) that
    * have been assigned.
@@ -320,8 +347,8 @@ public:
   void StartBackoffNow (uint32_t nSlots);
 
 protected:
-  ///< DcfManager associated class
-  friend class DcfManager;
+  ///< ChannelAccessManager associated class
+  friend class ChannelAccessManager;
 
   virtual void DoDispose (void);
   virtual void DoInitialize (void);
@@ -466,7 +493,7 @@ protected:
    */
   void TxDroppedPacket (Ptr<const WifiMacQueueItem> item);
 
-  Ptr<DcfManager> m_dcfManager; //!< the DCF manager
+  Ptr<ChannelAccessManager> m_channelAccessManager; //!< the channel access manager
   TxOk m_txOkCallback; //!< the transmit OK callback
   TxFailed m_txFailedCallback; //!< the transmit failed callback
   TxDropped m_txDroppedCallback; //!< the packet dropped callback
@@ -499,4 +526,4 @@ protected:
 
 } //namespace ns3
 
-#endif /* DCA_TXOP_H */
+#endif /* TXOP_H */

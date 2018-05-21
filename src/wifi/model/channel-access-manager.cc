@@ -20,28 +20,28 @@
 
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "dcf-manager.h"
-#include "dca-txop.h"
+#include "channel-access-manager.h"
+#include "txop.h"
 #include "wifi-phy-listener.h"
 #include "wifi-phy.h"
 #include "mac-low.h"
 
 namespace ns3 {
 
-NS_LOG_COMPONENT_DEFINE ("DcfManager");
+NS_LOG_COMPONENT_DEFINE ("ChannelAccessManager");
 
 /**
- * Listener for PHY events. Forwards to DcfManager
+ * Listener for PHY events. Forwards to ChannelAccessManager
  */
 class PhyListener : public ns3::WifiPhyListener
 {
 public:
   /**
-   * Create a PhyListener for the given DcfManager.
+   * Create a PhyListener for the given ChannelAccessManager.
    *
    * \param dcf
    */
-  PhyListener (ns3::DcfManager *dcf)
+  PhyListener (ns3::ChannelAccessManager *dcf)
     : m_dcf (dcf)
   {
   }
@@ -90,7 +90,7 @@ public:
   }
 
 private:
-  ns3::DcfManager *m_dcf;  //!< DcfManager to forward events to
+  ns3::ChannelAccessManager *m_dcf;  //!< ChannelAccessManager to forward events to
 };
 
 
@@ -98,7 +98,7 @@ private:
  *      Implement the DCF manager of all DCF state holders
  ****************************************************************/
 
-DcfManager::DcfManager ()
+ChannelAccessManager::ChannelAccessManager ()
   : m_lastAckTimeoutEnd (MicroSeconds (0)),
     m_lastCtsTimeoutEnd (MicroSeconds (0)),
     m_lastNavStart (MicroSeconds (0)),
@@ -123,7 +123,7 @@ DcfManager::DcfManager ()
   NS_LOG_FUNCTION (this);
 }
 
-DcfManager::~DcfManager ()
+ChannelAccessManager::~ChannelAccessManager ()
 {
   NS_LOG_FUNCTION (this);
   delete m_phyListener;
@@ -131,10 +131,10 @@ DcfManager::~DcfManager ()
 }
 
 void
-DcfManager::DoDispose (void)
+ChannelAccessManager::DoDispose (void)
 {
   NS_LOG_FUNCTION (this);
-  for (Ptr<DcaTxop> i : m_states)
+  for (Ptr<Txop> i : m_states)
     {
       i->Dispose ();
       i = 0;
@@ -142,7 +142,7 @@ DcfManager::DoDispose (void)
 }
 
 void
-DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
+ChannelAccessManager::SetupPhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   NS_ASSERT (m_phyListener == 0);
@@ -151,7 +151,7 @@ DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
 }
 
 void
-DcfManager::RemovePhyListener (Ptr<WifiPhy> phy)
+ChannelAccessManager::RemovePhyListener (Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
   if (m_phyListener != 0)
@@ -163,55 +163,66 @@ DcfManager::RemovePhyListener (Ptr<WifiPhy> phy)
 }
 
 void
-DcfManager::SetupLow (Ptr<MacLow> low)
+ChannelAccessManager::SetupLow (Ptr<MacLow> low)
 {
   NS_LOG_FUNCTION (this << low);
   low->RegisterDcf (this);
 }
 
 void
-DcfManager::SetSlot (Time slotTime)
+ChannelAccessManager::SetSlot (Time slotTime)
 {
   NS_LOG_FUNCTION (this << slotTime);
   m_slot = slotTime;
 }
 
 void
-DcfManager::SetSifs (Time sifs)
+ChannelAccessManager::SetSifs (Time sifs)
 {
   NS_LOG_FUNCTION (this << sifs);
   m_sifs = sifs;
 }
 
 void
-DcfManager::SetEifsNoDifs (Time eifsNoDifs)
+ChannelAccessManager::SetEifsNoDifs (Time eifsNoDifs)
 {
   NS_LOG_FUNCTION (this << eifsNoDifs);
   m_eifsNoDifs = eifsNoDifs;
 }
 
 Time
-DcfManager::GetEifsNoDifs () const
+ChannelAccessManager::GetEifsNoDifs () const
 {
   NS_LOG_FUNCTION (this);
   return m_eifsNoDifs;
 }
 
 void
-DcfManager::Add (Ptr<DcaTxop> dcf)
+ChannelAccessManager::Add (Ptr<Txop> dcf)
 {
   NS_LOG_FUNCTION (this << dcf);
   m_states.push_back (dcf);
 }
 
 Time
-DcfManager::MostRecent (Time a, Time b) const
+ChannelAccessManager::MostRecent (Time a, Time b) const
 {
   return Max (a, b);
 }
 
 Time
-DcfManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const
+ChannelAccessManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f) const
+{
+  Time g = MostRecent (a, b);
+  Time h = MostRecent (c, d);
+  Time i = MostRecent (e, f);
+  Time k = MostRecent (g, h);
+  Time retval = MostRecent (k, i);
+  return retval;
+}
+
+Time
+ChannelAccessManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) const
 {
   Time h = MostRecent (a, b);
   Time i = MostRecent (c, d);
@@ -223,7 +234,7 @@ DcfManager::MostRecent (Time a, Time b, Time c, Time d, Time e, Time f, Time g) 
 }
 
 bool
-DcfManager::IsBusy (void) const
+ChannelAccessManager::IsBusy (void) const
 {
   NS_LOG_FUNCTION (this);
   // PHY busy
@@ -252,7 +263,7 @@ DcfManager::IsBusy (void) const
 }
 
 bool
-DcfManager::IsWithinAifs (Ptr<DcaTxop> state) const
+ChannelAccessManager::IsWithinAifs (Ptr<Txop> state) const
 {
   NS_LOG_FUNCTION (this << state);
   Time ifsEnd = GetAccessGrantStart () + (state->GetAifsn () * m_slot);
@@ -265,13 +276,21 @@ DcfManager::IsWithinAifs (Ptr<DcaTxop> state) const
   return false;
 }
 
+
 void
-DcfManager::RequestAccess (Ptr<DcaTxop> state)
+ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
 {
   NS_LOG_FUNCTION (this << state);
   //Deny access if in sleep mode or off
   if (m_sleeping || m_off)
     {
+      return;
+    }
+  if (isCfPeriod)
+    {
+      state->NotifyAccessRequested ();
+      Time delay = (MostRecent (GetAccessGrantStart (true), Simulator::Now ()) - Simulator::Now ());
+      m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::GrantPcfAccess, this, state);
       return;
     }
   UpdateBackoff ();
@@ -314,13 +333,19 @@ DcfManager::RequestAccess (Ptr<DcaTxop> state)
 }
 
 void
-DcfManager::DoGrantAccess (void)
+ChannelAccessManager::GrantPcfAccess (Ptr<Txop> state) //to be renamed
+{
+  state->NotifyAccessGranted ();
+}
+
+void
+ChannelAccessManager::DoGrantAccess (void)
 {
   NS_LOG_FUNCTION (this);
   uint32_t k = 0;
   for (States::iterator i = m_states.begin (); i != m_states.end (); k++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       if (state->IsAccessRequested ()
           && GetBackoffEndFor (state) <= Simulator::Now () )
         {
@@ -331,10 +356,10 @@ DcfManager::DoGrantAccess (void)
           NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots=" << state->GetBackoffSlots ());
           i++; //go to the next item in the list.
           k++;
-          std::vector<Ptr<DcaTxop> > internalCollisionStates;
+          std::vector<Ptr<Txop> > internalCollisionStates;
           for (States::iterator j = i; j != m_states.end (); j++, k++)
             {
-              Ptr<DcaTxop> otherState = *j;
+              Ptr<Txop> otherState = *j;
               if (otherState->IsAccessRequested ()
                   && GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
@@ -357,7 +382,7 @@ DcfManager::DoGrantAccess (void)
            * the result of the calculations.
            */
           state->NotifyAccessGranted ();
-          for (std::vector<Ptr<DcaTxop> >::iterator l = internalCollisionStates.begin ();
+          for (std::vector<Ptr<Txop> >::iterator l = internalCollisionStates.begin ();
                l != internalCollisionStates.end (); l++)
             {
               (*l)->NotifyInternalCollision ();
@@ -369,7 +394,7 @@ DcfManager::DoGrantAccess (void)
 }
 
 void
-DcfManager::AccessTimeout (void)
+ChannelAccessManager::AccessTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   UpdateBackoff ();
@@ -378,7 +403,7 @@ DcfManager::AccessTimeout (void)
 }
 
 Time
-DcfManager::GetAccessGrantStart (void) const
+ChannelAccessManager::GetAccessGrantStart (bool ignoreNav) const
 {
   NS_LOG_FUNCTION (this);
   Time rxAccessStart;
@@ -400,14 +425,28 @@ DcfManager::GetAccessGrantStart (void) const
   Time ackTimeoutAccessStart = m_lastAckTimeoutEnd + m_sifs;
   Time ctsTimeoutAccessStart = m_lastCtsTimeoutEnd + m_sifs;
   Time switchingAccessStart = m_lastSwitchingStart + m_lastSwitchingDuration + m_sifs;
-  Time accessGrantedStart = MostRecent (rxAccessStart,
-                                        busyAccessStart,
-                                        txAccessStart,
-                                        navAccessStart,
-                                        ackTimeoutAccessStart,
-                                        ctsTimeoutAccessStart,
-                                        switchingAccessStart
-                                        );
+  Time accessGrantedStart;
+  if (ignoreNav)
+    {
+      accessGrantedStart = MostRecent (rxAccessStart,
+                                       busyAccessStart,
+                                       txAccessStart,
+                                       ackTimeoutAccessStart,
+                                       ctsTimeoutAccessStart,
+                                       switchingAccessStart
+                                       );
+    }
+  else
+    {
+      accessGrantedStart = MostRecent (rxAccessStart,
+                                       busyAccessStart,
+                                       txAccessStart,
+                                       navAccessStart,
+                                       ackTimeoutAccessStart,
+                                       ctsTimeoutAccessStart,
+                                       switchingAccessStart
+                                       );
+    }
   NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
                ", rx access start=" << rxAccessStart <<
                ", busy access start=" << busyAccessStart <<
@@ -417,7 +456,7 @@ DcfManager::GetAccessGrantStart (void) const
 }
 
 Time
-DcfManager::GetBackoffStartFor (Ptr<DcaTxop> state)
+ChannelAccessManager::GetBackoffStartFor (Ptr<Txop> state)
 {
   NS_LOG_FUNCTION (this << state);
   Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
@@ -427,7 +466,7 @@ DcfManager::GetBackoffStartFor (Ptr<DcaTxop> state)
 }
 
 Time
-DcfManager::GetBackoffEndFor (Ptr<DcaTxop> state)
+ChannelAccessManager::GetBackoffEndFor (Ptr<Txop> state)
 {
   NS_LOG_FUNCTION (this << state);
   NS_LOG_DEBUG ("Backoff start: " << GetBackoffStartFor (state).As (Time::US) <<
@@ -436,13 +475,13 @@ DcfManager::GetBackoffEndFor (Ptr<DcaTxop> state)
 }
 
 void
-DcfManager::UpdateBackoff (void)
+ChannelAccessManager::UpdateBackoff (void)
 {
   NS_LOG_FUNCTION (this);
   uint32_t k = 0;
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++, k++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
 
       Time backoffStart = GetBackoffStartFor (state);
       if (backoffStart <= Simulator::Now ())
@@ -459,7 +498,7 @@ DcfManager::UpdateBackoff (void)
            * that a minimum of AIFS has elapsed since last busy
            * medium.
            */
-          if (state->IsEdca ())
+          if (state->IsQosTxop ())
             {
               nIntSlots++;
             }
@@ -472,18 +511,18 @@ DcfManager::UpdateBackoff (void)
 }
 
 void
-DcfManager::DoRestartAccessTimeoutIfNeeded (void)
+ChannelAccessManager::DoRestartAccessTimeoutIfNeeded (void)
 {
   NS_LOG_FUNCTION (this);
   /**
-   * Is there a DcaTxop which needs to access the medium, and,
+   * Is there a Txop which needs to access the medium, and,
    * if there is one, how many slots for AIFS+backoff does it require ?
    */
   bool accessTimeoutNeeded = false;
   Time expectedBackoffEnd = Simulator::GetMaximumSimulationTime ();
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       if (state->IsAccessRequested ())
         {
           Time tmp = GetBackoffEndFor (state);
@@ -507,13 +546,13 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
       if (m_accessTimeout.IsExpired ())
         {
           m_accessTimeout = Simulator::Schedule (expectedBackoffDelay,
-                                                 &DcfManager::AccessTimeout, this);
+                                                 &ChannelAccessManager::AccessTimeout, this);
         }
     }
 }
 
 void
-DcfManager::NotifyRxStartNow (Time duration)
+ChannelAccessManager::NotifyRxStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   NS_LOG_DEBUG ("rx start for=" << duration);
@@ -524,7 +563,7 @@ DcfManager::NotifyRxStartNow (Time duration)
 }
 
 void
-DcfManager::NotifyRxEndOkNow (void)
+ChannelAccessManager::NotifyRxEndOkNow (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end ok");
@@ -534,7 +573,7 @@ DcfManager::NotifyRxEndOkNow (void)
 }
 
 void
-DcfManager::NotifyRxEndErrorNow (void)
+ChannelAccessManager::NotifyRxEndErrorNow (void)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx end error");
@@ -544,7 +583,7 @@ DcfManager::NotifyRxEndErrorNow (void)
 }
 
 void
-DcfManager::NotifyTxStartNow (Time duration)
+ChannelAccessManager::NotifyTxStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   if (m_rxing)
@@ -564,7 +603,7 @@ DcfManager::NotifyTxStartNow (Time duration)
 }
 
 void
-DcfManager::NotifyMaybeCcaBusyStartNow (Time duration)
+ChannelAccessManager::NotifyMaybeCcaBusyStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   NS_LOG_DEBUG ("busy start for " << duration);
@@ -574,7 +613,7 @@ DcfManager::NotifyMaybeCcaBusyStartNow (Time duration)
 }
 
 void
-DcfManager::NotifySwitchingStartNow (Time duration)
+ChannelAccessManager::NotifySwitchingStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   Time now = Simulator::Now ();
@@ -615,7 +654,7 @@ DcfManager::NotifySwitchingStartNow (Time duration)
   //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
       if (remainingSlots > 0)
         {
@@ -634,7 +673,7 @@ DcfManager::NotifySwitchingStartNow (Time duration)
 }
 
 void
-DcfManager::NotifySleepNow (void)
+ChannelAccessManager::NotifySleepNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = true;
@@ -647,13 +686,13 @@ DcfManager::NotifySleepNow (void)
   //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       state->NotifySleep ();
     }
 }
 
 void
-DcfManager::NotifyOffNow (void)
+ChannelAccessManager::NotifyOffNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_off = true;
@@ -666,19 +705,19 @@ DcfManager::NotifyOffNow (void)
   //Reset backoffs
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       state->NotifyOff ();
     }
 }
 
 void
-DcfManager::NotifyWakeupNow (void)
+ChannelAccessManager::NotifyWakeupNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_sleeping = false;
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
       if (remainingSlots > 0)
         {
@@ -692,13 +731,13 @@ DcfManager::NotifyWakeupNow (void)
 }
 
 void
-DcfManager::NotifyOnNow (void)
+ChannelAccessManager::NotifyOnNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_off = false;
   for (States::iterator i = m_states.begin (); i != m_states.end (); i++)
     {
-      Ptr<DcaTxop> state = *i;
+      Ptr<Txop> state = *i;
       uint32_t remainingSlots = state->GetBackoffSlots ();
       if (remainingSlots > 0)
         {
@@ -712,7 +751,7 @@ DcfManager::NotifyOnNow (void)
 }
 
 void
-DcfManager::NotifyNavResetNow (Time duration)
+ChannelAccessManager::NotifyNavResetNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   NS_LOG_DEBUG ("nav reset for=" << duration);
@@ -729,7 +768,7 @@ DcfManager::NotifyNavResetNow (Time duration)
 }
 
 void
-DcfManager::NotifyNavStartNow (Time duration)
+ChannelAccessManager::NotifyNavStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   NS_ASSERT (m_lastNavStart <= Simulator::Now ());
@@ -745,7 +784,7 @@ DcfManager::NotifyNavStartNow (Time duration)
 }
 
 void
-DcfManager::NotifyAckTimeoutStartNow (Time duration)
+ChannelAccessManager::NotifyAckTimeoutStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   NS_ASSERT (m_lastAckTimeoutEnd < Simulator::Now ());
@@ -753,7 +792,7 @@ DcfManager::NotifyAckTimeoutStartNow (Time duration)
 }
 
 void
-DcfManager::NotifyAckTimeoutResetNow ()
+ChannelAccessManager::NotifyAckTimeoutResetNow ()
 {
   NS_LOG_FUNCTION (this);
   m_lastAckTimeoutEnd = Simulator::Now ();
@@ -761,14 +800,14 @@ DcfManager::NotifyAckTimeoutResetNow ()
 }
 
 void
-DcfManager::NotifyCtsTimeoutStartNow (Time duration)
+ChannelAccessManager::NotifyCtsTimeoutStartNow (Time duration)
 {
   NS_LOG_FUNCTION (this << duration);
   m_lastCtsTimeoutEnd = Simulator::Now () + duration;
 }
 
 void
-DcfManager::NotifyCtsTimeoutResetNow ()
+ChannelAccessManager::NotifyCtsTimeoutResetNow ()
 {
   NS_LOG_FUNCTION (this);
   m_lastCtsTimeoutEnd = Simulator::Now ();

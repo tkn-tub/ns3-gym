@@ -544,6 +544,14 @@ The following code shows how to create an AP with QoS enabled::
 
 To create ad-hoc MAC instances, simply use ``ns3::AdhocWifiMac`` instead of ``ns3::StaWifiMac`` or ``ns3::ApWifiMac``.
 
+In infrastructure mode with QoS not enabled, it is also possible to enable PCF support.
+The following code shows how to create an AP with PCF enabled::
+
+  WifiMacHelper wifiMacHelper;
+  wifiMacHelper.SetType ("ns3::ApWifiMac",
+                         "Ssid", SsidValue (ssid),
+                         "PcfSupported", BooleanValue (true));
+
 With QoS-enabled MAC models it is possible to work with traffic belonging to
 four different Access Categories (ACs): **AC_VO** for voice traffic,
 **AC_VI** for video traffic, **AC_BE** for best-effort

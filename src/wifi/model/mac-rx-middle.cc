@@ -300,6 +300,10 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
 {
   NS_LOG_FUNCTION (packet << hdr);
   NS_ASSERT (hdr->IsData () || hdr->IsMgt ());
+  if (!m_pcfCallback.IsNull ())
+    {
+      m_pcfCallback ();
+    }
   OriginatorRxStatus *originator = Lookup (hdr);
   /**
    * The check below is really uneeded because it can fail in a lot of
@@ -336,6 +340,12 @@ MacRxMiddle::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       originator->SetSequenceControl (hdr->GetSequenceControl ());
     }
   m_callback (agregate, hdr);
+}
+
+void
+MacRxMiddle::SetPcfCallback (Callback<void> callback)
+{
+  m_pcfCallback = callback;
 }
 
 } //namespace ns3

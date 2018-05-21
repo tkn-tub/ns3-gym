@@ -21,7 +21,7 @@
 #include "ns3/log.h"
 #include "ns3/packet.h"
 #include "wifi-mac.h"
-#include "dca-txop.h"
+#include "txop.h"
 #include "ssid.h"
 
 namespace ns3 {
@@ -396,7 +396,7 @@ WifiMac::Configure80211ax_5Ghz (void)
 }
 
 void
-WifiMac::ConfigureDcf (Ptr<DcaTxop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
+WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
 {
   NS_LOG_FUNCTION (this << dcf << cwmin << cwmax << isDsss << ac);
   /* see IEE802.11 section 7.3.2.29 */

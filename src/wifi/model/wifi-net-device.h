@@ -32,6 +32,9 @@ class WifiMac;
 class NetDeviceQueueInterface;
 class QueueItem;
 
+/// This value conforms to the 802.11 specification
+static const uint16_t MAX_MSDU_SIZE = 2304;
+
 /**
  * \defgroup wifi Wifi Models
  *
@@ -143,9 +146,6 @@ private:
    * Defined and unimplemented to avoid misuse
    */
   WifiNetDevice &operator = (const WifiNetDevice &o);
-
-  /// This value conforms to the 802.11 specification
-  static const uint16_t MAX_MSDU_SIZE = 2304;
 
   /**
    * Set that the link is up. A link is always up in ad-hoc mode.

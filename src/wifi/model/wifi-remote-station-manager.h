@@ -227,6 +227,18 @@ public:
    */
   bool HasHeSupported (void) const;
   /**
+   * Enable or disable PCF capability support.
+   *
+   * \param enable enable or disable PCF capability support
+   */
+  virtual void SetPcfSupported (bool enable);
+  /**
+   * Return whether the device has PCF capability support enabled.
+   *
+   * \return true if PCF capability support is enabled, false otherwise
+   */
+  bool HasPcfSupported (void) const;
+  /**
    * Enable or disable protection for non-ERP stations.
    *
    * \param enable enable or disable protection for non-ERP stations
@@ -1439,6 +1451,7 @@ private:
   bool m_htSupported;  //!< Flag if HT capability is supported
   bool m_vhtSupported; //!< Flag if VHT capability is supported
   bool m_heSupported;  //!< Flag if HE capability is supported
+  bool m_pcfSupported; //!< Flag if PCF capability is supported
   uint32_t m_maxSsrc;  //!< Maximum STA short retry count (SSRC)
   uint32_t m_maxSlrc;  //!< Maximum STA long retry count (SLRC)
   uint32_t m_rtsCtsThreshold;  //!< Threshold for RTS/CTS

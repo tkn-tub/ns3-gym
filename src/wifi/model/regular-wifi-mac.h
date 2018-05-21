@@ -22,7 +22,7 @@
 #define REGULAR_WIFI_MAC_H
 
 #include "wifi-mac.h"
-#include "edca-txop-n.h"
+#include "qos-txop.h"
 #include "ssid.h"
 
 namespace ns3 {
@@ -30,16 +30,15 @@ namespace ns3 {
 class MacLow;
 class MacRxMiddle;
 class MacTxMiddle;
-class DcfManager;
+class ChannelAccessManager;
 class ExtendedCapabilities;
 
 /**
  * \brief base class for all MAC-level wifi objects.
  * \ingroup wifi
  *
- * This class encapsulates all the low-level MAC functionality
- * DCA, EDCA, etc) and all the high-level MAC functionality
- * (association/disassociation state machines).
+ * This class encapsulates all the low-level MAC functionality and all the
+ * high-level MAC functionality (association/disassociation state machines).
  *
  */
 class RegularWifiMac : public WifiMac
@@ -205,7 +204,7 @@ public:
    * dequeued as soon as the channel access function determines that
    * access is granted to this MAC.
    */
-  void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
+  virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to) = 0;
   /**
    * \param phy the physical layer attached to this MAC.
    */
@@ -290,7 +289,7 @@ protected:
   Ptr<MacRxMiddle> m_rxMiddle;  //!< RX middle (de-fragmentation etc.)
   Ptr<MacTxMiddle> m_txMiddle;  //!< TX middle (aggregation etc.)
   Ptr<MacLow> m_low;        //!< MacLow (RTS, CTS, DATA, ACK etc.)
-  Ptr<DcfManager> m_dcfManager; //!< DCF manager (access to channel)
+  Ptr<ChannelAccessManager> m_channelAccessManager; //!< channel access manager
   Ptr<WifiPhy> m_phy;       //!< Wifi PHY
 
   Ptr<WifiRemoteStationManager> m_stationManager; //!< Remote station manager (rate control, RTS/CTS/fragmentation thresholds etc.)
@@ -301,13 +300,13 @@ protected:
 
   Ssid m_ssid; //!< Service Set ID (SSID)
 
-  /** This holds a pointer to the DCF instance for this WifiMac - used
+  /** This holds a pointer to the TXOP instance for this WifiMac - used
   for transmission of frames to non-QoS peers. */
-  Ptr<DcaTxop> m_dca;
+  Ptr<Txop> m_txop;
 
   /** This type defines a mapping between an Access Category index,
   and a pointer to the corresponding channel access function */
-  typedef std::map<AcIndex, Ptr<EdcaTxopN> > EdcaQueues;
+  typedef std::map<AcIndex, Ptr<QosTxop> > EdcaQueues;
 
   /** This is a map from Access Category index to the corresponding
   channel access function */
@@ -316,34 +315,34 @@ protected:
   /**
    * Accessor for the DCF object
    *
-   * \return a smart pointer to DcaTxop
+   * \return a smart pointer to Txop
    */
-  Ptr<DcaTxop> GetDcaTxop (void) const;
+  Ptr<Txop> GetTxop (void) const;
 
   /**
    * Accessor for the AC_VO channel access function
    *
-   * \return a smart pointer to EdcaTxopN
+   * \return a smart pointer to QosTxop
    */
-  Ptr<EdcaTxopN> GetVOQueue (void) const;
+  Ptr<QosTxop> GetVOQueue (void) const;
   /**
    * Accessor for the AC_VI channel access function
    *
-   * \return a smart pointer to EdcaTxopN
+   * \return a smart pointer to QosTxop
    */
-  Ptr<EdcaTxopN> GetVIQueue (void) const;
+  Ptr<QosTxop> GetVIQueue (void) const;
   /**
    * Accessor for the AC_BE channel access function
    *
-   * \return a smart pointer to EdcaTxopN
+   * \return a smart pointer to QosTxop
    */
-  Ptr<EdcaTxopN> GetBEQueue (void) const;
+  Ptr<QosTxop> GetBEQueue (void) const;
   /**
    * Accessor for the AC_BK channel access function
    *
-   * \return a smart pointer to EdcaTxopN
+   * \return a smart pointer to QosTxop
    */
-  Ptr<EdcaTxopN> GetBKQueue (void) const;
+  Ptr<QosTxop> GetBKQueue (void) const;
 
   /**
    * \param standard the phy standard to be used
@@ -371,7 +370,7 @@ protected:
   /**
    * This method is invoked by a subclass to specify what type of
    * station it is implementing. This is something that the channel
-   * access functions (instantiated within this class as EdcaTxopN's)
+   * access functions (instantiated within this class as QosTxop's)
    * need to know.
    *
    * \param type the type of station.
@@ -438,46 +437,17 @@ protected:
                           Mac48Address originator);
 
   /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11e/WMM style Quality of Service. It is exposed through the
-   * attribute system.
-   *
-   * At the moment, this flag is the sole selection between QoS and
-   * non-QoS operation for the STA (whether IBSS, AP, or
-   * non-AP). Ultimately, we will want a QoS-enabled STA to be able to
-   * fall back to non-QoS operation with a non-QoS peer. This'll
-   * require further intelligence - i.e., per-association QoS
-   * state. Having a big switch seems like a good intermediate stage,
-   * however.
-   */
-  bool m_qosSupported;
-
-  /**
    * Enable or disable QoS support for the device.
    *
    * \param enable whether QoS is supported
    */
-  void SetQosSupported (bool enable);
+  virtual void SetQosSupported (bool enable);
   /**
    * Return whether the device supports QoS.
    *
    * \return true if QoS is supported, false otherwise
    */
   bool GetQosSupported () const;
-
-  /**
-    * This Boolean is set \c true iff this WifiMac is to model
-    * 802.11n. It is exposed through the attribute system.
-    *
-    * At the moment, this flag is the sole selection between HT and
-    * non-HT operation for the STA (whether IBSS, AP, or
-    * non-AP). Ultimately, we will want a HT-enabled STA to be able to
-    * fall back to non-HT operation with a non-HT peer. This'll
-    * require further intelligence - i.e., per-association HT
-    * state. Having a big switch seems like a good intermediate stage,
-    * however.
-    */
-  bool m_htSupported;
 
   /**
    * Enable or disable HT support for the device.
@@ -493,11 +463,6 @@ protected:
   bool GetHtSupported () const;
 
   /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11ac. It is exposed through the attribute system.
-   */
-  bool m_vhtSupported;
-  /**
    * Enable or disable VHT support for the device.
    *
    * \param enable whether VHT is supported
@@ -510,11 +475,6 @@ protected:
    */
   bool GetVhtSupported () const;
 
-  /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11g. It is exposed through the attribute system.
-   */
-  bool m_erpSupported;
   /**
    * Enable or disable ERP support for the device.
    *
@@ -529,11 +489,6 @@ protected:
   bool GetErpSupported () const;
 
   /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11b. It is exposed through the attribute system.
-   */
-  bool m_dsssSupported;
-  /**
    * Enable or disable DSSS support for the device.
    *
    * \param enable whether DSSS is supported
@@ -546,11 +501,6 @@ protected:
    */
   bool GetDsssSupported () const;
 
-  /**
-   * This Boolean is set \c true iff this WifiMac is to model
-   * 802.11ax. It is exposed through the attribute system.
-   */
-  bool m_heSupported;
   /**
    * Enable or disable HE support for the device.
    *
@@ -683,6 +633,54 @@ private:
    * \param timeout the BK block ack inactivity timeout.
    */
   void SetBkBlockAckInactivityTimeout (uint16_t timeout);
+
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11e/WMM style Quality of Service. It is exposed through the
+   * attribute system.
+   *
+   * At the moment, this flag is the sole selection between QoS and
+   * non-QoS operation for the STA (whether IBSS, AP, or
+   * non-AP). Ultimately, we will want a QoS-enabled STA to be able to
+   * fall back to non-QoS operation with a non-QoS peer. This'll
+   * require further intelligence - i.e., per-association QoS
+   * state. Having a big switch seems like a good intermediate stage,
+   * however.
+   */
+  bool m_qosSupported;
+  /**
+    * This Boolean is set \c true iff this WifiMac is to model
+    * 802.11n. It is exposed through the attribute system.
+    *
+    * At the moment, this flag is the sole selection between HT and
+    * non-HT operation for the STA (whether IBSS, AP, or
+    * non-AP). Ultimately, we will want a HT-enabled STA to be able to
+    * fall back to non-HT operation with a non-HT peer. This'll
+    * require further intelligence - i.e., per-association HT
+    * state. Having a big switch seems like a good intermediate stage,
+    * however.
+    */
+  bool m_htSupported;
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11ac. It is exposed through the attribute system.
+   */
+  bool m_vhtSupported;
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11g. It is exposed through the attribute system.
+   */
+  bool m_erpSupported;
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11b. It is exposed through the attribute system.
+   */
+  bool m_dsssSupported;
+  /**
+   * This Boolean is set \c true iff this WifiMac is to model
+   * 802.11ax. It is exposed through the attribute system.
+   */
+  bool m_heSupported;
 
   /// Configure aggregation function
   void ConfigureAggregation (void);

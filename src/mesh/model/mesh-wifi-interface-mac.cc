@@ -206,7 +206,7 @@ MeshWifiInterfaceMac::SwitchFrequencyChannel (uint16_t new_id)
   Ptr<YansWifiPhy> phy = m_phy->GetObject<YansWifiPhy> ();
   phy->SetChannelNumber (new_id);
   // Don't know NAV on new channel
-  m_dcfManager->NotifyNavResetNow (Seconds (0));
+  m_channelAccessManager->NotifyNavResetNow (Seconds (0));
 }
 //-----------------------------------------------------------------------------
 // Forward frame down
@@ -412,7 +412,7 @@ MeshWifiInterfaceMac::SendBeacon ()
     {
       (*i)->UpdateBeacon (beacon);
     }
-  m_dca->Queue (beacon.CreatePacket (), beacon.CreateHeader (GetAddress (), GetMeshPointAddress ()));
+  m_txop->Queue (beacon.CreatePacket (), beacon.CreateHeader (GetAddress (), GetMeshPointAddress ()));
 
   ScheduleNextBeacon ();
 }
@@ -556,9 +556,9 @@ MeshWifiInterfaceMac::FinishConfigureStandard (enum WifiPhyStandard standard)
   // We use the single DCF provided by WifiMac for the purpose of
   // Beacon transmission. For this we need to reconfigure the channel
   // access parameters slightly, and do so here.
-  m_dca->SetMinCw (0);
-  m_dca->SetMaxCw (0);
-  m_dca->SetAifsn (1);
+  m_txop->SetMinCw (0);
+  m_txop->SetMaxCw (0);
+  m_txop->SetAifsn (1);
 }
 WifiPhyStandard
 MeshWifiInterfaceMac::GetPhyStandard () const

@@ -319,6 +319,18 @@ MgtProbeResponseHeader::GetHeOperation (void) const
 }
 
 void
+MgtProbeResponseHeader::SetCfParameterSet (CfParameterSet cfparameterset)
+{
+  m_cfParameterSet = cfparameterset;
+}
+
+CfParameterSet
+MgtProbeResponseHeader::GetCfParameterSet (void) const
+{
+  return m_cfParameterSet;
+}
+
+void
 MgtProbeResponseHeader::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
@@ -398,6 +410,7 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
   size += m_capability.GetSerializedSize ();
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
+  size += m_cfParameterSet.GetSerializedSize ();
   size += m_dsssParameterSet.GetSerializedSize ();
   size += m_erpInformation.GetSerializedSize ();
   size += m_rates.extended.GetSerializedSize ();
@@ -445,6 +458,7 @@ MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
   i = m_capability.Serialize (i);
   i = m_ssid.Serialize (i);
   i = m_rates.Serialize (i);
+  i = m_cfParameterSet.Serialize (i);
   i = m_dsssParameterSet.Serialize (i);
   i = m_erpInformation.Serialize (i);
   i = m_rates.extended.Serialize (i);
@@ -468,6 +482,7 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   i = m_capability.Deserialize (i);
   i = m_ssid.Deserialize (i);
   i = m_rates.Deserialize (i);
+  i = m_cfParameterSet.DeserializeIfPresent (i);
   i = m_dsssParameterSet.DeserializeIfPresent (i);
   i = m_erpInformation.DeserializeIfPresent (i);
   i = m_rates.extended.DeserializeIfPresent (i);

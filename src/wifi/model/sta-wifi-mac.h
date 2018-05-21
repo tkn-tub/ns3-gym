@@ -23,7 +23,7 @@
 #ifndef STA_WIFI_MAC_H
 #define STA_WIFI_MAC_H
 
-#include "regular-wifi-mac.h"
+#include "infrastructure-wifi-mac.h"
 
 namespace ns3  {
 
@@ -36,7 +36,7 @@ class CapabilityInformation;
  *
  * The Wifi MAC high model for a non-AP STA in a BSS.
  */
-class StaWifiMac : public RegularWifiMac
+class StaWifiMac : public InfrastructureWifiMac
 {
 public:
   /**
@@ -47,6 +47,13 @@ public:
 
   StaWifiMac ();
   virtual ~StaWifiMac ();
+
+  /**
+   * Set up WifiRemoteStationManager associated with this StaWifiMac.
+   *
+   * \param stationManager the station manager attached to this MAC.
+   */
+  void SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager);
 
   /**
    * \param packet the packet to send.
@@ -106,6 +113,10 @@ private:
    *
    */
   void SendAssociationRequest (bool isReassoc);
+  /**
+   * Forward a CF-Poll response packet to the CFP queue.
+   */
+  void SendCfPollResponse (void);
   /**
    * Try to ensure that we are associated with an AP by taking an appropriate action
    * depending on the current association status.

@@ -103,16 +103,17 @@ MAC low layer
 
 The **MAC low layer** is split into three main components:
 
-#. ``ns3::MacLow`` which takes care of RTS/CTS/DATA/ACK transactions.
-#. ``ns3::DcfManager`` and ``ns3::DcfState`` which implements the DCF and EDCAF
+#. ``ns3::MacLow`` which takes care of RTS/CTS/DATA/ACK transactions and also
+   performs MPDU aggregation.
+#. ``ns3::ChannelAccessManager`` and ``ns3::DcfState`` which implements the DCF and EDCAF
    functions.
-#. ``ns3::DcaTxop`` and ``ns3::EdcaTxopN`` which handle the packet queue,
+#. ``ns3::Txop`` and ``ns3::QosTxop`` which handle the packet queue,
    packet fragmentation, and packet retransmissions if they are needed.
-   The ``ns3::DcaTxop`` object is used by high MACs that are not QoS-enabled,
+   The ``ns3::Txop`` object is used by high MACs that are not QoS-enabled,
    and for transmission of frames (e.g., of type Management)
    that the standard says should access the medium using the DCF. 
-   ``ns3::EdcaTxopN`` is is used by QoS-enabled high MACs and also
-   performs 802.11n-style MSDU aggregation.
+   ``ns3::QosTxop`` is is used by QoS-enabled high MACs and also
+   performs MSDU aggregation.
 
 PHY layer models
 ================
@@ -170,7 +171,8 @@ The following details pertain to the physical layer and channel models:
 * 802.11ax only supports SU PPDU format
 * 802.11ac/ax MU-MIMO is not supported, and no more than 4 antennas can be configured
 * 802.11n/ac/ax beamforming is not supported
-* 802.11 PCF and 802.11 HCF/HCCA are not implemented
+* 802.11 HCF/HCCA are not implemented
+* 802.11 PCF implementation currently assumes a DTIM interval equal to the beacon interval
 * Authentication and encryption are missing
 * Processing delays are not modeled
 * PLCP preamble reception is not modeled
@@ -631,12 +633,12 @@ Depending on your goal, the common tasks are (in no particular order):
 * MAC high modification. For example, handling new management frames (think beacon/probe), 
   beacon/probe generation.  Users usually make changes to ``regular-wifi-mac.*``, 
   ``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
-* Wi-Fi queue management.  The files ``dca-txop.*`` and ``edca-txop-n.*`` are of interested for this task.
-* Channel access management.  Users should modify the files ``dcf-manager.*``, which grant access to
-  ``DcaTxop`` and ``EdcaTxopN``.
+* Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interested for this task.
+* Channel access management.  Users should modify the files ``channel-access-manager.*``, which grant access to
+  ``Txop`` and ``QosTxop``.
 * Fragmentation and RTS threholds are handled by Wi-Fi remote station manager.  Note that Wi-Fi remote
   station manager simply indicates if fragmentation and RTS are needed.  Fragmentation is handled by
-  ``DcaTxop`` or ``EdcaTxopN`` while RTS/CTS transaction is hanled by ``MacLow``.
+  ``Txop`` or ``QosTxop`` while RTS/CTS transaction is hanled by ``MacLow``.
 * Modifying or creating new rate control algorithms can be done by creating a new child class of Wi-Fi remote
   station manager or modifying the existing ones.
 

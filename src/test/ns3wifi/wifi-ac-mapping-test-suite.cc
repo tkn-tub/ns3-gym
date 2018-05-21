@@ -26,7 +26,7 @@
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-mac.h"
 #include "ns3/wifi-mac-queue.h"
-#include "ns3/edca-txop-n.h"
+#include "ns3/qos-txop.h"
 #include "ns3/yans-wifi-helper.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/internet-stack-helper.h"
@@ -205,20 +205,20 @@ WifiAcMappingTest::DoRun (void)
   PointerValue ptr;
   // Get the four wifi mac queues and connect their Enqueue trace to the PacketEnqueuedInWifiMacQueue
   // method, which counts how many packets with the given ToS value have been enqueued
-  apMac->GetAttribute ("BE_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
+  apMac->GetAttribute ("BE_Txop", ptr);
+  ptr.Get<QosTxop> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount));
 
-  apMac->GetAttribute ("BK_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
+  apMac->GetAttribute ("BK_Txop", ptr);
+  ptr.Get<QosTxop> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+1));
 
-  apMac->GetAttribute ("VI_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
+  apMac->GetAttribute ("VI_Txop", ptr);
+  ptr.Get<QosTxop> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+2));
 
-  apMac->GetAttribute ("VO_EdcaTxopN", ptr);
-  ptr.Get<EdcaTxopN> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
+  apMac->GetAttribute ("VO_Txop", ptr);
+  ptr.Get<QosTxop> ()->GetWifiMacQueue ()->TraceConnectWithoutContext ("Enqueue",
                         MakeBoundCallback (&WifiAcMappingTest::PacketEnqueuedInWifiMacQueue, m_tos, m_WifiMacQueueCount+3));
 
   Simulator::Run ();

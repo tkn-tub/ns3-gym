@@ -62,7 +62,7 @@ public:
    * \param packet packet to send
    * \param hdr 802.11 header for packet to send
    * \param parameters the transmission parameters to use for this packet.
-   * \param dca pointer to the calling DcaTxop.
+   * \param txop pointer to the calling Txop.
    *
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
@@ -70,7 +70,7 @@ public:
   virtual void StartTransmission (Ptr<const Packet> packet,
                                   const WifiMacHeader* hdr,
                                   MacLowTransmissionParameters parameters,
-                                  Ptr<DcaTxop> dca);
+                                  Ptr<Txop> txop);
 private:
   /**
    * Return a TXVECTOR for the DATA frame given the destination.

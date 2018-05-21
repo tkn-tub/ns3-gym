@@ -98,9 +98,22 @@ public:
   Ptr<WifiMacQueueItem> Dequeue (void);
   /**
    * Search and return, if present in the queue, the first packet having the
+   * address indicated by <i>type</i> equal to <i>addr</i>.
+   * This method removes the packet from the queue.
+   * It is typically used by ns3::Txop during the CF period.
+   *
+   * \param type the given address type
+   * \param dest the given destination
+   *
+   * \return the packet
+   */
+  Ptr<WifiMacQueueItem> DequeueByAddress (WifiMacHeader::AddressType type,
+                                          Mac48Address dest);
+  /**
+   * Search and return, if present in the queue, the first packet having the
    * address indicated by <i>type</i> equal to <i>addr</i>, and tid
    * equal to <i>tid</i>. This method removes the packet from the queue.
-   * It is typically used by ns3::EdcaTxopN in order to perform correct MSDU
+   * It is typically used by ns3::QosTxop in order to perform correct MSDU
    * aggregation (A-MSDU).
    *
    * \param tid the given TID
@@ -134,7 +147,7 @@ public:
    * Search and return, if present in the queue, the first packet having the
    * address indicated by <i>type</i> equal to <i>addr</i>, and tid
    * equal to <i>tid</i>. This method does not remove the packet from the queue.
-   * It is typically used by ns3::EdcaTxopN in order to perform correct MSDU
+   * It is typically used by ns3::QosTxop in order to perform correct MSDU
    * aggregation (A-MSDU).
    *
    * \param tid the given TID
@@ -170,6 +183,17 @@ public:
    * \return true if the packet was removed, false otherwise
    */
   bool Remove (Ptr<const Packet> packet);
+  /**
+   * Return the number of packets having address specified by
+   * <i>type</i> equal to <i>addr</i>.
+   *
+   * \param type the given address type
+   * \param dest the given destination
+   *
+   * \return the number of packets
+   */
+  uint32_t GetNPacketsByAddress (WifiMacHeader::AddressType type,
+                                 Mac48Address dest);
   /**
    * Return the number of QoS packets having tid equal to <i>tid</i> and address
    * specified by <i>type</i> equal to <i>addr</i>.

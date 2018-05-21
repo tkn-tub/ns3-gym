@@ -187,7 +187,7 @@ public:
    * \param dataSnr data SNR reported by remote station
    *
    * Invoked upon receipt of a block ack frame. Typically, this function, is called
-   * by ns3::EdcaTxopN object. Performs a check on which MPDUs, previously sent
+   * by ns3::QosTxop object. Performs a check on which MPDUs, previously sent
    * with ack policy set to Block Ack, were correctly received by the recipient.
    * An acknowledged MPDU is removed from the buffer, retransmitted otherwise.
    */
@@ -233,10 +233,10 @@ public:
   /**
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
-   * \param nextSeqNumber Sequence number of the next packet that would be trasmitted by EdcaTxopN.
+   * \param nextSeqNumber Sequence number of the next packet that would be trasmitted by QosTxop.
    * \param policy ack policy of the transmitted packet.
    *
-   * This method is typically invoked by ns3::EdcaTxopN object every time that a MPDU
+   * This method is typically invoked by ns3::QosTxop object every time that a MPDU
    * with ack policy subfield in Qos Control field set to Block Ack is transmitted.
    * The <i>nextSeqNumber</i> parameter is used to block transmission of packets that are out of bitmap.
    */

@@ -20,12 +20,12 @@
  *          Mirko Banchi <mk.banchi@gmail.com>
  */
 
-#ifndef EDCA_TXOP_N_H
-#define EDCA_TXOP_N_H
+#ifndef QOS_TXOP_H
+#define QOS_TXOP_H
 
 #include "ns3/traced-value.h"
 #include "block-ack-manager.h"
-#include "dca-txop.h"
+#include "txop.h"
 #include "qos-utils.h"
 
 class AmpduAggregationTest;
@@ -60,7 +60,7 @@ enum TypeOfStation
  * \ingroup wifi
  *
  * This class implements the packet fragmentation and retransmission policy for
- * QoS data frames. It uses the ns3::MacLow and ns3::DcfManager helper classes
+ * QoS data frames. It uses the ns3::MacLow and ns3::ChannelAccessManager helper classes
  * to respectively send packets and decide when to send them. Packets are stored
  * in a ns3::WifiMacQueue until they can be sent.
  *
@@ -87,7 +87,7 @@ enum TypeOfStation
  * a packet is bigger than a threshold, the rts/cts protocol is used.
  */
 
-class EdcaTxopN : public DcaTxop
+class QosTxop : public Txop
 {
 public:
   /// Allow test cases to access private members
@@ -101,18 +101,18 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  EdcaTxopN ();
-  virtual ~EdcaTxopN ();
+  QosTxop ();
+  virtual ~QosTxop ();
 
   /**
-   * Check for EDCA.
+   * Check for QoS TXOP.
    *
-   * \returns true if EDCA.
+   * \returns true if QoS TXOP.
    */
-  bool IsEdca ();
+  bool IsQosTxop () const;
 
   /**
-   * Set WifiRemoteStationsManager this EdcaTxopN is associated to.
+   * Set WifiRemoteStationsManager this QosTxop is associated to.
    *
    * \param remoteManager WifiRemoteStationManager.
    */
@@ -559,4 +559,4 @@ private:
 
 } //namespace ns3
 
-#endif /* EDCA_TXOP_N_H */
+#endif /* QOS_TXOP_H */

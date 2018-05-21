@@ -54,7 +54,7 @@ TypeId
 StaWifiMac::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::StaWifiMac")
-    .SetParent<RegularWifiMac> ()
+    .SetParent<InfrastructureWifiMac> ()
     .SetGroupName ("Wifi")
     .AddConstructor<StaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "The interval between two consecutive probe request attempts.",
@@ -138,6 +138,14 @@ StaWifiMac::SetWifiPhy (const Ptr<WifiPhy> phy)
 }
 
 void
+StaWifiMac::SetWifiRemoteStationManager (const Ptr<WifiRemoteStationManager> stationManager)
+{
+  NS_LOG_FUNCTION (this << stationManager);
+  RegularWifiMac::SetWifiRemoteStationManager (stationManager);
+  m_stationManager->SetPcfSupported (GetPcfSupported ());
+}
+
+void
 StaWifiMac::SendProbeRequest (void)
 {
   NS_LOG_FUNCTION (this);
@@ -153,16 +161,16 @@ StaWifiMac::SendProbeRequest (void)
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
-  if (m_htSupported || m_vhtSupported || m_heSupported)
+  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
       probe.SetExtendedCapabilities (GetExtendedCapabilities ());
       probe.SetHtCapabilities (GetHtCapabilities ());
     }
-  if (m_vhtSupported || m_heSupported)
+  if (GetVhtSupported () || GetHeSupported ())
     {
       probe.SetVhtCapabilities (GetVhtCapabilities ());
     }
-  if (m_heSupported)
+  if (GetHeSupported ())
     {
       probe.SetHeCapabilities (GetHeCapabilities ());
     }
@@ -170,9 +178,9 @@ StaWifiMac::SendProbeRequest (void)
 
   //The standard is not clear on the correct queue for management
   //frames if we are a QoS AP. The approach taken here is to always
-  //use the DCF for these regardless of whether we have a QoS
+  //use the non-QoS for these regardless of whether we have a QoS
   //association or not.
-  m_dca->Queue (packet, hdr);
+  m_txop->Queue (packet, hdr);
 
   if (m_probeRequestEvent.IsRunning ())
     {
@@ -202,16 +210,16 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       assoc.SetSupportedRates (GetSupportedRates ());
       assoc.SetCapabilities (GetCapabilities ());
       assoc.SetListenInterval (0);
-      if (m_htSupported || m_vhtSupported || m_heSupported)
+      if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
         {
           assoc.SetExtendedCapabilities (GetExtendedCapabilities ());
           assoc.SetHtCapabilities (GetHtCapabilities ());
         }
-      if (m_vhtSupported || m_heSupported)
+      if (GetVhtSupported () || GetHeSupported ())
         {
           assoc.SetVhtCapabilities (GetVhtCapabilities ());
         }
-      if (m_heSupported)
+      if (GetHeSupported ())
         {
           assoc.SetHeCapabilities (GetHeCapabilities ());
         }
@@ -225,16 +233,16 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
       reassoc.SetSupportedRates (GetSupportedRates ());
       reassoc.SetCapabilities (GetCapabilities ());
       reassoc.SetListenInterval (0);
-      if (m_htSupported || m_vhtSupported || m_heSupported)
+      if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
         {
           reassoc.SetExtendedCapabilities (GetExtendedCapabilities ());
           reassoc.SetHtCapabilities (GetHtCapabilities ());
         }
-      if (m_vhtSupported || m_heSupported)
+      if (GetVhtSupported () || GetHeSupported ())
         {
           reassoc.SetVhtCapabilities (GetVhtCapabilities ());
         }
-      if (m_heSupported)
+      if (GetHeSupported ())
         {
           reassoc.SetHeCapabilities (GetHeCapabilities ());
         }
@@ -243,9 +251,9 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
 
   //The standard is not clear on the correct queue for management
   //frames if we are a QoS AP. The approach taken here is to always
-  //use the DCF for these regardless of whether we have a QoS
+  //use the non-QoS for these regardless of whether we have a QoS
   //association or not.
-  m_dca->Queue (packet, hdr);
+  m_txop->Queue (packet, hdr);
 
   if (m_assocRequestEvent.IsRunning ())
     {
@@ -253,6 +261,14 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
     }
   m_assocRequestEvent = Simulator::Schedule (m_assocRequestTimeout,
                                              &StaWifiMac::AssocRequestTimeout, this);
+}
+
+void
+StaWifiMac::SendCfPollResponse (void)
+{
+  NS_LOG_FUNCTION (this);
+  NS_ASSERT (GetPcfSupported ());
+  m_txop->SendCfFrame (WIFI_MAC_DATA_NULL, GetBssid ());
 }
 
 void
@@ -381,7 +397,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   //support simultaneously associated QoS and non-QoS STAs, at which
   //point there will need to be per-association QoS state maintained
   //by the association state machine, and consulted here.
-  if (m_qosSupported)
+  if (GetQosSupported ())
     {
       hdr.SetType (WIFI_MAC_QOSDATA);
       hdr.SetQosAckPolicy (WifiMacHeader::NORMAL_ACK);
@@ -406,7 +422,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     {
       hdr.SetType (WIFI_MAC_DATA);
     }
-  if (m_qosSupported || m_htSupported || m_vhtSupported || m_heSupported)
+  if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
       hdr.SetNoOrder ();
     }
@@ -417,7 +433,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
 
-  if (m_qosSupported)
+  if (GetQosSupported ())
     {
       //Sanity check that the TID is valid
       NS_ASSERT (tid < 8);
@@ -425,7 +441,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     }
   else
     {
-      m_dca->Queue (packet, hdr);
+      m_txop->Queue (packet, hdr);
     }
 }
 
@@ -446,7 +462,11 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
       NotifyRxDrop (packet);
       return;
     }
-  else if (hdr->IsData ())
+  else if ((hdr->GetAddr1 () == GetAddress ()) && (hdr->GetAddr2 () == GetBssid ()) && hdr->IsCfPoll ())
+    {
+      SendCfPollResponse ();
+    }
+  if (hdr->IsData ())
     {
       if (!IsAssociated ())
         {
@@ -479,7 +499,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
             }
         }
-      else
+      else if (hdr->HasData ())
         {
           ForwardUp (packet, hdr->GetAddr3 (), hdr->GetAddr1 ());
         }
@@ -506,6 +526,19 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         {
           NS_LOG_LOGIC ("Beacon is for our SSID");
           goodBeacon = true;
+        }
+      CfParameterSet cfParameterSet = beacon.GetCfParameterSet ();
+      if (cfParameterSet.GetCFPCount () == 0)
+        {
+          //see section 9.3.2.2 802.11-1999
+          if (GetPcfSupported ())
+            {
+              m_low->DoNavStartNow (MicroSeconds (cfParameterSet.GetCFPMaxDurationUs ()));
+            }
+          else
+            {
+              m_low->DoNavStartNow (MicroSeconds (cfParameterSet.GetCFPDurRemainingUs ()));
+            }
         }
       SupportedRates rates = beacon.GetSupportedRates ();
       bool bssMembershipSelectorMatch = false;
@@ -543,7 +576,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 }
             }
           bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-          if (m_erpSupported)
+          if (GetErpSupported ())
             {
               ErpInformation erpInformation = beacon.GetErpInformation ();
               isShortPreambleEnabled &= !erpInformation.GetBarkerPreambleMode ();
@@ -566,7 +599,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                   SetSlot (MicroSeconds (20));
                 }
             }
-          if (m_qosSupported)
+          if (GetQosSupported ())
             {
               bool qosSupported = false;
               EdcaParameterSet edcaParameters = beacon.GetEdcaParameterSet ();
@@ -581,7 +614,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 }
               m_stationManager->SetQosSupport (hdr->GetAddr2 (), qosSupported);
             }
-          if (m_htSupported)
+          if (GetHtSupported ())
             {
               HtCapabilities htCapabilities = beacon.GetHtCapabilities ();
               if (!htCapabilities.IsSupportedMcs (0))
@@ -600,7 +633,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     {
                       m_stationManager->SetUseGreenfieldProtection (false);
                     }
-                  if (!m_vhtSupported && GetRifsSupported () && htOperation.GetRifsMode ())
+                  if (!GetVhtSupported () && GetRifsSupported () && htOperation.GetRifsMode ())
                     {
                       m_stationManager->SetRifsPermitted (true);
                     }
@@ -610,7 +643,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     }
                 }
             }
-          if (m_vhtSupported)
+          if (GetVhtSupported ())
             {
               VhtCapabilities vhtCapabilities = beacon.GetVhtCapabilities ();
               //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
@@ -628,12 +661,12 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     }
                 }
             }
-          if (m_htSupported || m_vhtSupported)
+          if (GetHtSupported () || GetVhtSupported ())
             {
               ExtendedCapabilities extendedCapabilities = beacon.GetExtendedCapabilities ();
               //TODO: to be completed
             }
-          if (m_heSupported)
+          if (GetHeSupported ())
             {
               HeCapabilities heCapabilities = beacon.GetHeCapabilities ();
               //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
@@ -696,7 +729,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
             }
 
           bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-          if (m_erpSupported)
+          if (GetErpSupported ())
             {
               bool isErpAllowed = false;
               for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
@@ -769,7 +802,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
               CapabilityInformation capabilities = assocResp.GetCapabilities ();
               SupportedRates rates = assocResp.GetSupportedRates ();
               bool isShortPreambleEnabled = capabilities.IsShortPreamble ();
-              if (m_erpSupported)
+              if (GetErpSupported ())
                 {
                   bool isErpAllowed = false;
                   for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
@@ -806,7 +839,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                 }
               m_stationManager->SetShortPreambleEnabled (isShortPreambleEnabled);
               m_stationManager->SetShortSlotTimeEnabled (capabilities.IsShortSlotTime ());
-              if (m_qosSupported)
+              if (GetQosSupported ())
                 {
                   bool qosSupported = false;
                   EdcaParameterSet edcaParameters = assocResp.GetEdcaParameterSet ();
@@ -821,7 +854,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                     }
                   m_stationManager->SetQosSupport (hdr->GetAddr2 (), qosSupported);
                 }
-              if (m_htSupported)
+              if (GetHtSupported ())
                 {
                   HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
                   if (!htCapabilities.IsSupportedMcs (0))
@@ -840,7 +873,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         {
                           m_stationManager->SetUseGreenfieldProtection (false);
                         }
-                      if (!m_vhtSupported && GetRifsSupported () && htOperation.GetRifsMode ())
+                      if (!GetVhtSupported () && GetRifsSupported () && htOperation.GetRifsMode ())
                         {
                           m_stationManager->SetRifsPermitted (true);
                         }
@@ -850,7 +883,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         }
                     }
                 }
-              if (m_vhtSupported)
+              if (GetVhtSupported ())
                 {
                   VhtCapabilities vhtCapabilities = assocResp.GetVhtCapabilities ();
                   //we will always fill in RxHighestSupportedLgiDataRate field at TX, so this can be used to check whether it supports VHT
@@ -860,7 +893,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                       VhtOperation vhtOperation = assocResp.GetVhtOperation ();
                     }
                 }
-              if (m_heSupported)
+              if (GetHeSupported ())
                 {
                   HeCapabilities hecapabilities = assocResp.GetHeCapabilities ();
                   //todo: once we support non constant rate managers, we should add checks here whether HE is supported by the peer
@@ -879,7 +912,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         }
                     }
                 }
-              if (m_htSupported)
+              if (GetHtSupported ())
                 {
                   HtCapabilities htCapabilities = assocResp.GetHtCapabilities ();
                   for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
@@ -892,7 +925,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         }
                     }
                 }
-              if (m_vhtSupported)
+              if (GetVhtSupported ())
                 {
                   VhtCapabilities vhtcapabilities = assocResp.GetVhtCapabilities ();
                   for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
@@ -905,12 +938,12 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
                         }
                     }
                 }
-              if (m_htSupported || m_vhtSupported)
+              if (GetHtSupported () || GetVhtSupported ())
                 {
                   ExtendedCapabilities extendedCapabilities = assocResp.GetExtendedCapabilities ();
                   //TODO: to be completed
                 }
-              if (m_heSupported)
+              if (GetHeSupported ())
                 {
                   HeCapabilities heCapabilities = assocResp.GetHeCapabilities ();
                   for (uint8_t i = 0; i < m_phy->GetNMcs (); i++)
@@ -947,7 +980,7 @@ SupportedRates
 StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
-  if (m_htSupported || m_vhtSupported || m_heSupported)
+  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
       for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
         {
@@ -968,8 +1001,12 @@ CapabilityInformation
 StaWifiMac::GetCapabilities (void) const
 {
   CapabilityInformation capabilities;
-  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreambleSupported () || m_erpSupported);
-  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && m_erpSupported);
+  capabilities.SetShortPreamble (m_phy->GetShortPlcpPreambleSupported () || GetErpSupported ());
+  capabilities.SetShortSlotTime (GetShortSlotTimeSupported () && GetErpSupported ());
+  if (GetPcfSupported ())
+    {
+      capabilities.SetCfPollable ();
+    }
   return capabilities;
 }
 
@@ -992,7 +1029,7 @@ StaWifiMac::SetState (MacState value)
 void
 StaWifiMac::SetEdcaParameters (AcIndex ac, uint32_t cwMin, uint32_t cwMax, uint8_t aifsn, Time txopLimit)
 {
-  Ptr<EdcaTxopN> edca = m_edca.find (ac)->second;
+  Ptr<QosTxop> edca = m_edca.find (ac)->second;
   edca->SetMinCw (cwMin);
   edca->SetMaxCw (cwMax);
   edca->SetAifsn (aifsn);
