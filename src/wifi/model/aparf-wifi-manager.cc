@@ -129,8 +129,8 @@ void
 AparfWifiManager::SetupPhy (const Ptr<WifiPhy> phy)
 {
   NS_LOG_FUNCTION (this << phy);
-  m_minPower = phy->GetTxPowerStart ();
-  m_maxPower = phy->GetTxPowerEnd ();
+  m_minPower = 0;
+  m_maxPower = phy->GetNTxPower () - 1;
   WifiRemoteStationManager::SetupPhy (phy);
 }
 
