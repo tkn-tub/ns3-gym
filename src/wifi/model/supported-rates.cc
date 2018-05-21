@@ -56,7 +56,7 @@ SupportedRates::operator= (const SupportedRates& rates)
 }
 
 void
-SupportedRates::AddSupportedRate (uint32_t bs)
+SupportedRates::AddSupportedRate (uint64_t bs)
 {
   NS_LOG_FUNCTION (this << bs);
   NS_ASSERT_MSG (IsBssMembershipSelectorRate (bs) == false, "Invalid rate");
@@ -115,7 +115,7 @@ SupportedRates::AddBssMembershipSelectorRate (uint32_t bs)
 }
 
 bool
-SupportedRates::IsBasicRate (uint32_t bs) const
+SupportedRates::IsBasicRate (uint64_t bs) const
 {
   NS_LOG_FUNCTION (this << bs);
   uint8_t rate = (bs / 500000) | 0x80;
@@ -130,7 +130,7 @@ SupportedRates::IsBasicRate (uint32_t bs) const
 }
 
 bool
-SupportedRates::IsSupportedRate (uint32_t bs) const
+SupportedRates::IsSupportedRate (uint64_t bs) const
 {
   NS_LOG_FUNCTION (this << bs);
   uint8_t rate = bs / 500000;

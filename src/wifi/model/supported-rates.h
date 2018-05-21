@@ -153,7 +153,7 @@ public:
    *
    * \param bs the rate to be added
    */
-  void AddSupportedRate (uint32_t bs);
+  void AddSupportedRate (uint64_t bs);
   /**
    * Set the given rate to basic rates.
    *
@@ -176,7 +176,7 @@ public:
    *
    * \return true if the rate is supported, false otherwise
    */
-  bool IsSupportedRate (uint32_t bs) const;
+  bool IsSupportedRate (uint64_t bs) const;
   /**
    * Check if the given rate is a basic rate.  The rate is encoded as it is
    * serialized to the Supported Rates Information Element (i.e. as a
@@ -186,7 +186,7 @@ public:
    *
    * \return true if the rate is a basic rate, false otherwise
    */
-  bool IsBasicRate (uint32_t bs) const;
+  bool IsBasicRate (uint64_t bs) const;
   /**
    * Check if the given rate is a BSS membership selector value.  The rate
    * is encoded as it is serialized to the Supporting Rates Information
