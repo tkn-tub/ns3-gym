@@ -60,7 +60,7 @@ struct MinstrelHtWifiRemoteStation : MinstrelWifiRemoteStation
   uint32_t m_sampleCount;     //!< Max number of samples per update interval.
   uint32_t m_numSamplesSlow;  //!< Number of times a slow rate was sampled.
 
-  double m_avgAmpduLen;       //!< Average number of MPDUs in an A-MPDU.
+  uint32_t m_avgAmpduLen;     //!< Average number of MPDUs in an A-MPDU.
   double m_ampduLen;          //!< Number of MPDUs in an A-MPDU.
   uint32_t m_ampduPacketCount; //!< Number of A-MPDUs transmitted.
 
