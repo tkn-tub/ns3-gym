@@ -409,11 +409,8 @@ BlockAckManager::RemovePacket (uint8_t tid, Mac48Address recipient, uint16_t seq
       if ((*it)->hdr.GetAddr1 () == recipient && (*it)->hdr.GetQosTid () == tid && (*it)->hdr.GetSequenceNumber () == seqnumber)
         {
           WifiMacHeader hdr = (*it)->hdr;
-          uint8_t tid = hdr.GetQosTid ();
-
           AgreementsI i = m_agreements.find (std::make_pair (recipient, tid));
           i->second.second.erase ((*it));
-
           m_retryPackets.erase (it);
           NS_LOG_DEBUG ("Removed Packet from retry queue = " << hdr.GetSequenceNumber () << " " << +tid << " " << recipient << " Buffer Size = " << m_retryPackets.size ());
           return true;
