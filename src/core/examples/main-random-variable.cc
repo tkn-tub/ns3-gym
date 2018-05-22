@@ -23,6 +23,7 @@
 #include "ns3/string.h"
 #include "ns3/integer.h"
 #include "ns3/gnuplot.h"
+#include "ns3/command-line.h"
 #include <map>
 #include <cmath>
 
@@ -102,6 +103,9 @@ Histogram (Ptr<RandomVariableStream> rndvar,
 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse(argc, argv);
+  
   unsigned int probes = 1000000;
   double precision = 0.01;
 

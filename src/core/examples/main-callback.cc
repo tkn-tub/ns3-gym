@@ -19,6 +19,7 @@
 
 #include "ns3/callback.h"
 #include "ns3/assert.h"
+#include "ns3/command-line.h"
 #include <iostream>
 
 /**
@@ -68,6 +69,9 @@ public:
 
 int main (int argc, char *argv[])
 {
+  CommandLine cmd;
+  cmd.Parse(argc, argv);
+  
   // return type: double
   // first arg type: double
   // second arg type: double
