@@ -272,7 +272,7 @@ Murmur3TestCase::DoRun (void)
  * \returns The checksum of the buffer contents.
  */ 
 uint16_t
-gnu_sum (const char * buffer, const size_t size)
+gnu_sum (const char * buffer, const std::size_t size)
 {
   const char * p = buffer;
   const char * const pend = p + size;
@@ -293,7 +293,7 @@ gnu_sum (const char * buffer, const size_t size)
  * \copydetails gnu_sum()
  */
 uint32_t
-gnu_sum32 (const char * buffer, const size_t size)
+gnu_sum32 (const char * buffer, const std::size_t size)
 {
   uint32_t h = gnu_sum (buffer, size);
   return (uint32_t)( (h << 16) + h);
@@ -305,7 +305,7 @@ gnu_sum32 (const char * buffer, const size_t size)
  * \copydetails gnu_sum()
  */
 uint64_t
-gnu_sum64 (const char * buffer, const size_t size)
+gnu_sum64 (const char * buffer, const std::size_t size)
 {
   uint64_t h = gnu_sum32 (buffer, size);
   return (uint64_t)( (h << 32) + h);

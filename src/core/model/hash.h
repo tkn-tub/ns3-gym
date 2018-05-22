@@ -111,7 +111,7 @@ public:
    * \param [in] size Length of the buffer, in bytes.
    * \return 32-bit hash of the buffer..
    */
-  uint32_t  GetHash32  (const char * buffer, const size_t size);
+  uint32_t  GetHash32  (const char * buffer, const std::size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -126,7 +126,7 @@ public:
    * \param [in] size Length of the buffer, in bytes.
    * \return 64-bit hash of the buffer.
    */
-  uint64_t  GetHash64  (const char * buffer, const size_t size);
+  uint64_t  GetHash64  (const char * buffer, const std::size_t size);
 
   /**
    * Compute 32-bit hash of a string.
@@ -190,7 +190,7 @@ private:
  * \param [in] size Length of the buffer, in bytes.
  * \return 32-bit hash of the buffer.
  */
-uint32_t Hash32 (const char * buffer, const size_t size);
+uint32_t Hash32 (const char * buffer, const std::size_t size);
 /**
  * \ingroup hash
  *
@@ -200,7 +200,7 @@ uint32_t Hash32 (const char * buffer, const size_t size);
  * \param [in] size Length of the buffer, in bytes.
  * \return 64-bit hash of the buffer.
  */
-uint64_t Hash64 (const char * buffer, const size_t size);
+uint64_t Hash64 (const char * buffer, const std::size_t size);
 
 /**
  * \ingroup hash
@@ -236,7 +236,7 @@ namespace ns3 {
 
 inline
 uint32_t
-Hasher::GetHash32  (const char * buffer, const size_t size)
+Hasher::GetHash32  (const char * buffer, const std::size_t size)
 {
   NS_ASSERT (m_impl != 0);
   return m_impl->GetHash32  (buffer, size);
@@ -244,7 +244,7 @@ Hasher::GetHash32  (const char * buffer, const size_t size)
 
 inline
 uint64_t
-Hasher::GetHash64  (const char * buffer, const size_t size)
+Hasher::GetHash64  (const char * buffer, const std::size_t size)
 {
   NS_ASSERT (m_impl != 0);
   return m_impl->GetHash64  (buffer, size);
@@ -273,14 +273,14 @@ Hasher::GetHash64  (const std::string s)
 
 inline
 uint32_t
-Hash32 (const char * buffer, const size_t size)
+Hash32 (const char * buffer, const std::size_t size)
 {
   return Hasher ().GetHash32 (buffer, size);
 }
 
 inline
 uint64_t
-Hash64 (const char * buffer, const size_t size)
+Hash64 (const char * buffer, const std::size_t size)
 {
   return Hasher ().GetHash64 (buffer, size);
 }

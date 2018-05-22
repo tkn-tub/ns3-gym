@@ -28,6 +28,9 @@
  *
  * Changes from the murmur3 distribution are marked with `//PDB'
  * In addition comment blocks have been converted to Doxygen format.
+ * Function arguments for buffer length which were originally
+ * "int len" or "int i" have been changed to "std::size_t".
+ * Other conversions to std::size_t are marked.
  */
 
 #include "log.h"
@@ -119,12 +122,12 @@ inline uint64_t rotl64 ( uint64_t x, int8_t r )
  * \param [in] i Index into the block.
  * \returns The \c i'th word from the block.
  */
-inline uint32_t getblock ( const uint32_t * p, int i )
+inline uint32_t getblock ( const uint32_t * p, std::size_t i )
 {
   return p[i];
 }
 /** \copydoc getblock(const uint32_t*,int) */
-inline uint64_t getblock ( const uint64_t * p, int i )
+inline uint64_t getblock ( const uint64_t * p, std::size_t i )
 {
   return p[i];
 }
@@ -171,7 +174,7 @@ inline uint64_t fmix ( uint64_t h )
  * \param [in] seed Initial or current hash state.
  * \param [out] out Output hash value.
  */
-void MurmurHash3_x86_32_incr ( const void * key, int len,
+void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
                                uint32_t seed, void * out );
 /**
  * Finalize a hash.
@@ -180,12 +183,12 @@ void MurmurHash3_x86_32_incr ( const void * key, int len,
  * \param [in] seed Initial or current hash state.
  * \param [out] out Output hash value.
  */
-void MurmurHash3_x86_32_fin ( int len,
+void MurmurHash3_x86_32_fin ( std::size_t len,
                               uint32_t seed, void * out );
 
 //PDB - incremental hashing
 /** \copydoc MurmurHash3_x86_32_incr() */
-void MurmurHash3_x86_32 ( const void * key, int len,
+void MurmurHash3_x86_32 ( const void * key, std::size_t len,
                           uint32_t seed, void * out )
 {
   uint32_t h1;
@@ -193,11 +196,11 @@ void MurmurHash3_x86_32 ( const void * key, int len,
   MurmurHash3_x86_32_fin (len, h1, out);
 }
 
-void MurmurHash3_x86_32_incr ( const void * key, int len,
+void MurmurHash3_x86_32_incr ( const void * key, std::size_t len,
                                uint32_t seed, void * out )
 {
   const uint8_t * data = (const uint8_t*)key;
-  const int nblocks = len / 4;
+  const std::size_t nblocks = len / 4;  //PDB: was const int nblocks
 
   uint32_t h1 = seed;
 
@@ -209,7 +212,7 @@ void MurmurHash3_x86_32_incr ( const void * key, int len,
 
   const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
 
-  for(int i = -nblocks; i; i++)
+  for(std::size_t i = -nblocks; i; i++)  //PDB: was int i
   {
     uint32_t k1 = getblock(blocks,i);
 
@@ -241,7 +244,7 @@ void MurmurHash3_x86_32_incr ( const void * key, int len,
 }
 
 //PDB - incremental hashing - finalization
-void MurmurHash3_x86_32_fin ( int len,
+void MurmurHash3_x86_32_fin ( std::size_t len,
                               uint32_t seed, void * out )
 {
   uint32_t h1 = seed;
@@ -267,7 +270,7 @@ void MurmurHash3_x86_32_fin ( int len,
  * \param [in] seeds Initial or current hash state.
  * \param [out] out Output hash value.
  */
-void MurmurHash3_x86_128_incr ( const void * key, const int len,
+void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
                                 uint32_t * seeds, void * out );
 /**
  * Finalize a hash.
@@ -276,7 +279,7 @@ void MurmurHash3_x86_128_incr ( const void * key, const int len,
  * \param [in] seeds Initial or current hash state.
  * \param [out] out Output hash value.
  */
-void MurmurHash3_x86_128_fin ( const int len,
+void MurmurHash3_x86_128_fin ( const std::size_t len,
                                uint32_t * seeds, void * out );
 
 //PDB - incremental hashing
@@ -288,7 +291,7 @@ void MurmurHash3_x86_128_fin ( const int len,
  * \param [in] seed Initial or current hash state.
  * \param [out] out Output hash value.
  */
-void MurmurHash3_x86_128 ( const void * key, const int len,
+void MurmurHash3_x86_128 ( const void * key, const std::size_t len,
                            uint32_t seed, void * out )
 {
   uint32_t seeds[4];
@@ -298,11 +301,11 @@ void MurmurHash3_x86_128 ( const void * key, const int len,
   MurmurHash3_x86_128_fin (len, h, out);
 }
 
-void MurmurHash3_x86_128_incr ( const void * key, const int len,
+void MurmurHash3_x86_128_incr ( const void * key, const std::size_t len,
                                 uint32_t * seeds, void * out )
 {
   const uint8_t * data = (const uint8_t*)key;
-  const int nblocks = len / 16;
+  const std::size_t nblocks = len / 16;  //PDB: was const int nblocks
 
   uint32_t h1 = seeds[0];
   uint32_t h2 = seeds[1];
@@ -319,7 +322,7 @@ void MurmurHash3_x86_128_incr ( const void * key, const int len,
 
   const uint32_t * blocks = (const uint32_t *)(data + nblocks*16);
 
-  for(int i = -nblocks; i; i++)
+  for(std::size_t i = -nblocks; i; i++)  //PDB: was int i
   {
     uint32_t k1 = getblock(blocks,i*4+0);
     uint32_t k2 = getblock(blocks,i*4+1);
@@ -386,7 +389,7 @@ void MurmurHash3_x86_128_incr ( const void * key, const int len,
 }
 
 //PDB - incremental hashing - finalization
-void MurmurHash3_x86_128_fin ( const int len,
+void MurmurHash3_x86_128_fin ( const std::size_t len,
                                uint32_t * seeds, void * out )
 {
   //----------
@@ -418,11 +421,11 @@ void MurmurHash3_x86_128_fin ( const int len,
 
 //-----------------------------------------------------------------------------
 /** \copydoc MurmurHash3_x86_32() */
-void MurmurHash3_x64_128 ( const void * key, const int len,
+void MurmurHash3_x64_128 ( const void * key, const std::size_t len,
                            const uint32_t seed, void * out )
 {
   const uint8_t * data = (const uint8_t*)key;
-  const int nblocks = len / 16;
+  const std::size_t nblocks = len / 16;  //PDB: was const int nblocks
 
   uint64_t h1 = seed;
   uint64_t h2 = seed;
@@ -435,7 +438,7 @@ void MurmurHash3_x64_128 ( const void * key, const int len,
 
   const uint64_t * blocks = (const uint64_t *)(data);
 
-  for(int i = 0; i < nblocks; i++)
+  for(std::size_t i = 0; i < nblocks; i++)  //PDB: was int i
   {
     uint64_t k1 = getblock(blocks,i*2+0);
     uint64_t k2 = getblock(blocks,i*2+1);
@@ -517,11 +520,11 @@ Murmur3::Murmur3 ()
 }
 
 uint32_t
-Murmur3::GetHash32  (const char * buffer, const size_t size)
+Murmur3::GetHash32  (const char * buffer, const std::size_t size)
 {
   using namespace Murmur3Implementation;
 
-  MurmurHash3_x86_32_incr (buffer, static_cast<int> (size),
+  MurmurHash3_x86_32_incr (buffer, size,
                            m_hash32, (void *)& m_hash32);
   m_size32 += static_cast<uint32_t> (size);
   uint32_t hash;
@@ -531,7 +534,7 @@ Murmur3::GetHash32  (const char * buffer, const size_t size)
 }
 
 uint64_t
-Murmur3::GetHash64  (const char * buffer, const size_t size)
+Murmur3::GetHash64  (const char * buffer, const std::size_t size)
 {
   using namespace Murmur3Implementation;
 

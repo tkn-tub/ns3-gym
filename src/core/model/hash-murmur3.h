@@ -71,7 +71,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 32-bit hash of the buffer
    */
-  uint32_t  GetHash32  (const char * buffer, const size_t size);
+  uint32_t  GetHash32  (const char * buffer, const std::size_t size);
   /**
    * Compute 64-bit hash of a byte buffer.
    *
@@ -86,7 +86,7 @@ public:
    * \param [in] size length of the buffer, in bytes
    * \return 64-bit hash of the buffer
    */
-  uint64_t  GetHash64  (const char * buffer, const size_t size);
+  uint64_t  GetHash64  (const char * buffer, const std::size_t size);
   /**
    * Restore initial state
    */
@@ -109,13 +109,13 @@ private:
    */
   /**@{*/
   uint32_t m_hash32;
-  uint32_t m_size32;
+  std::size_t m_size32;
   /**@}*/
   
   /** murmur3 produces 128-bit hash and state; we use just the first 64-bits. */
   /**@{*/
   uint64_t m_hash64[2];  
-  uint64_t m_size64;
+  std::size_t m_size64;
   /**@}*/
       
 };  // class Murmur3

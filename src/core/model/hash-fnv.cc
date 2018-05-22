@@ -752,7 +752,7 @@ Fnv1a::Fnv1a ()
 }
 
 uint32_t
-Fnv1a::GetHash32  (const char * buffer, const size_t size)
+Fnv1a::GetHash32  (const char * buffer, const std::size_t size)
 {
   m_hash32 =
     Fnv1aImplementation::fnv_32a_buf ((void *)buffer, size, m_hash32);
@@ -760,7 +760,7 @@ Fnv1a::GetHash32  (const char * buffer, const size_t size)
 }
 
 uint64_t
-Fnv1a::GetHash64  (const char * buffer, const size_t size)
+Fnv1a::GetHash64  (const char * buffer, const std::size_t size)
 {
   m_hash64 =
     Fnv1aImplementation::fnv_64a_buf ((void *)buffer, size, m_hash64);

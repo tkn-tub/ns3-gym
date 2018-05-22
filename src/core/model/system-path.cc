@@ -170,7 +170,7 @@ std::string FindSelfDirectory (void)
 #elif defined (__FreeBSD__)
   {
     int     mib[4];
-    size_t  bufSize = 1024;
+    std::size_t  bufSize = 1024;
     char   *buf = (char *) malloc(bufSize);
 
     mib[0] = CTL_KERN;
