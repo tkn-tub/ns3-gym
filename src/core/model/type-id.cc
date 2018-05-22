@@ -448,7 +448,7 @@ IidManager::AllocateUid (std::string name)
   m_namemap.insert (std::make_pair (name, uid));
   m_hashmap.insert (std::make_pair (hash, uid));
   NS_LOG_LOGIC (IIDL << uid);
-  return static_cast<uint16_t> (uid);
+  return uid;
 }
 
 struct IidManager::IidInformation *
