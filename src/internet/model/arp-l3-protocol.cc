@@ -30,7 +30,9 @@
 #include "arp-l3-protocol.h"
 #include "arp-header.h"
 #include "arp-cache.h"
+#include "arp-queue-disc-item.h"
 #include "ipv4-interface.h"
+#include "ns3/traffic-control-layer.h"
 
 namespace ns3 {
 
@@ -71,6 +73,7 @@ ArpL3Protocol::GetTypeId (void)
 }
 
 ArpL3Protocol::ArpL3Protocol ()
+  : m_tc (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -93,6 +96,13 @@ ArpL3Protocol::SetNode (Ptr<Node> node)
 {
   NS_LOG_FUNCTION (this << node);
   m_node = node;
+}
+
+void
+ArpL3Protocol::SetTrafficControl (Ptr<TrafficControlLayer> tc)
+{
+  NS_LOG_FUNCTION (this << tc);
+  m_tc = tc;
 }
 
 /*
@@ -127,6 +137,7 @@ ArpL3Protocol::DoDispose (void)
     }
   m_cacheList.clear ();
   m_node = 0;
+  m_tc = 0;
   Object::DoDispose ();
 }
 
@@ -367,8 +378,8 @@ ArpL3Protocol::SendArpRequest (Ptr<const ArpCache> cache, Ipv4Address to)
                 " || src: " << device->GetAddress () << " / " << source <<
                 " || dst: " << device->GetBroadcast () << " / " << to);
   arp.SetRequest (device->GetAddress (), source, device->GetBroadcast (), to);
-  packet->AddHeader (arp);
-  cache->GetDevice ()->Send (packet, device->GetBroadcast (), PROT_NUMBER);
+  NS_ASSERT (m_tc != 0);
+  m_tc->Send (device, Create<ArpQueueDiscItem> (packet, device->GetBroadcast (), PROT_NUMBER, arp));
 }
 
 void
@@ -382,8 +393,8 @@ ArpL3Protocol::SendArpReply (Ptr<const ArpCache> cache, Ipv4Address myIp, Ipv4Ad
                 " || dst: " << toMac << " / " << toIp);
   arp.SetReply (cache->GetDevice ()->GetAddress (), myIp, toMac, toIp);
   Ptr<Packet> packet = Create<Packet> ();
-  packet->AddHeader (arp);
-  cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
+  NS_ASSERT (m_tc != 0);
+  m_tc->Send (cache->GetDevice (), Create<ArpQueueDiscItem> (packet, toMac, PROT_NUMBER, arp));
 }
 
 } // namespace ns3

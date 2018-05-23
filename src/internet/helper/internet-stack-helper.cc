@@ -351,6 +351,15 @@ InternetStackHelper::Install (Ptr<Node> node) const
       Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
       node->AggregateObject (factory);
     }
+
+  if (m_ipv4Enabled)
+    {
+      Ptr<ArpL3Protocol> arp = node->GetObject<ArpL3Protocol> ();
+      Ptr<TrafficControlLayer> tc = node->GetObject<TrafficControlLayer> ();
+      NS_ASSERT (arp);
+      NS_ASSERT (tc);
+      arp->SetTrafficControl (tc);
+    }
 }
 
 void

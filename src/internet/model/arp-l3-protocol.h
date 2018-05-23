@@ -35,6 +35,7 @@ class NetDevice;
 class Node;
 class Packet;
 class Ipv4Interface;
+class TrafficControlLayer;
 
 /**
  * \ingroup ipv4
@@ -67,6 +68,12 @@ public:
    * \param node the node
    */
   void SetNode (Ptr<Node> node);
+
+  /**
+   * \brief Set the TrafficControlLayer.
+   * \param tc TrafficControlLayer object
+   */
+  void SetTrafficControl (Ptr<TrafficControlLayer> tc);
 
   /**
    * \brief Create an ARP cache for the device/interface
@@ -163,6 +170,7 @@ private:
   Ptr<Node> m_node; //!< node the ARP L3 protocol is associated with
   TracedCallback<Ptr<const Packet> > m_dropTrace; //!< trace for packets dropped by ARP
   Ptr<RandomVariableStream> m_requestJitter; //!< jitter to de-sync ARP requests
+  Ptr<TrafficControlLayer> m_tc; //!< The associated TrafficControlLayer
 
 };
 
