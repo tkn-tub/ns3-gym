@@ -511,7 +511,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBeCWmin (edca->GetMinCw ());
       edcaParameters.SetBeCWmax (edca->GetMaxCw ());
       edcaParameters.SetBeAifsn (edca->GetAifsn ());
-      edcaParameters.SetBeTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+      edcaParameters.SetBeTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_BK)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -519,7 +519,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBkCWmin (edca->GetMinCw ());
       edcaParameters.SetBkCWmax (edca->GetMaxCw ());
       edcaParameters.SetBkAifsn (edca->GetAifsn ());
-      edcaParameters.SetBkTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+      edcaParameters.SetBkTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_VI)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -527,7 +527,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetViCWmin (edca->GetMinCw ());
       edcaParameters.SetViCWmax (edca->GetMaxCw ());
       edcaParameters.SetViAifsn (edca->GetAifsn ());
-      edcaParameters.SetViTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+      edcaParameters.SetViTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_VO)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -535,7 +535,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetVoCWmin (edca->GetMinCw ());
       edcaParameters.SetVoCWmax (edca->GetMaxCw ());
       edcaParameters.SetVoAifsn (edca->GetAifsn ());
-      edcaParameters.SetVoTXOPLimit (txopLimit.GetMicroSeconds () / 32);
+      edcaParameters.SetVoTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edcaParameters.SetQosInfo (0);
     }
@@ -1542,9 +1542,9 @@ ApWifiMac::DoInitialize (void)
     {
       if (m_enableBeaconJitter)
         {
-          int64_t jitter = m_beaconJitter->GetValue (0, GetBeaconInterval ().GetMicroSeconds ());
-          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress () << " at time " << jitter << " microseconds");
-          m_beaconEvent = Simulator::Schedule (MicroSeconds (jitter), &ApWifiMac::SendOneBeacon, this);
+          Time jitter = m_beaconJitter->GetValue (0, 1) * GetBeaconInterval ();
+          NS_LOG_DEBUG ("Scheduling initial beacon for access point " << GetAddress () << " at time " << jitter);
+          m_beaconEvent = Simulator::Schedule (jitter, &ApWifiMac::SendOneBeacon, this);
         }
       else
         {
