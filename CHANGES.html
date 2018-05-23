@@ -59,6 +59,8 @@ us a note on ns-developers mailing list.</p>
   <li> NS_LOG_FUNCTION can now log the contents of vectors </li>
   <li> A new position allocator has been added to the buildings module, allowing
 nodes to be placed outside of buildings defined in the scenario.</li>
+  <li> The Hash() method has been added to the QueueDiscItem class to compute the
+    hash of various fields of the packet header (depending on the packet type).</li>
 </ul>
 <h2>Changes to existing API:</h2>
 <ul>
@@ -72,6 +74,10 @@ nodes to be placed outside of buildings defined in the scenario.</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
+  <li>FqCoDelQueueDisc now computes the hash of the packet's 5-tuple to determine
+    the flow the packet belongs to, unless a packet filter has been configured.
+    The previous behavior is simply obtained by not configuring any packet filter.
+    Consequently, the FqCoDelIpv{4,6}PacketFilter classes have been removed.</li>
 </ul>
 
 <hr>

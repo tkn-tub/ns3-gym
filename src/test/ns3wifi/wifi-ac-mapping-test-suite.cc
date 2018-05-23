@@ -148,11 +148,7 @@ WifiAcMappingTest::DoRun (void)
   TrafficControlHelper tch;
   uint16_t handle = tch.SetRootQueueDisc ("ns3::MqQueueDisc");
   TrafficControlHelper::ClassIdList cls = tch.AddQueueDiscClasses (handle, 4, "ns3::QueueDiscClass");
-  TrafficControlHelper::HandleList hdl = tch.AddChildQueueDiscs (handle, cls, "ns3::FqCoDelQueueDisc");
-  for (auto h : hdl)
-    {
-      tch.AddPacketFilter (h, "ns3::FqCoDelIpv4PacketFilter");
-    }
+  tch.AddChildQueueDiscs (handle, cls, "ns3::FqCoDelQueueDisc");
   tch.Install (apDev);
   tch.Install (staDev);
 

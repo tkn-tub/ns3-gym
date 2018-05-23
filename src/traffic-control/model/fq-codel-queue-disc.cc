@@ -132,6 +132,11 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
                    UintegerValue (64),
                    MakeUintegerAccessor (&FqCoDelQueueDisc::m_dropBatchSize),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Perturbation",
+                   "The salt used as an additional input to the hash function used to classify packets",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&FqCoDelQueueDisc::m_perturbation),
+                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
@@ -166,16 +171,27 @@ FqCoDelQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
 
-  int32_t ret = Classify (item);
+  uint32_t h = 0;
 
-  if (ret == PacketFilter::PF_NO_MATCH)
+  if (GetNPacketFilters () == 0)
     {
-      NS_LOG_ERROR ("No filter has been able to classify this packet, drop it.");
-      DropBeforeEnqueue (item, UNCLASSIFIED_DROP);
-      return false;
+      h = item->Hash (m_perturbation) % m_flows;
     }
+  else
+    {
+      int32_t ret = Classify (item);
 
-  uint32_t h = ret % m_flows;
+      if (ret != PacketFilter::PF_NO_MATCH)
+        {
+          h = ret % m_flows;
+        }
+      else
+        {
+          NS_LOG_ERROR ("No filter has been able to classify this packet, drop it.");
+          DropBeforeEnqueue (item, UNCLASSIFIED_DROP);
+          return false;
+        }
+    }
 
   Ptr<FqCoDelFlow> flow;
   if (m_flowsIndices.find (h) == m_flowsIndices.end ())
@@ -323,12 +339,6 @@ FqCoDelQueueDisc::CheckConfig (void)
   if (GetNQueueDiscClasses () > 0)
     {
       NS_LOG_ERROR ("FqCoDelQueueDisc cannot have classes");
-      return false;
-    }
-
-  if (GetNPacketFilters () == 0)
-    {
-      NS_LOG_ERROR ("FqCoDelQueueDisc needs at least a packet filter");
       return false;
     }
 
