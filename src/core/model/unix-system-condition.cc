@@ -17,8 +17,9 @@
  */
 
 #include <pthread.h>
-#include <cerrno> // for ETIMEDOUT
-#include <sys/time.h>
+#include <cerrno>        // for ETIMEDOUT
+#include <time.h>        // for timespec
+#include <sys/time.h>    // for timeval, gettimeofday
 
 #include "fatal-error.h"
 #include "system-condition.h"
