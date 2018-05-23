@@ -71,7 +71,7 @@ SupportedRates::AddSupportedRate (uint64_t bs)
 }
 
 void
-SupportedRates::SetBasicRate (uint32_t bs)
+SupportedRates::SetBasicRate (uint64_t bs)
 {
   NS_LOG_FUNCTION (this << bs);
   NS_ASSERT_MSG (IsBssMembershipSelectorRate (bs) == false, "Invalid rate");
@@ -94,7 +94,7 @@ SupportedRates::SetBasicRate (uint32_t bs)
 }
 
 void
-SupportedRates::AddBssMembershipSelectorRate (uint32_t bs)
+SupportedRates::AddBssMembershipSelectorRate (uint64_t bs)
 {
   NS_LOG_FUNCTION (this << bs);
   if ((bs != BSS_MEMBERSHIP_SELECTOR_HT_PHY) && (bs != BSS_MEMBERSHIP_SELECTOR_VHT_PHY) && (bs != BSS_MEMBERSHIP_SELECTOR_HE_PHY))
@@ -146,7 +146,7 @@ SupportedRates::IsSupportedRate (uint64_t bs) const
 }
 
 bool
-SupportedRates::IsBssMembershipSelectorRate (uint32_t bs) const
+SupportedRates::IsBssMembershipSelectorRate (uint64_t bs) const
 {
   NS_LOG_FUNCTION (this << bs);
   if ((bs & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY

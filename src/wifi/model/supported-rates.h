@@ -159,14 +159,14 @@ public:
    *
    * \param bs the rate to be set
    */
-  void SetBasicRate (uint32_t bs);
+  void SetBasicRate (uint64_t bs);
   /**
    * Add a special value to the supported rate set, corresponding to
    * a BSS membership selector
    *
    * \param bs the special membership selector value (not a valid rate)
    */
-  void AddBssMembershipSelectorRate (uint32_t bs);
+  void AddBssMembershipSelectorRate (uint64_t bs);
   /**
    * Check if the given rate is supported.  The rate is encoded as it is
    * serialized to the Supported Rates Information Element (i.e. as a
@@ -196,7 +196,7 @@ public:
    *
    * \return true if the rate is a BSS membership selector, false otherwise
    */
-  bool IsBssMembershipSelectorRate (uint32_t bs) const;
+  bool IsBssMembershipSelectorRate (uint64_t bs) const;
   /**
    * Return the number of supported rates.
    *
