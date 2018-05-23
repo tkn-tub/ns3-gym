@@ -65,7 +65,7 @@ SupportedRates::AddSupportedRate (uint64_t bs)
     {
       return;
     }
-  m_rates[m_nRates] = bs / 500000;
+  m_rates[m_nRates] = static_cast<uint8_t> (bs / 500000);
   m_nRates++;
   NS_LOG_DEBUG ("add rate=" << bs << ", n rates=" << +m_nRates);
 }
@@ -75,7 +75,7 @@ SupportedRates::SetBasicRate (uint64_t bs)
 {
   NS_LOG_FUNCTION (this << bs);
   NS_ASSERT_MSG (IsBssMembershipSelectorRate (bs) == false, "Invalid rate");
-  uint8_t rate = bs / 500000;
+  uint8_t rate = static_cast<uint8_t> (bs / 500000);
   for (uint8_t i = 0; i < m_nRates; i++)
     {
       if ((rate | 0x80) == m_rates[i])
@@ -101,7 +101,7 @@ SupportedRates::AddBssMembershipSelectorRate (uint64_t bs)
     {
       NS_ASSERT_MSG (false, "Value " << bs << " not a BSS Membership Selector");
     }
-  uint32_t rate = (bs | 0x80);
+  uint8_t rate = (static_cast<uint8_t> (bs / 500000) | 0x80);
   for (uint8_t i = 0; i < m_nRates; i++)
     {
       if (rate == m_rates[i])
@@ -110,7 +110,7 @@ SupportedRates::AddBssMembershipSelectorRate (uint64_t bs)
         }
     }
   m_rates[m_nRates] = rate;
-  NS_LOG_DEBUG ("add BSS membership selector rate " << bs << " as rate " << m_nRates);
+  NS_LOG_DEBUG ("add BSS membership selector rate " << bs << " as rate " << +rate);
   m_nRates++;
 }
 
@@ -118,7 +118,7 @@ bool
 SupportedRates::IsBasicRate (uint64_t bs) const
 {
   NS_LOG_FUNCTION (this << bs);
-  uint8_t rate = (bs / 500000) | 0x80;
+  uint8_t rate = static_cast<uint8_t> (bs / 500000) | 0x80;
   for (uint8_t i = 0; i < m_nRates; i++)
     {
       if (rate == m_rates[i])
@@ -133,7 +133,7 @@ bool
 SupportedRates::IsSupportedRate (uint64_t bs) const
 {
   NS_LOG_FUNCTION (this << bs);
-  uint8_t rate = bs / 500000;
+  uint8_t rate = static_cast<uint8_t> (bs / 500000);
   for (uint8_t i = 0; i < m_nRates; i++)
     {
       if (rate == m_rates[i]
