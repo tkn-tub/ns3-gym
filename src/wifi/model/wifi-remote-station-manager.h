@@ -1031,7 +1031,7 @@ protected:
    *
    * \return the number of Ness the station has
    */
-  uint32_t GetNess (const WifiRemoteStation *station) const;
+  uint8_t GetNess (const WifiRemoteStation *station) const;
   /**
    * Return the preamble to be used for the transmission.
    *
@@ -1522,14 +1522,14 @@ struct WifiRemoteStationState
   bool m_shortGuardInterval;  //!< Flag if HT/VHT short guard interval is supported by the remote station
   uint16_t m_guardInterval;   //!< HE Guard interval duration (in nanoseconds) supported by the remote station
   uint8_t m_streams;          //!< Number of supported streams by the remote station
-  uint32_t m_ness;            //!< Number of streams in beamforming of the remote station
+  uint8_t m_ness;             //!< Number of streams in beamforming of the remote station
   bool m_stbc;                //!< Flag if STBC is supported by the remote station
   bool m_ldpc;                //!< Flag if LDPC is supported by the remote station
   bool m_aggregation;         //!< Flag if MPDU aggregation is used by the remote station
   bool m_greenfield;          //!< Flag if greenfield is supported by the remote station
   bool m_shortPreamble;       //!< Flag if short PLCP preamble is supported by the remote station
   bool m_shortSlotTime;       //!< Flag if short ERP slot time is supported by the remote station
-  bool m_qosSupported;         //!< Flag if HT is supported by the station
+  bool m_qosSupported;        //!< Flag if HT is supported by the station
   bool m_htSupported;         //!< Flag if HT is supported by the station
   bool m_vhtSupported;        //!< Flag if VHT is supported by the station
   bool m_heSupported;         //!< Flag if HE is supported by the station

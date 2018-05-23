@@ -2089,7 +2089,7 @@ WifiRemoteStationManager::GetNumberOfSupportedStreams (const WifiRemoteStation *
   return station->m_state->m_streams;
 }
 
-uint32_t
+uint8_t
 WifiRemoteStationManager::GetNess (const WifiRemoteStation *station) const
 {
   return station->m_state->m_ness;
