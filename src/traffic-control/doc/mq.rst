@@ -46,11 +46,7 @@ discs:
   TrafficControlHelper tch;
   uint16_t handle = tch.SetRootQueueDisc ("ns3::MqQueueDisc");
   TrafficControlHelper::ClassIdList cls = tch.AddQueueDiscClasses (handle, numTxQueues, "ns3::QueueDiscClass");
-  TrafficControlHelper::HandleList hdl = tch.AddChildQueueDiscs (handle, cls, "ns3::FqCoDelQueueDisc");
-  for (auto h : hdl)
-    {
-      tch.AddPacketFilter (h, "ns3::FqCoDelIpv4PacketFilter");
-    }
+  tch.AddChildQueueDiscs (handle, cls, "ns3::FqCoDelQueueDisc");
   QueueDiscContainer qdiscs = tch.Install (devices);
 
 Note that the child queue discs attached to the classes do not necessarily have to be of the same type.

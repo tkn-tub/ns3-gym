@@ -170,11 +170,9 @@ int main (int argc, char *argv[])
     }
   else if (queueDiscType.compare ("FqCoDel") == 0)
     {
-      uint32_t handle = tchBottleneck.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
+      tchBottleneck.SetRootQueueDisc ("ns3::FqCoDelQueueDisc");
       Config::SetDefault ("ns3::FqCoDelQueueDisc::MaxSize",
                           QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, queueDiscSize)));
-      tchBottleneck.AddPacketFilter (handle, "ns3::FqCoDelIpv4PacketFilter");
-      tchBottleneck.AddPacketFilter (handle, "ns3::FqCoDelIpv6PacketFilter");
     }
   else if (queueDiscType.compare ("PIE") == 0)
     {
