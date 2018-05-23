@@ -60,14 +60,14 @@ MinstrelWifiManager::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("LookAroundRate",
                    "the percentage to try other rates",
-                   DoubleValue (10),
-                   MakeDoubleAccessor (&MinstrelWifiManager::m_lookAroundRate),
-                   MakeDoubleChecker<double> ())
+                   UintegerValue (10),
+                   MakeUintegerAccessor (&MinstrelWifiManager::m_lookAroundRate),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("EWMA",
                    "EWMA level",
-                   DoubleValue (75),
-                   MakeDoubleAccessor (&MinstrelWifiManager::m_ewmaLevel),
-                   MakeDoubleChecker<double> ())
+                   UintegerValue (75),
+                   MakeUintegerAccessor (&MinstrelWifiManager::m_ewmaLevel),
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("SampleColumn",
                    "The number of columns used for sampling",
                    UintegerValue (10),

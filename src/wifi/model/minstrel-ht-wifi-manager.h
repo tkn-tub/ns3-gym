@@ -582,8 +582,8 @@ private:
   WifiModeList GetHtDeviceMcsList (void) const;
 
   Time m_updateStats;         //!< How frequent do we calculate the stats (1/10 seconds).
-  double m_lookAroundRate;    //!< The % to try other rates than our current rate.
-  double m_ewmaLevel;         //!< Exponential weighted moving average level (or coefficient).
+  uint8_t m_lookAroundRate;    //!< The % to try other rates than our current rate.
+  uint8_t m_ewmaLevel;        //!< Exponential weighted moving average level (or coefficient).
 
   uint8_t m_nSampleCol;       //!< Number of sample columns.
   uint32_t m_frameLength;     //!< Frame length used for calculate modes TxTime.

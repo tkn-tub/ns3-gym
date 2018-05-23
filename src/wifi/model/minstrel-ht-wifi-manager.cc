@@ -60,8 +60,8 @@ struct MinstrelHtWifiRemoteStation : MinstrelWifiRemoteStation
   uint32_t m_sampleCount;     //!< Max number of samples per update interval.
   uint32_t m_numSamplesSlow;  //!< Number of times a slow rate was sampled.
 
-  uint32_t m_avgAmpduLen;     //!< Average number of MPDUs in an A-MPDU.
-  double m_ampduLen;          //!< Number of MPDUs in an A-MPDU.
+  uint32_t m_avgAmpduLen;      //!< Average number of MPDUs in an A-MPDU.
+  uint32_t m_ampduLen;         //!< Number of MPDUs in an A-MPDU.
   uint32_t m_ampduPacketCount; //!< Number of A-MPDUs transmitted.
 
   McsGroupData m_groupsTable;  //!< Table of groups with stats.
@@ -86,14 +86,14 @@ MinstrelHtWifiManager::GetTypeId (void)
                    MakeTimeChecker ())
     .AddAttribute ("LookAroundRate",
                    "The percentage to try other rates (for legacy Minstrel)",
-                   DoubleValue (10),
-                   MakeDoubleAccessor (&MinstrelHtWifiManager::m_lookAroundRate),
-                   MakeDoubleChecker<double> (0, 100))
+                   UintegerValue (10),
+                   MakeUintegerAccessor (&MinstrelHtWifiManager::m_lookAroundRate),
+                   MakeUintegerChecker<uint8_t>(0, 100))
     .AddAttribute ("EWMA",
                    "EWMA level",
-                   DoubleValue (75),
-                   MakeDoubleAccessor (&MinstrelHtWifiManager::m_ewmaLevel),
-                   MakeDoubleChecker<double> (0, 100))
+                   UintegerValue (75),
+                   MakeUintegerAccessor (&MinstrelHtWifiManager::m_ewmaLevel),
+                   MakeUintegerChecker<uint8_t>(0, 100))
     .AddAttribute ("SampleColumn",
                    "The number of columns used for sampling",
                    UintegerValue (10),
@@ -441,8 +441,8 @@ MinstrelHtWifiManager::CheckInit (MinstrelHtWifiRemoteStation *station)
           station->m_isHt = false;
           // We will use non-HT minstrel for this station. Initialize the manager.
           m_legacyManager->SetAttribute ("UpdateStatistics", TimeValue (m_updateStats));
-          m_legacyManager->SetAttribute ("LookAroundRate", DoubleValue (m_lookAroundRate));
-          m_legacyManager->SetAttribute ("EWMA", DoubleValue (m_ewmaLevel));
+          m_legacyManager->SetAttribute ("LookAroundRate", UintegerValue (m_lookAroundRate));
+          m_legacyManager->SetAttribute ("EWMA", UintegerValue (m_ewmaLevel));
           m_legacyManager->SetAttribute ("SampleColumn", UintegerValue (m_nSampleCol));
           m_legacyManager->SetAttribute ("PacketLength", UintegerValue (m_frameLength));
           m_legacyManager->SetAttribute ("PrintStats", BooleanValue (m_printStats));
@@ -1186,7 +1186,7 @@ MinstrelHtWifiManager::UpdateStats (MinstrelHtWifiRemoteStation *station)
 
   if (station->m_ampduPacketCount > 0)
     {
-      double newLen = station->m_ampduLen / station->m_ampduPacketCount;
+      uint32_t newLen = station->m_ampduLen / station->m_ampduPacketCount;
       station->m_avgAmpduLen = ( newLen * (100 - m_ewmaLevel) + (station->m_avgAmpduLen * m_ewmaLevel) ) / 100;
       station->m_ampduLen = 0;
       station->m_ampduPacketCount = 0;
