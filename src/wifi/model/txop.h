@@ -173,7 +173,7 @@ public:
    *
    * \param aifsn the number of slots that make up an AIFS.
    */
-  void SetAifsn (uint32_t aifsn);
+  void SetAifsn (uint8_t aifsn);
   /**
    * Set the TXOP limit.
    *
@@ -198,7 +198,7 @@ public:
    *
    * \return the number of slots that make up an AIFS.
    */
-  uint32_t GetAifsn (void) const;
+  uint8_t GetAifsn (void) const;
   /**
    * Return the TXOP limit.
    *
@@ -515,7 +515,7 @@ protected:
    */
   Time m_backoffStart;
 
-  uint32_t m_aifsn;        //!< the AIFSN
+  uint8_t m_aifsn;        //!< the AIFSN
   Time m_txopLimit;       //!< the txop limit time
 
   Ptr<const Packet> m_currentPacket; //!< the current packet

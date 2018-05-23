@@ -59,7 +59,7 @@ Txop::GetTypeId (void)
                    UintegerValue (2),
                    MakeUintegerAccessor (&Txop::SetAifsn,
                                          &Txop::GetAifsn),
-                   MakeUintegerChecker<uint32_t> ())
+                   MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("TxopLimit", "The TXOP limit: the default value conforms to non-QoS.",
                    TimeValue (MilliSeconds (0)),
                    MakeTimeAccessor (&Txop::SetTxopLimit,
@@ -253,9 +253,9 @@ Txop::StartBackoffNow (uint32_t nSlots)
 }
 
 void
-Txop::SetAifsn (uint32_t aifsn)
+Txop::SetAifsn (uint8_t aifsn)
 {
-  NS_LOG_FUNCTION (this << aifsn);
+  NS_LOG_FUNCTION (this << +aifsn);
   m_aifsn = aifsn;
 }
 
@@ -279,7 +279,7 @@ Txop::GetMaxCw (void) const
   return m_cwMax;
 }
 
-uint32_t
+uint8_t
 Txop::GetAifsn (void) const
 {
   return m_aifsn;
