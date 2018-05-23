@@ -30,6 +30,8 @@
 
 namespace ns3 {
 
+NS_LOG_COMPONENT_DEFINE ("SystemWallClockMs");
+
 /**
  * \ingroup system
  * \brief System-dependent implementation for SystemWallClockMs
