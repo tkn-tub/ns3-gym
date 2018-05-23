@@ -139,4 +139,11 @@ QueueDiscItem::Print (std::ostream& os) const
   ;
 }
 
+uint32_t
+QueueDiscItem::Hash (uint32_t perturbation) const
+{
+  NS_LOG_WARN ("The Hash method should be redefined by subclasses");
+  return 0;
+}
+
 } // namespace ns3

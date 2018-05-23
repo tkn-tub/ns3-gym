@@ -215,6 +215,17 @@ public:
    */
   virtual bool Mark (void) = 0;
 
+  /**
+   * \brief Computes the hash of various fields of the packet header
+   *
+   * This method just returns 0. Subclasses should implement a reasonable hash
+   * for their protocol type, such as hashing on the TCP/IP 5-tuple.
+   *
+   * \param perturbation hash perturbation value
+   * \return the hash of various fields of the packet header
+   */
+  virtual uint32_t Hash (uint32_t perturbation = 0) const;
+
 private:
   /**
    * \brief Default constructor

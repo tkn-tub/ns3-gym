@@ -82,6 +82,18 @@ public:
    */
   virtual bool Mark (void);
 
+  /**
+   * \brief Computes the hash of the packet's 5-tuple
+   *
+   * Computes the hash of the source and destination IP addresses, protocol
+   * number and, if the transport protocol is either UDP or TCP, the source
+   * and destination port
+   *
+   * \param perturbation hash perturbation value
+   * \return the hash of the packet's 5-tuple
+   */
+  virtual uint32_t Hash (uint32_t perturbation) const;
+
 private:
   /**
    * \brief Default constructor

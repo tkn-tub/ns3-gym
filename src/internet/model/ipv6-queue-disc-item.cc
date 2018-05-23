@@ -18,6 +18,8 @@
 
 #include "ns3/log.h"
 #include "ipv6-queue-disc-item.h"
+#include "ns3/tcp-header.h"
+#include "ns3/udp-header.h"
 
 namespace ns3 {
 
@@ -106,6 +108,60 @@ Ipv6QueueDiscItem::GetUint8Value (QueueItem::Uint8Values field, uint8_t& value) 
     }
 
   return ret;
+}
+
+uint32_t
+Ipv6QueueDiscItem::Hash (uint32_t perturbation) const
+{
+  NS_LOG_FUNCTION (this << perturbation);
+
+  Ipv6Address src = m_header.GetSourceAddress ();
+  Ipv6Address dest = m_header.GetDestinationAddress ();
+  uint8_t prot = m_header.GetNextHeader ();
+
+  TcpHeader tcpHdr;
+  UdpHeader udpHdr;
+  uint16_t srcPort = 0;
+  uint16_t destPort = 0;
+
+  if (prot == 6) // TCP
+    {
+      GetPacket ()->PeekHeader (tcpHdr);
+      srcPort = tcpHdr.GetSourcePort ();
+      destPort = tcpHdr.GetDestinationPort ();
+    }
+  else if (prot == 17) // UDP
+    {
+      GetPacket ()->PeekHeader (udpHdr);
+      srcPort = udpHdr.GetSourcePort ();
+      destPort = udpHdr.GetDestinationPort ();
+    }
+  if (prot != 6 && prot != 17)
+    {
+      NS_LOG_WARN ("Unknown transport protocol, no port number included in hash computation");
+    }
+
+  /* serialize the 5-tuple and the perturbation in buf */
+  uint8_t buf[41];
+  src.Serialize (buf);
+  dest.Serialize (buf + 16);
+  buf[32] = prot;
+  buf[33] = (srcPort >> 8) & 0xff;
+  buf[34] = srcPort & 0xff;
+  buf[35] = (destPort >> 8) & 0xff;
+  buf[36] = destPort & 0xff;
+  buf[37] = (perturbation >> 24) & 0xff;
+  buf[38] = (perturbation >> 16) & 0xff;
+  buf[39] = (perturbation >> 8) & 0xff;
+  buf[40] = perturbation & 0xff;
+
+  // Linux calculates jhash2 (jenkins hash), we calculate murmur3 because it is
+  // already available in ns-3
+  uint32_t hash = Hash32 ((char*) buf, 41);
+
+  NS_LOG_DEBUG ("Found Ipv6 packet; hash of the five tuple " << hash);
+
+  return hash;
 }
 
 } // namespace ns3
