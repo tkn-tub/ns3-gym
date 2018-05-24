@@ -131,7 +131,7 @@ YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<Packet> packet, double rxPow
 uint32_t
 YansWifiChannel::GetNDevices (void) const
 {
-  return m_phyList.size ();
+  return static_cast<uint32_t> (m_phyList.size ());
 }
 
 Ptr<NetDevice>
