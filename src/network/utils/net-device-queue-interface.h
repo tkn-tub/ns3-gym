@@ -365,15 +365,12 @@ NetDeviceQueue::PacketEnqueued (Ptr<Queue<Item> > queue,
   // Inform BQL
   ndqi->GetTxQueue (txq)->NotifyQueuedBytes (item->GetSize ());
 
-  uint16_t mtu = ndqi->GetObject<NetDevice> ()->GetMtu ();
+  Ptr<Packet> p = Create<Packet> (ndqi->GetObject<NetDevice> ()->GetMtu ());
 
   // After enqueuing a packet, we need to check whether the queue is able to
   // store another packet. If not, we stop the queue
 
-  if ((queue->GetMode () == QueueBase::QUEUE_MODE_PACKETS &&
-       queue->GetNPackets () >= queue->GetMaxPackets ()) ||
-      (queue->GetMode () == QueueBase::QUEUE_MODE_BYTES &&
-       queue->GetNBytes () + mtu > queue->GetMaxBytes ()))
+  if (queue->GetCurrentSize () + p > queue->GetMaxSize ())
     {
       NS_LOG_DEBUG ("The device queue is being stopped (" << queue->GetNPackets ()
                     << " packets and " << queue->GetNBytes () << " bytes inside)");
@@ -394,16 +391,13 @@ NetDeviceQueue::PacketDequeued (Ptr<Queue<Item> > queue,
   // Inform BQL
   ndqi->GetTxQueue (txq)->NotifyTransmittedBytes (item->GetSize ());
 
-  uint16_t mtu = ndqi->GetObject<NetDevice> ()->GetMtu ();
+  Ptr<Packet> p = Create<Packet> (ndqi->GetObject<NetDevice> ()->GetMtu ());
 
   // After dequeuing a packet, if there is room for another packet we
   // call Wake () that ensures that the queue is not stopped and restarts
   // the queue disc if the queue was stopped
 
-  if ((queue->GetMode () == QueueBase::QUEUE_MODE_PACKETS &&
-       queue->GetNPackets () < queue->GetMaxPackets ()) ||
-      (queue->GetMode () == QueueBase::QUEUE_MODE_BYTES &&
-       queue->GetNBytes () + mtu <= queue->GetMaxBytes ()))
+  if (queue->GetCurrentSize () + p <= queue->GetMaxSize ())
     {
       ndqi->GetTxQueue (txq)->Wake ();
     }

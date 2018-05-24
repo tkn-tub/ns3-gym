@@ -35,34 +35,9 @@ QueueBase::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::QueueBase")
     .SetParent<Object> ()
     .SetGroupName ("Network")
-    .AddAttribute ("Mode",
-                   "Whether to use bytes (see MaxBytes) or packets (see MaxPackets) as the maximum queue size metric.",
-                   EnumValue (QUEUE_MODE_PACKETS),
-                   MakeEnumAccessor (&QueueBase::SetMode,
-                                     &QueueBase::GetMode),
-                   MakeEnumChecker (QUEUE_MODE_BYTES, "QUEUE_MODE_BYTES",
-                                    QUEUE_MODE_PACKETS, "QUEUE_MODE_PACKETS"),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
-    .AddAttribute ("MaxPackets",
-                   "The maximum number of packets accepted by this queue.",
-                   UintegerValue (100),
-                   MakeUintegerAccessor (&QueueBase::SetMaxPackets,
-                                         &QueueBase::GetMaxPackets),
-                   MakeUintegerChecker<uint32_t> (),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
-    .AddAttribute ("MaxBytes",
-                   "The maximum number of bytes accepted by this queue.",
-                   UintegerValue (100 * 65535),
-                   MakeUintegerAccessor (&QueueBase::SetMaxBytes,
-                                         &QueueBase::GetMaxBytes),
-                   MakeUintegerChecker<uint32_t> (),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxSize",
                    "The max queue size",
-                   QueueSizeValue (QueueSize ("0p")),
+                   QueueSizeValue (QueueSize ("100p")),
                    MakeQueueSizeAccessor (&QueueBase::SetMaxSize,
                                           &QueueBase::GetMaxSize),
                    MakeQueueSizeChecker ())
@@ -88,9 +63,7 @@ QueueBase::QueueBase () :
   m_nTotalDroppedBytesAfterDequeue (0),
   m_nTotalDroppedPackets (0),
   m_nTotalDroppedPacketsBeforeEnqueue (0),
-  m_nTotalDroppedPacketsAfterDequeue (0),
-  m_maxPackets (1),         // to avoid that setting the mode at construction time is ignored
-  m_maxBytes (1)            // to avoid that setting the mode at construction time is ignored
+  m_nTotalDroppedPacketsAfterDequeue (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -228,72 +201,6 @@ QueueBase::ResetStatistics (void)
 }
 
 void
-QueueBase::SetMode (QueueBase::QueueMode mode)
-{
-  NS_LOG_FUNCTION (this << mode);
-
-  if (mode == QUEUE_MODE_BYTES)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, m_maxBytes));
-    }
-  else if (mode == QUEUE_MODE_PACKETS)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, m_maxPackets));
-    }
-  else
-    {
-      NS_ABORT_MSG ("Unknown queue size unit");
-    }
-}
-
-QueueBase::QueueMode
-QueueBase::GetMode (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return (m_maxSize.GetUnit () == QueueSizeUnit::PACKETS ? QUEUE_MODE_PACKETS : QUEUE_MODE_BYTES);
-}
-
-void
-QueueBase::SetMaxPackets (uint32_t maxPackets)
-{
-  NS_LOG_FUNCTION (this << maxPackets);
-
-  m_maxPackets = maxPackets;
-
-  if (m_maxSize.GetUnit () == QueueSizeUnit::PACKETS)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, m_maxPackets));
-    }
-}
-
-uint32_t
-QueueBase::GetMaxPackets (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_maxPackets;
-}
-
-void
-QueueBase::SetMaxBytes (uint32_t maxBytes)
-{
-  NS_LOG_FUNCTION (this << maxBytes);
-
-  m_maxBytes = maxBytes;
-
-  if (m_maxSize.GetUnit () == QueueSizeUnit::BYTES)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, m_maxBytes));
-    }
-}
-
-uint32_t
-QueueBase::GetMaxBytes (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return m_maxBytes;
-}
-
-void
 QueueBase::SetMaxSize (QueueSize size)
 {
   NS_LOG_FUNCTION (this << size);
@@ -308,15 +215,6 @@ QueueBase::SetMaxSize (QueueSize size)
 
   NS_ABORT_MSG_IF (size < GetCurrentSize (),
                    "The new maximum queue size cannot be less than the current size");
-
-  if (size.GetUnit () == QueueSizeUnit::PACKETS)
-    {
-      m_maxPackets = size.GetValue ();
-    }
-  else if (size.GetUnit () == QueueSizeUnit::BYTES)
-    {
-      m_maxBytes = size.GetValue ();
-    }
 }
 
 QueueSize

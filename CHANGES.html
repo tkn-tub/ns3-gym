@@ -79,6 +79,7 @@ nodes to be placed outside of buildings defined in the scenario.</li>
     The previous behavior is simply obtained by not configuring any packet filter.
     Consequently, the FqCoDelIpv{4,6}PacketFilter classes have been removed.</li>
   <li> ARP packets now pass through the traffic control layer, as in Linux. </li>
+  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, have now been removed and cannot be used anymore. Likewise, the methods to get/set the old attributes have been removed as well.</li>
 </ul>
 
 <hr>

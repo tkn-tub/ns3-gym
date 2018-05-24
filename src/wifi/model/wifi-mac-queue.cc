@@ -94,11 +94,12 @@ bool
 WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
 {
   NS_LOG_FUNCTION (this << item);
-  NS_ASSERT_MSG (GetMode () == QueueBase::QUEUE_MODE_PACKETS, "WifiMacQueues must be in packet mode");
+  NS_ASSERT_MSG (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS,
+                 "WifiMacQueues must be in packet mode");
 
   // if the queue is full, remove the first stale packet (if any) encountered
   // starting from the head of the queue, in order to make room for the new packet.
-  if (QueueBase::GetNPackets () == GetMaxPackets ())
+  if (QueueBase::GetNPackets () == GetMaxSize ().GetValue ())
     {
       auto it = Head ();
       while (it != Tail () && !TtlExceeded (it))
@@ -107,7 +108,7 @@ WifiMacQueue::Enqueue (Ptr<WifiMacQueueItem> item)
         }
     }
 
-  if (QueueBase::GetNPackets () == GetMaxPackets () && m_dropPolicy == DROP_OLDEST)
+  if (QueueBase::GetNPackets () == GetMaxSize ().GetValue () && m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
       DoRemove (Head ());
@@ -120,11 +121,12 @@ bool
 WifiMacQueue::PushFront (Ptr<WifiMacQueueItem> item)
 {
   NS_LOG_FUNCTION (this << item);
-  NS_ASSERT_MSG (GetMode () == QueueBase::QUEUE_MODE_PACKETS, "WifiMacQueues must be in packet mode");
+  NS_ASSERT_MSG (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS,
+                 "WifiMacQueues must be in packet mode");
 
   // if the queue is full, remove the first stale packet (if any) encountered
   // starting from the head of the queue, in order to make room for the new packet.
-  if (QueueBase::GetNPackets () == GetMaxPackets ())
+  if (QueueBase::GetNPackets () == GetMaxSize ().GetValue ())
     {
       auto it = Head ();
       while (it != Tail () && !TtlExceeded (it))
@@ -133,7 +135,7 @@ WifiMacQueue::PushFront (Ptr<WifiMacQueueItem> item)
         }
     }
 
-  if (QueueBase::GetNPackets () == GetMaxPackets () && m_dropPolicy == DROP_OLDEST)
+  if (QueueBase::GetNPackets () == GetMaxSize ().GetValue () && m_dropPolicy == DROP_OLDEST)
     {
       NS_LOG_DEBUG ("Remove the oldest item in the queue");
       DoRemove (Head ());

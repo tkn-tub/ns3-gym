@@ -18,7 +18,7 @@
 
 #include "ns3/test.h"
 #include "ns3/drop-tail-queue.h"
-#include "ns3/uinteger.h"
+#include "ns3/string.h"
 
 using namespace ns3;
 
@@ -43,7 +43,7 @@ void
 DropTailQueueTestCase::DoRun (void)
 {
   Ptr<DropTailQueue<Packet> > queue = CreateObject<DropTailQueue<Packet> > ();
-  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxPackets", UintegerValue (3)), true,
+  NS_TEST_EXPECT_MSG_EQ (queue->SetAttributeFailSafe ("MaxSize", StringValue ("3p")), true,
                          "Verify that we can actually set the attribute");
 
   Ptr<Packet> p1, p2, p3, p4;
