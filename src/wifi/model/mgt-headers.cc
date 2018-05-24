@@ -1171,27 +1171,27 @@ void
 WifiActionHeader::SetAction (WifiActionHeader::CategoryValue type,
                              WifiActionHeader::ActionValue action)
 {
-  m_category = type;
+  m_category = static_cast<uint8_t> (type);
   switch (type)
     {
     case BLOCK_ACK:
       {
-        m_actionValue = action.blockAck;
+        m_actionValue = static_cast<uint8_t> (action.blockAck);
         break;
       }
     case MESH:
       {
-        m_actionValue = action.meshAction;
+        m_actionValue = static_cast<uint8_t> (action.meshAction);
         break;
       }
     case MULTIHOP:
       {
-        m_actionValue = action.multihopAction;
+        m_actionValue = static_cast<uint8_t> (action.multihopAction);
         break;
       }
     case SELF_PROTECTED:
       {
-        m_actionValue = action.selfProtectedAction;
+        m_actionValue = static_cast<uint8_t> (action.selfProtectedAction);
         break;
       }
     case VENDOR_SPECIFIC_ACTION:
