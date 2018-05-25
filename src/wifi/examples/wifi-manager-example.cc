@@ -419,12 +419,14 @@ int main (int argc, char *argv[])
   Ptr<WifiNetDevice> wndServer = ndServer->GetObject<WifiNetDevice> ();
   Ptr<WifiPhy> wifiPhyPtrClient = wndClient->GetPhy ();
   Ptr<WifiPhy> wifiPhyPtrServer = wndServer->GetPhy ();
-  wifiPhyPtrClient->SetNumberOfAntennas (clientNss);
-  wifiPhyPtrClient->SetMaxSupportedTxSpatialStreams (clientNss);
-  wifiPhyPtrClient->SetMaxSupportedRxSpatialStreams (clientNss);
-  wifiPhyPtrServer->SetNumberOfAntennas (serverNss);
-  wifiPhyPtrServer->SetMaxSupportedTxSpatialStreams (serverNss);
-  wifiPhyPtrServer->SetMaxSupportedRxSpatialStreams (serverNss);
+  uint8_t t_clientNss = static_cast<uint8_t> (clientNss);
+  uint8_t t_serverNss = static_cast<uint8_t> (serverNss);
+  wifiPhyPtrClient->SetNumberOfAntennas (t_clientNss);
+  wifiPhyPtrClient->SetMaxSupportedTxSpatialStreams (t_clientNss);
+  wifiPhyPtrClient->SetMaxSupportedRxSpatialStreams (t_clientNss);
+  wifiPhyPtrServer->SetNumberOfAntennas (t_serverNss);
+  wifiPhyPtrServer->SetMaxSupportedTxSpatialStreams (t_serverNss);
+  wifiPhyPtrServer->SetMaxSupportedRxSpatialStreams (t_serverNss);
   // Only set the channel width and guard interval for HT and VHT modes
   if (serverSelectedStandard.m_name == "802.11n-5GHz"
       || serverSelectedStandard.m_name == "802.11n-2.4GHz"
