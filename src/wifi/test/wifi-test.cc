@@ -1216,7 +1216,7 @@ Bug2483TestCase::StoreDistinctTuple (std::string context,  Ptr<SpectrumSignalPar
 {
   // Extract starting frequency and number of subbands
   Ptr<const SpectrumModel> c = txParams->psd->GetSpectrumModel ();
-  uint32_t numBands = c->GetNumBands ();
+  std::size_t numBands = c->GetNumBands ();
   double startingFreq = c->Begin ()->fl;
 
   // Get channel bandwidth and modulation class
@@ -1328,7 +1328,7 @@ Bug2483TestCase::DoRun (void)
   Simulator::Destroy ();
 
   // {starting frequency, channelWidth, Number of subbands in SpectrumModel, modulation type} tuples
-  uint8_t numberTuples = m_distinctTuples.size ();
+  std::size_t numberTuples = m_distinctTuples.size ();
   NS_TEST_ASSERT_MSG_EQ (numberTuples, 2, "Only two distinct tuples expected");
   NS_TEST_ASSERT_MSG_EQ (std::get<0> (m_distinctTuples[0]) - 20e6, std::get<0> (m_distinctTuples[1]), "The starting frequency of the first tuple should be shifted 20 MHz to the right wrt second tuple");
   // Note that the first tuple should the one initiated by the beacon, i.e. legacy OFDM (20 MHz)
