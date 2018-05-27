@@ -592,7 +592,7 @@ ConstantSpeedPropagationDelayModel
 ==================================
 
 In this model, the signal travels with constant speed.
-The delay is calculated according with the trasmitter and receiver positions.
+The delay is calculated according with the transmitter and receiver positions.
 The Euclidean distance between the Tx and Rx antennas is used.
 Beware that, according to this model, the Earth is flat.
 
