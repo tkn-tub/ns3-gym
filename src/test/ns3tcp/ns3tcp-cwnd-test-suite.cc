@@ -444,7 +444,7 @@ Ns3TcpCwndTestCase2::DoRun (void)
 { 
   NS_LOG_DEBUG ("Starting test case 2");
   // Set up some default values for the simulation.
-  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (4));
+  Config::SetDefault ("ns3::QueueBase::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 4)));
   Packet::EnablePrinting ();
 
   NodeContainer n0n1;
