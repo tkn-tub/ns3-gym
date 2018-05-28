@@ -68,6 +68,19 @@ nodes to be placed outside of buildings defined in the scenario.</li>
     QueueDiscContainer.</li>
   <li>Recovery algorithms are now in a different class, instead of being tied to TcpSocketBase.
     Take a look to TcpRecoveryOps for more information.</li>
+  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, have now been removed and cannot be used anymore. Likewise, the methods to get/set the old attributes have been removed as well.  Commands such as:
+<pre>
+  Config::SetDefault ("ns3::QueueBase::MaxPackets", UintegerValue (4));
+</pre>
+should now be written as:
+<pre>
+  Config::SetDefault ("ns3::QueueBase::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 4)));
+</pre>
+or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
+<pre>
+  Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue ("4p"));
+</pre>
+  </li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -79,7 +92,6 @@ nodes to be placed outside of buildings defined in the scenario.</li>
     The previous behavior is simply obtained by not configuring any packet filter.
     Consequently, the FqCoDelIpv{4,6}PacketFilter classes have been removed.</li>
   <li> ARP packets now pass through the traffic control layer, as in Linux. </li>
-  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, have now been removed and cannot be used anymore. Likewise, the methods to get/set the old attributes have been removed as well.</li>
 </ul>
 
 <hr>
@@ -98,6 +110,9 @@ nodes to be placed outside of buildings defined in the scenario.</li>
   <li> Class <b>LrWpanMac</b> now supports extended addressing mode. Both <b>McpsDataRequest</b> and <b>PdDataIndication</b> methods will now use extended addressing if <b>McpsDataRequestParams::m_srcAddrMode</b> or <b>McpsDataRequestParams::m_dstAddrMode</b> are set to <b>EXT_ADDR</b>.</li>
   <li> Class <b>LteUeNetDevice</b> MAC address is now a 64-bit address and can be set during construction.</li>
   <li> Class <b>TcpSocketBase</b> trace source <i>CongestionWindow</i> shows the values without the in-recovery inflation and the post-recovery deflation; the old behavior has been moved to the new trace source <i>CongestionWindowInflated</i>.
+  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class have been deprecated in favor of the MaxSize attribute. Old attributes can still be used, but using them will be no longer possible in one of the next releases. The methods to get/set the old attributes will be removed as well.</li>
+  <li>The attributes of the QueueDisc subclasses that separately determine the mode and the limit of the QueueDisc have been deprecated in favor of the single MaxSize attribute.</li>
+  <li>The GetQueueSize method of some QueueDisc subclasses (e.g., RED) has been removed and replaced by the GetCurrentSize method of the QueueDisc base class.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -105,9 +120,6 @@ nodes to be placed outside of buildings defined in the scenario.</li>
 </ul>
 <h2>Changed behavior:</h2>
 <ul>
-  <li>The Mode, MaxPackets and MaxBytes attributes of the Queue class have been deprecated in favor of the MaxSize attribute. Old attributes can still be used, but using them will be no longer possible in one of the next releases. The methods to get/set the old attributes will be removed as well.</li>
-  <li>The attributes of the QueueDisc subclasses that separately determine the mode and the limit of the QueueDisc have been deprecated in favor of the single MaxSize attribute.</li>
-  <li>The GetQueueSize method of some QueueDisc subclasses (e.g., RED) has been removed and replaced by the GetCurrentSize method of the QueueDisc base class.</li>
   <li>All Wi-Fi management frames are now transmitted using the lowest basic rate.</li>
   <li>The Wi-Fi spectrum model now takes into account adjacent channels through OFDM transmit spectrum masks.</li>
   <li> The CsmaNetDevice::PhyTxBeginTrace will trace all attempts to transmit, even those that result in drops. Previously, eventual channel drops were excluded from this trace.</l>
