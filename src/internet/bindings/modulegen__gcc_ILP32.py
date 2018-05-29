@@ -36,6 +36,9 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -150,6 +153,9 @@ def register_types(module):
     module.add_enum('InterfaceAddressScope_e', ['HOST', 'LINK', 'GLOBAL'], outer_class=root_module['ns3::Ipv4InterfaceAddress'])
     ## ipv4-interface-container.h (module 'internet'): ns3::Ipv4InterfaceContainer [class]
     module.add_class('Ipv4InterfaceContainer')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > const_iterator', u'ns3::Ipv4InterfaceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > const_iterator*', u'ns3::Ipv4InterfaceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > const_iterator&', u'ns3::Ipv4InterfaceContainer::Iterator&')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Mask [class]
     module.add_class('Ipv4Mask', import_from_module='ns.network')
     ## ipv4-routing-table-entry.h (module 'internet'): ns3::Ipv4MulticastRoutingTableEntry [class]
@@ -176,6 +182,9 @@ def register_types(module):
     module.add_enum('Scope_e', ['HOST', 'LINKLOCAL', 'GLOBAL'], outer_class=root_module['ns3::Ipv6InterfaceAddress'])
     ## ipv6-interface-container.h (module 'internet'): ns3::Ipv6InterfaceContainer [class]
     module.add_class('Ipv6InterfaceContainer')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv6 >, unsigned int > > const_iterator', u'ns3::Ipv6InterfaceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv6 >, unsigned int > > const_iterator*', u'ns3::Ipv6InterfaceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv6 >, unsigned int > > const_iterator&', u'ns3::Ipv6InterfaceContainer::Iterator&')
     ## ipv6-routing-table-entry.h (module 'internet'): ns3::Ipv6MulticastRoutingTableEntry [class]
     module.add_class('Ipv6MulticastRoutingTableEntry')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix [class]
@@ -188,6 +197,9 @@ def register_types(module):
     module.add_class('Ipv6StaticRoutingHelper', parent=root_module['ns3::Ipv6RoutingHelper'])
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )', u'ns3::Mac48Address::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )*', u'ns3::Mac48Address::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )&', u'ns3::Mac48Address::TracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
@@ -196,8 +208,14 @@ def register_types(module):
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', u'ns3::NetDeviceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator*', u'ns3::NetDeviceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator&', u'ns3::NetDeviceContainer::Iterator&')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
     module.add_class('NodeContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeContainer::Iterator&')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -252,6 +270,9 @@ def register_types(module):
     module.add_class('SPFVertex')
     ## global-route-manager-impl.h (module 'internet'): ns3::SPFVertex::VertexType [enumeration]
     module.add_enum('VertexType', ['VertexUnknown', 'VertexRouter', 'VertexNetwork'], outer_class=root_module['ns3::SPFVertex'])
+    typehandlers.add_type_alias(u'std::pair< ns3::Ipv4Address, int >', u'ns3::SPFVertex::NodeExit_t')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ipv4Address, int >*', u'ns3::SPFVertex::NodeExit_t*')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ipv4Address, int >&', u'ns3::SPFVertex::NodeExit_t&')
     ## sequence-number.h (module 'network'): ns3::SequenceNumber<unsigned int, int> [class]
     module.add_class('SequenceNumber32', import_from_module='ns.network')
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter> [class]
@@ -298,6 +319,9 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
+    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
+    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## empty.h (module 'core'): ns3::empty [class]
     module.add_class('empty', import_from_module='ns.core')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t [class]
@@ -492,6 +516,12 @@ def register_types(module):
     module.add_class('TcpHeader', parent=root_module['ns3::Header'])
     ## tcp-header.h (module 'internet'): ns3::TcpHeader::Flags_t [enumeration]
     module.add_enum('Flags_t', ['NONE', 'FIN', 'SYN', 'RST', 'PSH', 'ACK', 'URG', 'ECE', 'CWR'], outer_class=root_module['ns3::TcpHeader'])
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::TcpOption const > >', u'ns3::TcpHeader::TcpOptionList')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::TcpOption const > >*', u'ns3::TcpHeader::TcpOptionList*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::TcpOption const > >&', u'ns3::TcpHeader::TcpOptionList&')
+    typehandlers.add_type_alias(u'ns3::TcpHeader::Flags_t', u'ns3::TcpHeader::Flags_t')
+    typehandlers.add_type_alias(u'ns3::TcpHeader::Flags_t*', u'ns3::TcpHeader::Flags_t*')
+    typehandlers.add_type_alias(u'ns3::TcpHeader::Flags_t&', u'ns3::TcpHeader::Flags_t&')
     ## tcp-congestion-ops.h (module 'internet'): ns3::TcpNewReno [class]
     module.add_class('TcpNewReno', parent=root_module['ns3::TcpCongestionOps'])
     ## tcp-option.h (module 'internet'): ns3::TcpOption [class]
@@ -506,6 +536,12 @@ def register_types(module):
     module.add_class('TcpOptionNOP', parent=root_module['ns3::TcpOption'])
     ## tcp-option-sack.h (module 'internet'): ns3::TcpOptionSack [class]
     module.add_class('TcpOptionSack', parent=root_module['ns3::TcpOption'])
+    typehandlers.add_type_alias(u'std::pair< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int > >', u'ns3::TcpOptionSack::SackBlock')
+    typehandlers.add_type_alias(u'std::pair< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int > >*', u'ns3::TcpOptionSack::SackBlock*')
+    typehandlers.add_type_alias(u'std::pair< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int > >&', u'ns3::TcpOptionSack::SackBlock&')
+    typehandlers.add_type_alias(u'std::list< std::pair< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int > > >', u'ns3::TcpOptionSack::SackList')
+    typehandlers.add_type_alias(u'std::list< std::pair< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int > > >*', u'ns3::TcpOptionSack::SackList*')
+    typehandlers.add_type_alias(u'std::list< std::pair< ns3::SequenceNumber< unsigned int, int >, ns3::SequenceNumber< unsigned int, int > > >&', u'ns3::TcpOptionSack::SackList&')
     ## tcp-option-sack-permitted.h (module 'internet'): ns3::TcpOptionSackPermitted [class]
     module.add_class('TcpOptionSackPermitted', parent=root_module['ns3::TcpOption'])
     ## tcp-option-ts.h (module 'internet'): ns3::TcpOptionTS [class]
@@ -524,8 +560,14 @@ def register_types(module):
     module.add_class('TcpSocket', parent=root_module['ns3::Socket'])
     ## tcp-socket.h (module 'internet'): ns3::TcpSocket::TcpStates_t [enumeration]
     module.add_enum('TcpStates_t', ['CLOSED', 'LISTEN', 'SYN_SENT', 'SYN_RCVD', 'ESTABLISHED', 'CLOSE_WAIT', 'LAST_ACK', 'FIN_WAIT_1', 'FIN_WAIT_2', 'CLOSING', 'TIME_WAIT', 'LAST_STATE'], outer_class=root_module['ns3::TcpSocket'])
+    typehandlers.add_type_alias(u'ns3::TcpSocket::TcpStates_t', u'ns3::TcpSocket::TcpStates_t')
+    typehandlers.add_type_alias(u'ns3::TcpSocket::TcpStates_t*', u'ns3::TcpSocket::TcpStates_t*')
+    typehandlers.add_type_alias(u'ns3::TcpSocket::TcpStates_t&', u'ns3::TcpSocket::TcpStates_t&')
     ## tcp-socket-base.h (module 'internet'): ns3::TcpSocketBase [class]
     module.add_class('TcpSocketBase', parent=root_module['ns3::TcpSocket'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )', u'ns3::TcpSocketBase::TcpTxRxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )*', u'ns3::TcpSocketBase::TcpTxRxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::TcpHeader const &, ns3::Ptr< ns3::TcpSocketBase const > const )&', u'ns3::TcpSocketBase::TcpTxRxTracedCallback&')
     ## tcp-socket-factory.h (module 'internet'): ns3::TcpSocketFactory [class]
     module.add_class('TcpSocketFactory', parent=root_module['ns3::SocketFactory'])
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState [class]
@@ -534,6 +576,15 @@ def register_types(module):
     module.add_enum('TcpCongState_t', ['CA_OPEN', 'CA_DISORDER', 'CA_CWR', 'CA_RECOVERY', 'CA_LOSS', 'CA_LAST_STATE'], outer_class=root_module['ns3::TcpSocketState'])
     ## tcp-socket-state.h (module 'internet'): ns3::TcpSocketState::TcpCAEvent_t [enumeration]
     module.add_enum('TcpCAEvent_t', ['CA_EVENT_TX_START', 'CA_EVENT_CWND_RESTART', 'CA_EVENT_COMPLETE_CWR', 'CA_EVENT_LOSS', 'CA_EVENT_ECN_NO_CE', 'CA_EVENT_ECN_IS_CE', 'CA_EVENT_DELAYED_ACK', 'CA_EVENT_NON_DELAYED_ACK'], outer_class=root_module['ns3::TcpSocketState'])
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCongState_t', u'ns3::TcpSocketState::TcpCongState_t')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCongState_t*', u'ns3::TcpSocketState::TcpCongState_t*')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCongState_t&', u'ns3::TcpSocketState::TcpCongState_t&')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCAEvent_t', u'ns3::TcpSocketState::TcpCAEvent_t')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCAEvent_t*', u'ns3::TcpSocketState::TcpCAEvent_t*')
+    typehandlers.add_type_alias(u'ns3::TcpSocketState::TcpCAEvent_t&', u'ns3::TcpSocketState::TcpCAEvent_t&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )*', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )&', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback&')
     ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxBuffer [class]
     module.add_class('TcpTxBuffer', parent=root_module['ns3::Object'])
     ## tcp-vegas.h (module 'internet'): ns3::TcpVegas [class]
@@ -582,6 +633,9 @@ def register_types(module):
     module.add_class('ArpCache', parent=root_module['ns3::Object'])
     ## arp-cache.h (module 'internet'): ns3::ArpCache::Entry [class]
     module.add_class('Entry', outer_class=root_module['ns3::ArpCache'])
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv4Header >', u'ns3::ArpCache::Ipv4PayloadHeaderPair')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv4Header >*', u'ns3::ArpCache::Ipv4PayloadHeaderPair*')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv4Header >&', u'ns3::ArpCache::Ipv4PayloadHeaderPair&')
     ## arp-header.h (module 'internet'): ns3::ArpHeader [class]
     module.add_class('ArpHeader', parent=root_module['ns3::Header'])
     ## arp-header.h (module 'internet'): ns3::ArpHeader::ArpType_e [enumeration]
@@ -650,6 +704,12 @@ def register_types(module):
     module.add_class('IpL4Protocol', parent=root_module['ns3::Object'])
     ## ip-l4-protocol.h (module 'internet'): ns3::IpL4Protocol::RxStatus [enumeration]
     module.add_enum('RxStatus', ['RX_OK', 'RX_CSUM_FAILED', 'RX_ENDPOINT_CLOSED', 'RX_ENDPOINT_UNREACH'], outer_class=root_module['ns3::IpL4Protocol'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv4Address, ns3::Ipv4Address, unsigned char, ns3::Ptr< ns3::Ipv4Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::IpL4Protocol::DownTargetCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv4Address, ns3::Ipv4Address, unsigned char, ns3::Ptr< ns3::Ipv4Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::IpL4Protocol::DownTargetCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv4Address, ns3::Ipv4Address, unsigned char, ns3::Ptr< ns3::Ipv4Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::IpL4Protocol::DownTargetCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv6Address, ns3::Ipv6Address, unsigned char, ns3::Ptr< ns3::Ipv6Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::IpL4Protocol::DownTargetCallback6')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv6Address, ns3::Ipv6Address, unsigned char, ns3::Ptr< ns3::Ipv6Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::IpL4Protocol::DownTargetCallback6*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::Ipv6Address, ns3::Ipv6Address, unsigned char, ns3::Ptr< ns3::Ipv6Route >, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::IpL4Protocol::DownTargetCallback6&')
     ## ipv4.h (module 'internet'): ns3::Ipv4 [class]
     module.add_class('Ipv4', parent=root_module['ns3::Object'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4AddressChecker [class]
@@ -662,6 +722,15 @@ def register_types(module):
     module.add_class('Ipv4L3Protocol', parent=root_module['ns3::Ipv4'])
     ## ipv4-l3-protocol.h (module 'internet'): ns3::Ipv4L3Protocol::DropReason [enumeration]
     module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_BAD_CHECKSUM', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_FRAGMENT_TIMEOUT'], outer_class=root_module['ns3::Ipv4L3Protocol'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )', u'ns3::Ipv4L3Protocol::SentTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )*', u'ns3::Ipv4L3Protocol::SentTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )&', u'ns3::Ipv4L3Protocol::SentTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::Ipv4 >, uint32_t )', u'ns3::Ipv4L3Protocol::TxRxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::Ipv4 >, uint32_t )*', u'ns3::Ipv4L3Protocol::TxRxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::Ipv4 >, uint32_t )&', u'ns3::Ipv4L3Protocol::TxRxTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr< ns3::Ipv4 >, uint32_t )', u'ns3::Ipv4L3Protocol::DropTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr< ns3::Ipv4 >, uint32_t )*', u'ns3::Ipv4L3Protocol::DropTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv4Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv4L3Protocol::DropReason, ns3::Ptr< ns3::Ipv4 >, uint32_t )&', u'ns3::Ipv4L3Protocol::DropTracedCallback&')
     ## ipv4-address.h (module 'network'): ns3::Ipv4MaskChecker [class]
     module.add_class('Ipv4MaskChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## ipv4-address.h (module 'network'): ns3::Ipv4MaskValue [class]
@@ -678,6 +747,18 @@ def register_types(module):
     module.add_class('Ipv4Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv4Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv4Route> >'])
     ## ipv4-routing-protocol.h (module 'internet'): ns3::Ipv4RoutingProtocol [class]
     module.add_class('Ipv4RoutingProtocol', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv4RoutingProtocol::UnicastForwardCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv4RoutingProtocol::UnicastForwardCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Ipv4Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv4RoutingProtocol::UnicastForwardCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Ipv4MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv4RoutingProtocol::MulticastForwardCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Ipv4MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv4RoutingProtocol::MulticastForwardCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Ipv4MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv4RoutingProtocol::MulticastForwardCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv4RoutingProtocol::LocalDeliverCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv4RoutingProtocol::LocalDeliverCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv4RoutingProtocol::LocalDeliverCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv4RoutingProtocol::ErrorCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv4RoutingProtocol::ErrorCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv4Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv4RoutingProtocol::ErrorCallback&')
     ## ipv4-static-routing.h (module 'internet'): ns3::Ipv4StaticRouting [class]
     module.add_class('Ipv4StaticRouting', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## ipv6.h (module 'internet'): ns3::Ipv6 [class]
@@ -704,6 +785,9 @@ def register_types(module):
     module.add_class('Ipv6ExtensionESPHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionFragment [class]
     module.add_class('Ipv6ExtensionFragment', parent=root_module['ns3::Ipv6Extension'])
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >', u'ns3::Ipv6ExtensionFragment::Ipv6PayloadHeaderPair')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >*', u'ns3::Ipv6ExtensionFragment::Ipv6PayloadHeaderPair*')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >&', u'ns3::Ipv6ExtensionFragment::Ipv6PayloadHeaderPair&')
     ## ipv6-extension-header.h (module 'internet'): ns3::Ipv6ExtensionFragmentHeader [class]
     module.add_class('Ipv6ExtensionFragmentHeader', parent=root_module['ns3::Ipv6ExtensionHeader'])
     ## ipv6-extension.h (module 'internet'): ns3::Ipv6ExtensionHopByHop [class]
@@ -720,6 +804,15 @@ def register_types(module):
     module.add_class('Ipv6L3Protocol', parent=root_module['ns3::Ipv6'])
     ## ipv6-l3-protocol.h (module 'internet'): ns3::Ipv6L3Protocol::DropReason [enumeration]
     module.add_enum('DropReason', ['DROP_TTL_EXPIRED', 'DROP_NO_ROUTE', 'DROP_INTERFACE_DOWN', 'DROP_ROUTE_ERROR', 'DROP_UNKNOWN_PROTOCOL', 'DROP_UNKNOWN_OPTION', 'DROP_MALFORMED_HEADER', 'DROP_FRAGMENT_TIMEOUT'], outer_class=root_module['ns3::Ipv6L3Protocol'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv6Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )', u'ns3::Ipv6L3Protocol::SentTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv6Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )*', u'ns3::Ipv6L3Protocol::SentTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv6Header const &, ns3::Ptr< ns3::Packet const >, uint32_t )&', u'ns3::Ipv6L3Protocol::SentTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::Ipv6 >, uint32_t )', u'ns3::Ipv6L3Protocol::TxRxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::Ipv6 >, uint32_t )*', u'ns3::Ipv6L3Protocol::TxRxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Ptr< ns3::Ipv6 >, uint32_t )&', u'ns3::Ipv6L3Protocol::TxRxTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv6Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv6L3Protocol::DropReason, ns3::Ptr< ns3::Ipv6 >, uint32_t )', u'ns3::Ipv6L3Protocol::DropTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv6Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv6L3Protocol::DropReason, ns3::Ptr< ns3::Ipv6 >, uint32_t )*', u'ns3::Ipv6L3Protocol::DropTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ipv6Header const &, ns3::Ptr< ns3::Packet const >, ns3::Ipv6L3Protocol::DropReason, ns3::Ptr< ns3::Ipv6 >, uint32_t )&', u'ns3::Ipv6L3Protocol::DropTracedCallback&')
     ## ipv6-route.h (module 'internet'): ns3::Ipv6MulticastRoute [class]
     module.add_class('Ipv6MulticastRoute', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6MulticastRoute, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6MulticastRoute> >'])
     ## ipv6-option.h (module 'internet'): ns3::Ipv6Option [class]
@@ -746,6 +839,18 @@ def register_types(module):
     module.add_class('Ipv6Route', parent=root_module['ns3::SimpleRefCount< ns3::Ipv6Route, ns3::empty, ns3::DefaultDeleter<ns3::Ipv6Route> >'])
     ## ipv6-routing-protocol.h (module 'internet'): ns3::Ipv6RoutingProtocol [class]
     module.add_class('Ipv6RoutingProtocol', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice const >, ns3::Ptr< ns3::Ipv6Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv6RoutingProtocol::UnicastForwardCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice const >, ns3::Ptr< ns3::Ipv6Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv6RoutingProtocol::UnicastForwardCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice const >, ns3::Ptr< ns3::Ipv6Route >, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv6RoutingProtocol::UnicastForwardCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice const >, ns3::Ptr< ns3::Ipv6MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv6RoutingProtocol::MulticastForwardCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice const >, ns3::Ptr< ns3::Ipv6MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv6RoutingProtocol::MulticastForwardCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice const >, ns3::Ptr< ns3::Ipv6MulticastRoute >, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv6RoutingProtocol::MulticastForwardCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv6RoutingProtocol::LocalDeliverCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv6RoutingProtocol::LocalDeliverCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv6RoutingProtocol::LocalDeliverCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Ipv6RoutingProtocol::ErrorCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Ipv6RoutingProtocol::ErrorCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::Ipv6Header const &, ns3::Socket::SocketErrno, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Ipv6RoutingProtocol::ErrorCallback&')
     ## ipv6-static-routing.h (module 'internet'): ns3::Ipv6StaticRouting [class]
     module.add_class('Ipv6StaticRouting', parent=root_module['ns3::Ipv6RoutingProtocol'])
     ## random-variable-stream.h (module 'core'): ns3::LogNormalRandomVariable [class]
@@ -758,14 +863,32 @@ def register_types(module):
     module.add_class('NdiscCache', parent=root_module['ns3::Object'])
     ## ndisc-cache.h (module 'internet'): ns3::NdiscCache::Entry [class]
     module.add_class('Entry', outer_class=root_module['ns3::NdiscCache'])
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >', u'ns3::NdiscCache::Ipv6PayloadHeaderPair')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >*', u'ns3::NdiscCache::Ipv6PayloadHeaderPair*')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::Packet >, ns3::Ipv6Header >&', u'ns3::NdiscCache::Ipv6PayloadHeaderPair&')
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) (  )', u'ns3::NetDevice::LinkChangeTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) (  )*', u'ns3::NetDevice::LinkChangeTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) (  )&', u'ns3::NetDevice::LinkChangeTracedCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::ReceiveCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::ReceiveCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::ReceiveCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::PromiscReceiveCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::PromiscReceiveCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::ProtocolHandler')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::ProtocolHandler*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::ProtocolHandler&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::DeviceAdditionListener')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::DeviceAdditionListener*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
     module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -776,6 +899,21 @@ def register_types(module):
     module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )*', u'ns3::Packet::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )&', u'ns3::Packet::TracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )', u'ns3::Packet::SizeTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )*', u'ns3::Packet::SizeTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )&', u'ns3::Packet::SizeTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )', u'ns3::Packet::SinrTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', u'ns3::Packet::SinrTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## probe.h (module 'stats'): ns3::Probe [class]
@@ -784,6 +922,9 @@ def register_types(module):
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
     ## queue-item.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
     module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )', u'ns3::QueueItem::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )*', u'ns3::QueueItem::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )&', u'ns3::QueueItem::TracedCallback&')
     ## rip.h (module 'internet'): ns3::Rip [class]
     module.add_class('Rip', parent=root_module['ns3::Ipv4RoutingProtocol'])
     ## rip.h (module 'internet'): ns3::Rip::SplitHorizonType_e [enumeration]
@@ -814,6 +955,9 @@ def register_types(module):
     module.add_class('TcpPrrRecovery', parent=root_module['ns3::TcpClassicRecovery'])
     ## tcp-prr-recovery.h (module 'internet'): ns3::TcpPrrRecovery::ReductionBound_t [enumeration]
     module.add_enum('ReductionBound_t', ['CRB', 'SSRB'], outer_class=root_module['ns3::TcpPrrRecovery'])
+    typehandlers.add_type_alias(u'ns3::TcpPrrRecovery::ReductionBound_t', u'ns3::TcpPrrRecovery::ReductionBound_t')
+    typehandlers.add_type_alias(u'ns3::TcpPrrRecovery::ReductionBound_t*', u'ns3::TcpPrrRecovery::ReductionBound_t*')
+    typehandlers.add_type_alias(u'ns3::TcpPrrRecovery::ReductionBound_t&', u'ns3::TcpPrrRecovery::ReductionBound_t&')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -971,12 +1115,12 @@ def register_types_ns3_Hash(module):
     
     ## hash-function.h (module 'core'): ns3::Hash::Implementation [class]
     module.add_class('Implementation', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Hash::Implementation, ns3::empty, ns3::DefaultDeleter<ns3::Hash::Implementation> >'])
-    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, size_t const )', u'ns3::Hash::Hash32Function_ptr')
-    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, size_t const )*', u'ns3::Hash::Hash32Function_ptr*')
-    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, size_t const )&', u'ns3::Hash::Hash32Function_ptr&')
-    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, size_t const )', u'ns3::Hash::Hash64Function_ptr')
-    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, size_t const )*', u'ns3::Hash::Hash64Function_ptr*')
-    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, size_t const )&', u'ns3::Hash::Hash64Function_ptr&')
+    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, std::size_t const )', u'ns3::Hash::Hash32Function_ptr')
+    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, std::size_t const )*', u'ns3::Hash::Hash32Function_ptr*')
+    typehandlers.add_type_alias(u'uint32_t ( * ) ( char const *, std::size_t const )&', u'ns3::Hash::Hash32Function_ptr&')
+    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, std::size_t const )', u'ns3::Hash::Hash64Function_ptr')
+    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, std::size_t const )*', u'ns3::Hash::Hash64Function_ptr*')
+    typehandlers.add_type_alias(u'uint64_t ( * ) ( char const *, std::size_t const )&', u'ns3::Hash::Hash64Function_ptr&')
     
     ## Register a nested module for the namespace Function
     
@@ -2205,7 +2349,7 @@ def register_Ns3DataRate_methods(root_module, cls):
     cls.add_method('CalculateTxTime', 
                    'double', 
                    [param('uint32_t', 'bytes')], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## data-rate.h (module 'network'): uint64_t ns3::DataRate::GetBitRate() const [member function]
     cls.add_method('GetBitRate', 
                    'uint64_t', 
@@ -2649,18 +2793,18 @@ def register_Ns3Hasher_methods(root_module, cls):
     cls.add_constructor([])
     ## hash.h (module 'core'): ns3::Hasher::Hasher(ns3::Ptr<ns3::Hash::Implementation> hp) [constructor]
     cls.add_constructor([param('ns3::Ptr< ns3::Hash::Implementation >', 'hp')])
-    ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(char const * buffer, size_t const size) [member function]
+    ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash32', 
                    'uint32_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')])
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')])
     ## hash.h (module 'core'): uint32_t ns3::Hasher::GetHash32(std::string const s) [member function]
     cls.add_method('GetHash32', 
                    'uint32_t', 
                    [param('std::string const', 's')])
-    ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(char const * buffer, size_t const size) [member function]
+    ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')])
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')])
     ## hash.h (module 'core'): uint64_t ns3::Hasher::GetHash64(std::string const s) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
@@ -3512,7 +3656,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -5784,7 +5928,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -12512,7 +12657,8 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddresss(ns3::Address macAddress) [member function]
     cls.add_method('SetMacAddresss', 
                    'void', 
-                   [param('ns3::Address', 'macAddress')])
+                   [param('ns3::Address', 'macAddress')], 
+                   deprecated=True)
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::UpdateSeen() [member function]
     cls.add_method('UpdateSeen', 
                    'void', 
@@ -17387,7 +17533,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     cls.add_method('GetMean', 
                    'double', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
     cls.add_method('GetScale', 
                    'double', 
@@ -20118,15 +20264,15 @@ def register_Ns3HashImplementation_methods(root_module, cls):
     cls.add_constructor([param('ns3::Hash::Implementation const &', 'arg0')])
     ## hash-function.h (module 'core'): ns3::Hash::Implementation::Implementation() [constructor]
     cls.add_constructor([])
-    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Implementation::GetHash32(char const * buffer, size_t const size) [member function]
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Implementation::GetHash32(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash32', 
                    'uint32_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Implementation::GetHash64(char const * buffer, size_t const size) [member function]
+    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Implementation::GetHash64(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_virtual=True)
     ## hash-function.h (module 'core'): void ns3::Hash::Implementation::clear() [member function]
     cls.add_method('clear', 
@@ -20162,10 +20308,10 @@ def register_Ns3HashFunctionHash32_methods(root_module, cls):
     cls.add_constructor([param('ns3::Hash::Function::Hash32 const &', 'arg0')])
     ## hash-function.h (module 'core'): ns3::Hash::Function::Hash32::Hash32(ns3::Hash::Hash32Function_ptr hp) [constructor]
     cls.add_constructor([param('ns3::Hash::Hash32Function_ptr', 'hp')])
-    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash32::GetHash32(char const * buffer, size_t const size) [member function]
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash32::GetHash32(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash32', 
                    'uint32_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_virtual=True)
     ## hash-function.h (module 'core'): void ns3::Hash::Function::Hash32::clear() [member function]
     cls.add_method('clear', 
@@ -20179,15 +20325,15 @@ def register_Ns3HashFunctionHash64_methods(root_module, cls):
     cls.add_constructor([param('ns3::Hash::Function::Hash64 const &', 'arg0')])
     ## hash-function.h (module 'core'): ns3::Hash::Function::Hash64::Hash64(ns3::Hash::Hash64Function_ptr hp) [constructor]
     cls.add_constructor([param('ns3::Hash::Hash64Function_ptr', 'hp')])
-    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash64::GetHash32(char const * buffer, size_t const size) [member function]
+    ## hash-function.h (module 'core'): uint32_t ns3::Hash::Function::Hash64::GetHash32(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash32', 
                    'uint32_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_virtual=True)
-    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Function::Hash64::GetHash64(char const * buffer, size_t const size) [member function]
+    ## hash-function.h (module 'core'): uint64_t ns3::Hash::Function::Hash64::GetHash64(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_virtual=True)
     ## hash-function.h (module 'core'): void ns3::Hash::Function::Hash64::clear() [member function]
     cls.add_method('clear', 
@@ -20201,15 +20347,15 @@ def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
     cls.add_constructor([param('ns3::Hash::Function::Murmur3 const &', 'arg0')])
     ## hash-murmur3.h (module 'core'): ns3::Hash::Function::Murmur3::Murmur3() [constructor]
     cls.add_constructor([])
-    ## hash-murmur3.h (module 'core'): uint32_t ns3::Hash::Function::Murmur3::GetHash32(char const * buffer, size_t const size) [member function]
+    ## hash-murmur3.h (module 'core'): uint32_t ns3::Hash::Function::Murmur3::GetHash32(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash32', 
                    'uint32_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_virtual=True)
-    ## hash-murmur3.h (module 'core'): uint64_t ns3::Hash::Function::Murmur3::GetHash64(char const * buffer, size_t const size) [member function]
+    ## hash-murmur3.h (module 'core'): uint64_t ns3::Hash::Function::Murmur3::GetHash64(char const * buffer, std::size_t const size) [member function]
     cls.add_method('GetHash64', 
                    'uint64_t', 
-                   [param('char const *', 'buffer'), param('size_t const', 'size')], 
+                   [param('char const *', 'buffer'), param('std::size_t const', 'size')], 
                    is_virtual=True)
     ## hash-murmur3.h (module 'core'): void ns3::Hash::Function::Murmur3::clear() [member function]
     cls.add_method('clear', 
@@ -20220,17 +20366,17 @@ def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
+    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):
