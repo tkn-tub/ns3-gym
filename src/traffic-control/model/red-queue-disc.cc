@@ -78,15 +78,6 @@ TypeId RedQueueDisc::GetTypeId (void)
     .SetParent<QueueDisc> ()
     .SetGroupName("TrafficControl")
     .AddConstructor<RedQueueDisc> ()
-    .AddAttribute ("Mode",
-                   "Determines unit for QueueLimit",
-                   EnumValue (QUEUE_DISC_MODE_PACKETS),
-                   MakeEnumAccessor (&RedQueueDisc::SetMode,
-                                     &RedQueueDisc::GetMode),
-                   MakeEnumChecker (QUEUE_DISC_MODE_BYTES, "QUEUE_DISC_MODE_BYTES",
-                                    QUEUE_DISC_MODE_PACKETS, "QUEUE_DISC_MODE_PACKETS"),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MeanPktSize",
                    "Average of packet size",
                    UintegerValue (500),
@@ -137,16 +128,9 @@ TypeId RedQueueDisc::GetTypeId (void)
                    DoubleValue (15),
                    MakeDoubleAccessor (&RedQueueDisc::m_maxTh),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("QueueLimit",
-                   "Queue limit in bytes/packets",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&RedQueueDisc::SetQueueLimit),
-                   MakeUintegerChecker<uint32_t> (),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxSize",
                    "The maximum number of packets accepted by this queue disc",
-                   QueueSizeValue (QueueSize ("0p")),
+                   QueueSizeValue (QueueSize ("25p")),
                    MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
                                           &QueueDisc::GetMaxSize),
                    MakeQueueSizeChecker ())
@@ -261,32 +245,6 @@ RedQueueDisc::DoDispose (void)
 }
 
 void
-RedQueueDisc::SetMode (QueueDiscMode mode)
-{
-  NS_LOG_FUNCTION (this << mode);
-
-  if (mode == QUEUE_DISC_MODE_BYTES)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, GetMaxSize ().GetValue ()));
-    }
-  else if (mode == QUEUE_DISC_MODE_PACKETS)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, GetMaxSize ().GetValue ()));
-    }
-  else
-    {
-      NS_ABORT_MSG ("Unknown queue size unit");
-    }
-}
-
-RedQueueDisc::QueueDiscMode
-RedQueueDisc::GetMode (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS ? QUEUE_DISC_MODE_PACKETS : QUEUE_DISC_MODE_BYTES);
-}
-
-void
 RedQueueDisc::SetAredAlpha (double alpha)
 {
   NS_LOG_FUNCTION (this << alpha);
@@ -360,13 +318,6 @@ RedQueueDisc::GetFengAdaptiveB (void)
 {
   NS_LOG_FUNCTION (this);
   return m_b;
-}
-
-void
-RedQueueDisc::SetQueueLimit (uint32_t lim)
-{
-  NS_LOG_FUNCTION (this << lim);
-  SetMaxSize (QueueSize (GetMaxSize ().GetUnit (), lim));
 }
 
 void
@@ -536,7 +487,7 @@ RedQueueDisc::InitializeParams (void)
         {
           m_minTh = targetqueue / 2.0;
         }
-      if (GetMode () == QUEUE_DISC_MODE_BYTES)
+      if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES)
         {
           m_minTh = m_minTh * m_meanPktSize;
         }
@@ -812,7 +763,7 @@ RedQueueDisc::ModifyP (double p, uint32_t size)
   NS_LOG_FUNCTION (this << p << size);
   double count1 = (double) m_count;
 
-  if (GetMode () == QUEUE_DISC_MODE_BYTES)
+  if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES)
     {
       count1 = (double) (m_countBytes / m_meanPktSize);
     }
@@ -844,7 +795,7 @@ RedQueueDisc::ModifyP (double p, uint32_t size)
         }
     }
 
-  if ((GetMode () == QUEUE_DISC_MODE_BYTES) && (p < 1.0))
+  if ((GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES) && (p < 1.0))
     {
       p = (p * size) / m_meanPktSize;
     }

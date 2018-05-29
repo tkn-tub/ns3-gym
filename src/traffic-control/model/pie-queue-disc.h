@@ -78,51 +78,6 @@ public:
   };
 
   /**
-   * \brief Enumeration of the modes supported in the class.
-   * \deprecated This enum will go away in future versions of ns-3.
-   *
-   */
-  enum QueueDiscMode
-  {
-    QUEUE_DISC_MODE_PACKETS,     /**< Use number of packets for maximum queue disc size */
-    QUEUE_DISC_MODE_BYTES,       /**< Use number of bytes for maximum queue disc size */
-  };
-
-  /**
-   * \brief Set the operating mode of this queue disc.
-   *
-   * \param mode The operating mode of this queue disc.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead SetMaxSize()
-   */
-  void SetMode (QueueDiscMode mode);
-
-  /**
-   * \brief Get the operating mode of this queue disc.
-   *
-   * \returns The operating mode of this queue disc.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead GetMaxSize()
-   */
-  QueueDiscMode GetMode (void) const;
-
-  /**
-   * \brief Get the current value of the queue in bytes or packets.
-   *
-   * \returns The queue size in bytes or packets.
-   */
-  uint32_t GetQueueSize (void);
-
-  /**
-   * \brief Set the limit of the queue in bytes or packets.
-   *
-   * \param lim The limit in bytes or packets.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead SetMaxSize()
-   */
-  void SetQueueLimit (uint32_t lim);
-
-  /**
    * \brief Get queue delay.
    *
    * \returns The current queue delay.

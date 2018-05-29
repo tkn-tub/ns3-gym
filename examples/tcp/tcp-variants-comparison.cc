@@ -346,13 +346,13 @@ int main (int argc, char *argv[])
   Time access_d (access_delay);
   Time bottle_d (delay);
 
-  Config::SetDefault ("ns3::CoDelQueueDisc::Mode", EnumValue (CoDelQueueDisc::QUEUE_DISC_MODE_BYTES));
-
   uint32_t size = static_cast<uint32_t>((std::min (access_b, bottle_b).GetBitRate () / 8) *
     ((access_d + bottle_d) * 2).GetSeconds ());
 
-  Config::SetDefault ("ns3::PfifoFastQueueDisc::Limit", UintegerValue (size / mtu_bytes));
-  Config::SetDefault ("ns3::CoDelQueueDisc::MaxBytes", UintegerValue (size));
+  Config::SetDefault ("ns3::PfifoFastQueueDisc::MaxSize",
+                      QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, size / mtu_bytes)));
+  Config::SetDefault ("ns3::CoDelQueueDisc::MaxSize",
+                      QueueSizeValue (QueueSize (QueueSizeUnit::BYTES, size)));
 
   for (uint32_t i = 0; i < num_flows; i++)
     {

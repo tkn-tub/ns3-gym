@@ -411,9 +411,8 @@ main (int argc, char *argv[])
       // like in ns2 test, r2 -> r1, have a queue in packet mode
       Ptr<QueueDisc> queue = queueDiscs.Get (1);
 
-      StaticCast<RedQueueDisc> (queue)->SetMode (RedQueueDisc::QUEUE_DISC_MODE_PACKETS);
+      queue->SetMaxSize (QueueSize ("1000p"));
       StaticCast<RedQueueDisc> (queue)->SetTh (5, 15);
-      StaticCast<RedQueueDisc> (queue)->SetQueueLimit (1000);
     }
 
   BuildAppsTest (redTest);

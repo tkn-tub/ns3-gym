@@ -78,7 +78,7 @@ main (int argc, char *argv[])
   // single PointToPointNetDevice (NetDevice 0) and added a 
   // DropTailQueue to it.
 
-  // Now, we can manipulate the MaxPackets value of the already 
+  // Now, we can manipulate the MaxSize value of the already 
   // instantiated DropTailQueue.  Here are various ways to do that.
 
   // We assume that a smart pointer (Ptr) to a relevant network device
@@ -97,7 +97,7 @@ main (int argc, char *argv[])
   Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> > ();
 
   // Using the GetObject function, we can perform a safe downcast
-  // to a DropTailQueue, where MaxPackets is a member
+  // to a DropTailQueue, where MaxSize is a member
   Ptr<DropTailQueue<Packet> > dtq = txQueue->GetObject <DropTailQueue<Packet> > ();
   NS_ASSERT (dtq);
 

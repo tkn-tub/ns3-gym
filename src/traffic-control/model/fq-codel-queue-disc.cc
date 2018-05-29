@@ -108,17 +108,9 @@ TypeId FqCoDelQueueDisc::GetTypeId (void)
                    StringValue ("5ms"),
                    MakeStringAccessor (&FqCoDelQueueDisc::m_target),
                    MakeStringChecker ())
-    .AddAttribute ("PacketLimit",
-                   "The hard limit on the real queue size, measured in packets",
-                   UintegerValue (10 * 1024),
-                   MakeUintegerAccessor (&FqCoDelQueueDisc::SetLimit,
-                                         &FqCoDelQueueDisc::GetLimit),
-                   MakeUintegerChecker<uint32_t> (),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxSize",
                    "The maximum number of packets accepted by this queue disc",
-                   QueueSizeValue (QueueSize ("0p")),
+                   QueueSizeValue (QueueSize ("10240p")),
                    MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
                                           &QueueDisc::GetMaxSize),
                    MakeQueueSizeChecker ())
@@ -316,20 +308,6 @@ FqCoDelQueueDisc::DoPeek (void)
   NS_LOG_FUNCTION (this);
 
   return PeekDequeued ();
-}
-
-void
-FqCoDelQueueDisc::SetLimit (uint32_t limit)
-{
-  NS_LOG_FUNCTION (this << limit);
-  SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, limit));
-}
-
-uint32_t
-FqCoDelQueueDisc::GetLimit (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return GetMaxSize ().GetValue ();
 }
 
 bool

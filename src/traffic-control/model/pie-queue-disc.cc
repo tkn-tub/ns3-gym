@@ -47,15 +47,6 @@ TypeId PieQueueDisc::GetTypeId (void)
     .SetParent<QueueDisc> ()
     .SetGroupName ("TrafficControl")
     .AddConstructor<PieQueueDisc> ()
-    .AddAttribute ("Mode",
-                   "Determines unit for QueueLimit",
-                   EnumValue (QUEUE_DISC_MODE_PACKETS),
-                   MakeEnumAccessor (&PieQueueDisc::SetMode,
-                                     &PieQueueDisc::GetMode),
-                   MakeEnumChecker (QUEUE_DISC_MODE_BYTES, "QUEUE_DISC_MODE_BYTES",
-                                    QUEUE_DISC_MODE_PACKETS, "QUEUE_DISC_MODE_PACKETS"),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MeanPktSize",
                    "Average of packet size",
                    UintegerValue (1000),
@@ -81,16 +72,9 @@ TypeId PieQueueDisc::GetTypeId (void)
                    TimeValue (Seconds (0)),
                    MakeTimeAccessor (&PieQueueDisc::m_sUpdate),
                    MakeTimeChecker ())
-    .AddAttribute ("QueueLimit",
-                   "Queue limit in bytes/packets",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&PieQueueDisc::SetQueueLimit),
-                   MakeUintegerChecker<uint32_t> (),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxSize",
                    "The maximum number of packets accepted by this queue disc",
-                   QueueSizeValue (QueueSize ("0p")),
+                   QueueSizeValue (QueueSize ("25p")),
                    MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
                                           &QueueDisc::GetMaxSize),
                    MakeQueueSizeChecker ())
@@ -134,57 +118,6 @@ PieQueueDisc::DoDispose (void)
   m_uv = 0;
   Simulator::Remove (m_rtrsEvent);
   QueueDisc::DoDispose ();
-}
-
-void
-PieQueueDisc::SetMode (QueueDiscMode mode)
-{
-  NS_LOG_FUNCTION (this << mode);
-
-  if (mode == QUEUE_DISC_MODE_BYTES)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::BYTES, GetMaxSize ().GetValue ()));
-    }
-  else if (mode == QUEUE_DISC_MODE_PACKETS)
-    {
-      SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, GetMaxSize ().GetValue ()));
-    }
-  else
-    {
-      NS_ABORT_MSG ("Unknown queue size unit");
-    }
-}
-
-PieQueueDisc::QueueDiscMode
-PieQueueDisc::GetMode (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS ? QUEUE_DISC_MODE_PACKETS : QUEUE_DISC_MODE_BYTES);
-}
-
-void
-PieQueueDisc::SetQueueLimit (uint32_t lim)
-{
-  NS_LOG_FUNCTION (this << lim);
-  SetMaxSize (QueueSize (GetMaxSize ().GetUnit (), lim));
-}
-
-uint32_t
-PieQueueDisc::GetQueueSize (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (GetMode () == QUEUE_DISC_MODE_BYTES)
-    {
-      return GetInternalQueue (0)->GetNBytes ();
-    }
-  else if (GetMode () == QUEUE_DISC_MODE_PACKETS)
-    {
-      return GetInternalQueue (0)->GetNPackets ();
-    }
-  else
-    {
-      NS_ABORT_MSG ("Unknown PIE mode.");
-    }
 }
 
 Time
@@ -266,7 +199,7 @@ bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
 
   uint32_t packetSize = item->GetSize ();
 
-  if (GetMode () == QUEUE_DISC_MODE_BYTES)
+  if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES)
     {
       p = p * packetSize / m_meanPktSize;
     }
@@ -277,11 +210,11 @@ bool PieQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
     {
       return false;
     }
-  else if (GetMode () == QUEUE_DISC_MODE_BYTES && qSize <= 2 * m_meanPktSize)
+  else if (GetMaxSize ().GetUnit () == QueueSizeUnit::BYTES && qSize <= 2 * m_meanPktSize)
     {
       return false;
     }
-  else if (GetMode () == QUEUE_DISC_MODE_PACKETS && qSize <= 2)
+  else if (GetMaxSize ().GetUnit () == QueueSizeUnit::PACKETS && qSize <= 2)
     {
       return false;
     }

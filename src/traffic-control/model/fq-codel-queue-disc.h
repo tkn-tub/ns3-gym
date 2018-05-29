@@ -131,24 +131,6 @@ public:
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";        //!< Overlimit dropped packets
 
 private:
-  /**
-   * \brief Set the limit of this queue disc.
-   *
-   * \param limit The limit of this queue disc.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead SetMaxSize()
-   */
-  void SetLimit (uint32_t limit);
-
-  /**
-   * \brief Get the limit of this queue disc.
-   *
-   * \returns The limit of this queue disc.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead GetMaxSize()
-   */
-  uint32_t GetLimit (void) const;
-
   virtual bool DoEnqueue (Ptr<QueueDiscItem> item);
   virtual Ptr<QueueDiscItem> DoDequeue (void);
   virtual Ptr<const QueueDiscItem> DoPeek (void);

@@ -39,17 +39,9 @@ TypeId PfifoFastQueueDisc::GetTypeId (void)
     .SetParent<QueueDisc> ()
     .SetGroupName ("TrafficControl")
     .AddConstructor<PfifoFastQueueDisc> ()
-    .AddAttribute ("Limit",
-                   "The maximum number of packets accepted by this queue disc.",
-                   UintegerValue (1000),
-                   MakeUintegerAccessor (&PfifoFastQueueDisc::SetLimit,
-                                         &PfifoFastQueueDisc::GetLimit),
-                   MakeUintegerChecker<uint32_t> (),
-                   TypeId::DEPRECATED,
-                   "Use the MaxSize attribute instead")
     .AddAttribute ("MaxSize",
                    "The maximum number of packets accepted by this queue disc.",
-                   QueueSizeValue (QueueSize ("0p")),
+                   QueueSizeValue (QueueSize ("1000p")),
                    MakeQueueSizeAccessor (&QueueDisc::SetMaxSize,
                                           &QueueDisc::GetMaxSize),
                    MakeQueueSizeChecker ())
@@ -146,20 +138,6 @@ PfifoFastQueueDisc::DoPeek (void)
 
   NS_LOG_LOGIC ("Queue empty");
   return item;
-}
-
-void
-PfifoFastQueueDisc::SetLimit (uint32_t limit)
-{
-  NS_LOG_FUNCTION (this << limit);
-  SetMaxSize (QueueSize (QueueSizeUnit::PACKETS, limit));
-}
-
-uint32_t
-PfifoFastQueueDisc::GetLimit (void) const
-{
-  NS_LOG_FUNCTION (this);
-  return GetMaxSize ().GetValue ();
 }
 
 bool

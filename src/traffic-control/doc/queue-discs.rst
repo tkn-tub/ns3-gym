@@ -179,7 +179,7 @@ the default pfifo_fast can be configured as follows:
 
   TrafficControlHelper tch;
   uint16_t handle = tch.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
-  tch.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxPackets", UintegerValue (1000));
+  tch.AddInternalQueues (handle, 3, "ns3::DropTailQueue", "MaxSize", StringValue ("1000p"));
   QueueDiscContainer qdiscs = tch.Install (devices);
 
 The above code adds three internal queues and a packet filter to the root queue disc of type PfifoFast.

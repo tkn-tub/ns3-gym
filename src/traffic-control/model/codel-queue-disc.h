@@ -78,42 +78,6 @@ public:
   virtual ~CoDelQueueDisc ();
 
   /**
-   * \brief Enumeration of the modes supported in the class.
-   * \deprecated This enum will go away in future versions of ns-3.
-   *
-   */
-  enum QueueDiscMode
-  {
-    QUEUE_DISC_MODE_PACKETS,     /**< Use number of packets for maximum queue disc size */
-    QUEUE_DISC_MODE_BYTES,       /**< Use number of bytes for maximum queue disc size */
-  };
-
-  /**
-   * \brief Set the operating mode of this queue disc.
-   *
-   * \param mode The operating mode of this queue disc.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead SetMaxSize()
-   */
-  void SetMode (QueueDiscMode mode);
-
-  /**
-   * \brief Get the operating mode of this queue disc.
-   *
-   * \returns The operating mode of this queue disc.
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead GetMaxSize()
-   */
-  QueueDiscMode GetMode (void) const;
-
-  /**
-   * \brief Get the current value of the queue in bytes or packets.
-   *
-   * \returns The queue size in bytes or packets.
-   */
-  uint32_t GetQueueSize (void);
-
-  /**
    * \brief Get the target queue delay
    *
    * \returns The target queue delay
@@ -139,38 +103,6 @@ public:
   static constexpr const char* OVERLIMIT_DROP = "Overlimit drop";  //!< Overlimit dropped packet
 
 private:
-  /**
-   * \brief Set the maximum amount of packets that can be stored in this queue
-   *
-   * \param maxPackets amount of packets
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead SetMaxSize()
-   */
-  void SetMaxPackets (uint32_t maxPackets);
-
-  /**
-   * \return the maximum amount of packets that can be stored in this queue
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead GetMaxSize()
-   */
-  uint32_t GetMaxPackets (void) const;
-
-  /**
-   * \brief Set the maximum amount of bytes that can be stored in this queue
-   *
-   * \param maxBytes amount of bytes
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead SetMaxSize()
-   */
-  void SetMaxBytes (uint32_t maxBytes);
-
-  /**
-   * \return the maximum amount of bytes that can be stored in this queue
-   * \deprecated This method will go away in future versions of ns-3.
-   * See instead GetMaxSize()
-   */
-  uint32_t GetMaxBytes (void) const;
-
   friend class::CoDelQueueDiscNewtonStepTest;  // Test code
   friend class::CoDelQueueDiscControlLawTest;  // Test code
   /**
@@ -262,8 +194,6 @@ private:
 
   virtual void InitializeParams (void);
 
-  uint32_t m_maxPackets;                  //!< Max # of packets accepted by the queue
-  uint32_t m_maxBytes;                    //!< Max # of bytes accepted by the queue
   uint32_t m_minBytes;                    //!< Minimum bytes in queue to allow a packet drop
   Time m_interval;                        //!< 100 ms sliding minimum time window width
   Time m_target;                          //!< 5 ms target queue delay
@@ -277,7 +207,6 @@ private:
   uint32_t m_state2;                      //!< Number of times we perform next drop while in dropping state
   uint32_t m_state3;                      //!< Number of times we enter drop state and drop the fist packet
   uint32_t m_states;                      //!< Total number of times we are in state 1, state 2, or state 3
-  QueueDiscMode m_mode;                   //!< The operating mode (Bytes or packets)
 };
 
 } // namespace ns3
