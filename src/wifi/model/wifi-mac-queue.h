@@ -184,29 +184,25 @@ public:
    */
   bool Remove (Ptr<const Packet> packet);
   /**
-   * Return the number of packets having address specified by
-   * <i>type</i> equal to <i>addr</i>.
+   * Return the number of packets having destination address specified by
+   * <i>dest</i>.
    *
    * \param type the given address type
    * \param dest the given destination
    *
    * \return the number of packets
    */
-  uint32_t GetNPacketsByAddress (WifiMacHeader::AddressType type,
-                                 Mac48Address dest);
+  uint32_t GetNPacketsByAddress (Mac48Address dest);
   /**
-   * Return the number of QoS packets having tid equal to <i>tid</i> and address
-   * specified by <i>type</i> equal to <i>addr</i>.
+   * Return the number of QoS packets having tid equal to <i>tid</i> and
+   * destination address equal to <i>dest</i>.
    *
    * \param tid the given TID
-   * \param type the given address type
    * \param dest the given destination
    *
    * \return the number of QoS packets
    */
-  uint32_t GetNPacketsByTidAndAddress (uint8_t tid,
-                                       WifiMacHeader::AddressType type,
-                                       Mac48Address dest);
+  uint32_t GetNPacketsByTidAndAddress (uint8_t tid, Mac48Address dest);
 
   /**
    * \return true if the queue is empty; false otherwise

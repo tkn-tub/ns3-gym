@@ -321,8 +321,7 @@ WifiMacQueue::Remove (Ptr<const Packet> packet)
 }
 
 uint32_t
-WifiMacQueue::GetNPacketsByAddress (WifiMacHeader::AddressType type,
-                                    Mac48Address dest)
+WifiMacQueue::GetNPacketsByAddress (Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
 
@@ -345,8 +344,7 @@ WifiMacQueue::GetNPacketsByAddress (WifiMacHeader::AddressType type,
 }
 
 uint32_t
-WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, WifiMacHeader::AddressType type,
-                                          Mac48Address dest)
+WifiMacQueue::GetNPacketsByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
   uint32_t nPackets = 0;

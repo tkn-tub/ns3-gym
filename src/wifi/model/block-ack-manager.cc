@@ -666,7 +666,7 @@ BlockAckManager::ScheduleBlockAckReqIfNeeded (Mac48Address recipient, uint8_t ti
 
   if ((*it).second.first.IsBlockAckRequestNeeded ()
       || (GetNRetryNeededPackets (recipient, tid) == 0
-          && m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient) == 0))
+          && m_queue->GetNPacketsByTidAndAddress (tid, recipient) == 0))
     {
       OriginatorBlockAckAgreement &agreement = (*it).second.first;
       agreement.CompleteExchange ();
@@ -764,7 +764,7 @@ BlockAckManager::SwitchToBlockAckIfNeeded (Mac48Address recipient, uint8_t tid, 
   NS_ASSERT (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::PENDING));
   if (!ExistsAgreementInState (recipient, tid, OriginatorBlockAckAgreement::UNSUCCESSFUL) && ExistsAgreement (recipient, tid))
     {
-      uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient) +
+      uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient) +
         GetNBufferedPackets (recipient, tid);
       if (packets >= m_blockAckThreshold)
         {

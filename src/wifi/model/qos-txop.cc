@@ -1353,7 +1353,7 @@ QosTxop::SetupBlockAckIfNeeded ()
   NS_LOG_FUNCTION (this);
   uint8_t tid = m_currentHdr.GetQosTid ();
   Mac48Address recipient = m_currentHdr.GetAddr1 ();
-  uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, WifiMacHeader::ADDR1, recipient);
+  uint32_t packets = m_queue->GetNPacketsByTidAndAddress (tid, recipient);
   if ((GetBlockAckThreshold () > 0 && packets >= GetBlockAckThreshold ())
       || (m_mpduAggregator != 0 && m_mpduAggregator->GetMaxAmpduSize () > 0 && packets > 1)
       || m_stationManager->HasVhtSupported ()

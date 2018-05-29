@@ -742,7 +742,7 @@ Txop::SendCfFrame (WifiMacType frameType, Mac48Address addr)
           m_currentHdr.SetRetry ();
         }
     }
-  else if ((m_queue->GetNPacketsByAddress (WifiMacHeader::ADDR1, addr) > 0) && (frameType != WIFI_MAC_CTL_END)) //if no packet for that dest, send to another dest?
+  else if ((m_queue->GetNPacketsByAddress (addr) > 0) && (frameType != WIFI_MAC_CTL_END)) //if no packet for that dest, send to another dest?
     {
       Ptr<WifiMacQueueItem> item = m_queue->DequeueByAddress (WifiMacHeader::ADDR1, addr);
       NS_ASSERT (item != 0);

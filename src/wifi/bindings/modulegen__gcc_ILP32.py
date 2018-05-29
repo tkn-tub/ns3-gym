@@ -18841,14 +18841,14 @@ def register_Ns3WifiMacQueue_methods(root_module, cls):
     cls.add_method('Remove', 
                    'bool', 
                    [param('ns3::Ptr< ns3::Packet const >', 'packet')])
-    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNPacketsByAddress(ns3::WifiMacHeader::AddressType type, ns3::Mac48Address dest) [member function]
+    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNPacketsByAddress(ns3::Mac48Address dest) [member function]
     cls.add_method('GetNPacketsByAddress', 
                    'uint32_t', 
-                   [param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'dest')])
-    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNPacketsByTidAndAddress(uint8_t tid, ns3::WifiMacHeader::AddressType type, ns3::Mac48Address dest) [member function]
+                   [param('ns3::Mac48Address', 'dest')])
+    ## wifi-mac-queue.h (module 'wifi'): uint32_t ns3::WifiMacQueue::GetNPacketsByTidAndAddress(uint8_t tid, ns3::Mac48Address dest) [member function]
     cls.add_method('GetNPacketsByTidAndAddress', 
                    'uint32_t', 
-                   [param('uint8_t', 'tid'), param('ns3::WifiMacHeader::AddressType', 'type'), param('ns3::Mac48Address', 'dest')])
+                   [param('uint8_t', 'tid'), param('ns3::Mac48Address', 'dest')])
     ## wifi-mac-queue.h (module 'wifi'): bool ns3::WifiMacQueue::IsEmpty() [member function]
     cls.add_method('IsEmpty', 
                    'bool', 
