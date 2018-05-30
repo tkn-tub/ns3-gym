@@ -78,7 +78,7 @@ int main (int argc, char *argv[])
   clientHelper.SetAttribute ("OffTime", StringValue ("ns3::UniformRandomVariable"));
   ApplicationContainer clientApps;
 
-  for (uint32_t i = 0; i < d.RightCount (); ++i)
+  for (uint32_t i = 0; i < ((d.RightCount () < d.LeftCount ()) ? d.RightCount () : d.LeftCount ()); ++i)
     {
       // Create an on/off app sending packets to the same leaf right side
       AddressValue remoteAddress (InetSocketAddress (d.GetLeftIpv4Address (i), 1000));
