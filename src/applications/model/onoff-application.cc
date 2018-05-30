@@ -91,6 +91,9 @@ OnOffApplication::GetTypeId (void)
     .AddTraceSource ("Tx", "A new packet is created and is sent",
                      MakeTraceSourceAccessor (&OnOffApplication::m_txTrace),
                      "ns3::Packet::TracedCallback")
+    .AddTraceSource ("TxWithAddresses", "A new packet is created and is sent",
+                     MakeTraceSourceAccessor (&OnOffApplication::m_txTraceWithAddresses),
+                     "ns3::Packet::TwoAddressTracedCallback")
   ;
   return tid;
 }
@@ -283,6 +286,8 @@ void OnOffApplication::SendPacket ()
   m_txTrace (packet);
   m_socket->Send (packet);
   m_totBytes += m_pktSize;
+  Address localAddress;
+  m_socket->GetSockName (localAddress);
   if (InetSocketAddress::IsMatchingType (m_peer))
     {
       NS_LOG_INFO ("At time " << Simulator::Now ().GetSeconds ()
@@ -291,6 +296,7 @@ void OnOffApplication::SendPacket ()
                    << InetSocketAddress::ConvertFrom(m_peer).GetIpv4 ()
                    << " port " << InetSocketAddress::ConvertFrom (m_peer).GetPort ()
                    << " total Tx " << m_totBytes << " bytes");
+      m_txTraceWithAddresses (packet, localAddress, InetSocketAddress::ConvertFrom (m_peer));
     }
   else if (Inet6SocketAddress::IsMatchingType (m_peer))
     {
@@ -300,6 +306,7 @@ void OnOffApplication::SendPacket ()
                    << Inet6SocketAddress::ConvertFrom(m_peer).GetIpv6 ()
                    << " port " << Inet6SocketAddress::ConvertFrom (m_peer).GetPort ()
                    << " total Tx " << m_totBytes << " bytes");
+      m_txTraceWithAddresses (packet, localAddress, Inet6SocketAddress::ConvertFrom(m_peer));
     }
   m_lastStartTime = Simulator::Now ();
   m_residualBits = 0;

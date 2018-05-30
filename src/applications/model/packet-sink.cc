@@ -59,6 +59,9 @@ PacketSink::GetTypeId (void)
                      "A packet has been received",
                      MakeTraceSourceAccessor (&PacketSink::m_rxTrace),
                      "ns3::Packet::AddressTracedCallback")
+    .AddTraceSource ("RxWithAddresses", "A packet has been received",
+                     MakeTraceSourceAccessor (&PacketSink::m_rxTraceWithAddresses),
+                     "ns3::Packet::TwoAddressTracedCallback")
   ;
   return tid;
 }
@@ -165,6 +168,7 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
+  Address localAddress;
   while ((packet = socket->RecvFrom (from)))
     {
       if (packet->GetSize () == 0)
@@ -190,7 +194,9 @@ void PacketSink::HandleRead (Ptr<Socket> socket)
                        << " port " << Inet6SocketAddress::ConvertFrom (from).GetPort ()
                        << " total Rx " << m_totalRx << " bytes");
         }
+      socket->GetSockName (localAddress);
       m_rxTrace (packet, from);
+      m_rxTraceWithAddresses (packet, from, localAddress);
     }
 }
 

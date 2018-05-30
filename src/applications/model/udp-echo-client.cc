@@ -70,6 +70,15 @@ UdpEchoClient::GetTypeId (void)
     .AddTraceSource ("Tx", "A new packet is created and is sent",
                      MakeTraceSourceAccessor (&UdpEchoClient::m_txTrace),
                      "ns3::Packet::TracedCallback")
+    .AddTraceSource ("Rx", "A packet has been received",
+                     MakeTraceSourceAccessor (&UdpEchoClient::m_rxTrace),
+                     "ns3::Packet::TracedCallback")
+    .AddTraceSource ("TxWithAddresses", "A new packet is created and is sent",
+                     MakeTraceSourceAccessor (&UdpEchoClient::m_txTraceWithAddresses),
+                     "ns3::Packet::TwoAddressTracedCallback")
+    .AddTraceSource ("RxWithAddresses", "A packet has been received",
+                     MakeTraceSourceAccessor (&UdpEchoClient::m_rxTraceWithAddresses),
+                     "ns3::Packet::TwoAddressTracedCallback")
   ;
   return tid;
 }
@@ -324,11 +333,20 @@ UdpEchoClient::Send (void)
       //
       p = Create<Packet> (m_size);
     }
+  Address localAddress;
+  m_socket->GetSockName (localAddress);
   // call to the trace sinks before the packet is actually sent,
   // so that tags added to the packet can be sent as well
   m_txTrace (p);
+  if (Ipv4Address::IsMatchingType (m_peerAddress))
+    {
+      m_txTraceWithAddresses (p, localAddress, InetSocketAddress (Ipv4Address::ConvertFrom (m_peerAddress), m_peerPort));
+    }
+  else if (Ipv6Address::IsMatchingType (m_peerAddress))
+    {
+      m_txTraceWithAddresses (p, localAddress, Inet6SocketAddress (Ipv6Address::ConvertFrom (m_peerAddress), m_peerPort));
+    }
   m_socket->Send (p);
-
   ++m_sent;
 
   if (Ipv4Address::IsMatchingType (m_peerAddress))
@@ -364,6 +382,7 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
+  Address localAddress;
   while ((packet = socket->RecvFrom (from)))
     {
       if (InetSocketAddress::IsMatchingType (from))
@@ -378,6 +397,9 @@ UdpEchoClient::HandleRead (Ptr<Socket> socket)
                        Inet6SocketAddress::ConvertFrom (from).GetIpv6 () << " port " <<
                        Inet6SocketAddress::ConvertFrom (from).GetPort ());
         }
+      socket->GetSockName (localAddress);
+      m_rxTrace (packet);
+      m_rxTraceWithAddresses (packet, from, localAddress);
     }
 }
 

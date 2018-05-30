@@ -133,6 +133,9 @@ private:
   /// Traced Callback: received packets, source address.
   TracedCallback<Ptr<const Packet>, const Address &> m_rxTrace;
 
+  /// Callback for tracing the packet Rx events, includes source and destination addresses
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_rxTraceWithAddresses;
+
 };
 
 } // namespace ns3

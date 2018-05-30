@@ -59,6 +59,12 @@ UdpServer::GetTypeId (void)
                    MakeUintegerAccessor (&UdpServer::GetPacketWindowSize,
                                          &UdpServer::SetPacketWindowSize),
                    MakeUintegerChecker<uint16_t> (8,256))
+    .AddTraceSource ("Rx", "A packet has been received",
+                     MakeTraceSourceAccessor (&UdpServer::m_rxTrace),
+                     "ns3::Packet::TracedCallback")
+    .AddTraceSource ("RxWithAddresses", "A packet has been received",
+                     MakeTraceSourceAccessor (&UdpServer::m_rxTraceWithAddresses),
+                     "ns3::Packet::TwoAddressTracedCallback")
   ;
   return tid;
 }
@@ -162,8 +168,12 @@ UdpServer::HandleRead (Ptr<Socket> socket)
   NS_LOG_FUNCTION (this << socket);
   Ptr<Packet> packet;
   Address from;
+  Address localAddress;
   while ((packet = socket->RecvFrom (from)))
     {
+      socket->GetSockName (localAddress);
+      m_rxTrace (packet);
+      m_rxTraceWithAddresses (packet, from, localAddress);
       if (packet->GetSize () > 0)
         {
           SeqTsHeader seqTs;

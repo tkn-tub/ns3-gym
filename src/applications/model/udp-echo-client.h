@@ -172,6 +172,16 @@ private:
 
   /// Callbacks for tracing the packet Tx events
   TracedCallback<Ptr<const Packet> > m_txTrace;
+
+  /// Callbacks for tracing the packet Rx events
+  TracedCallback<Ptr<const Packet> > m_rxTrace;
+  
+  /// Callbacks for tracing the packet Tx events, includes source and destination addresses
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_txTraceWithAddresses;
+  
+  /// Callbacks for tracing the packet Rx events, includes source and destination addresses
+  TracedCallback<Ptr<const Packet>, const Address &, const Address &> m_rxTraceWithAddresses;
+
 };
 
 } // namespace ns3
