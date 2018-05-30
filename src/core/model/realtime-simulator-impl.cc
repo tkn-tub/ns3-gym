@@ -523,8 +523,7 @@ RealtimeSimulatorImpl::Schedule (Time const &delay, EventImpl *impl)
     // here since we are running in a CriticalSection.
     //
     Time tAbsolute = Simulator::Now () + delay;
-    NS_ASSERT_MSG (tAbsolute.IsPositive (), "RealtimeSimulatorImpl::Schedule(): Negative time");
-    NS_ASSERT_MSG (tAbsolute >= TimeStep (m_currentTs), "RealtimeSimulatorImpl::Schedule(): time < m_currentTs");
+    NS_ASSERT_MSG (delay.IsPositive (), "RealtimeSimulatorImpl::Schedule(): Negative delay");
     ev.impl = impl;
     ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
     ev.key.m_context = GetContext ();

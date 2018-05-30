@@ -230,10 +230,9 @@ DefaultSimulatorImpl::Schedule (Time const &delay, EventImpl *event)
   NS_LOG_FUNCTION (this << delay.GetTimeStep () << event);
   NS_ASSERT_MSG (SystemThread::Equals (m_main), "Simulator::Schedule Thread-unsafe invocation!");
 
+  NS_ASSERT_MSG (delay.IsPositive (), "DefaultSimulatorImpl::Schedule(): Negative delay");
   Time tAbsolute = delay + TimeStep (m_currentTs);
 
-  NS_ASSERT (tAbsolute.IsPositive ());
-  NS_ASSERT (tAbsolute >= TimeStep (m_currentTs));
   Scheduler::Event ev;
   ev.impl = event;
   ev.key.m_ts = (uint64_t) tAbsolute.GetTimeStep ();
