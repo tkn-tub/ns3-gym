@@ -86,6 +86,7 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
   <li>The PacketLimit attribute of the FqCoDelQueueDisc class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, has now been removed and cannot be used anymore. Likewise, the methods to get/set the old PacketLimit attribute have been removed as well. The GetMaxSize/SetMaxSize methods of the base QueueDisc class must be used instead.</li>
   <li>The Mode and QueueLimit attributes of the PieQueueDisc class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, have now been removed and cannot be used anymore. Likewise, the methods to get/set the old attributes have been removed as well. The GetMaxSize/SetMaxSize methods of the base QueueDisc class must be used instead.</li>
   <li>The Mode and QueueLimit attributes of the RedQueueDisc class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, have now been removed and cannot be used anymore. Likewise, the methods to get/set the old attributes have been removed as well. The GetMaxSize/SetMaxSize methods of the base QueueDisc class must be used instead.</li>
+  <li> Several traffic generating applications have additional trace sources that export not only the transmitted or received packet but also the source and destination addresses.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
@@ -97,6 +98,7 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
     The previous behavior is simply obtained by not configuring any packet filter.
     Consequently, the FqCoDelIpv{4,6}PacketFilter classes have been removed.</li>
   <li> ARP packets now pass through the traffic control layer, as in Linux. </li>
+  <li> The maximum size UDP packet of the UdpClient application is no longer limited to 1500 bytes.</li>
 </ul>
 
 <hr>
