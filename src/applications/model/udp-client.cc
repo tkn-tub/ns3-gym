@@ -68,7 +68,7 @@ UdpClient::GetTypeId (void)
                    "Size of packets generated. The minimum packet size is 12 bytes which is the size of the header carrying the sequence number and the time stamp.",
                    UintegerValue (1024),
                    MakeUintegerAccessor (&UdpClient::m_size),
-                   MakeUintegerChecker<uint32_t> (12,1500))
+                   MakeUintegerChecker<uint32_t> (12,65507))
   ;
   return tid;
 }
