@@ -135,7 +135,7 @@ Bug772ChainTest::CreateDevices ()
   wifiPhy.Set ("TxGain", DoubleValue (1.0)); //this configuration should go away in future revision to the test
   wifiPhy.Set ("RxGain", DoubleValue (1.0)); //this configuration should go away in future revision to the test
   WifiHelper wifi;
-  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"));
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager", "DataMode", StringValue ("OfdmRate6Mbps"), "RtsCtsThreshold", StringValue ("2200"), "MaxSlrc", UintegerValue (7));
   NetDeviceContainer devices = wifi.Install (wifiPhy, wifiMac, *m_nodes);
 
   // Assign fixed stream numbers to wifi and channel random variables

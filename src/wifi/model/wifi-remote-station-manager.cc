@@ -342,7 +342,7 @@ WifiRemoteStationManager::GetTypeId (void)
     .AddAttribute ("MaxSlrc",
                    "The maximum number of retransmission attempts for a DATA packet. "
                    "This value will not have any effect on some rate control algorithms.",
-                   UintegerValue (7),
+                   UintegerValue (4),
                    MakeUintegerAccessor (&WifiRemoteStationManager::SetMaxSlrc),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("RtsCtsThreshold",
@@ -355,7 +355,7 @@ WifiRemoteStationManager::GetTypeId (void)
                    "If the size of the PSDU is bigger than this value, we fragment it such that the size of the fragments are equal or smaller. "
                    "This value does not apply when it is carried in an A-MPDU. "
                    "This value will not have any effect on some rate control algorithms.",
-                   UintegerValue (2346),
+                   UintegerValue (65535),
                    MakeUintegerAccessor (&WifiRemoteStationManager::DoSetFragmentationThreshold,
                                          &WifiRemoteStationManager::DoGetFragmentationThreshold),
                    MakeUintegerChecker<uint32_t> ())
