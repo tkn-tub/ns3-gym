@@ -1201,7 +1201,7 @@ GlobalRouter::BuildNetworkLSAs (NetDeviceContainer c)
       //
       ClearBridgesVisited ();
       Ptr<Channel> ch = ndLocal->GetChannel ();
-      uint32_t nDevices = ch->GetNDevices ();
+      std::size_t nDevices = ch->GetNDevices ();
       NS_ASSERT (nDevices);
       NetDeviceContainer deviceList = FindAllNonBridgedDevicesOnLink (ch);
       NS_LOG_LOGIC ("Found " << deviceList.GetN () << " non-bridged devices on channel");
@@ -1270,7 +1270,7 @@ GlobalRouter::FindAllNonBridgedDevicesOnLink (Ptr<Channel> ch) const
   NS_LOG_FUNCTION (this << ch);
   NetDeviceContainer c;
 
-  for (uint32_t i = 0; i < ch->GetNDevices (); i++)
+  for (std::size_t i = 0; i < ch->GetNDevices (); i++)
     {
       Ptr<NetDevice> nd = ch->GetDevice (i);
       NS_LOG_LOGIC ("checking to see if the device " << nd << " is bridged");

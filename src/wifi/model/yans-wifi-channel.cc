@@ -128,14 +128,14 @@ YansWifiChannel::Receive (Ptr<YansWifiPhy> phy, Ptr<Packet> packet, double rxPow
   phy->StartReceivePreambleAndHeader (packet, DbmToW (rxPowerDbm + phy->GetRxGain ()), duration);
 }
 
-uint32_t
+std::size_t
 YansWifiChannel::GetNDevices (void) const
 {
-  return static_cast<uint32_t> (m_phyList.size ());
+  return m_phyList.size ();
 }
 
 Ptr<NetDevice>
-YansWifiChannel::GetDevice (uint32_t i) const
+YansWifiChannel::GetDevice (std::size_t i) const
 {
   return m_phyList[i]->GetDevice ()->GetObject<NetDevice> ();
 }

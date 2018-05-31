@@ -53,8 +53,8 @@ public:
   virtual void Add (Ptr<SimpleNetDevice> device);
 
   // inherited from ns3::Channel
-  virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+  virtual std::size_t GetNDevices (void) const;
+  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   /**
    * \brief Set the delay for the odd packets (even ones are not delayed)

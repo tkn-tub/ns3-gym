@@ -124,8 +124,8 @@ public:
 
 
   // inherited from Channel
-  virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+  virtual std::size_t GetNDevices (void) const;
+  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   /**
    * Get the frequency-dependent propagation loss model.
@@ -198,7 +198,7 @@ private:
   /**
    * Number of devices connected to the channel.
    */
-  uint32_t m_numDevices;
+  std::size_t m_numDevices;
 
   /**
    * Maximum loss [dB].

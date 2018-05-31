@@ -561,7 +561,7 @@ const std::vector<std::string>
 AnimationInterface::GetElementsFromContext (const std::string& context) const
 {
   std::vector <std::string> elements;
-  size_t pos1=0, pos2;
+  std::size_t pos1=0, pos2;
   while (pos1 != context.npos)
   {
     pos1 = context.find ("/",pos1);
@@ -1956,8 +1956,8 @@ AnimationInterface::WriteLinkProperties ()
          else if (channelType == std::string ("ns3::PointToPointChannel"))
             { // Since these are duplex links, we only need to dump
               // if srcid < dstid
-              uint32_t nChDev = ch->GetNDevices ();
-              for (uint32_t j = 0; j < nChDev; ++j)
+              std::size_t nChDev = ch->GetNDevices ();
+              for (std::size_t j = 0; j < nChDev; ++j)
                 {
                   Ptr<NetDevice> chDev = ch->GetDevice (j);
                   uint32_t n2Id = chDev->GetNode ()->GetId ();

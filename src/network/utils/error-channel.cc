@@ -135,14 +135,14 @@ ErrorChannel::Add (Ptr<SimpleNetDevice> device)
   m_devices.push_back (device);
 }
 
-uint32_t
+std::size_t
 ErrorChannel::GetNDevices (void) const
 {
   return m_devices.size ();
 }
 
 Ptr<NetDevice>
-ErrorChannel::GetDevice (uint32_t i) const
+ErrorChannel::GetDevice (std::size_t i) const
 {
   return m_devices[i];
 }

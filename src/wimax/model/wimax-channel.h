@@ -55,12 +55,12 @@ public:
   /**
    * \return the number of attached devices
    */
-  uint32_t GetNDevices (void) const;
+  std::size_t GetNDevices (void) const;
   /**
    * \param i the ith device
    * \return the ith attached device
    */
-  Ptr<NetDevice> GetDevice (uint32_t i) const;
+  Ptr<NetDevice> GetDevice (std::size_t i) const;
 
  /**
   * Assign a fixed random variable stream number to the random variables
@@ -83,13 +83,13 @@ private:
    * Get number of devices on the channel
    * \returns the number of devices
    */
-  virtual uint32_t DoGetNDevices (void) const = 0;
+  virtual std::size_t DoGetNDevices (void) const = 0;
   /**
    * Get device corresponding to index
    * \param i the device index
    * \returns the device
    */
-  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const = 0;
+  virtual Ptr<NetDevice> DoGetDevice (std::size_t i) const = 0;
 };
 
 } // namespace ns3

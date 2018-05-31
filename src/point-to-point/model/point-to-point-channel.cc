@@ -106,7 +106,7 @@ PointToPointChannel::TransmitStart (
   return true;
 }
 
-uint32_t 
+std::size_t
 PointToPointChannel::GetNDevices (void) const
 {
   NS_LOG_FUNCTION_NOARGS ();
@@ -114,7 +114,7 @@ PointToPointChannel::GetNDevices (void) const
 }
 
 Ptr<PointToPointNetDevice>
-PointToPointChannel::GetPointToPointDevice (uint32_t i) const
+PointToPointChannel::GetPointToPointDevice (std::size_t i) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   NS_ASSERT (i < 2);
@@ -122,7 +122,7 @@ PointToPointChannel::GetPointToPointDevice (uint32_t i) const
 }
 
 Ptr<NetDevice>
-PointToPointChannel::GetDevice (uint32_t i) const
+PointToPointChannel::GetDevice (std::size_t i) const
 {
   NS_LOG_FUNCTION_NOARGS ();
   return GetPointToPointDevice (i);

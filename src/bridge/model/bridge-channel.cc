@@ -61,7 +61,7 @@ BridgeChannel::AddChannel (Ptr<Channel> bridgedChannel)
   m_bridgedChannels.push_back (bridgedChannel);
 }
 
-uint32_t
+std::size_t
 BridgeChannel::GetNDevices (void) const
 {
   uint32_t ndevices = 0;
@@ -75,9 +75,9 @@ BridgeChannel::GetNDevices (void) const
 
 
 Ptr<NetDevice>
-BridgeChannel::GetDevice (uint32_t i) const
+BridgeChannel::GetDevice (std::size_t i) const
 {
-  uint32_t ndevices = 0;
+  std::size_t ndevices = 0;
   for (std::vector< Ptr<Channel> >::const_iterator iter = m_bridgedChannels.begin ();
        iter != m_bridgedChannels.end (); iter++)
     {

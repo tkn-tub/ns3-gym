@@ -653,7 +653,7 @@ PointToPointNetDevice::GetRemote (void) const
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_channel->GetNDevices () == 2);
-  for (uint32_t i = 0; i < m_channel->GetNDevices (); ++i)
+  for (std::size_t i = 0; i < m_channel->GetNDevices (); ++i)
     {
       Ptr<NetDevice> tmp = m_channel->GetDevice (i);
       if (tmp != this)

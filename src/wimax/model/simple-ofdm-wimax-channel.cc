@@ -121,16 +121,16 @@ SimpleOfdmWimaxChannel::DoAttach (Ptr<WimaxPhy> phy)
   m_phyList.push_back (o_phy);
 }
 
-uint32_t
+std::size_t
 SimpleOfdmWimaxChannel::DoGetNDevices (void) const
 {
   return m_phyList.size ();
 }
 
 Ptr<NetDevice>
-SimpleOfdmWimaxChannel::DoGetDevice (uint32_t index) const
+SimpleOfdmWimaxChannel::DoGetDevice (std::size_t index) const
 {
-  uint32_t j = 0;
+  std::size_t j = 0;
   for (std::list<Ptr<SimpleOfdmWimaxPhy> >::const_iterator iter = m_phyList.begin (); iter != m_phyList.end (); ++iter)
     {
       if (j == index)

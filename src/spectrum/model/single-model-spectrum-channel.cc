@@ -207,7 +207,6 @@ SingleModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
             }
         }
     }
-
 }
 
 void
@@ -217,23 +216,19 @@ SingleModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<S
   receiver->StartRx (params);
 }
 
-
-
-uint32_t
+std::size_t
 SingleModelSpectrumChannel::GetNDevices (void) const
 {
   NS_LOG_FUNCTION (this);
   return m_phyList.size ();
 }
 
-
 Ptr<NetDevice>
-SingleModelSpectrumChannel::GetDevice (uint32_t i) const
+SingleModelSpectrumChannel::GetDevice (std::size_t i) const
 {
   NS_LOG_FUNCTION (this << i);
   return m_phyList.at (i)->GetDevice ()->GetObject<NetDevice> ();
 }
-
 
 void
 SingleModelSpectrumChannel::AddPropagationLossModel (Ptr<PropagationLossModel> loss)

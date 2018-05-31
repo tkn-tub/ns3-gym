@@ -397,18 +397,14 @@ MultiModelSpectrumChannel::StartRx (Ptr<SpectrumSignalParameters> params, Ptr<Sp
   receiver->StartRx (params);
 }
 
-
-
-uint32_t
+std::size_t
 MultiModelSpectrumChannel::GetNDevices (void) const
 {
   return m_numDevices;
-
 }
 
-
 Ptr<NetDevice>
-MultiModelSpectrumChannel::GetDevice (uint32_t i) const
+MultiModelSpectrumChannel::GetDevice (std::size_t i) const
 {
   NS_ASSERT (i < m_numDevices);
   // this method implementation is computationally intensive. This
@@ -419,7 +415,7 @@ MultiModelSpectrumChannel::GetDevice (uint32_t i) const
   // acceptable as it is not used much at run time (often not at all).
   // On the other hand, having slow SpectrumModel conversion would be
   // less acceptable. 
-  uint32_t j = 0;
+  std::size_t j = 0;
   for (RxSpectrumModelInfoMap_t::const_iterator rxInfoIterator = m_rxSpectrumModelInfoMap.begin ();
        rxInfoIterator !=  m_rxSpectrumModelInfoMap.end ();
        ++rxInfoIterator)

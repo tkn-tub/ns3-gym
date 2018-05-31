@@ -256,7 +256,7 @@ public:
    * \return Returns the total number of devices including devices
    * that have been detached from the channel.
    */
-  virtual uint32_t GetNDevices (void) const;
+  virtual std::size_t GetNDevices (void) const;
 
   /**
    * \return Get a NetDevice pointer to a connected network device.
@@ -265,7 +265,7 @@ public:
    * \return Returns the pointer to the net device that is associated
    * with deviceId i.
    */
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   /**
    * \return Get a CsmaNetDevice pointer to a connected network device.
@@ -275,7 +275,7 @@ public:
    * \return Returns the pointer to the net device that is associated
    * with deviceId i.
    */
-  Ptr<CsmaNetDevice> GetCsmaDevice (uint32_t i) const;
+  Ptr<CsmaNetDevice> GetCsmaDevice (std::size_t i) const;
 
   /**
    * Get the assigned data rate of the channel

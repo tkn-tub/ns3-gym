@@ -111,7 +111,7 @@ private:
    * Get number of devices function
    * \returns the number of devices
    */
-  uint32_t DoGetNDevices (void) const;
+  std::size_t DoGetNDevices (void) const;
   /**
    * End send dummy block function
    * \param rxphy the Ptr<SimpleOfdmWimaxPhy>
@@ -123,7 +123,7 @@ private:
    * \param i the device index
    * \returns the device
    */
-  Ptr<NetDevice> DoGetDevice (uint32_t i) const;
+  Ptr<NetDevice> DoGetDevice (std::size_t i) const;
   Ptr<PropagationLossModel> m_loss; ///< loss
 };
 

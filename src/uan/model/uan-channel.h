@@ -61,8 +61,8 @@ public:
   static TypeId GetTypeId (void);
 
   // Inherited methods
-  virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+  virtual std::size_t GetNDevices (void) const;
+  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   /**
    * Send a packet out on the channel.

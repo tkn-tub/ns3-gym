@@ -58,8 +58,8 @@ public:
 
 
   // inherited from Channel
-  virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+  virtual std::size_t GetNDevices (void) const;
+  virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
   /// Container: SpectrumPhy objects
   typedef std::vector<Ptr<SpectrumPhy> > PhyList;

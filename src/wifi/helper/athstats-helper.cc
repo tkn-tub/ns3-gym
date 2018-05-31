@@ -90,7 +90,7 @@ AthstatsHelper::EnableAthstats (std::string filename, NodeContainer n)
   for (NodeContainer::Iterator i = n.Begin (); i != n.End (); ++i)
     {
       Ptr<Node> node = *i;
-      for (uint32_t j = 0; j < node->GetNDevices (); ++j)
+      for (std::size_t j = 0; j < node->GetNDevices (); ++j)
         {
           devs.Add (node->GetDevice (j));
         }

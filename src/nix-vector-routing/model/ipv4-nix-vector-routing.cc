@@ -307,7 +307,7 @@ Ipv4NixVectorRouting::GetAdjacentNetDevices (Ptr<NetDevice> netDevice, Ptr<Chann
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  for (uint32_t i = 0; i < channel->GetNDevices (); i++)
+  for (std::size_t i = 0; i < channel->GetNDevices (); i++)
     {
       Ptr<NetDevice> remoteDevice = channel->GetDevice (i);
       if (remoteDevice != netDevice)
