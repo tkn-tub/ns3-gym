@@ -36,9 +36,6 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -109,14 +106,8 @@ def register_types(module):
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
     ## log.h (module 'core'): ns3::LogComponent [class]
     module.add_class('LogComponent', import_from_module='ns.core')
-    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >', u'ns3::LogComponent::ComponentList')
-    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >*', u'ns3::LogComponent::ComponentList*')
-    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >&', u'ns3::LogComponent::ComponentList&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )', u'ns3::Mac48Address::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )*', u'ns3::Mac48Address::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )&', u'ns3::Mac48Address::TracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
@@ -125,14 +116,8 @@ def register_types(module):
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', u'ns3::NetDeviceContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator*', u'ns3::NetDeviceContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator&', u'ns3::NetDeviceContainer::Iterator&')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
     module.add_class('NodeContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeContainer::Iterator&')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -227,9 +212,6 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
-    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
-    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
-    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## wimax-tlv.h (module 'wimax'): ns3::U16TlvValue [class]
     module.add_class('U16TlvValue', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::U32TlvValue [class]
@@ -240,9 +222,6 @@ def register_types(module):
     module.add_class('UcdChannelEncodings', allow_subclassing=True)
     ## wimax-tlv.h (module 'wimax'): ns3::VectorTlvValue [class]
     module.add_class('VectorTlvValue', parent=root_module['ns3::TlvValue'])
-    typehandlers.add_type_alias(u'std::vector< ns3::Tlv * > const_iterator', u'ns3::VectorTlvValue::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Tlv * > const_iterator*', u'ns3::VectorTlvValue::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Tlv * > const_iterator&', u'ns3::VectorTlvValue::Iterator&')
     ## wimax-helper.h (module 'wimax'): ns3::WimaxHelper [class]
     module.add_class('WimaxHelper', parent=[root_module['ns3::PcapHelperForDevice'], root_module['ns3::AsciiTraceHelperForDevice']])
     ## wimax-helper.h (module 'wimax'): ns3::WimaxHelper::NetDeviceType [enumeration]
@@ -275,9 +254,6 @@ def register_types(module):
     module.add_class('Ipv4AddressTlvValue', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::Ipv4AddressTlvValue::ipv4Addr [struct]
     module.add_class('ipv4Addr', outer_class=root_module['ns3::Ipv4AddressTlvValue'])
-    typehandlers.add_type_alias(u'std::vector< ns3::Ipv4AddressTlvValue::ipv4Addr > const_iterator', u'ns3::Ipv4AddressTlvValue::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ipv4AddressTlvValue::ipv4Addr > const_iterator*', u'ns3::Ipv4AddressTlvValue::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ipv4AddressTlvValue::ipv4Addr > const_iterator&', u'ns3::Ipv4AddressTlvValue::Iterator&')
     ## wimax-mac-header.h (module 'wimax'): ns3::MacHeaderType [class]
     module.add_class('MacHeaderType', parent=root_module['ns3::Header'])
     ## wimax-mac-header.h (module 'wimax'): ns3::MacHeaderType::HeaderType [enumeration]
@@ -298,27 +274,18 @@ def register_types(module):
     module.add_class('OfdmUcdChannelEncodings', parent=root_module['ns3::UcdChannelEncodings'])
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
     module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )', u'ns3::PacketBurst::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )*', u'ns3::PacketBurst::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )&', u'ns3::PacketBurst::TracedCallback&')
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
     module.add_class('PcapFileWrapper', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## wimax-tlv.h (module 'wimax'): ns3::PortRangeTlvValue [class]
     module.add_class('PortRangeTlvValue', parent=root_module['ns3::TlvValue'])
     ## wimax-tlv.h (module 'wimax'): ns3::PortRangeTlvValue::PortRange [struct]
     module.add_class('PortRange', outer_class=root_module['ns3::PortRangeTlvValue'])
-    typehandlers.add_type_alias(u'std::vector< ns3::PortRangeTlvValue::PortRange > const_iterator', u'ns3::PortRangeTlvValue::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::PortRangeTlvValue::PortRange > const_iterator*', u'ns3::PortRangeTlvValue::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::PortRangeTlvValue::PortRange > const_iterator&', u'ns3::PortRangeTlvValue::Iterator&')
     ## ul-job.h (module 'wimax'): ns3::PriorityUlJob [class]
     module.add_class('PriorityUlJob', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::PropagationLossModel [class]
     module.add_class('PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## wimax-tlv.h (module 'wimax'): ns3::ProtocolTlvValue [class]
     module.add_class('ProtocolTlvValue', parent=root_module['ns3::TlvValue'])
-    typehandlers.add_type_alias(u'std::vector< unsigned char > const_iterator', u'ns3::ProtocolTlvValue::Iterator')
-    typehandlers.add_type_alias(u'std::vector< unsigned char > const_iterator*', u'ns3::ProtocolTlvValue::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< unsigned char > const_iterator&', u'ns3::ProtocolTlvValue::Iterator&')
     ## propagation-loss-model.h (module 'propagation'): ns3::RandomPropagationLossModel [class]
     module.add_class('RandomPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## random-variable-stream.h (module 'core'): ns3::RandomVariableStream [class]
@@ -407,9 +374,6 @@ def register_types(module):
     module.add_class('WeibullRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## wimax-connection.h (module 'wimax'): ns3::WimaxConnection [class]
     module.add_class('WimaxConnection', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::Packet const > >', u'ns3::WimaxConnection::FragmentsQueue')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::Packet const > >*', u'ns3::WimaxConnection::FragmentsQueue*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::Packet const > >&', u'ns3::WimaxConnection::FragmentsQueue&')
     ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue [class]
     module.add_class('WimaxMacQueue', parent=root_module['ns3::Object'])
     ## wimax-mac-queue.h (module 'wimax'): ns3::WimaxMacQueue::QueueElement [struct]
@@ -532,25 +496,10 @@ def register_types(module):
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) (  )', u'ns3::NetDevice::LinkChangeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) (  )*', u'ns3::NetDevice::LinkChangeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) (  )&', u'ns3::NetDevice::LinkChangeTracedCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::ReceiveCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::ReceiveCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::ReceiveCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::PromiscReceiveCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::PromiscReceiveCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::ProtocolHandler')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::ProtocolHandler*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::ProtocolHandler&')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::DeviceAdditionListener')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::DeviceAdditionListener*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
     module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -561,21 +510,6 @@ def register_types(module):
     module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )*', u'ns3::Packet::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )&', u'ns3::Packet::TracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )', u'ns3::Packet::SizeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )*', u'ns3::Packet::SizeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )&', u'ns3::Packet::SizeTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )', u'ns3::Packet::SinrTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', u'ns3::Packet::SinrTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## simple-ofdm-wimax-phy.h (module 'wimax'): ns3::SimpleOfdmWimaxPhy [class]
@@ -598,9 +532,6 @@ def register_types(module):
     module.add_enum('Direction', ['DIRECTION_DOWNLINK', 'DIRECTION_UPLINK'], outer_class=root_module['ns3::WimaxNetDevice'])
     ## wimax-net-device.h (module 'wimax'): ns3::WimaxNetDevice::RangingStatus [enumeration]
     module.add_enum('RangingStatus', ['RANGING_STATUS_EXPIRED', 'RANGING_STATUS_CONTINUE', 'RANGING_STATUS_ABORT', 'RANGING_STATUS_SUCCESS'], outer_class=root_module['ns3::WimaxNetDevice'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address const & )', u'ns3::WimaxNetDevice::TxRxTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address const & )*', u'ns3::WimaxNetDevice::TxRxTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address const & )&', u'ns3::WimaxNetDevice::TxRxTracedCallback&')
     ## address.h (module 'network'): ns3::AddressChecker [class]
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
@@ -663,9 +594,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::LogNodePrinter')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::LogNodePrinter*')
     typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::LogNodePrinter&')
-    typehandlers.add_type_alias(u'std::vector< bool >', u'ns3::bvec')
-    typehandlers.add_type_alias(u'std::vector< bool >*', u'ns3::bvec*')
-    typehandlers.add_type_alias(u'std::vector< bool >&', u'ns3::bvec&')
+    typehandlers.add_type_alias(u'std::vector< bool, std::allocator< bool > >', u'ns3::bvec')
+    typehandlers.add_type_alias(u'std::vector< bool, std::allocator< bool > >*', u'ns3::bvec*')
+    typehandlers.add_type_alias(u'std::vector< bool, std::allocator< bool > >&', u'ns3::bvec&')
     
     ## Register a nested module for the namespace FatalImpl
     
@@ -9229,19 +9160,19 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
     ## channel.h (module 'network'): ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## channel.h (module 'network'): uint32_t ns3::Channel::GetNDevices() const [member function]
+    ## channel.h (module 'network'): std::size_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]
@@ -11550,14 +11481,14 @@ def register_Ns3WimaxChannel_methods(root_module, cls):
     cls.add_method('Attach', 
                    'void', 
                    [param('ns3::Ptr< ns3::WimaxPhy >', 'phy')])
-    ## wimax-channel.h (module 'wimax'): ns3::Ptr<ns3::NetDevice> ns3::WimaxChannel::GetDevice(uint32_t i) const [member function]
+    ## wimax-channel.h (module 'wimax'): ns3::Ptr<ns3::NetDevice> ns3::WimaxChannel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, is_virtual=True)
-    ## wimax-channel.h (module 'wimax'): uint32_t ns3::WimaxChannel::GetNDevices() const [member function]
+    ## wimax-channel.h (module 'wimax'): std::size_t ns3::WimaxChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## wimax-channel.h (module 'wimax'): static ns3::TypeId ns3::WimaxChannel::GetTypeId() [member function]
@@ -11570,14 +11501,14 @@ def register_Ns3WimaxChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WimaxPhy >', 'phy')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
-    ## wimax-channel.h (module 'wimax'): ns3::Ptr<ns3::NetDevice> ns3::WimaxChannel::DoGetDevice(uint32_t i) const [member function]
+    ## wimax-channel.h (module 'wimax'): ns3::Ptr<ns3::NetDevice> ns3::WimaxChannel::DoGetDevice(std::size_t i) const [member function]
     cls.add_method('DoGetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
-    ## wimax-channel.h (module 'wimax'): uint32_t ns3::WimaxChannel::DoGetNDevices() const [member function]
+    ## wimax-channel.h (module 'wimax'): std::size_t ns3::WimaxChannel::DoGetNDevices() const [member function]
     cls.add_method('DoGetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
     return
@@ -12465,14 +12396,14 @@ def register_Ns3SimpleOfdmWimaxChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::WimaxPhy >', 'phy')], 
                    visibility='private', is_virtual=True)
-    ## simple-ofdm-wimax-channel.h (module 'wimax'): ns3::Ptr<ns3::NetDevice> ns3::SimpleOfdmWimaxChannel::DoGetDevice(uint32_t i) const [member function]
+    ## simple-ofdm-wimax-channel.h (module 'wimax'): ns3::Ptr<ns3::NetDevice> ns3::SimpleOfdmWimaxChannel::DoGetDevice(std::size_t i) const [member function]
     cls.add_method('DoGetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, visibility='private', is_virtual=True)
-    ## simple-ofdm-wimax-channel.h (module 'wimax'): uint32_t ns3::SimpleOfdmWimaxChannel::DoGetNDevices() const [member function]
+    ## simple-ofdm-wimax-channel.h (module 'wimax'): std::size_t ns3::SimpleOfdmWimaxChannel::DoGetNDevices() const [member function]
     cls.add_method('DoGetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, visibility='private', is_virtual=True)
     return
@@ -12865,17 +12796,17 @@ def register_functions(root_module):
     module.add_function('CRC8Calculate', 
                         'uint8_t', 
                         [param('uint8_t const *', 'data'), param('int', 'length')])
-    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
-    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):

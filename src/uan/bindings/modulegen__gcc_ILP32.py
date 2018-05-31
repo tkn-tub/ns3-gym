@@ -28,9 +28,6 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -67,9 +64,6 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## device-energy-model-container.h (module 'energy'): ns3::DeviceEnergyModelContainer [class]
     module.add_class('DeviceEnergyModelContainer', import_from_module='ns.energy')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::DeviceEnergyModel > > const_iterator', u'ns3::DeviceEnergyModelContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::DeviceEnergyModel > > const_iterator*', u'ns3::DeviceEnergyModelContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::DeviceEnergyModel > > const_iterator&', u'ns3::DeviceEnergyModelContainer::Iterator&')
     ## energy-model-helper.h (module 'energy'): ns3::DeviceEnergyModelHelper [class]
     module.add_class('DeviceEnergyModelHelper', allow_subclassing=True, import_from_module='ns.energy')
     ## energy-model-helper.h (module 'energy'): ns3::EnergySourceHelper [class]
@@ -92,9 +86,6 @@ def register_types(module):
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )', u'ns3::Mac48Address::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )*', u'ns3::Mac48Address::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )&', u'ns3::Mac48Address::TracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac8-address.h (module 'network'): ns3::Mac8Address [class]
@@ -103,14 +94,8 @@ def register_types(module):
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', u'ns3::NetDeviceContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator*', u'ns3::NetDeviceContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator&', u'ns3::NetDeviceContainer::Iterator&')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
     module.add_class('NodeContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeContainer::Iterator&')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -161,9 +146,6 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
-    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
-    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
-    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## uan-helper.h (module 'uan'): ns3::UanHelper [class]
     module.add_class('UanHelper')
     ## uan-tx-mode.h (module 'uan'): ns3::UanModesList [class]
@@ -172,9 +154,6 @@ def register_types(module):
     module.add_class('UanPacketArrival')
     ## uan-prop-model.h (module 'uan'): ns3::UanPdp [class]
     module.add_class('UanPdp')
-    typehandlers.add_type_alias(u'std::vector< ns3::Tap > const_iterator', u'ns3::UanPdp::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Tap > const_iterator*', u'ns3::UanPdp::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Tap > const_iterator&', u'ns3::UanPdp::Iterator&')
     ## uan-phy.h (module 'uan'): ns3::UanPhyListener [class]
     module.add_class('UanPhyListener', allow_subclassing=True)
     ## uan-header-common.h (module 'uan'): ns3::UanProtocolBits [struct]
@@ -183,9 +162,6 @@ def register_types(module):
     module.add_class('UanTxMode')
     ## uan-tx-mode.h (module 'uan'): ns3::UanTxMode::ModulationType [enumeration]
     module.add_enum('ModulationType', ['PSK', 'QAM', 'FSK', 'OTHER'], outer_class=root_module['ns3::UanTxMode'])
-    typehandlers.add_type_alias(u'ns3::UanTxMode::ModulationType', u'ns3::UanTxMode::ModulationType')
-    typehandlers.add_type_alias(u'ns3::UanTxMode::ModulationType*', u'ns3::UanTxMode::ModulationType*')
-    typehandlers.add_type_alias(u'ns3::UanTxMode::ModulationType&', u'ns3::UanTxMode::ModulationType&')
     ## uan-tx-mode.h (module 'uan'): ns3::UanTxModeFactory [class]
     module.add_class('UanTxModeFactory')
     ## vector.h (module 'core'): ns3::Vector2D [class]
@@ -256,28 +232,16 @@ def register_types(module):
     module.add_class('UanHeaderRcRts', parent=root_module['ns3::Header'])
     ## uan-mac.h (module 'uan'): ns3::UanMac [class]
     module.add_class('UanMac', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::UanTxMode )', u'ns3::UanMac::PacketModeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::UanTxMode )*', u'ns3::UanMac::PacketModeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::UanTxMode )&', u'ns3::UanMac::PacketModeTracedCallback&')
     ## uan-mac-aloha.h (module 'uan'): ns3::UanMacAloha [class]
     module.add_class('UanMacAloha', parent=root_module['ns3::UanMac'])
     ## uan-mac-cw.h (module 'uan'): ns3::UanMacCw [class]
     module.add_class('UanMacCw', parent=[root_module['ns3::UanMac'], root_module['ns3::UanPhyListener']])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, uint16_t )', u'ns3::UanMacCw::QueueTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, uint16_t )*', u'ns3::UanMacCw::QueueTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, uint16_t )&', u'ns3::UanMacCw::QueueTracedCallback&')
     ## uan-mac-rc.h (module 'uan'): ns3::UanMacRc [class]
     module.add_class('UanMacRc', parent=root_module['ns3::UanMac'])
     ## uan-mac-rc.h (module 'uan'): ns3::UanMacRc [enumeration]
     module.add_enum('', ['TYPE_DATA', 'TYPE_GWPING', 'TYPE_RTS', 'TYPE_CTS', 'TYPE_ACK'], outer_class=root_module['ns3::UanMacRc'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, uint32_t )', u'ns3::UanMacRc::QueueTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, uint32_t )*', u'ns3::UanMacRc::QueueTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, uint32_t )&', u'ns3::UanMacRc::QueueTracedCallback&')
     ## uan-mac-rc-gw.h (module 'uan'): ns3::UanMacRcGw [class]
     module.add_class('UanMacRcGw', parent=root_module['ns3::UanMac'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time, uint32_t, uint32_t, double, uint32_t, double )', u'ns3::UanMacRcGw::CycleCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time, uint32_t, uint32_t, double, uint32_t, double )*', u'ns3::UanMacRcGw::CycleCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time, uint32_t, uint32_t, double, uint32_t, double )&', u'ns3::UanMacRcGw::CycleCallback&')
     ## uan-noise-model.h (module 'uan'): ns3::UanNoiseModel [class]
     module.add_class('UanNoiseModel', parent=root_module['ns3::Object'])
     ## uan-noise-model-default.h (module 'uan'): ns3::UanNoiseModelDefault [class]
@@ -286,15 +250,6 @@ def register_types(module):
     module.add_class('UanPhy', parent=root_module['ns3::Object'])
     ## uan-phy.h (module 'uan'): ns3::UanPhy::State [enumeration]
     module.add_enum('State', ['IDLE', 'CCABUSY', 'RX', 'TX', 'SLEEP', 'DISABLED'], outer_class=root_module['ns3::UanPhy'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::UanPhy::RxOkCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::UanPhy::RxOkCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::UanTxMode, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::UanPhy::RxOkCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::UanPhy::RxErrCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::UanPhy::RxErrCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::UanPhy::RxErrCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double, ns3::UanTxMode )', u'ns3::UanPhy::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double, ns3::UanTxMode )*', u'ns3::UanPhy::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double, ns3::UanTxMode )&', u'ns3::UanPhy::TracedCallback&')
     ## uan-phy.h (module 'uan'): ns3::UanPhyCalcSinr [class]
     module.add_class('UanPhyCalcSinr', parent=root_module['ns3::Object'])
     ## uan-phy-gen.h (module 'uan'): ns3::UanPhyCalcSinrDefault [class]
@@ -325,12 +280,6 @@ def register_types(module):
     module.add_class('UanTransducer', parent=root_module['ns3::Object'])
     ## uan-transducer.h (module 'uan'): ns3::UanTransducer::State [enumeration]
     module.add_enum('State', ['TX', 'RX'], outer_class=root_module['ns3::UanTransducer'])
-    typehandlers.add_type_alias(u'std::list< ns3::UanPacketArrival >', u'ns3::UanTransducer::ArrivalList')
-    typehandlers.add_type_alias(u'std::list< ns3::UanPacketArrival >*', u'ns3::UanTransducer::ArrivalList*')
-    typehandlers.add_type_alias(u'std::list< ns3::UanPacketArrival >&', u'ns3::UanTransducer::ArrivalList&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanPhy > >', u'ns3::UanTransducer::UanPhyList')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanPhy > >*', u'ns3::UanTransducer::UanPhyList*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanPhy > >&', u'ns3::UanTransducer::UanPhyList&')
     ## uan-transducer-hd.h (module 'uan'): ns3::UanTransducerHd [class]
     module.add_class('UanTransducerHd', parent=root_module['ns3::UanTransducer'])
     ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable [class]
@@ -365,9 +314,6 @@ def register_types(module):
     module.add_class('DeterministicRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## device-energy-model.h (module 'energy'): ns3::DeviceEnergyModel [class]
     module.add_class('DeviceEnergyModel', import_from_module='ns.energy', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::DeviceEnergyModel::ChangeStateCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::DeviceEnergyModel::ChangeStateCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::DeviceEnergyModel::ChangeStateCallback&')
     ## double.h (module 'core'): ns3::DoubleValue [class]
     module.add_class('DoubleValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## random-variable-stream.h (module 'core'): ns3::EmpiricalRandomVariable [class]
@@ -384,9 +330,6 @@ def register_types(module):
     module.add_class('EnergySource', import_from_module='ns.energy', parent=root_module['ns3::Object'])
     ## energy-source-container.h (module 'energy'): ns3::EnergySourceContainer [class]
     module.add_class('EnergySourceContainer', import_from_module='ns.energy', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::EnergySource > > const_iterator', u'ns3::EnergySourceContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::EnergySource > > const_iterator*', u'ns3::EnergySourceContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::EnergySource > > const_iterator&', u'ns3::EnergySourceContainer::Iterator&')
     ## enum.h (module 'core'): ns3::EnumChecker [class]
     module.add_class('EnumChecker', import_from_module='ns.core', parent=root_module['ns3::AttributeChecker'])
     ## enum.h (module 'core'): ns3::EnumValue [class]
@@ -425,32 +368,14 @@ def register_types(module):
     module.add_class('Mac48AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
     module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )', u'ns3::MobilityModel::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )*', u'ns3::MobilityModel::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )&', u'ns3::MobilityModel::TracedCallback&')
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) (  )', u'ns3::NetDevice::LinkChangeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) (  )*', u'ns3::NetDevice::LinkChangeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) (  )&', u'ns3::NetDevice::LinkChangeTracedCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::ReceiveCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::ReceiveCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::ReceiveCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::PromiscReceiveCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::PromiscReceiveCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::ProtocolHandler')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::ProtocolHandler*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::ProtocolHandler&')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::DeviceAdditionListener')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::DeviceAdditionListener*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
     module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -459,21 +384,6 @@ def register_types(module):
     module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )*', u'ns3::Packet::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )&', u'ns3::Packet::TracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )', u'ns3::Packet::SizeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )*', u'ns3::Packet::SizeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )&', u'ns3::Packet::SizeTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )', u'ns3::Packet::SinrTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', u'ns3::Packet::SinrTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## pointer.h (module 'core'): ns3::PointerChecker [class]
@@ -488,24 +398,12 @@ def register_types(module):
     module.add_class('TypeIdValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## uan-channel.h (module 'uan'): ns3::UanChannel [class]
     module.add_class('UanChannel', parent=root_module['ns3::Channel'])
-    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::UanNetDevice >, ns3::Ptr< ns3::UanTransducer > > >', u'ns3::UanChannel::UanDeviceList')
-    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::UanNetDevice >, ns3::Ptr< ns3::UanTransducer > > >*', u'ns3::UanChannel::UanDeviceList*')
-    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::UanNetDevice >, ns3::Ptr< ns3::UanTransducer > > >&', u'ns3::UanChannel::UanDeviceList&')
     ## uan-tx-mode.h (module 'uan'): ns3::UanModesListChecker [class]
     module.add_class('UanModesListChecker', parent=root_module['ns3::AttributeChecker'])
     ## uan-tx-mode.h (module 'uan'): ns3::UanModesListValue [class]
     module.add_class('UanModesListValue', parent=root_module['ns3::AttributeValue'])
     ## uan-net-device.h (module 'uan'): ns3::UanNetDevice [class]
     module.add_class('UanNetDevice', parent=root_module['ns3::NetDevice'])
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanPhy > >', u'ns3::UanNetDevice::UanPhyList')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanPhy > >*', u'ns3::UanNetDevice::UanPhyList*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanPhy > >&', u'ns3::UanNetDevice::UanPhyList&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanTransducer > >', u'ns3::UanNetDevice::UanTransducerList')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanTransducer > >*', u'ns3::UanNetDevice::UanTransducerList*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::UanTransducer > >&', u'ns3::UanNetDevice::UanTransducerList&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac8Address )', u'ns3::UanNetDevice::RxTxTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac8Address )*', u'ns3::UanNetDevice::RxTxTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac8Address )&', u'ns3::UanNetDevice::RxTxTracedCallback&')
     ## uinteger.h (module 'core'): ns3::UintegerValue [class]
     module.add_class('UintegerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## vector.h (module 'core'): ns3::Vector2DChecker [class]
@@ -518,12 +416,6 @@ def register_types(module):
     module.add_class('Vector3DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## acoustic-modem-energy-model.h (module 'uan'): ns3::AcousticModemEnergyModel [class]
     module.add_class('AcousticModemEnergyModel', parent=root_module['ns3::DeviceEnergyModel'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::AcousticModemEnergyModel::AcousticModemEnergyDepletionCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::AcousticModemEnergyModel::AcousticModemEnergyDepletionCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::AcousticModemEnergyModel::AcousticModemEnergyDepletionCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::AcousticModemEnergyModel::AcousticModemEnergyRechargeCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::AcousticModemEnergyModel::AcousticModemEnergyRechargeCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::AcousticModemEnergyModel::AcousticModemEnergyRechargeCallback&')
     ## address.h (module 'network'): ns3::AddressChecker [class]
     module.add_class('AddressChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## address.h (module 'network'): ns3::AddressValue [class]
@@ -6530,19 +6422,19 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
     ## channel.h (module 'network'): ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## channel.h (module 'network'): uint32_t ns3::Channel::GetNDevices() const [member function]
+    ## channel.h (module 'network'): std::size_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]
@@ -8293,14 +8185,14 @@ def register_Ns3UanChannel_methods(root_module, cls):
     cls.add_method('Clear', 
                    'void', 
                    [])
-    ## uan-channel.h (module 'uan'): ns3::Ptr<ns3::NetDevice> ns3::UanChannel::GetDevice(uint32_t i) const [member function]
+    ## uan-channel.h (module 'uan'): ns3::Ptr<ns3::NetDevice> ns3::UanChannel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, is_virtual=True)
-    ## uan-channel.h (module 'uan'): uint32_t ns3::UanChannel::GetNDevices() const [member function]
+    ## uan-channel.h (module 'uan'): std::size_t ns3::UanChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## uan-channel.h (module 'uan'): double ns3::UanChannel::GetNoiseDbHz(double fKhz) [member function]
@@ -9342,17 +9234,17 @@ def register_functions(root_module):
     module.add_function('MakeUanModesListChecker', 
                         'ns3::Ptr< ns3::AttributeChecker const >', 
                         [])
-    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
-    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):
