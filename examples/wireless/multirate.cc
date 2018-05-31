@@ -588,10 +588,6 @@ int main (int argc, char *argv[])
   //for commandline input
   experiment.CommandSetup (argc, argv);
 
-  // set value to 0 for enabling fragmentation
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue (experiment.GetRtsThreshold ()));
-
   std::ofstream outfile ((experiment.GetOutputFileName () + ".plt").c_str ());
 
   MobilityHelper mobility;

@@ -121,11 +121,6 @@ int main (int argc, char *argv[])
 
   Packet::EnablePrinting ();
 
-  // enable rts cts all the time.
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("0"));
-  // disable fragmentation
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
-
   WifiHelper wifi;
   MobilityHelper mobility;
   NodeContainer stas;

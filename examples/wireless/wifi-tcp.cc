@@ -89,11 +89,6 @@ main (int argc, char *argv[])
   cmd.Parse (argc, argv);
 
   tcpVariant = std::string ("ns3::") + tcpVariant;
-
-  /* No fragmentation and no RTS/CTS */
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("999999"));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("999999"));
-
   // Select TCP variant
   if (tcpVariant.compare ("ns3::TcpWestwoodPlus") == 0)
     { 

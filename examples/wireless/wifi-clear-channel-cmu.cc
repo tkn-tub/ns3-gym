@@ -174,9 +174,6 @@ int main (int argc, char *argv[])
   modes.push_back ("DsssRate2Mbps");
   modes.push_back ("DsssRate5_5Mbps");
   modes.push_back ("DsssRate11Mbps");
-  // disable fragmentation
-  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue ("2200"));
-  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue ("2200"));
 
   CommandLine cmd;
   cmd.Parse (argc, argv);

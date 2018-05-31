@@ -99,11 +99,6 @@ def main(argv):
 
     ns.network.Packet.EnablePrinting();
 
-    # enable rts cts all the time.
-    ns.core.Config.SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", ns.core.StringValue("0"))
-    # disable fragmentation
-    ns.core.Config.SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", ns.core.StringValue("2200"))
-
     wifi = ns.wifi.WifiHelper()
     mobility = ns.mobility.MobilityHelper()
     stas = ns.network.NodeContainer()
