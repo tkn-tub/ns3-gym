@@ -356,11 +356,11 @@ int main (int argc, char *argv[])
       Ssid ssid = Ssid ("ns-3-ssid");
       wifiMac.SetType ("ns3::StaWifiMac",
                        "Ssid", SsidValue (ssid),
-                       "ActiveProbing", BooleanValue (false));
+                       "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
       serverDevice = wifi.Install (wifiPhy, wifiMac, serverNode);
       wifiMac.SetType ("ns3::ApWifiMac",
                        "Ssid", SsidValue (ssid),
-                       "BeaconGeneration", BooleanValue (true));
+                       "BE_MaxAmpduSize", UintegerValue (maxAmpduSize));
       clientDevice = wifi.Install (wifiPhy, wifiMac, clientNode);
     }
   else
