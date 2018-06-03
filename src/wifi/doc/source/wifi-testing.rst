@@ -82,7 +82,9 @@ There is no validation for those curves yet.
 
 MAC validation
 **************
-Validation of the MAC layer has been performed in [baldo2010]_.
+Validation of the 802.11 DCF MAC layer has been performed in [baldo2010]_.
+
+802.11 PCF operation has been verified by running 'wifi-pcf' example whith PCAP files generation enabled, and observing the frame exchange using Wireshark.
 
 SpectrumWiFiPhy
 ***************
