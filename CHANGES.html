@@ -88,6 +88,7 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
   <li>The Mode and QueueLimit attributes of the RedQueueDisc class, that had been deprecated in favor of the MaxSize attribute in ns-3.28, have now been removed and cannot be used anymore. Likewise, the methods to get/set the old attributes have been removed as well. The GetMaxSize/SetMaxSize methods of the base QueueDisc class must be used instead.</li>
   <li> Several traffic generating applications have additional trace sources that export not only the transmitted or received packet but also the source and destination addresses.</li>
   <li>The returned type of <b>GetNDevices</b> methods in <b>Channel</b> and subclasses derived from it were changed from uint32_t to std::size_t. Likewise, the input parameter type of <b>GetDevice</b> in <b>Channel</b> and its subclasses were changed from uint32_t to std::size_t.</li>
+  <li>Wifi classes <b>DcfManager</b>, <b>DcaTxop</b> and <b>EdcaTxopN</b> were renamed to <b>ChannelAccessManager</b>, <b>Txop</b> and <b>QosTxop</b>, respectively.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
