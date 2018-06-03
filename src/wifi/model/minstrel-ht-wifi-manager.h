@@ -602,10 +602,7 @@ private:
 
   Ptr<UniformRandomVariable> m_uniformRandomVariable; //!< Provides uniform random variables.
 
-  /**
-   * The trace source fired when the transmission rate change.
-   */
-  TracedCallback<uint64_t, Mac48Address> m_rateChange;
+  TracedValue<uint64_t> m_currentRate; //!< Trace rate changes
 };
 
 } // namespace ns3

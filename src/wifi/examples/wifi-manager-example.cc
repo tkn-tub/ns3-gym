@@ -80,13 +80,6 @@ RateChange (uint64_t oldVal, uint64_t newVal)
   g_intervalRate = newVal;
 }
 
-void
-RateChangeMinstrelHt (uint64_t newVal, Mac48Address dest)
-{
-  NS_LOG_DEBUG ("Change to " << newVal);
-  g_intervalRate = newVal;
-}
-
 /// Step structure
 struct Step
 {
@@ -383,14 +376,8 @@ int main (int argc, char *argv[])
   wifi.AssignStreams (serverDevice, 100);
   wifi.AssignStreams (clientDevice, 100);
 
-  if (wifiManager == "MinstrelHt")
-    {
-      Config::ConnectWithoutContext ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$ns3::MinstrelHtWifiManager/RateChange", MakeCallback (&RateChangeMinstrelHt));
-    }
-  else
-    {
-      Config::ConnectWithoutContext ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$ns3::" + wifiManager + "WifiManager/Rate", MakeCallback (&RateChange));
-    }
+  Config::ConnectWithoutContext ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/RemoteStationManager/$ns3::" + wifiManager + "WifiManager/Rate", MakeCallback (&RateChange));
+
   // Configure the mobility.
   MobilityHelper mobility;
   Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();

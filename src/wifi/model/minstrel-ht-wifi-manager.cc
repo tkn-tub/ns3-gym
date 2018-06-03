@@ -114,17 +114,18 @@ MinstrelHtWifiManager::GetTypeId (void)
                    BooleanValue (false),
                    MakeBooleanAccessor (&MinstrelHtWifiManager::m_printStats),
                    MakeBooleanChecker ())
-    .AddTraceSource ("RateChange",
-                     "The transmission rate has changed",
-                     MakeTraceSourceAccessor (&MinstrelHtWifiManager::m_rateChange),
-                     "ns3::MinstrelHtWifiManager::RateChangeTracedCallback")
+    .AddTraceSource ("Rate",
+                     "Traced value for rate changes (b/s)",
+                     MakeTraceSourceAccessor (&MinstrelHtWifiManager::m_currentRate),
+                     "ns3::TracedValueCallback::Uint64")
   ;
   return tid;
 }
 
 MinstrelHtWifiManager::MinstrelHtWifiManager ()
   : m_numGroups (0),
-    m_numRates (0)
+    m_numRates (0),
+    m_currentRate (0)
 {
   NS_LOG_FUNCTION (this);
   m_uniformRandomVariable = CreateObject<UniformRandomVariable> ();
@@ -841,13 +842,12 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
   if (!station->m_isHt)
     {
       WifiTxVector vector = m_legacyManager->GetDataTxVector (station);
-
       uint64_t dataRate = vector.GetMode ().GetDataRate (vector);
-      if (!station->m_isSampling)
+      if (m_currentRate != dataRate && !station->m_isSampling)
         {
-          m_rateChange (dataRate, station->m_state->m_address);
+          NS_LOG_DEBUG ("New datarate: " << dataRate);
+          m_currentRate = dataRate;
         }
-
       return vector;
     }
   else
@@ -870,13 +870,13 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
                          " Station capabilities: (" << GetNumberOfSupportedStreams (station) <<
                          "," << GetShortGuardInterval (station) << "," << GetChannelWidth (station) << ")");
         }
-
-      uint64_t dataRate = GetMcsSupported (station, mcsIndex).GetDataRate (group.chWidth, group.sgi ? 400 : 800, group.streams);
-      if (!station->m_isSampling)
-        {
-          m_rateChange (dataRate, station->m_state->m_address);
-        }
       WifiMode mode = GetMcsSupported (station, mcsIndex);
+      uint64_t dataRate = mode.GetDataRate (group.chWidth, group.sgi ? 400 : 800, group.streams);
+      if (m_currentRate != dataRate && !station->m_isSampling)
+        {
+          NS_LOG_DEBUG ("New datarate: " << dataRate);
+          m_currentRate = dataRate;
+        }
       return WifiTxVector (mode, GetDefaultTxPowerLevel (), GetPreambleForTransmission (mode, GetAddress (station)), group.sgi ? 400 : 800, GetNumberOfAntennas (), group.streams, GetNess (station), GetChannelWidthForTransmission (mode, group.chWidth), GetAggregation (station) && !station->m_isSampling, false);
     }
 }
