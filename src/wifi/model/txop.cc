@@ -102,6 +102,7 @@ Txop::DoDispose (void)
   m_stationManager = 0;
   m_rng = 0;
   m_txMiddle = 0;
+  m_channelAccessManager = 0;
 }
 
 void
