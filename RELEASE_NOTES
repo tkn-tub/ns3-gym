@@ -32,6 +32,7 @@ New user-visible features
 
 Bugs fixed
 ----------
+- Bug 2921 - tcp: Add min_cwnd variable to LEDBAT
 - Bug 2911 - aodv:  Binary exponential backoff can become unlimited
 - Bug 2901 - Add CommandLine::Parse (const std::vector<std::string>> args)
 - Bug 2891 - netanim:  dumbbell-animation breaks when RightCount > LeftCount
