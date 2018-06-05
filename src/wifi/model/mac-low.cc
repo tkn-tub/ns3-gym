@@ -1541,8 +1541,10 @@ MacLow::BlockAckTimeout (void)
   m_currentTxop = 0;
   m_ampdu = false;
   uint8_t tid = GetTid (m_currentPacket, m_currentHdr);
+  AmpduTag ampdu;
+  m_currentPacket->RemovePacketTag (ampdu);
+  txop->MissedBlockAck (ampdu.GetRemainingNbOfMpdus() + 1);
   FlushAggregateQueue (tid);
-  txop->MissedBlockAck (static_cast<uint8_t> (m_aggregateQueue[tid]->GetNPackets()));
 }
 
 void

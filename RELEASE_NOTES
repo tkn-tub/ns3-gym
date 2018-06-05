@@ -40,6 +40,7 @@ Bugs fixed
 - Bug 2801 - FdNetDevice device MTU is not set correctly
 - Bug 2819 - FqCoDel handling of non-IP packets
 - Bug 2920 - wifi: Default MaxSlrc and fragmentation threshold values differ from standard
+- Bug 2925 - wifi: MinstrelHt provides strange results at low SNR with A-MPDU enabled
 
 Known issues
 ------------
