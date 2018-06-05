@@ -358,7 +358,7 @@ public:
     * \param [in] Pointer to UE RRC
     * \param [in] List of LteRrcSap::SCellToAddMod
     */
-  typedef void (* SCarrierConfiguredCallback)
+  typedef void (* SCarrierConfiguredTracedCallback)
     (Ptr<LteUeRrc>, std::list<LteRrcSap::SCellToAddMod>);
 
 

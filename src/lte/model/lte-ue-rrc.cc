@@ -280,7 +280,7 @@ LteUeRrc::GetTypeId (void)
     .AddTraceSource ("SCarrierConfigured",
                      "trace fired after configuring secondary carriers",
                      MakeTraceSourceAccessor (&LteUeRrc::m_sCarrierConfiguredTrace),
-                     "ns3::LteUeRrc::SCellConfiguredCallback")
+                     "ns3::LteUeRrc::SCarrierConfiguredTracedCallback")
   ;
   return tid;
 }
