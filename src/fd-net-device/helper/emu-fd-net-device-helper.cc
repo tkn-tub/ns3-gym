@@ -107,7 +107,7 @@ EmuFdNetDeviceHelper::SetFileDescriptor (Ptr<FdNetDevice> device) const
   //
   struct ifreq ifr;
   bzero (&ifr, sizeof(ifr));
-  strncpy ((char *)ifr.ifr_name, m_deviceName.c_str (), IFNAMSIZ);
+  strncpy ((char *)ifr.ifr_name, m_deviceName.c_str (), IFNAMSIZ - 1);
 
   NS_LOG_LOGIC ("Getting interface index");
   int32_t rc = ioctl (fd, SIOCGIFINDEX, &ifr);
