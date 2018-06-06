@@ -278,6 +278,7 @@ TcpLedbatDecrementTest::DoRun ()
 void
 TcpLedbatDecrementTest::ExecuteTest ()
 {
+  UintegerValue minCwnd;
   m_state = CreateObject <TcpSocketState> ();
   m_state->m_cWnd = m_cWnd;
   m_state->m_ssThresh = m_ssThresh;
@@ -288,6 +289,7 @@ TcpLedbatDecrementTest::ExecuteTest ()
   Ptr<TcpLedbat> cong = CreateObject <TcpLedbat> ();
   cong->SetAttribute ("SSParam", StringValue ("no"));
   cong->SetAttribute ("NoiseFilterLen", UintegerValue (1));
+  cong->GetAttribute ("MinCwnd", minCwnd);
 
   m_state->m_rcvTimestampValue = 2;
   m_state->m_rcvTimestampEchoReply = 1;
@@ -300,6 +302,7 @@ TcpLedbatDecrementTest::ExecuteTest ()
   cong->IncreaseWindow (m_state, m_segmentsAcked);
 
   m_cWnd = m_cWnd - ((0.98 * m_segmentsAcked * m_segmentSize * m_segmentSize) / m_cWnd);
+  m_cWnd = std::max (m_cWnd, static_cast<uint32_t> (m_segmentSize * minCwnd.Get ()));
 
   NS_TEST_ASSERT_MSG_EQ (m_state->m_cWnd.Get (), m_cWnd,
                          "cWnd has not updated correctly");

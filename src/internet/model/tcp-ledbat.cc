@@ -61,7 +61,7 @@ TcpLedbat::GetTypeId (void)
                    MakeEnumAccessor (&TcpLedbat::SetDoSs),
                    MakeEnumChecker (DO_SLOWSTART, "yes",
                                     DO_NOT_SLOWSTART, "no"))
-    .AddAttribute ("MIN_CWND",
+    .AddAttribute ("MinCwnd",
                    "Minimum cWnd for Ledbat",
                    UintegerValue (2),
                    MakeUintegerAccessor (&TcpLedbat::m_minCwnd),
