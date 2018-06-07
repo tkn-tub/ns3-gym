@@ -28,6 +28,9 @@
 namespace ns3  {
 
 class MgtAddBaRequestHeader;
+class MgtBeaconHeader;
+class MgtProbeResponseHeader;
+class MgtAssocResponseHeader;
 class SupportedRates;
 class CapabilityInformation;
 
@@ -131,6 +134,31 @@ private:
    * \param hdr the mac header of the received packet
    */
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
+  /**
+   * Update associated AP's information from beacon. If STA is not associated,
+   * this information will used for the association process.
+   *
+   * \param beacon the beacon
+   * \param apAddr mac address of the AP
+   * \param bssid mac address of BSSID
+   */
+  void UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr, Mac48Address bssid);
+  /**
+   * Update AP's information from probe response. This information is required
+   * for the association process.
+   *
+   * \param beacon the beacon
+   * \param apAddr mac address of the AP
+   * \param bssid mac address of BSSID
+   */
+  void UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Address apAddr, Mac48Address bssid);
+  /**
+   * Update AP's information from association response.
+   *
+   * \param beacon the beacon
+   * \param apAddr mac address of the AP
+   */
+  void UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Address apAddr);
 
   /**
    * Forward a probe request packet to the DCF. The standard is not clear on the correct
