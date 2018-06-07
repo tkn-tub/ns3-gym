@@ -28,22 +28,6 @@
 #include "mac-low.h"
 #include "mgt-headers.h"
 
-/*
- * The state machine for this STA is:
- --------------                                          -----------
- | Associated |   <--------------------      ------->    | Refused |
- --------------                        \    /            -----------
-    \                                   \  /
-     \    -----------------     -----------------------------
-      \-> | Beacon Missed | --> | Wait Association Response |
-          -----------------     -----------------------------
-                \                       ^
-                 \                      |
-                  \    -----------------------
-                   \-> | Wait Probe Response |
-                       -----------------------
- */
-
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("StaWifiMac");

@@ -34,7 +34,34 @@ class CapabilityInformation;
 /**
  * \ingroup wifi
  *
- * The Wifi MAC high model for a non-AP STA in a BSS.
+ * The Wifi MAC high model for a non-AP STA in a BSS. The state
+ * machine is as follows:
+ *
+   \verbatim
+   ---------       --------------                          -----------
+   | Start |       | Associated | <--------        ------> | Refused |
+   ---------       --------------          |      /        -----------
+      |                  |                 |     /
+      \                  v                 v    /
+       \    -----------------      -----------------------------
+        \-> | Beacon Missed | <--> | Wait Association Response |
+            -----------------      -----------------------------
+                  \                       ^           ^ |
+                   \                      |           | |
+                    \    -----------------------       -
+                     \-> | Wait Probe Response |
+                         -----------------------
+   \endverbatim
+ *
+ * Notes:
+ * 1. The state 'Start' is not included in #MacState and only used
+ *    for illustration purpose.
+ * 2. The transition from Wait Association Response to Beacon Missed
+ *    occurs if an association request fails without explicit
+ *    refusal (i.e., the AP fails to respond).
+ * 3. The transition from Associated to Wait Association Response
+ *    occurs when STA's PHY capabilities changed. In this state, STA
+ *    tries to reassociate with the previously associated AP.
  */
 class StaWifiMac : public InfrastructureWifiMac
 {
@@ -97,6 +124,12 @@ private:
    */
   bool GetActiveProbing (void) const;
 
+  /**
+   * Handle a received packet.
+   *
+   * \param packet the received packet
+   * \param hdr the mac header of the received packet
+   */
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
 
   /**

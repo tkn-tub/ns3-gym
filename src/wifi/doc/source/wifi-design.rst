@@ -479,6 +479,44 @@ Spectrum channel.
 The MAC model
 =============
 
+Infrastructure association
+##########################
+
+Association in infrastructure (IBSS) mode is a high-level MAC function.
+Either active probing or passive scanning is used (default is passive scan).
+At the start of the simulation, Wi-Fi network devices configured as
+STA will listen for beacons on the same SSID and will attempt to associate
+with the AP that generates the first received beacon that is considered
+to be good. If active probing is enabled, STA will regularly send probe
+request until it receive probe response and will similarly attempt to
+associate with the AP that generates the first received probe response.
+
+If association is rejected by the AP for some reason, the STA will
+move to a 'REFUSED' state and the simulation user will need to force a
+reassociation retry in some way, perhaps by changing configuration
+(i.e. the STA will not persistently try to associate upon a refusal).
+
+When associated, if the configuration is changed by the simulation user,
+the STA will try to reassociate with the existing AP.
+
+If a number of missed beacons exceeds a threshold, the STA will notify
+the rest of the device that the link is down (association is lost). If
+configured for passive scanning, the STA will try to associate again with
+the first good beacon heard. If in active probing, the STA will initiate
+a new probe request.
+
+Roaming
+#######
+
+Roaming at layer-2 (i.e. a STA migrates its association from one AP to
+another) is not presently supported. Because of that, the Min/Max channel
+dwelling time implementation as described by the IEEE 802.11 standard
+[ieee80211]_ is also omitted, since it is only meaningful on the context
+of channel roaming.
+
+Channel access
+##############
+
 The 802.11 Distributed Coordination Function is used to calculate when to grant
 access to the transmission medium. While implementing the DCF would have been
 particularly easy if we had used a recurring timer that expired every slot, we
