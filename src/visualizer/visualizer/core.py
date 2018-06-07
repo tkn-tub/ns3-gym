@@ -411,6 +411,22 @@ class Node(PyVizObject):
         if self._label_canvas_item is not None:
             self._label_canvas_item.set_properties(x=x, y=(y+self._size*3))
 
+        # If the location of the point is now beyond the bounds of the
+        # canvas then those bounds now need to be increased
+        bounds = self.visualizer.canvas.get_bounds()
+
+        (min_x, min_y, max_x, max_y) = bounds
+
+        min_x = min(x, min_x)
+        min_y = min(y, min_y)
+        max_x = max(x, max_x)
+        max_y = max(y, max_y)
+
+        new_bounds = (min_x, min_y, max_x, max_y)
+
+        if new_bounds != bounds:
+            self.visualizer.canvas.set_bounds(*new_bounds)
+
     def get_position(self):
         """!
         Get position function.
