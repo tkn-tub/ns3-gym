@@ -632,7 +632,7 @@ TapBridge::CreateTap (void)
           NS_FATAL_ERROR ("Did not get the raw socket from the socket creator");
         }
 
-      if (m_mode == USE_LOCAL || m_mode == USE_BRIDGE)
+      if (m_mode == USE_BRIDGE)
         {
           //
           // Set the ns-3 device's mac address to the overlying container's
