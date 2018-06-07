@@ -485,25 +485,27 @@ Infrastructure association
 Association in infrastructure (IBSS) mode is a high-level MAC function.
 Either active probing or passive scanning is used (default is passive scan).
 At the start of the simulation, Wi-Fi network devices configured as
-STA will listen for beacons on the same SSID and will attempt to associate
-with the AP that generates the first received beacon that is considered
-to be good. If active probing is enabled, STA will regularly send probe
-request until it receive probe response and will similarly attempt to
-associate with the AP that generates the first received probe response.
+STA will attempt to scan the channel. Depends on whether passive or active
+scanning is selected, STA will attempt to gather beacons, or send a probe
+request and gather probe responses until the respective timeout occurs. The
+end result will be a list of candidate AP to associate to. STA will then try
+to associate to the best AP (i.e., best SNR).
 
-If association is rejected by the AP for some reason, the STA will
-move to a 'REFUSED' state and the simulation user will need to force a
-reassociation retry in some way, perhaps by changing configuration
-(i.e. the STA will not persistently try to associate upon a refusal).
+If association is rejected by the AP for some reason, the STA will try to
+associate to the next best AP until the candidate list is exhausted which
+then sends STA to 'REFUSED' state. If this occurs, the simulation user will
+need to force reassociation retry in some way, perhaps by changing
+configuration (i.e. the STA will not persistently try to associate upon a
+refusal).
 
 When associated, if the configuration is changed by the simulation user,
 the STA will try to reassociate with the existing AP.
 
-If a number of missed beacons exceeds a threshold, the STA will notify
-the rest of the device that the link is down (association is lost). If
-configured for passive scanning, the STA will try to associate again with
-the first good beacon heard. If in active probing, the STA will initiate
-a new probe request.
+If the number of missed beacons exceeds the threshold, the STA will notify
+the rest of the device that the link is down (association is lost) and
+restart the scanning process. Note that this can also happen when an
+association request fails without explicit refusal (i.e., the AP fails to
+respond to association request).
 
 Roaming
 #######
