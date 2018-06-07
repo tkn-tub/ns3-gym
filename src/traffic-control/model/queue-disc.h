@@ -409,13 +409,13 @@ public:
    * \param i the index of the queue
    * \return the i-th internal queue.
    */
-  Ptr<InternalQueue> GetInternalQueue (uint32_t i) const;
+  Ptr<InternalQueue> GetInternalQueue (std::size_t i) const;
 
   /**
    * \brief Get the number of internal queues
    * \return the number of internal queues.
    */
-  uint32_t GetNInternalQueues (void) const;
+  std::size_t GetNInternalQueues (void) const;
 
   /**
    * \brief Add a packet filter to the tail of the list of filters used to classify packets.
@@ -428,13 +428,13 @@ public:
    * \param i the index of the packet filter
    * \return the i-th packet filter.
    */
-  Ptr<PacketFilter> GetPacketFilter (uint32_t i) const;
+  Ptr<PacketFilter> GetPacketFilter (std::size_t i) const;
 
   /**
    * \brief Get the number of packet filters
    * \return the number of packet filters.
    */
-  uint32_t GetNPacketFilters (void) const;
+  std::size_t GetNPacketFilters (void) const;
 
   /**
    * \brief Add a queue disc class to the tail of the list of classes.
@@ -447,13 +447,13 @@ public:
    * \param i the index of the queue disc class
    * \return the i-th queue disc class.
    */
-  Ptr<QueueDiscClass> GetQueueDiscClass (uint32_t i) const;
+  Ptr<QueueDiscClass> GetQueueDiscClass (std::size_t i) const;
 
   /**
    * \brief Get the number of queue disc classes
    * \return the number of queue disc classes.
    */
-  uint32_t GetNQueueDiscClasses (void) const;
+  std::size_t GetNQueueDiscClasses (void) const;
 
   /**
    * Classify a packet by calling the packet filters, one at a time, until either
