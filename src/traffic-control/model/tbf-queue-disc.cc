@@ -193,24 +193,6 @@ TbfQueueDisc::DoEnqueue (Ptr<QueueDiscItem> item)
   return retval;
 }
 
-Ptr<const QueueDiscItem>
-TbfQueueDisc::DoPeek ()
-{
-  NS_LOG_FUNCTION (this);
-
-  Ptr<const QueueDiscItem> item = PeekDequeued ();
-
-  if (!item)
-    {
-      NS_LOG_LOGIC ("No packet returned");
-      return 0;
-    }
-
-  NS_LOG_LOGIC ("Current queue size: " << GetNPackets () << " packets, " << GetNBytes () << " bytes");
-
-  return item;
-}
-
 Ptr<QueueDiscItem>
 TbfQueueDisc::DoDequeue (void)
 {
@@ -254,7 +236,7 @@ TbfQueueDisc::DoDequeue (void)
 
       if ((btoks|ptoks) >= 0) // else packet blocked
         {
-          Ptr<QueueDiscItem> item = GetQueueDiscClass (0)->GetQueueDisc ()->DequeuePeeked ();
+          Ptr<QueueDiscItem> item = GetQueueDiscClass (0)->GetQueueDisc ()->Dequeue ();
           if (!item)
             {
               NS_LOG_DEBUG ("That's odd! Expecting the peeked packet, we got no packet.");

@@ -93,9 +93,22 @@ queue disc. A subclass is required to implement the following methods:
 
 * ``bool DoEnqueue (Ptr<QueueDiscItem> item)``:  Enqueue a packet
 * ``Ptr<QueueDiscItem> DoDequeue (void)``:  Dequeue a packet
-* ``Ptr<const QueueDiscItem> DoPeek (void) const``: Peek a packet
 * ``bool CheckConfig (void) const``: Check if the configuration is correct
 * ``void InitializeParams (void)``: Initialize queue disc parameters
+
+and may optionally override the default implementation of the following method:
+
+* ``Ptr<const QueueDiscItem> DoPeek (void) const``: Peek the next packet to extract
+
+The default implementation of the ``DoPeek`` method is based on the qdisc_peek_dequeued
+function of the Linux kernel, which dequeues a packet and retains it in the
+queue disc as a requeued packet. This approach is recommended
+especially for queue discs for which it is not obvious what is the next
+packet that will be dequeued (e.g., queue discs having multiple internal
+queues or child queue discs or queue discs that drop packets after dequeue).
+Therefore, unless the subclass redefines the ``DoPeek`` method, calling ``Peek`` causes
+the next packet to be dequeued from the queue disc, though it is still retained
+within the queue disc.
 
 The C++ base class QueueDisc implements:
 

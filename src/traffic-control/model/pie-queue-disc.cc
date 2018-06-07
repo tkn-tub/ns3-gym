@@ -406,25 +406,6 @@ PieQueueDisc::DoDequeue ()
   return item;
 }
 
-Ptr<const QueueDiscItem>
-PieQueueDisc::DoPeek ()
-{
-  NS_LOG_FUNCTION (this);
-
-  Ptr<const QueueDiscItem> item = PeekDequeued ();
-
-  if (!item)
-    {
-      NS_LOG_LOGIC ("Queue empty");
-      return 0;
-    }
-
-  NS_LOG_LOGIC ("Number packets " << GetInternalQueue (0)->GetNPackets ());
-  NS_LOG_LOGIC ("Number bytes " << GetInternalQueue (0)->GetNBytes ());
-
-  return item;
-}
-
 bool
 PieQueueDisc::CheckConfig (void)
 {

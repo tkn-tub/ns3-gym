@@ -861,7 +861,19 @@ QueueDisc::Dequeue (void)
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<QueueDiscItem> item = DoDequeue ();
+  // The QueueDisc::DoPeek method dequeues a packet and keeps it as a requeued
+  // packet. Thus, first check whether a peeked packet exists. Otherwise, call
+  // the private DoDequeue method.
+  Ptr<QueueDiscItem> item = m_requeued;
+
+  if (item)
+    {
+      m_requeued = 0;
+    }
+  else
+    {
+      item = DoDequeue ();
+    }
 
   NS_ASSERT (m_nPackets == m_stats.nTotalEnqueuedPackets - m_stats.nTotalDequeuedPackets);
   NS_ASSERT (m_nBytes == m_stats.nTotalEnqueuedBytes - m_stats.nTotalDequeuedBytes);
@@ -877,7 +889,7 @@ QueueDisc::Peek (void)
 }
 
 Ptr<const QueueDiscItem>
-QueueDisc::PeekDequeued (void)
+QueueDisc::DoPeek (void)
 {
   NS_LOG_FUNCTION (this);
 
@@ -886,25 +898,6 @@ QueueDisc::PeekDequeued (void)
       m_requeued = Dequeue ();
     }
   return m_requeued;
-}
-
-Ptr<QueueDiscItem>
-QueueDisc::DequeuePeeked (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  Ptr<QueueDiscItem> item = m_requeued;
-
-  if (item)
-    {
-      m_requeued = 0;
-    }
-  else
-    {
-      item = Dequeue ();
-    }
-
-  return item;
 }
 
 void

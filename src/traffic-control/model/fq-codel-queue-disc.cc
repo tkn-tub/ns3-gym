@@ -302,14 +302,6 @@ FqCoDelQueueDisc::DoDequeue (void)
   return item;
 }
 
-Ptr<const QueueDiscItem>
-FqCoDelQueueDisc::DoPeek (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  return PeekDequeued ();
-}
-
 bool
 FqCoDelQueueDisc::CheckConfig (void)
 {

@@ -124,7 +124,6 @@ private:
    */
   virtual Ptr<QueueDiscItem> DoDequeue (void);
 
-  virtual Ptr<const QueueDiscItem> DoPeek (void);
   virtual bool CheckConfig (void);
 
   /**

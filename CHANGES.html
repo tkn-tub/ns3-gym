@@ -89,6 +89,9 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
   <li> Several traffic generating applications have additional trace sources that export not only the transmitted or received packet but also the source and destination addresses.</li>
   <li>The returned type of <b>GetNDevices</b> methods in <b>Channel</b> and subclasses derived from it were changed from uint32_t to std::size_t. Likewise, the input parameter type of <b>GetDevice</b> in <b>Channel</b> and its subclasses were changed from uint32_t to std::size_t.</li>
   <li>Wifi classes <b>DcfManager</b>, <b>DcaTxop</b> and <b>EdcaTxopN</b> were renamed to <b>ChannelAccessManager</b>, <b>Txop</b> and <b>QosTxop</b>, respectively.</li>
+  <li>QueueDisc::DequeuePeeked has been merged into QueueDisc::Dequeue and hence no longer exists.</li>
+  <li>The QueueDisc base class now provides a default implementation of the DoPeek private method
+  based on the QueueDisc::PeekDequeue method, which is now no longer available.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
