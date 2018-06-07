@@ -105,6 +105,7 @@ BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     case PACKET_HOST:
       if (dst48 == m_address)
         {
+          Learn (src48, incomingPort);
           m_rxCallback (this, packet, protocol, src);
         }
       break;
@@ -118,6 +119,7 @@ BridgeNetDevice::ReceiveFromDevice (Ptr<NetDevice> incomingPort, Ptr<const Packe
     case PACKET_OTHERHOST:
       if (dst48 == m_address)
         {
+          Learn (src48, incomingPort);
           m_rxCallback (this, packet, protocol, src);
         }
       else
