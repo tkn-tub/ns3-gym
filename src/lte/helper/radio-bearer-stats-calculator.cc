@@ -295,8 +295,10 @@ RadioBearerStatsCalculator::WriteUlResults (std::ofstream& outFile)
     {
       ImsiLcidPair_t p = *it;
       FlowIdMap::const_iterator flowIdIt = m_flowId.find (p);
-      NS_ASSERT_MSG (flowIdIt != m_flowId.end (),
-                     "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t) p.m_lcId << ") is missing");
+      // \TODO Temporary workaround until traces are connected correctly in LteEnbRrc and LteUeRrc
+      if (flowIdIt == m_flowId.end ()) continue;
+//       NS_ASSERT_MSG (flowIdIt != m_flowId.end (),
+//                      "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t) p.m_lcId << ") is missing");
       LteFlowId_t flowId = flowIdIt->second;
       NS_ASSERT_MSG (flowId.m_lcId == p.m_lcId, "lcid mismatch");
 
@@ -354,8 +356,10 @@ RadioBearerStatsCalculator::WriteDlResults (std::ofstream& outFile)
     {
       ImsiLcidPair_t p = *pair;
       FlowIdMap::const_iterator flowIdIt = m_flowId.find (p);
-      NS_ASSERT_MSG (flowIdIt != m_flowId.end (),
-                     "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t) p.m_lcId << ") is missing");
+      // \TODO Temporary workaround until traces are connected correctly in LteEnbRrc and LteUeRrc
+      if (flowIdIt == m_flowId.end ()) continue;
+//       NS_ASSERT_MSG (flowIdIt != m_flowId.end (),
+//                      "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t) p.m_lcId << ") is missing");
       LteFlowId_t flowId = flowIdIt->second;
       NS_ASSERT_MSG (flowId.m_lcId == p.m_lcId, "lcid mismatch");
 
