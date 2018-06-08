@@ -294,12 +294,18 @@ RadioBearerStatsCalculator::WriteUlResults (std::ofstream& outFile)
   for (std::vector<ImsiLcidPair_t>::iterator it = pairVector.begin (); it != pairVector.end (); ++it)
     {
       ImsiLcidPair_t p = *it;
+      FlowIdMap::const_iterator flowIdIt = m_flowId.find (p);
+      NS_ASSERT_MSG (flowIdIt != m_flowId.end (),
+                     "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t) p.m_lcId << ") is missing");
+      LteFlowId_t flowId = flowIdIt->second;
+      NS_ASSERT_MSG (flowId.m_lcId == p.m_lcId, "lcid mismatch");
+
       outFile << m_startTime.GetNanoSeconds () / 1.0e9 << "\t";
       outFile << endTime.GetNanoSeconds () / 1.0e9 << "\t";
       outFile << GetUlCellId (p.m_imsi, p.m_lcId) << "\t";
       outFile << p.m_imsi << "\t";
-      outFile << m_flowId[p].m_rnti << "\t";
-      outFile << (uint32_t) m_flowId[p].m_lcId << "\t";
+      outFile << flowId.m_rnti << "\t";
+      outFile << (uint32_t) flowId.m_lcId << "\t";
       outFile << GetUlTxPackets (p.m_imsi, p.m_lcId) << "\t";
       outFile << GetUlTxData (p.m_imsi, p.m_lcId) << "\t";
       outFile << GetUlRxPackets (p.m_imsi, p.m_lcId) << "\t";
@@ -347,12 +353,18 @@ RadioBearerStatsCalculator::WriteDlResults (std::ofstream& outFile)
   for (std::vector<ImsiLcidPair_t>::iterator pair = pairVector.begin (); pair != pairVector.end (); ++pair)
     {
       ImsiLcidPair_t p = *pair;
+      FlowIdMap::const_iterator flowIdIt = m_flowId.find (p);
+      NS_ASSERT_MSG (flowIdIt != m_flowId.end (),
+                     "FlowId (imsi " << p.m_imsi << " lcid " << (uint32_t) p.m_lcId << ") is missing");
+      LteFlowId_t flowId = flowIdIt->second;
+      NS_ASSERT_MSG (flowId.m_lcId == p.m_lcId, "lcid mismatch");
+
       outFile << m_startTime.GetNanoSeconds () / 1.0e9 << "\t";
       outFile << endTime.GetNanoSeconds () / 1.0e9 << "\t";
       outFile << GetDlCellId (p.m_imsi, p.m_lcId) << "\t";
       outFile << p.m_imsi << "\t";
-      outFile << m_flowId[p].m_rnti << "\t";
-      outFile << (uint32_t) m_flowId[p].m_lcId << "\t";
+      outFile << flowId.m_rnti << "\t";
+      outFile << (uint32_t) flowId.m_lcId << "\t";
       outFile << GetDlTxPackets (p.m_imsi, p.m_lcId) << "\t";
       outFile << GetDlTxData (p.m_imsi, p.m_lcId) << "\t";
       outFile << GetDlRxPackets (p.m_imsi, p.m_lcId) << "\t";
