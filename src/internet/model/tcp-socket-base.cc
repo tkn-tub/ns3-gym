@@ -2957,9 +2957,9 @@ TcpSocketBase::AdvertisedWindowSize (bool scale) const
     }
   else
     {
-      uint32_t max = m_rxBuffer->MaxRxSequence ().GetValue ();
-      uint32_t next = m_rxBuffer->NextRxSequence ().GetValue ();
-      w = ( max > next ) ? max - next : 0;
+      NS_ASSERT_MSG (m_rxBuffer->MaxRxSequence () - m_rxBuffer->NextRxSequence () >= 0,
+                     "Unexpected sequence number values");
+      w = static_cast<uint32_t> (m_rxBuffer->MaxRxSequence () - m_rxBuffer->NextRxSequence ());
     }
 
   // Ugly, but we are not modifying the state, that variable
