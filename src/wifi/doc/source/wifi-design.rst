@@ -454,18 +454,12 @@ To support the Spectrum channel, the ``YansWifiPhy`` transmit and receive method
 were adapted to use the Spectrum channel API.  This required developing
 a few ``SpectrumModel``-related classes.  The class
 ``WifiSpectrumValueHelper`` is used to create Wi-Fi signals with the
-spectrum framework and spread their energy across the bands.  The 
-spectrum is sub-divided into 312.5 kHz sub-bands (the width of an OFDM
-subcarrier).  The power allocated to a particular channel
+spectrum framework and spread their energy across the bands. The
+spectrum is sub-divided into sub-bands (the width of an OFDM
+subcarrier, which depends on the technology). The power allocated to a particular channel
 is spread across the sub-bands roughly according to how power would 
-be allocated to sub-carriers using an even distribution of power and
-assuming perfect transmit filters.  This could be extended in the 
-future to place power outside of the
-channel according to the real spectral mask.  This should be
-done for future adjacent channel models but is not presently implemented.
-Similarly, on the receive side, a receiver filter mask can be defined; 
-for this initial implementation, we implemented a perfect brick wall 
-filter that is centered on the channel center frequency.
+be allocated to sub-carriers. Adjacent channels are models by the use of
+OFDM transmit spectrum masks as defined in the standards.
 
 To support an easier user configuration experience, the existing
 YansWifi helper classes (in ``src/wifi/helper``) were copied and
