@@ -254,6 +254,7 @@ def build(bld):
         'test/tcp-wscaling-test.cc',
         'test/tcp-option-test.cc',
         'test/tcp-header-test.cc',
+        'test/tcp-ecn-test.cc',
         'test/tcp-general-test.cc',
         'test/tcp-error-model.cc',
         'test/tcp-slow-start-test.cc',

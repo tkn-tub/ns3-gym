@@ -929,6 +929,22 @@ TcpGeneralTest::SetInitialCwnd (SocketWho who, uint32_t initialCwnd)
       NS_FATAL_ERROR ("Not defined");
     }
 }
+void
+TcpGeneralTest::SetEcn (SocketWho who, TcpSocketBase::EcnMode_t ecnMode)
+{
+  if (who == SENDER)
+    {
+      m_senderSocket->SetEcn (ecnMode);
+    }
+   else if (who == RECEIVER)
+   {
+      m_receiverSocket->SetEcn (ecnMode);
+    }
+  else
+    {
+      NS_FATAL_ERROR ("Not defined");
+    }
+}
 
 void
 TcpGeneralTest::SetInitialSsThresh (SocketWho who, uint32_t initialSsThresh)

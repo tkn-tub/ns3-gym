@@ -583,6 +583,14 @@ protected:
   void SetInitialCwnd (SocketWho who, uint32_t initialCwnd);
 
   /**
+   * \brief Forcefully set the ecn mode on
+   *
+   * \param who socket to force
+   * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
+   */
+  void SetEcn (SocketWho who, TcpSocketBase::EcnMode_t ecnMode);
+
+  /**
    * \brief Forcefully set the initial ssth
    *
    * \param who socket to force

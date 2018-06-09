@@ -42,8 +42,8 @@ are supported, with NewReno the default, and Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
 (LEDBAT) and TCP Low Priority (TCP-LP) also supported. The model also supports
-Selective Acknowledgements (SACK). Multipath-TCP is not yet supported in the |ns3|
-releases.
+Selective Acknowledgements (SACK) and Explicit Congestion Notification (ECN).
+Multipath-TCP is not yet supported in the |ns3| releases.
 
 Model history
 +++++++++++++
@@ -760,6 +760,159 @@ phase or not
 
 More information (paper): http://cs.northwestern.edu/~akuzma/rice/doc/TCP-LP.pdf
 
+Support for Explicit Congestion Notification (ECN)
+++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ECN provides end-to-end notification of network congestion without dropping
+packets. It uses two bits in the IP header: ECN Capable Transport (ECT bit)
+and Congestion Experienced (CE bit), and two bits in the TCP header: Congestion
+Window Reduced (CWR) and ECN Echo (ECE).
+
+More information is available in RFC 3168: https://tools.ietf.org/html/rfc3168
+
+The following ECN states are declared in ``src/internet/model/tcp-socket.h``
+
+::
+
+  typedef enum
+    {
+      ECN_DISABLED = 0, //!< ECN disabled traffic
+      ECN_IDLE,         //!< ECN is enabled but currently there is no action pertaining to ECE or CWR to be taken
+      ECN_CE_RCVD,      //!< Last packet received had CE bit set in IP header
+      ECN_SENDING_ECE,  //!< Receiver sends an ACK with ECE bit set in TCP header
+      ECN_ECE_RCVD,     //!< Last ACK received had ECE bit set in TCP header
+      ECN_CWR_SENT      //!< Sender has reduced the congestion window, and sent a packet with CWR bit set in TCP header. This is used for tracing.
+    } EcnStates_t;
+
+Current implementation of ECN is based on RFC 3168 and is referred as Classic ECN.
+
+The following enum represents the mode of ECN:
+
+::
+
+  typedef enum
+    {
+      NoEcn = 0,   //!< ECN is not enabled.
+      ClassicEcn   //!< ECN functionality as described in RFC 3168.
+    } EcnMode_t;
+
+The following are some important ECN parameters
+  // ECN parameters
+  EcnMode_t                     m_ecnMode;    //!< Socket ECN capability
+  TracedValue<SequenceNumber32> m_ecnEchoSeq; //!< Sequence number of the last received ECN Echo
+
+Enabling ECN
+^^^^^^^^^^^^
+
+By default, support for ECN is disabled in TCP sockets.  To enable, change
+the value of the attribute ``ns3::TcpSocketBase::EcnMode`` from NoEcn to ClassicEcn.
+
+::
+
+  Config::SetDefault ("ns3::TcpSocketBase::EcnMode", StringValue ("ClassicEcn"))
+
+ECN negotiation
+^^^^^^^^^^^^^^^
+
+ECN capability is negotiated during the three-way TCP handshake:
+
+1. Sender sends SYN + CWR + ECE
+
+::
+
+    if (m_ecnMode == EcnMode_t::ClassicEcn)
+      {
+        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ECE | TcpHeader::CWR);
+      }
+    else
+      {
+        SendEmptyPacket (TcpHeader::SYN);
+      }
+    m_ecnState = ECN_DISABLED;
+
+2. Receiver sends SYN + ACK + ECE
+
+::
+
+    if (m_ecnMode == EcnMode_t::ClassicEcn && (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::CWR | TcpHeader::ECE))
+      {
+        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK |TcpHeader::ECE);
+        m_ecnState = ECN_IDLE;
+      }
+    else
+      {
+        SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
+        m_ecnState = ECN_DISABLED;
+      }
+
+3. Sender sends ACK
+
+::
+
+    if (m_ecnMode == EcnMode_t::ClassicEcn &&  (tcpHeader.GetFlags () & (TcpHeader::CWR | TcpHeader::ECE)) == (TcpHeader::ECE))
+      {
+        m_ecnState = ECN_IDLE;
+      }
+    else
+      {
+        m_ecnState = ECN_DISABLED;
+      }
+
+Once the ECN-negotiation is successful, the sender sends data packets with ECT
+bits set in the IP header.
+
+Note: As mentioned in Section 6.1.1 of RFC 3168, ECT bits should not be set
+during ECN negotiation. The ECN negotiation implemented in |ns3| follows
+this guideline.
+
+ECN State Transitions
+^^^^^^^^^^^^^^^^^^^^^
+
+1. Initially both sender and receiver have their m_ecnState set as ECN_DISABLED
+2. Once the ECN negotiation is successful, their states are set to ECN_IDLE
+3. The receiver's state changes to ECN_CE_RCVD when it receives a packet with
+   CE bit set. The state then moves to ECN_SENDING_ECE when the receiver sends
+   an ACK with ECE set. This state is retained until a CWR is received
+   , following which, the state changes to ECN_IDLE.
+4. When the sender receives an ACK with ECE bit set from receiver, its state
+   is set as ECN_ECE_RCVD
+5. The sender's state changes to ECN_CWR_SENT when it sends a packet with
+   CWR bit set. It remains in this state until an ACK with valid ECE is received
+   (i.e., ECE is received for a packet that belongs to a new window),
+   following which, it's state changes to ECN_ECE_RCVD.
+
+RFC 3168 compliance
+^^^^^^^^^^^^^^^^^^^
+
+Based on the suggestions provided in RFC 3168, the following behavior has
+been implemented:
+
+1. Pure ACK packets should not have the ECT bit set (Section 6.1.4).
+2. In the current implementation, the sender only sends ECT(0) in the IP header.
+3. The sender should should reduce the congestion window only once in each
+   window (Section 6.1.2).
+4. The receiver should ignore the CE bits set in a packet arriving out of
+   window (Section 6.1.5).
+5. The sender should ignore the ECE bits set in the packet arriving out of
+   window (Section 6.1.2).
+
+Open issues
+^^^^^^^^^^^
+
+The following issues are yet to be addressed:
+
+1. Retransmitted packets should not have the CWR bit set (Section 6.1.5).
+
+2. Despite the congestion window size being 1 MSS, the sender should reduce its
+   congestion window by half when it receives a packet with the ECE bit set. The
+   sender must reset the retransmit timer on receiving the ECN-Echo packet when
+   the congestion window is one.  The sending TCP will then be able to send a
+   new packet only when the retransmit timer expires (Section 6.1.2).
+
+3. Support for separately handling the enabling of ECN on the incoming and
+   outgoing TCP sessions (e.g. a TCP may perform ECN echoing but not set the
+   ECT codepoints on its outbound data segments).
+
 Validation
 ++++++++++
 
@@ -796,6 +949,7 @@ section below on :ref:`Writing-tcp-tests`.
 * **tcp-wscaling:** Unit test on the window scaling option
 * **tcp-zero-window-test:** Unit test persist behavior for zero window conditions
 * **tcp-close-test:** Unit test on the socket closing: both receiver and sender have to close their socket when all bytes are transferred
+* **tcp-ecn-test:** Unit tests on explicit congestion notification
 
 Several tests have dependencies outside of the ``internet`` module, so they
 are located in a system test directory called ``src/test/ns3tcp``.  Three
@@ -813,6 +967,9 @@ disabled if NSC is not enabled in the build.
 Several TCP validation test results can also be found in the
 `wiki page <http://www.nsnam.org/wiki/New_TCP_Socket_Architecture>`_ 
 describing this implementation.
+
+TCP ECN operation is tested in the ARED and RED tests that are documented in the traffic-control
+module documentation.
 
 Writing a new congestion control algorithm
 ++++++++++++++++++++++++++++++++++++++++++

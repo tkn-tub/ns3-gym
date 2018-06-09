@@ -334,6 +334,11 @@ public:
    */
   TracedCallback<TcpSocketState::TcpCongState_t, TcpSocketState::TcpCongState_t> m_congStateTrace;
 
+   /**
+   * \brief Callback pointer for ECN state trace chaining
+   */
+  TracedCallback<TcpSocketState::EcnState_t, TcpSocketState::EcnState_t> m_ecnStateTrace;
+
   /**
    * \brief Callback pointer for high tx mark chaining
    */
@@ -383,6 +388,14 @@ public:
   void UpdateCongState (TcpSocketState::TcpCongState_t oldValue,
                         TcpSocketState::TcpCongState_t newValue);
 
+   /**
+   * \brief Callback function to hook to EcnState state
+   * \param oldValue old ecn state value
+   * \param newValue new ecn state value
+   */
+  void UpdateEcnState (TcpSocketState::EcnState_t oldValue,
+                        TcpSocketState::EcnState_t newValue);
+
   /**
    * \brief Callback function to hook to TcpSocketState high tx mark
    * \param oldValue old high tx mark
@@ -424,6 +437,102 @@ public:
    * \param recovery Algorithm to be installed
    */
   void SetRecoveryAlgorithm (Ptr<TcpRecoveryOps> recovery);
+
+  /**
+   * \brief Mark ECT(0)
+   *
+   * \return TOS with ECT(0)
+   */
+  inline uint8_t MarkEcnEct0 (uint8_t tos) const
+    {
+      return ((tos & 0xfc) | 0x02);
+    }
+
+  /**
+   * \brief Mark ECT(1)
+   *
+   * \return TOS with ECT(1)
+   */
+  inline uint8_t MarkEcnEct1 (uint8_t tos) const
+    {
+      return ((tos & 0xfc) | 0x01);
+    }
+
+  /**
+   * \brief Mark CE
+   *
+   * \return TOS with CE
+   */
+  inline uint8_t MarkEcnCe (uint8_t tos) const
+    {
+      return ((tos & 0xfc) | 0x03);
+    }
+
+  /**
+   * \brief Clears ECN bits from TOS
+   *
+   * \return TOS without ECN bits
+   */
+  inline uint8_t ClearEcnBits (uint8_t tos) const
+    {
+      return tos & 0xfc;
+    }
+
+  /**
+   * \brief ECN Modes
+   */
+  typedef enum
+    {
+      NoEcn = 0,   //!< ECN is not enabled.
+      ClassicEcn   //!< ECN functionality as described in RFC 3168.
+    } EcnMode_t;
+
+  /**
+   * \brief Checks if TOS has no ECN bits
+   *
+   * \return true if TOS does not have any ECN bits set; otherwise false
+   */
+  inline bool CheckNoEcn (uint8_t tos) const
+    {
+      return ((tos & 0xfc) == 0x00);
+    }
+
+  /**
+   * \brief Checks for ECT(0) bits
+   *
+   * \return true if TOS has ECT(0) bit set; otherwise false
+   */
+  inline bool CheckEcnEct0 (uint8_t tos) const
+    {
+      return ((tos & 0xfc) == 0x02);
+    }
+
+  /**
+   * \brief Checks for ECT(1) bits
+   *
+   * \return true if TOS has ECT(1) bit set; otherwise false
+   */
+  inline bool CheckEcnEct1 (uint8_t tos) const
+    {
+      return ((tos & 0xfc) == 0x01);
+    }
+
+  /**
+   * \brief Checks for CE bits
+   *
+   * \return true if TOS has CE bit set; otherwise false
+   */
+  inline bool CheckEcnCe (uint8_t tos) const
+    {
+      return ((tos & 0xfc) == 0x03);
+    }
+
+  /**
+   * \brief Set ECN mode to use on the socket
+   *
+   * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
+   */
+  void SetEcn (EcnMode_t ecnMode);
 
   // Necessary implementations of null functions from ns3::Socket
   virtual enum SocketErrno GetErrno (void) const;    // returns m_errno
@@ -545,6 +654,16 @@ protected:
   // Helper functions: Transfer operation
 
   /**
+   * \brief Checks whether the given TCP segment is valid or not.
+   *
+   * \param seq the sequence number of packet's TCP header
+   * \param tcpHeaderSize the size of packet's TCP header
+   * \param tcpPayloadSize the size of TCP payload
+   */
+  bool IsValidTcpSegment (const SequenceNumber32 seq, const uint32_t tcpHeaderSize,
+                          const uint32_t tcpPayloadSize);
+
+  /**
    * \brief Called by the L3 protocol when it received a packet to pass on to TCP.
    *
    * \param packet the incoming packet
@@ -620,7 +739,7 @@ protected:
    * \param withAck forces an ACK to be sent
    * \returns the number of bytes sent
    */
-  uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
+  virtual uint32_t SendDataPacket (SequenceNumber32 seq, uint32_t maxSize, bool withAck);
 
   /**
    * \brief Send a empty packet that carries a flag, e.g., ACK
@@ -1145,6 +1264,12 @@ protected:
 
   // Pacing related variable
   Timer m_pacingTimer {Timer::REMOVE_ON_DESTROY}; //!< Pacing Event
+
+  // Parameters related to Explicit Congestion Notification
+  EcnMode_t                     m_ecnMode    {EcnMode_t::NoEcn};      //!< Socket ECN capability
+  TracedValue<SequenceNumber32> m_ecnEchoSeq {0};      //!< Sequence number of the last received ECN Echo
+  TracedValue<SequenceNumber32> m_ecnCESeq   {0};      //!< Sequence number of the last received Congestion Experienced
+  TracedValue<SequenceNumber32> m_ecnCWRSeq  {0};      //!< Sequence number of the last sent CWR
 };
 
 /**
@@ -1156,6 +1281,16 @@ protected:
  */
 typedef void (* TcpCongStatesTracedValueCallback)(const TcpSocketState::TcpCongState_t oldValue,
                                                   const TcpSocketState::TcpCongState_t newValue);
+
+/**
+ * \ingroup tcp
+ * TracedValue Callback signature for ECN state trace
+ *
+ * \param [in] oldValue original value of the traced variable
+ * \param [in] newValue new value of the traced variable
+ */
+typedef void (* EcnStatesTracedValueCallback)(const TcpSocketState::EcnState_t oldValue,
+                                                  const TcpSocketState::EcnState_t newValue);
 
 } // namespace ns3
 

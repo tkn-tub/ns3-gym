@@ -98,6 +98,21 @@ public:
     CA_EVENT_NON_DELAYED_ACK, /**< Non-delayed ack is sent */
   } TcpCAEvent_t;
 
+   /**
+   * \brief Definition of the Ecn state machine
+   *
+   */
+  typedef enum
+  {
+    ECN_DISABLED = 0, /**< ECN disabled traffic                                                                          */
+    ECN_IDLE,         /**< ECN is enabled  but currently there is no action pertaining to ECE or CWR to be taken         */
+    ECN_CE_RCVD,      /**< Last packet received had CE bit set in IP header                                              */
+    ECN_SENDING_ECE,  /**< Receiver sends an ACK with ECE bit set in TCP header                                          */
+    ECN_ECE_RCVD,     /**< Last ACK received had ECE bit set in TCP header                                               */
+    ECN_CWR_SENT      /**< Sender has reduced the congestion window, and sent a packet with CWR bit set in TCP header.
+                        *  This state is used for tracing.                                                               */
+  } EcnState_t;
+
   /**
    * \ingroup tcp
    * TracedValue Callback signature for TcpCongState_t
@@ -108,10 +123,25 @@ public:
   typedef void (* TcpCongStatesTracedValueCallback)(const TcpCongState_t oldValue,
                                                     const TcpCongState_t newValue);
 
+   /**
+   * \ingroup tcp
+   * TracedValue Callback signature for EcnState_t
+   *
+   * \param [in] oldValue original value of the traced variable
+   * \param [in] newValue new value of the traced variable
+   */
+  typedef void (* EcnStatesTracedValueCallback)(const EcnState_t oldValue,
+                                                const EcnState_t newValue);
+
   /**
    * \brief Literal names of TCP states for use in log messages
    */
   static const char* const TcpCongStateName[TcpSocketState::CA_LAST_STATE];
+
+  /**
+   * \brief Literal names of ECN states for use in log messages
+   */
+  static const char* const EcnStateName[TcpSocketState::ECN_CWR_SENT + 1];
 
   // Congestion control
   TracedValue<uint32_t>  m_cWnd             {0}; //!< Congestion window
@@ -125,6 +155,8 @@ public:
   SequenceNumber32       m_lastAckedSeq  {0}; //!< Last sequence ACKed
 
   TracedValue<TcpCongState_t> m_congState {CA_OPEN}; //!< State in the Congestion state machine
+
+  TracedValue<EcnState_t> m_ecnState {ECN_DISABLED}; //!< Current ECN State, represented as combination of EcnState values
 
   TracedValue<SequenceNumber32> m_highTxMark     {0}; //!< Highest seqno ever sent, regardless of ReTx
   TracedValue<SequenceNumber32> m_nextTxSequence {0}; //!< Next seqnum to be sent (SND.NXT), ReTx pushes it back
