@@ -242,7 +242,8 @@ in a number of ways:
 
 ::
 
-  Config::Set ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/ChannelNumber", UintegerValue (3));
+  Config::Set ("/NodeList/0/DeviceList/*/$ns3::WifiNetDevice/Phy/$ns3::WifiPhy/ChannelNumber",
+               UintegerValue (3));
 
 This section provides guidance on how to configure these settings in
 a coherent manner, and what happens if non-standard values are chosen.

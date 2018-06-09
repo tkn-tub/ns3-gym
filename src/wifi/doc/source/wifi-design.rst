@@ -666,7 +666,7 @@ Depending on your goal, the common tasks are (in no particular order):
   ``MacLow::ReceiveOk``.
 * MAC high modification. For example, handling new management frames (think beacon/probe), 
   beacon/probe generation.  Users usually make changes to ``regular-wifi-mac.*``, 
-  ``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
+  ``infrastructure-wifi-mac.*``,``sta-wifi-mac.*``, ``ap-wifi-mac.*``, or ``adhoc-wifi-mac.*`` to accomplish this.
 * Wi-Fi queue management.  The files ``txop.*`` and ``qos-txop.*`` are of interested for this task.
 * Channel access management.  Users should modify the files ``channel-access-manager.*``, which grant access to
   ``Txop`` and ``QosTxop``.
