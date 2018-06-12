@@ -111,7 +111,7 @@ WiFi Radio Energy Model
 
 The WiFi Radio Energy Model is the energy consumption model of a Wifi
 net device. It provides a state for each of the available states of
-the PHY layer: Idle, CcaBusy, Tx, Rx, ChannelSwitch, Sleep. Each of
+the PHY layer: Idle, CcaBusy, Tx, Rx, ChannelSwitch, Sleep, Off. Each of
 such states is associated with a value (in Ampere) of the current draw
 (see below for the corresponding attribute names). A Wifi Radio Energy
 Model PHY Listener is registered to the Wifi PHY in order to be
@@ -136,14 +136,14 @@ The Wifi Radio Energy Model offers the possibility to specify a
 callback that is invoked when the energy source is depleted. If such a
 callback is not specified when the Wifi Radio Energy Model Helper is
 used to install the model on a device, a callback is implicitly made
-so that the Wifi PHY is put in the SLEEP mode (hence no frame is
+so that the Wifi PHY is put in the OFF mode (hence no frame is
 transmitted nor received afterwards) when the energy source is
 depleted. Likewise, it is possible to specify a callback that is
 invoked when the energy source is recharged (which might occur in case
 an energy harvester is connected to the energy source). If such a
 callback is not specified when the Wifi Radio Energy Model Helper is
 used to install the model on a device, a callback is implicitly made
-so that the Wifi PHY is resumed from the SLEEP mode when the energy
+so that the Wifi PHY is resumed from the OFF mode when the energy
 source is recharged.
 
 Future Work
