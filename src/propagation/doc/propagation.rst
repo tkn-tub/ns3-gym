@@ -94,7 +94,7 @@ the user via the Frequency attribute.
 The Friis model is valid only for propagation in free space within
 the so-called far field region, which can be considered
 approximately as the region for :math:`d > 3 \lambda`.
-The model will still return a value for :math:`d > 3 \lambda`, as
+The model will still return a value for :math:`d < 3 \lambda`, as
 doing so (rather than triggering a fatal error) is practical for
 many simulation scenarios. However, we stress that the values
 obtained in such conditions shall not be considered realistic. 
