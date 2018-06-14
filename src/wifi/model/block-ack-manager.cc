@@ -785,7 +785,7 @@ bool BlockAckManager::NeedBarRetransmission (uint8_t tid, uint16_t seqNumber, Ma
     {
       return false;
     }
-  else if (it->second.first.m_inactivityEvent.IsExpired ())
+  else if (it->second.first.GetTimeout () > 0 && it->second.first.m_inactivityEvent.IsExpired ())
     {
       /*
        * According to "11.5.4 Error recovery upon a peer failure",
