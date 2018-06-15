@@ -1441,7 +1441,7 @@ Bug2831TestCase::DoRun (void)
   ObjectFactory propDelay;
   propDelay.SetTypeId ("ns3::ConstantSpeedPropagationDelayModel");
   Ptr<PropagationDelayModel> propagationDelay = propDelay.Create<PropagationDelayModel> ();
-  Ptr<PropagationLossModel> propagationLoss = CreateObject<RandomPropagationLossModel> ();
+  Ptr<PropagationLossModel> propagationLoss = CreateObject<FriisPropagationLossModel> ();
   channel->SetPropagationDelayModel (propagationDelay);
   channel->SetPropagationLossModel (propagationLoss);
 
@@ -1449,6 +1449,7 @@ Bug2831TestCase::DoRun (void)
   Ptr<WifiNetDevice> apDev = CreateObject<WifiNetDevice> ();
   ObjectFactory mac;
   mac.SetTypeId ("ns3::ApWifiMac");
+  mac.Set ("EnableBeaconJitter", BooleanValue (false));
   Ptr<WifiMac> apMac = mac.Create<WifiMac> ();
   apMac->ConfigureStandard (WIFI_PHY_STANDARD_80211ax_5GHZ);
 
