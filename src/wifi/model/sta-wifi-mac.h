@@ -39,12 +39,12 @@ class CapabilityInformation;
  */
 struct ApInfo
 {
-  Mac48Address m_bssid;
-  Mac48Address m_apAddr;
-  double m_snr;
-  bool m_activeProbing;
-  MgtBeaconHeader m_beacon;
-  MgtProbeResponseHeader m_probeResp;
+  Mac48Address m_bssid;               ///< BSSID
+  Mac48Address m_apAddr;              ///< AP MAC address
+  double m_snr;                       ///< SNR
+  bool m_activeProbing;               ///< Flag whether active probing is used or not
+  MgtBeaconHeader m_beacon;           ///< Beacon header
+  MgtProbeResponseHeader m_probeResp; ///< Probe Response header
 };
 
 /**
@@ -165,32 +165,32 @@ private:
    * Handle a received packet.
    *
    * \param packet the received packet
-   * \param hdr the mac header of the received packet
+   * \param hdr the MAC header of the received packet
    */
   void Receive (Ptr<Packet> packet, const WifiMacHeader *hdr);
   /**
    * Update associated AP's information from beacon. If STA is not associated,
    * this information will used for the association process.
    *
-   * \param beacon the beacon
-   * \param apAddr mac address of the AP
-   * \param bssid mac address of BSSID
+   * \param beacon the beacon header
+   * \param apAddr MAC address of the AP
+   * \param bssid MAC address of BSSID
    */
   void UpdateApInfoFromBeacon (MgtBeaconHeader beacon, Mac48Address apAddr, Mac48Address bssid);
   /**
    * Update AP's information from probe response. This information is required
    * for the association process.
    *
-   * \param beacon the beacon
-   * \param apAddr mac address of the AP
-   * \param bssid mac address of BSSID
+   * \param probeResp the probe response header
+   * \param apAddr MAC address of the AP
+   * \param bssid MAC address of BSSID
    */
   void UpdateApInfoFromProbeResp (MgtProbeResponseHeader probeResp, Mac48Address apAddr, Mac48Address bssid);
   /**
    * Update AP's information from association response.
    *
-   * \param beacon the beacon
-   * \param apAddr mac address of the AP
+   * \param assocResp the association response header
+   * \param apAddr MAC address of the AP
    */
   void UpdateApInfoFromAssocResp (MgtAssocResponseHeader assocResp, Mac48Address apAddr);
   /**

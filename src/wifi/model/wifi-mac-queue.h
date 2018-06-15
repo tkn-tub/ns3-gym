@@ -187,7 +187,6 @@ public:
    * Return the number of packets having destination address specified by
    * <i>dest</i>.
    *
-   * \param type the given address type
    * \param dest the given destination
    *
    * \return the number of packets
