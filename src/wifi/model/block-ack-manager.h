@@ -245,7 +245,7 @@ public:
    * \param recipient Address of peer station involved in block ack mechanism.
    * \param tid Traffic ID of transmitted packet.
    *
-   * This method to set the number of packets waitin for blockAck = 0 since the receiver will send the blockAck right away
+   * This method to set the number of packets waiting for blockAck = 0 since the receiver will send the blockAck right away
    */
   void CompleteAmpduExchange (Mac48Address recipient, uint8_t tid);
   /**
@@ -492,8 +492,8 @@ private:
   std::list<PacketQueueI> m_retryPackets;
   std::list<Bar> m_bars; ///< list of BARs
 
-  uint8_t m_blockAckThreshold; ///< bock ack threshold
-  BlockAckType m_blockAckType; ///< bock ack type
+  uint8_t m_blockAckThreshold; ///< block ack threshold
+  BlockAckType m_blockAckType; ///< block ack type
   Time m_maxDelay; ///< maximum delay
   Ptr<MacTxMiddle> m_txMiddle; ///< the MacTxMiddle
   Mac48Address m_address; ///< address
