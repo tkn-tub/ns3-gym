@@ -86,7 +86,7 @@ bool
 Ipv6QueueDiscItem::Mark (void)
 {
   NS_LOG_FUNCTION (this);
-  if (!m_headerAdded && (m_header.GetEcn () == Ipv6Header::ECN_ECT1 || m_header.GetEcn () == Ipv6Header::ECN_ECT0))
+  if (!m_headerAdded && m_header.GetEcn () != Ipv6Header::ECN_NotECT)
     {
       m_header.SetEcn (Ipv6Header::ECN_CE);
       return true;
