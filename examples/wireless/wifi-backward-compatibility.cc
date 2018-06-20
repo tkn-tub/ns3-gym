@@ -214,7 +214,6 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   uint64_t rxBytes;
   double throughput;
@@ -223,22 +222,21 @@ int main (int argc, char *argv[])
       rxBytes = payloadSize * DynamicCast<UdpServer> (staServerApp.Get (0))->GetReceived ();
       throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
       std::cout << "AP Throughput: " << throughput << " Mbit/s" << std::endl;
-      if (throughput == 0)
-        {
-          NS_LOG_ERROR ("No traffic received!");
-          exit (1);
-        }
     }
   if (staHasTraffic)
     {
       rxBytes = payloadSize * DynamicCast<UdpServer> (apServerApp.Get (0))->GetReceived ();
       throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
       std::cout << "STA Throughput: " << throughput << " Mbit/s" << std::endl;
-      if (throughput == 0)
-        {
-          NS_LOG_ERROR ("No traffic received!");
-          exit (1);
-        }
     }
+
+  Simulator::Destroy ();
+
+  if (throughput == 0)
+    {
+      NS_LOG_ERROR ("No traffic received!");
+      exit (1);
+    }
+
   return 0;
 }

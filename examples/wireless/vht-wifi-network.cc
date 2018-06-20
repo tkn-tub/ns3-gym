@@ -230,7 +230,6 @@ int main (int argc, char *argv[])
 
               Simulator::Stop (Seconds (simulationTime + 1));
               Simulator::Run ();
-              Simulator::Destroy ();
 
               uint64_t rxBytes = 0;
               if (udp)
@@ -242,7 +241,11 @@ int main (int argc, char *argv[])
                   rxBytes = DynamicCast<PacketSink> (serverApp.Get (0))->GetTotalRx ();
                 }
               double throughput = (rxBytes * 8) / (simulationTime * 1000000.0); //Mbit/s
+
+              Simulator::Destroy ();
+
               std::cout << mcs << "\t\t\t" << channelWidth << " MHz\t\t\t" << sgi << "\t\t\t" << throughput << " Mbit/s" << std::endl;
+
               //test first element
               if (mcs == 0 && channelWidth == 20 && sgi == 0)
                 {

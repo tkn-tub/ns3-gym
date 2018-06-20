@@ -260,9 +260,7 @@ int main (int argc, char *argv[])
     }
 
   Simulator::Stop (Seconds (simulationTime + 1));
-
   Simulator::Run ();
-  Simulator::Destroy ();
 
   double throughput = 0;
   for (uint32_t index = 0; index < sinkApplications.GetN (); ++index)
@@ -283,5 +281,6 @@ int main (int argc, char *argv[])
   std::cout << "# tx DATA-NULL: " << m_countDataNull << std::endl;
   std::cout << "# tx DATA: " << m_countData << std::endl;
 
+  Simulator::Destroy ();
   return 0;
 }

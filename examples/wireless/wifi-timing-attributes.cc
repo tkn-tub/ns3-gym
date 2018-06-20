@@ -169,12 +169,12 @@ int main (int argc, char *argv[])
   //Set simulation time and launch simulation
   Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   //Get and print results
   uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
   double throughput = totalPacketsThrough * 1472 * 8 / (simulationTime * 1000000.0); //Mbit/s
   std::cout << "Throughput: " << throughput << " Mbit/s" << std::endl;
 
+  Simulator::Destroy ();
   return 0;
 }

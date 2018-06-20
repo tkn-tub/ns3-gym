@@ -287,11 +287,16 @@ int main (int argc, char *argv[])
 
   Simulator::Stop (Seconds (simulationTime + 1));
   Simulator::Run ();
-  Simulator::Destroy ();
 
   /* Show results */
-  uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
-  double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  uint64_t totalPacketsThroughA = DynamicCast<UdpServer> (serverAppA.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughB = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughC = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
+  uint64_t totalPacketsThroughD = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
+
+  Simulator::Destroy ();
+
+  double throughput = totalPacketsThroughA * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with default configuration (A-MPDU aggregation enabled, 65kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 59 || throughput > 60))
     {
@@ -299,8 +304,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppB.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughB * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with aggregation disabled: " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 30 || throughput > 30.5))
     {
@@ -308,8 +312,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppC.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughC * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with A-MPDU disabled and A-MSDU enabled (8kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 51 || throughput > 52))
     {
@@ -317,8 +320,7 @@ int main (int argc, char *argv[])
       exit (1);
     }
 
-  totalPacketsThrough = DynamicCast<UdpServer> (serverAppD.Get (0))->GetReceived ();
-  throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
+  throughput = totalPacketsThroughD * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput with A-MPDU enabled (32kB) and A-MSDU enabled (4kB): " << throughput << " Mbit/s" << '\n';
   if (verifyResults && (throughput < 58 || throughput > 59))
     {

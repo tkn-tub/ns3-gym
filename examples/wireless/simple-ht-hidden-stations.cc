@@ -177,9 +177,11 @@ int main (int argc, char *argv[])
   Simulator::Stop (Seconds (simulationTime + 1));
 
   Simulator::Run ();
-  Simulator::Destroy ();
 
   uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
+
+  Simulator::Destroy ();
+
   double throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
   std::cout << "Throughput: " << throughput << " Mbit/s" << '\n';
   if (throughput < minExpectedThroughput || (maxExpectedThroughput > 0 && throughput > maxExpectedThroughput))

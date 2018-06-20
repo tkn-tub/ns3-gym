@@ -335,7 +335,6 @@ Experiment::Run (Parameters params)
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
-      Simulator::Destroy ();
 
       uint64_t totalPacketsThrough = DynamicCast<UdpServer> (serverApp.Get (0))->GetReceived ();
       throughput = totalPacketsThrough * payloadSize * 8 / (simulationTime * 1000000.0);
@@ -381,11 +380,11 @@ Experiment::Run (Parameters params)
 
       Simulator::Stop (Seconds (simulationTime + 1));
       Simulator::Run ();
-      Simulator::Destroy ();
 
       uint64_t totalPacketsThrough = DynamicCast<PacketSink> (serverApp.Get (0))->GetTotalRx ();
       throughput += totalPacketsThrough * 8 / (simulationTime * 1000000.0);
     }
+  Simulator::Destroy ();
   return throughput;
 }
 

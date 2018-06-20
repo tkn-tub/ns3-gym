@@ -255,7 +255,6 @@ int main (int argc, char *argv[])
 
           Simulator::Stop (Seconds (simulationTime + 1));
           Simulator::Run ();
-          Simulator::Destroy ();
 
           double throughput = 0;
           if (udp)
@@ -273,6 +272,7 @@ int main (int argc, char *argv[])
           dataset.Add (d, throughput);
           std::cout << throughput << " Mbit/s" << std::endl;
           d += step;
+          Simulator::Destroy ();
         }
       plot.AddDataset (dataset);
     }
