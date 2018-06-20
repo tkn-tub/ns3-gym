@@ -2983,6 +2983,7 @@ MacLow::CanTransmitNextCfFrame (void) const
     }
   NS_ASSERT (GetRemainingCfpDuration ().IsPositive ());
   WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_DATA);
   WifiMacTrailer fcs;
   uint32_t maxMacFrameSize = MAX_MSDU_SIZE + hdr.GetSerializedSize () + fcs.GetSerializedSize ();
   Time nextTransmission = 2 * m_phy->CalculateTxDuration (maxMacFrameSize, m_currentTxVector, m_phy->GetFrequency ()) + 3 * GetSifs () + m_phy->CalculateTxDuration (GetCfEndSize (), m_currentTxVector, m_phy->GetFrequency ());
