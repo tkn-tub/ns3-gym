@@ -493,8 +493,12 @@ TcpEcnTest::Tx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
       if (m_senderSent == 3)
         {
           SocketIpTosTag ipTosTag;
-          p->PeekPacketTag (ipTosTag);
-          uint16_t ipTos = static_cast<uint16_t> (ipTosTag.GetTos ());
+          bool found = p->PeekPacketTag (ipTosTag);
+          uint16_t ipTos = 0;
+          if (found)
+            {
+              ipTos = static_cast<uint16_t> (ipTosTag.GetTos ());
+            }
           if (m_testcase == 4 || m_testcase == 6)
             {
               NS_TEST_ASSERT_MSG_EQ (ipTos, 0x2, "IP TOS should have ECT set if ECN negotiation between endpoints is successful");
