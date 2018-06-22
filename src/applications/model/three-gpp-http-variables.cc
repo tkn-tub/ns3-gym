@@ -339,6 +339,13 @@ ThreeGppHttpVariables::AssignStreams (int64_t stream)
   return 9;
 }
 
+void
+ThreeGppHttpVariables::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  UpdateMainObjectMuAndSigma ();
+  UpdateEmbeddedObjectMuAndSigma ();
+}
 
 // SETTER METHODS /////////////////////////////////////////////////////////////
 
@@ -360,15 +367,10 @@ ThreeGppHttpVariables::SetMainObjectGenerationDelay (Time constant)
                                                 DoubleValue (constant.GetSeconds ()));
 }
 
-
 void
-ThreeGppHttpVariables::SetMainObjectSizeMean (uint32_t mean)
+ThreeGppHttpVariables::UpdateMainObjectMuAndSigma (void)
 {
-  NS_LOG_FUNCTION (this << mean);
-  NS_ASSERT_MSG (mean > 0, "Mean must be greater than zero.");
-  m_mainObjectSizeMean = mean;
-
-  // Update Mu and Sigma.
+  NS_LOG_FUNCTION (this);
   const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
   const double a2 = std::pow (m_mainObjectSizeMean, 2.0);
   const double a = std::log (1.0 + (a1 / a2));
@@ -379,22 +381,44 @@ ThreeGppHttpVariables::SetMainObjectSizeMean (uint32_t mean)
   m_mainObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
 }
 
+void
+ThreeGppHttpVariables::UpdateEmbeddedObjectMuAndSigma (void)
+{
+  NS_LOG_FUNCTION (this);
+  const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
+  const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
+  const double a = std::log (1.0 + (a1 / a2));
+  const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
+  const double sigma = std::sqrt (a);
+  NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
+  m_embeddedObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
+  m_embeddedObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+}
+
+void
+ThreeGppHttpVariables::SetMainObjectSizeMean (uint32_t mean)
+{
+  NS_LOG_FUNCTION (this << mean);
+  NS_ASSERT_MSG (mean > 0, "Mean must be greater than zero.");
+  m_mainObjectSizeMean = mean;
+
+  if (IsInitialized ())
+    {
+      UpdateMainObjectMuAndSigma ();
+    }
+}
+
 
 void
 ThreeGppHttpVariables::SetMainObjectSizeStdDev (uint32_t stdDev)
 {
   NS_LOG_FUNCTION (this << stdDev);
   m_mainObjectSizeStdDev = stdDev;
-
-  // Update Mu and Sigma. Same piece of code as in SetMainObjectSizeMean().
-  const double a1 = std::pow (m_mainObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_mainObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_mainObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
-  NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_mainObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_mainObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  
+  if (IsInitialized ())
+    {
+      UpdateMainObjectMuAndSigma ();
+    }
 }
 
 
@@ -414,15 +438,10 @@ ThreeGppHttpVariables::SetEmbeddedObjectSizeMean (uint32_t mean)
   NS_ASSERT_MSG (mean > 0, "Mean must be greater than zero.");
   m_embeddedObjectSizeMean = mean;
 
-  // Update Mu and Sigma.
-  const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
-  NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_embeddedObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_embeddedObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  if (IsInitialized ())
+    {
+      UpdateEmbeddedObjectMuAndSigma ();
+    }
 }
 
 
@@ -432,15 +451,10 @@ ThreeGppHttpVariables::SetEmbeddedObjectSizeStdDev (uint32_t stdDev)
   NS_LOG_FUNCTION (this << stdDev);
   m_embeddedObjectSizeStdDev = stdDev;
 
-  // Update Mu and Sigma. Same piece of code as in SetEmbeddedObjectSizeMean().
-  const double a1 = std::pow (m_embeddedObjectSizeStdDev, 2.0);
-  const double a2 = std::pow (m_embeddedObjectSizeMean, 2.0);
-  const double a = std::log (1.0 + (a1 / a2));
-  const double mu = std::log (m_embeddedObjectSizeMean) - (0.5 * a);
-  const double sigma = std::sqrt (a);
-  NS_LOG_DEBUG (this << " Mu= " << mu << " Sigma= " << sigma << ".");
-  m_embeddedObjectSizeRng->SetAttribute ("Mu", DoubleValue (mu));
-  m_embeddedObjectSizeRng->SetAttribute ("Sigma", DoubleValue (sigma));
+  if (IsInitialized ())
+    {
+      UpdateEmbeddedObjectMuAndSigma ();
+    }
 }
 
 

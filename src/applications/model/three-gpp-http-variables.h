@@ -268,6 +268,19 @@ public:
 
 private:
   /**
+   * \brief Upon and after object initialization, update random variable
+   * Mu and Sigma based on changes to attribute values.
+   */
+  void UpdateMainObjectMuAndSigma (void);
+  /**
+   * \brief Upon and after object initialization, update random variable
+   * Mu and Sigma based on changes to attribute values.
+   */
+  void UpdateEmbeddedObjectMuAndSigma (void);
+  
+  void DoInitialize (void);   // overridden from base class
+
+  /**
    * Random variable for determining MTU size (in bytes).
    */
   Ptr<UniformRandomVariable>      m_mtuSizeRng;
@@ -330,7 +343,7 @@ private:
    */
   Ptr<ExponentialRandomVariable>  m_parsingTimeRng;
 
-}; // end of `class TreeGppHttpVariables`
+}; // end of `class ThreeGppHttpVariables`
 
 
 } // end of `namespace ns3`

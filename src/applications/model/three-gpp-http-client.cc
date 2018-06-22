@@ -212,6 +212,7 @@ ThreeGppHttpClient::StartApplication ()
 
   if (m_state == NOT_STARTED)
     {
+      m_httpVariables->Initialize ();
       OpenConnection ();
     }
   else

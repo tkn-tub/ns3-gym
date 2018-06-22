@@ -203,6 +203,7 @@ ThreeGppHttpServer::StartApplication ()
 
   if (m_state == NOT_STARTED)
     {
+      m_httpVariables->Initialize ();
       if (m_initialSocket == 0)
         {
           // Find the current default MTU value of TCP sockets.
