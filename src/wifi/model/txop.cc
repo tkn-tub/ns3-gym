@@ -353,14 +353,14 @@ bool
 Txop::NeedRtsRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedRtsRetransmission (hdr.GetAddr1 (), &hdr, packet);
+  return m_stationManager->NeedRetransmission (hdr.GetAddr1 (), &hdr, packet);
 }
 
 bool
 Txop::NeedDataRetransmission (Ptr<const Packet> packet, const WifiMacHeader &hdr)
 {
   NS_LOG_FUNCTION (this);
-  return m_stationManager->NeedDataRetransmission (hdr.GetAddr1 (), &hdr, packet);
+  return m_stationManager->NeedRetransmission (hdr.GetAddr1 (), &hdr, packet);
 }
 
 bool

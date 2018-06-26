@@ -273,7 +273,7 @@ private:
   WifiTxVector DoGetDataTxVector (WifiRemoteStation *station);
   WifiTxVector DoGetRtsTxVector (WifiRemoteStation *station);
 
-  bool DoNeedDataRetransmission (WifiRemoteStation *st,
+  bool DoNeedRetransmission (WifiRemoteStation *st,
                                  Ptr<const Packet> packet, bool normally);
 
   bool IsLowLatency (void) const;

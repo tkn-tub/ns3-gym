@@ -231,7 +231,7 @@ AmpduAggregationTest::DoRun (void)
   NS_TEST_EXPECT_MSG_EQ (isAmpdu, false, "no MPDU aggregation should be performed if there is no agreement");
   NS_TEST_EXPECT_MSG_EQ (m_low->m_aggregateQueue[0]->GetNPackets (), 0, "aggregation queue is not flushed");
 
-  m_manager->SetMaxSlrc (0); //set to 0 in order to fake that the maximum number of retries has been reached
+  m_manager->SetMaxSsrc (0); //set to 0 in order to fake that the maximum number of retries has been reached
   m_txop->MissedAck ();
 
   NS_TEST_EXPECT_MSG_EQ (m_txop->m_currentPacket, 0, "packet should be discarded");

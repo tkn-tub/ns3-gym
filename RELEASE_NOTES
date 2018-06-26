@@ -43,6 +43,7 @@ Bugs fixed
 - Bug 2920 - wifi: Default MaxSlrc and fragmentation threshold values differ from standard
 - Bug 2924 - documentation about Peek/Dequeue usage
 - Bug 2925 - wifi: MinstrelHt provides strange results at low SNR with A-MPDU enabled
+- Bug 2926 - wifi: SSRC and SLRC mechanism not fully aligned to the standard
 - Bug 2931 - Queue Disc drops the CE marked packets
 
 Known issues

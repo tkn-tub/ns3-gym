@@ -855,7 +855,7 @@ MinstrelWifiManager::DoGetRtsTxVector (WifiRemoteStation *st)
 }
 
 bool
-MinstrelWifiManager::DoNeedDataRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally)
+MinstrelWifiManager::DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally)
 {
   NS_LOG_FUNCTION (this << st << packet << normally);
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;

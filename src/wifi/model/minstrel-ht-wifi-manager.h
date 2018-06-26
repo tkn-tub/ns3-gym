@@ -241,7 +241,7 @@ private:
                               uint8_t nSuccessfulMpdus, uint8_t nFailedMpdus,
                               double rxSnr, double dataSnr);
   bool IsLowLatency (void) const;
-  bool DoNeedDataRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
+  bool DoNeedRetransmission (WifiRemoteStation *st, Ptr<const Packet> packet, bool normally);
 
   /**
    * Check the validity of a combination of number of streams, chWidth and mode.
