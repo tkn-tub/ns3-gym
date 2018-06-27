@@ -47,7 +47,7 @@ public:
    *
    * \code
    *   RngSeedManger::SetSeed(15);
-   *   UniformVariable x(2,3);     // These will give the same output everytime
+   *   UniformVariable x(2,3);     // These will give the same output every time
    *   ExponentialVariable y(120); // as long as the seed stays the same.
    * \endcode
    * \param [in] seed The seed value to use.

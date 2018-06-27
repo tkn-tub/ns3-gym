@@ -1177,7 +1177,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                       if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
                         continue;
 
-                      // calculate PF weigth 
+                      // calculate PF weight 
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
                         weight = 1.0;
@@ -1274,7 +1274,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                     {
                       if ((m_ffrSapProvider->IsDlRbgAvailableForUe (i, (*it).first)) == false)
                         continue;
-                      // calculate PF weigth 
+                      // calculate PF weight 
                       double weight = (*it).second.targetThroughput / (*it).second.lastAveragedThroughput;
                       if (weight < 1.0)
                         weight = 1.0;
@@ -1524,7 +1524,7 @@ PssFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
           (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
 
-      // ...more parameters -> ingored in this version
+      // ...more parameters -> ignored in this version
 
       ret.m_buildDataList.push_back (newEl);
       // update UE stats

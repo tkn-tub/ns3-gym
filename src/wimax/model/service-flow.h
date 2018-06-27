@@ -349,7 +349,7 @@ public:
   uint16_t GetArqBlockLifeTime (void) const;
   /**
    * Get ARQ sync loss
-   * \returns the ARQ snyc loss value
+   * \returns the ARQ sync loss value
    */
   uint16_t GetArqSyncLoss (void) const;
   /**
@@ -564,7 +564,7 @@ private:
   uint32_t m_requestTransmissionPolicy; ///< request transmission policy
   uint32_t m_toleratedJitter; ///< tolerated jitter
   uint32_t m_maximumLatency; ///< maximum latency
-  uint8_t m_fixedversusVariableSduIndicator; ///< fixed versus varaible SDI indicator
+  uint8_t m_fixedversusVariableSduIndicator; ///< fixed versus variable SDI indicator
   uint8_t m_sduSize; ///< SDU size
   uint16_t m_targetSAID; ///< traget SAID
   uint8_t m_arqEnable; ///< ARQ enable

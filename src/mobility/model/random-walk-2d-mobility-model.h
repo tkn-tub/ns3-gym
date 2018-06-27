@@ -35,7 +35,7 @@ namespace ns3 {
  * \ingroup mobility
  * \brief 2D random walk mobility model.
  *
- * Each instance moves with a speed and direction choosen at random
+ * Each instance moves with a speed and direction chosen at random
  * with the user-provided random variables until
  * either a fixed distance has been walked or until a fixed amount
  * of time. If we hit one of the boundaries (specified by a rectangle),

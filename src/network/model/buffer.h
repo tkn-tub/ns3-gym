@@ -244,7 +244,7 @@ public:
      * Write the data delimited by start and end in internal buffer
      * and advance the iterator position by the number of bytes
      * copied.
-     * The input interators _must_ not point to the same Buffer as
+     * The input iterators _must_ not point to the same Buffer as
      * we do to avoid overlapping copies. This is enforced
      * in debug builds by asserts.
      */
@@ -333,7 +333,7 @@ public:
      *
      * Read data and advance the Iterator by the number of bytes
      * read.
-     * The data is read in least signficant byte format and returned in host format.
+     * The data is read in least significant byte format and returned in host format.
      */
     uint64_t ReadLsbtohU64 (void);
     /**

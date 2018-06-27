@@ -94,13 +94,13 @@ public:
   std::string GetDlTxOutputFilename (void);
 
   /**
-   * Notifies the stats calculator that an downlink trasmission has occurred.
+   * Notifies the stats calculator that an downlink transmission has occurred.
    * @param params Trace information regarding PHY transmission stats
    */
   void DlPhyTransmission (PhyTransmissionStatParameters params);
 
   /**
-   * Notifies the stats calculator that an uplink trasmission has occurred.
+   * Notifies the stats calculator that an uplink transmission has occurred.
    * @param params Trace information regarding PHY transmission stats
    */
   void UlPhyTransmission (PhyTransmissionStatParameters params);

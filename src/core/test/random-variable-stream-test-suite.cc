@@ -1693,7 +1693,7 @@ RandomVariableStreamLogNormalTestCase::DoRun (void)
   /// \todo This test fails sometimes if the required tolerance is less
   /// than 3%, which may be because there is a bug in the
   /// implementation or that the mean of this distribution is more
-  /// senstive to its parameters than the others are.
+  /// sensitive to its parameters than the others are.
   double TOLERANCE = expectedMean * 3e-2;
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
 }
@@ -1836,7 +1836,7 @@ RandomVariableStreamLogNormalAntitheticTestCase::DoRun (void)
   /// \todo This test fails sometimes if the required tolerance is less
   /// than 3%, which may be because there is a bug in the
   /// implementation or that the mean of this distribution is more
-  /// senstive to its parameters than the others are.
+  /// sensitive to its parameters than the others are.
   double TOLERANCE = expectedMean * 3e-2;
   NS_TEST_ASSERT_MSG_EQ_TOL (valueMean, expectedMean, TOLERANCE, "Wrong mean value."); 
 }

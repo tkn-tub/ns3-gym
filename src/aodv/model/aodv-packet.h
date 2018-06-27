@@ -270,7 +270,7 @@ public:
   bool GetGratuitousRrep () const;
   /**
    * \brief Set the Destination only flag
-   * \param f the Destiantion only flag
+   * \param f the Destination only flag
    */
   void SetDestinationOnly (bool f);
   /**

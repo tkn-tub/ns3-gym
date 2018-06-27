@@ -28,7 +28,7 @@ namespace ns3 {
 /**
  * \param configPath Config path to access the probe.
  * \param matchedPath the path that matched the Config path.
- * \param wildcardSeparator the text to put betwen the wildcard
+ * \param wildcardSeparator the text to put between the wildcard
  * matches.  By default, a space is used.
  * \return String value of text matches
  *

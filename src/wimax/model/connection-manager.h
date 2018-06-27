@@ -59,7 +59,7 @@ public:
   void SetCidFactory (CidFactory *cidFactory);
   /**
    * \brief allocates the management connection for an ss record. This method is only used by BS
-   * \param ssRecord the ss record to wich the management connection will be allocated
+   * \param ssRecord the ss record to which the management connection will be allocated
    * \param rngrsp the ranging response message
    */
   void AllocateManagementConnections (SSRecord *ssRecord, RngRsp *rngrsp);

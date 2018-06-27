@@ -1891,7 +1891,7 @@ MacLow::SendDataAfterCts (Time duration)
 {
   NS_LOG_FUNCTION (this);
   /* send the third step in a
-   * RTS/CTS/DATA/ACK hanshake
+   * RTS/CTS/DATA/ACK handshake
    */
   NS_ASSERT (m_currentPacket != 0);
 

@@ -2285,7 +2285,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiTxVector txVector, MpduType m
                         << +txVector.GetTxPowerLevel ()
                         << +mpdutype);
   /* Transmission can happen if:
-   *  - we are syncing on a packet. It is the responsability of the
+   *  - we are syncing on a packet. It is the responsibility of the
    *    MAC layer to avoid doing this but the PHY does nothing to
    *    prevent it.
    *  - we are idle

@@ -66,7 +66,7 @@ have been considered:
     approach, which evaluates resource allocation only at the granularity of
     call/bearer establishment.
  #. The simulator should scale up to tens of eNBs and hundreds of User
-    Equipments (UEs). This
+    Equipment (UEs). This
     rules out the use of a link level simulator, i.e., a simulator whose radio
     interface is modeled with a granularity up to the symbol level. This is because
     to have a symbol level model it is necessary to implement all the PHY
@@ -466,7 +466,7 @@ Overview
 
 The physical layer model provided in this LTE simulator is based on
 the one described in [Piro2011]_, with the following modifications.  The model now includes the 
-inter cell intereference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
+inter cell interference calculation and the simulation of uplink traffic, including both packet transmission and CQI generation. 
 
 
 Subframe Structure
@@ -520,7 +520,7 @@ In uplink, two types of CQIs are implemented:
  - SRS based, periodically sent by the UEs.
  - PUSCH based, calculated from the actual transmitted data.
 
-The scheduler interface include an attribute system calld ``UlCqiFilter`` for managing the filtering of the CQIs according to their nature, in detail:
+The scheduler interface include an attribute system called ``UlCqiFilter`` for managing the filtering of the CQIs according to their nature, in detail:
 
   - ``SRS_UL_CQI`` for storing only SRS based CQIs.
   - ``PUSCH_UL_CQI`` for storing only PUSCH based CQIs.
@@ -588,7 +588,7 @@ The specific LSM method adopted is the one based on the usage of a mutual inform
 
    MIESM computational procedure diagram
 
-The mutual information (MI) is dependent on the constellation mapping and can be calculated per transport block (TB) basis, by evaluating the MI over the symbols and the subcarrier. However, this would be too complex for a network simulator. Hence, in our implementation a flat channel response within the RB has been considered; therefore the overall MI of a TB is calculated averaging the MI evaluated per each RB used in the TB. In detail, the implemented scheme is depicted in Figure :ref:`fig-miesm-architecture`, where we see that the model starts by evaluating the MI value for each RB, represented in the figure by the SINR samples. Then the equivalent MI is evaluated per TB basis by averaging the MI values. Finally, a further step has to be done since the link level simulator returns the performance of the link in terms of block error rate (BLER) in a addive white guassian noise  (AWGN) channel, where the blocks are the code blocks (CBs) independently encoded/decoded by the turbo encoder. On this matter the 
+The mutual information (MI) is dependent on the constellation mapping and can be calculated per transport block (TB) basis, by evaluating the MI over the symbols and the subcarrier. However, this would be too complex for a network simulator. Hence, in our implementation a flat channel response within the RB has been considered; therefore the overall MI of a TB is calculated averaging the MI evaluated per each RB used in the TB. In detail, the implemented scheme is depicted in Figure :ref:`fig-miesm-architecture`, where we see that the model starts by evaluating the MI value for each RB, represented in the figure by the SINR samples. Then the equivalent MI is evaluated per TB basis by averaging the MI values. Finally, a further step has to be done since the link level simulator returns the performance of the link in terms of block error rate (BLER) in a addive white gaussian noise  (AWGN) channel, where the blocks are the code blocks (CBs) independently encoded/decoded by the turbo encoder. On this matter the 
 standard 3GPP segmentation scheme has been used for estimating the actual CB size (described in section 5.1.2 of [TS36212]_). This scheme divides the TB in :math:`N_{K_-}` blocks of size :math:`K_-` and :math:`N_{K+}` blocks of size :math:`K_+`. Therefore the overall TB BLER (TBLER) can be expressed as
 
 .. math::
@@ -611,7 +611,7 @@ BLER Curves
 
 On this respect, we reused part of the curves obtained within [PaduaPEM]_. In detail, we introduced the CB size dependency to the CB BLER curves with the support of the developers of [PaduaPEM]_ and of the LTE Vienna Simulator. In fact, the module released provides the link layer performance only for what concerns the MCSs (i.e, with a given fixed ECR). In detail the new error rate curves for each has been evaluated with a simulation campaign with the link layer simulator for a single link with AWGN noise and for CB size of 104, 140, 256, 512, 1024, 2048, 4032 and 6144. These curves has been mapped with the Gaussian cumulative model formula presented above for obtaining the correspondents :math:`b_{ECR}` and :math:`c_{ECR}` parameters.
 
-The BLER perfomance of all MCS obtained with the link level simulator are plotted in the following figures (blue lines) together with their correspondent mapping to the Gaussian cumulative distribution (red dashed lines).
+The BLER performance of all MCS obtained with the link level simulator are plotted in the following figures (blue lines) together with their correspondent mapping to the Gaussian cumulative distribution (red dashed lines).
 
 
 .. _fig-mcs-1-4-ber:
@@ -814,7 +814,7 @@ The PHY Error Model model (i.e., the ``LteMiErrorModel`` class already presented
 
     M_{I eff} = \frac{\sum\limits_{i=1}^q C_i M_i}{\sum\limits_{i=1}^q C_i}
 
-where :math:`X` is the number of original information bits, :math:`C_i` are number of coded bits, :math:`M_i` are the mutual informations per HARQ block received on the total number of :math:`q` retransmissions. Therefore, in order to be able to return the error probability with the error model implemented in the simulator evaluates the :math:`R_{eff}` and the :math:`MI_{I eff}` and return the value of error probability of the ECR of the same modulation with closest lower rate respect to the :math:`R_{eff}`. In order to consider the effect of HARQ retransmissions a new sets of curves have been integrated respect to the standard one used for the original MCS. The new curves are intended for covering the cases when the most conservative MCS of a modulation is used which implies the generation of :math:`R_{eff}` lower respect to the one of standard MCSs. On this matter the curves for 1, 2 and 3 retransmissions have been evaluated for 10 and 17. For MCS 0 we considered only the first retransmission since the 
+where :math:`X` is the number of original information bits, :math:`C_i` are number of coded bits, :math:`M_i` are the mutual information per HARQ block received on the total number of :math:`q` retransmissions. Therefore, in order to be able to return the error probability with the error model implemented in the simulator evaluates the :math:`R_{eff}` and the :math:`MI_{I eff}` and return the value of error probability of the ECR of the same modulation with closest lower rate respect to the :math:`R_{eff}`. In order to consider the effect of HARQ retransmissions a new sets of curves have been integrated respect to the standard one used for the original MCS. The new curves are intended for covering the cases when the most conservative MCS of a modulation is used which implies the generation of :math:`R_{eff}` lower respect to the one of standard MCSs. On this matter the curves for 1, 2 and 3 retransmissions have been evaluated for 10 and 17. For MCS 0 we considered only the first retransmission since the 
 produced code rate is already very conservative (i.e., 0.04) and returns an error rate enough robust for the reception (i.e., the downturn of the BLER is centered around -18 dB).
 It is to be noted that, the size of first TB transmission has been assumed as containing all the information bits to be coded; therefore :math:`X` is equal to the size of the first TB sent of a an HARQ process. The model assumes that the eventual presence of parity bits in the codewords is already considered in the link level curves. This implies that as soon as the minimum :math:`R_{eff}` is reached the model is not including the gain due to the transmission of further parity bits.
 
@@ -1026,11 +1026,11 @@ For what concern the HARQ, RR implements the non adaptive version, which implies
 
    Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
 
-The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attibute, in detail:
+The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attribute, in detail:
 
   - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
   - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
-  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attibute (i.e., the last CQI received is stored independently from its nature).
+  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attribute (i.e., the last CQI received is stored independently from its nature).
 
 
 
@@ -1283,7 +1283,7 @@ quality UE tend towards the TBR.
 
   Config::SetDefault ("ns3::PfFfMacScheduler::HarqEnabled", BooleanValue (false));
 
-The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attibute, in detail:
+The scheduler implements the filtering of the uplink CQIs according to their nature with ``UlCqiFilter`` attribute, in detail:
 
   - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
   - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
@@ -2288,7 +2288,7 @@ following simplifying assumptions:
  - carrier aggregation is now supported in the LTE module
    - Event A6 is not implemented;
    
- - speed dependant scaling of time-to-trigger (Section 5.5.6.2 of [TS36331]_) is
+ - speed dependent scaling of time-to-trigger (Section 5.5.6.2 of [TS36331]_) is
    not supported.
 
 Overall design
@@ -3139,7 +3139,7 @@ assigned the base IPv4 address of the EPC network; hence, static
 routing rules will cause the incoming packet from the internet to be
 routed through this VirtualNetDevice. In case of IPv6 address as destination,
 a manual route towards the VirtualNetDevice is inserted in the routing table,
-containg the 48 bit IPv6 prefix from which all the IPv6 addresses of the UEs
+containing the 48 bit IPv6 prefix from which all the IPv6 addresses of the UEs
 and PGW are configured. Such device starts the GTP/UDP/IP tunneling procedure,
 by forwarding the packet to a dedicated application in the SGW/PGW  node which
 is called EpcSgwPgwApplication. This application does the following operations:
@@ -3356,7 +3356,7 @@ and it provides services to:
 
     * to send/receive RRC messages. The X2 entity sends the RRC message as a transparent container in the X2 message. This RRC message is sent to the UE. 
 
-Figure :ref:`fig-x2-entity-saps` shows the implentation model of the X2 entity and its relationship with all the other entities and services in the protocol stack.
+Figure :ref:`fig-x2-entity-saps` shows the implementation model of the X2 entity and its relationship with all the other entities and services in the protocol stack.
 
 .. _fig-x2-entity-saps:
 
@@ -4314,7 +4314,7 @@ pointers to MAC, PHY, scheduler, fractional frequency reuse instances.
 ``LteEnbNetDevice`` can contain pointers to several ``ComponentCarrierEnb`` instances. 
 This architecture allows that each CC may have its own configuration for PHY, MAC, 
 scheduling algorithm and franctional frequency reuse algorithm.  These attributes are 
-currently mantained also in the ``LteEnbNetDevice`` for backward compatibility purpose. 
+currently maintained also in the ``LteEnbNetDevice`` for backward compatibility purpose. 
 By default the ``LteEnbNetDevice`` attributes are the same as the 
 primary carrier attributes. 
 

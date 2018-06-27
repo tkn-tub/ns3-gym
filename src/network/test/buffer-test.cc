@@ -42,7 +42,7 @@ private:
    * Checks the buffer content
    * \param b The buffer to check
    * \param n The number of bytes to check
-   * \param array The aray of bytes that should be in the buffer
+   * \param array The array of bytes that should be in the buffer
    * \param file The file name
    * \param line The line number
    */

@@ -42,7 +42,7 @@ namespace ns3 {
  * of the double and long double implementations.
  * 
  * To handle this, where needed we define a tolerance to use in the
- * test comparisions.  If you need to increase the tolerance,
+ * test comparisons.  If you need to increase the tolerance,
  * please append the system and compiler version.  For example:
  *
  * \code

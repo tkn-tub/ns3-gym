@@ -228,7 +228,7 @@ public:
   /**
    * Return the supported channel width.
    *
-   * \return the supported chanel width
+   * \return the supported channel width
    */
   uint8_t GetSupportedChannelWidth (void) const;
   /**

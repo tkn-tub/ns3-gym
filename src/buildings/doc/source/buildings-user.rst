@@ -71,7 +71,7 @@ Setup nodes and mobility models
 Nodes and mobility models are configured as usual, however in order to
 use them with the buildings model you need an additional call to
 ``BuildingsHelper::Install()``, so as to let the mobility model include
-the informtion on their position w.r.t. the buildings. Here is an example::
+the information on their position w.r.t. the buildings. Here is an example::
 
     MobilityHelper mobility;
     mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
@@ -125,12 +125,12 @@ The following position allocator classes are available to place node
 in special positions with respect to buildings:
 
  - ``RandomBuildingPositionAllocator``: Allocate each position by
-   randomly chosing a building from the list of all buildings, and
-   then randomly chosing a position inside the building. 
+   randomly choosing a building from the list of all buildings, and
+   then randomly choosing a position inside the building. 
 
  - ``RandomRoomPositionAllocator``: Allocate each position by randomly
-   chosing a room from the list of rooms in all buildings, and then
-   randomly chosing a position inside the room. 
+   choosing a room from the list of rooms in all buildings, and then
+   randomly choosing a position inside the room. 
 
  - ``SameRoomPositionAllocator``: Walks a given NodeContainer
    sequentially, and for each node allocate a new position randomly in
@@ -180,7 +180,7 @@ The ``Building`` class has the following configurable parameters:
 * number of floors.
 * number of rooms in x-axis and y-axis (rooms can be placed only in a grid way).
 
-The ``BuildingMobilityLossModel`` parameter configurable with the ns3 attribute system is represented by the bound (string ``Bounds``) of the simulation area by providing a ``Box`` class with the area bounds. Moreover, by means of its methos the following parameters can be configured:
+The ``BuildingMobilityLossModel`` parameter configurable with the ns3 attribute system is represented by the bound (string ``Bounds``) of the simulation area by providing a ``Box`` class with the area bounds. Moreover, by means of its methods the following parameters can be configured:
 
 * the number of floor the node is placed (default 0).
 * the position in the rooms grid.

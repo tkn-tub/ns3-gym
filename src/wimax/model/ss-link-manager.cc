@@ -441,7 +441,7 @@ SSLinkManager::DeleteUplinkParameters (void)
 bool
 SSLinkManager::IsUlChannelUsable (void)
 {
-  // dont know how to check if usable, see Figure 58.
+  // don't know how to check if usable, see Figure 58.
   return true; // temporarily assuming usable
 }
 
@@ -466,7 +466,7 @@ SSLinkManager::AdjustRangingParameters (const RngRsp &rngrsp)
 void
 SSLinkManager::NegotiateBasicCapabilities (void)
 {
-  // code to nagotiate basic capabilites goes here, ignored until very advanced stages
+  // code to nagotiate basic capabilities goes here, ignored until very advanced stages
 }
 
 uint16_t
@@ -490,7 +490,7 @@ SSLinkManager::CalculateMaxIRSignalStrength (void)
 uint16_t
 SSLinkManager::GetMinTransmitPowerLevel (void)
 {
-  // code to calculate minimum transmit power level of the SS, see page 189 of ammendment
+  // code to calculate minimum transmit power level of the SS, see page 189 of amendment
   return 10; // temp
 }
 

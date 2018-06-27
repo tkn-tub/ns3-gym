@@ -74,7 +74,7 @@ public:
   /** 
    * Add an eNB to the EPC
    * 
-   * \param enbNode the previosuly created eNB node which is to be
+   * \param enbNode the previously created eNB node which is to be
    * added to the EPC
    * \param lteEnbNetDevice the LteEnbNetDevice of the eNB node
    * \param cellId ID of the eNB
@@ -82,7 +82,7 @@ public:
   virtual void AddEnb (Ptr<Node> enbNode, Ptr<NetDevice> lteEnbNetDevice, uint16_t cellId) = 0;
 
   /** 
-   * Notify the EPC of the existance of a new UE which might attach at a later time
+   * Notify the EPC of the existence of a new UE which might attach at a later time
    * 
    * \param ueLteDevice the UE device to be attached
    * \param imsi the unique identifier of the UE

@@ -158,7 +158,7 @@ public:
    * This method represent the UL Scheduler for rtPS  connections.
    * The scheduler is designed to serve all rtPS connections that
    * have at least one packet to transmit, every UL Subframe.
-   * The methos selects all rtPS connection that have al least one
+   * The method selects all rtPS connection that have al least one
    * packet to transmit. To each rtPS connections are allocated,
    * at the beginning, the bandwidth to transmit a quota of data equal
    * to (RequestedBandwidth - GrantedBandwidth).

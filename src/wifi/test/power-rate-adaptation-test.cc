@@ -539,7 +539,7 @@ PowerRateAdaptationTest::TestAparf ()
 
   /*
    * As we are in state High we need 3 successful transmissions to increase rate or decrease power.
-   * After 10 power changes critical rate is reseted.
+   * After 10 power changes critical rate is reset.
    * So after 10*3 successful transmissions critical rate is set to 0.
    * And 3 successful transmissions more will make power increase to maximum and rate increase to the critical rate.
    */

@@ -48,7 +48,7 @@ Error models are |ns3| objects and can be created using the typical
 pattern of ``CreateObject<>()``.  They have configuration attributes.
 
 An ErrorModel can be applied anywhere, but are commonly deployed on
-NetDevice models so that artificial losses (mimicing channel losses) 
+NetDevice models so that artificial losses (mimicking channel losses) 
 can be induced.
 
 Scope and Limitations

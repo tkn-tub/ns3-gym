@@ -33,8 +33,8 @@ class UniformRandomVariable;
 
 
 /**
- * Allocate each position by randomly chosing a building from the list
- * of all buildings, and then randomly chosing a position inside the building.
+ * Allocate each position by randomly choosing a building from the list
+ * of all buildings, and then randomly choosing a position inside the building.
  * 
  */
 class RandomBuildingPositionAllocator : public PositionAllocator
@@ -127,8 +127,8 @@ private:
 };
 
 /**
- * Allocate each position by randomly chosing a room from the list
- * of all buildings, and then randomly chosing a position inside the room.
+ * Allocate each position by randomly choosing a room from the list
+ * of all buildings, and then randomly choosing a position inside the room.
  * The selection of the room is always done without replacement.
  * 
  */

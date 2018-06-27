@@ -637,7 +637,7 @@ QosTxop::MissedBlockAck (uint8_t nMpdus)
         }
       else
         {
-          //standard says when loosing a BlockAck originator may send a BAR page 139
+          //standard says when losing a BlockAck originator may send a BAR page 139
           NS_LOG_DEBUG ("Transmit Block Ack Request");
           CtrlBAckRequestHeader reqHdr;
           reqHdr.SetType (COMPRESSED_BLOCK_ACK);

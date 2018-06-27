@@ -76,7 +76,7 @@ public:
 
 
 private:
-  //overriden from base class
+  //overridden from base class
   WifiRemoteStation * DoCreateStation (void) const;
   void DoReportRxOk (WifiRemoteStation *station,
                      double rxSnr, WifiMode txMode);
@@ -109,7 +109,7 @@ private:
    */
   uint8_t GetMaxRate (RraaWifiRemoteStation *station) const;
   /**
-   * Check if the counter should be resetted.
+   * Check if the counter should be reset.
    *
    * \param station
    */

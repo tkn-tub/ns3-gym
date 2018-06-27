@@ -105,7 +105,7 @@ RandomPropagationLossModel::GetTypeId (void)
     .SetParent<PropagationLossModel> ()
     .SetGroupName ("Propagation")
     .AddConstructor<RandomPropagationLossModel> ()
-    .AddAttribute ("Variable", "The random variable used to pick a loss everytime CalcRxPower is invoked.",
+    .AddAttribute ("Variable", "The random variable used to pick a loss every time CalcRxPower is invoked.",
                    StringValue ("ns3::ConstantRandomVariable[Constant=1.0]"),
                    MakePointerAccessor (&RandomPropagationLossModel::m_variable),
                    MakePointerChecker<RandomVariableStream> ())

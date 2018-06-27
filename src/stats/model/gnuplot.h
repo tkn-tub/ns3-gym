@@ -438,7 +438,7 @@ public:
 
   /**
    * \param osControl the output stream on which the relevant gnuplot
-   * contol commands should be generated. Including output file and
+   * control commands should be generated. Including output file and
    * terminal headers.
    * \param osData the output stream on which the relevant gnuplot
    * data values should be generated.
@@ -520,7 +520,7 @@ public:
  
   /**
    * \param osControl the output stream on which the relevant gnuplot
-   * contol commands should be generated. Including output file and
+   * control commands should be generated. Including output file and
    * terminal headers.
    * \param osData the output stream on which the relevant gnuplot
    * data values should be generated.

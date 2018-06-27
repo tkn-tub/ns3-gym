@@ -68,7 +68,7 @@ int main (int argc, char *argv[])
       lteHelper->SetFadingModelAttribute ("TraceFilename", StringValue ("src/lte/model/fading-traces/fading_trace_EPA_3kmph.fad"));
     }
     
-  // these parameters have to setted only in case of the trace format 
+  // these parameters have to set only in case of the trace format 
   // differs from the standard one, that is
   // - 10 seconds length trace
   // - 10,000 samples

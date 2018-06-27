@@ -1621,7 +1621,7 @@ CqaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
           (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
 
-      // ...more parameters -> ingored in this version
+      // ...more parameters -> ignored in this version
 
       ret.m_buildDataList.push_back (newEl);
       // update UE stats

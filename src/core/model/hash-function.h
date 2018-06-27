@@ -145,7 +145,7 @@ private:
 /**
  * \ingroup hash
  *
- * \brief Template for creating a Hash::Implemetation from
+ * \brief Template for creating a Hash::Implementation from
  * a 64-bit hash function.
  */
 class Hash64 : public Implementation

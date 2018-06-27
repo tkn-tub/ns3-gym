@@ -98,7 +98,7 @@ public:
   int64_t AssignStreams (int64_t stream);
 
 private:
-  //overriden from base class
+  //overridden from base class
   virtual WifiRemoteStation * DoCreateStation (void) const;
   virtual void DoReportRxOk (WifiRemoteStation *station,
                              double rxSnr, WifiMode txMode);
@@ -123,7 +123,7 @@ private:
   void CheckInit (RrpaaWifiRemoteStation *station);
 
   /**
-   * Check if the counter should be reseted.
+   * Check if the counter should be reset.
    *
    * \param station
    */

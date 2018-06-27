@@ -808,7 +808,7 @@ LteEnbMac::DoAddUe (uint16_t rnti)
 
   m_cschedSapProvider->CschedUeConfigReq (params);
 
-  // Create DL trasmission HARQ buffers
+  // Create DL transmission HARQ buffers
   std::vector < Ptr<PacketBurst> > dlHarqLayer0pkt;
   dlHarqLayer0pkt.resize (8);
   for (uint8_t i = 0; i < 8; i++)

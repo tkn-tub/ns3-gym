@@ -710,7 +710,7 @@ ChannelAccessManagerTest::DoRun (void)
   ExpectCollision (30, 4, 0); //backoff: 4 slots
   EndTest ();
 
-  // Test an EIFS which is interupted by a successfull transmission.
+  // Test an EIFS which is interrupted by a successful transmission.
   //
   //  20          60      66  69     75     81      85       89       93       97      101  103
   //   |    rx     | sifs  |   |  rx  | sifs | aifsn | bslot0 | bslot1 | bslot2 | bslot3 | tx |

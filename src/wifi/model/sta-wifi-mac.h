@@ -236,7 +236,7 @@ private:
   void StartScanning (void);
   /**
    * This method is called after wait beacon timeout or wait probe request timeout has
-   * occured. This will trigger association process from beacons or probe responses
+   * occurred. This will trigger association process from beacons or probe responses
    * gathered while scanning.
    */
   void ScanningTimeout (void);

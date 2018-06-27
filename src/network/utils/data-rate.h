@@ -140,7 +140,7 @@ public:
   bool operator >  (const DataRate& rhs) const;
   
   /**
-   * \return true if this rate is greather than or equal to rhs
+   * \return true if this rate is greater than or equal to rhs
    *
    * \param rhs the datarate to compare to this datarate
    */   

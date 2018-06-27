@@ -415,7 +415,7 @@ Handover configuration
 ######################
 
 The purpose of the handover configuration is to verify whether UE measurement
-configuration is updated properly after a succesful handover takes place. For
+configuration is updated properly after a successful handover takes place. For
 this purpose, the simulation will construct 2 eNodeBs with different UE
 measurement configuration, and the UE will perform handover from one cell to
 another. The UE will be located on a straight line between the 2 eNodeBs, and
@@ -932,7 +932,7 @@ might be produced in quantizing the MI and the error curve.
 HARQ Model
 ----------
 
-The test suite ``lte-harq`` includes two tests for evaluating the HARQ model and the related extension in the error model. The test consists on checking whether the amount of bytes received during the simulation corresponds to the expected ones according to the values of transport block and the HARQ dynamics. In detail, the test checks whether the throughput obtained after one HARQ retransmission is the expeted one. For evaluating the expected throughput the expected TB delivering time has been evaluated according to the following formula:
+The test suite ``lte-harq`` includes two tests for evaluating the HARQ model and the related extension in the error model. The test consists on checking whether the amount of bytes received during the simulation corresponds to the expected ones according to the values of transport block and the HARQ dynamics. In detail, the test checks whether the throughput obtained after one HARQ retransmission is the expected one. For evaluating the expected throughput the expected TB delivering time has been evaluated according to the following formula:
 
 .. math::
 
@@ -1015,7 +1015,7 @@ knowledge of the input test vector and knowledge of the expected
 behavior. These test vector are specialized for UM RLC and
 AM RLC due to their different behavior. Each test case passes if the
 sequence of primitives triggered by the RLC instance being tested is
-exacly equal to the output test vector. In particular, for each PDU
+exactly equal to the output test vector. In particular, for each PDU
 transmitted by the RLC instance, both the size and the content of the
 PDU are verified to check for an exact match with the test vector.
 
@@ -1473,8 +1473,8 @@ Power Control in three different ways:
    to ``RsPowerChunkProcessor`` list in UE DownlinkSpectrumPhy. Tx power of data 
    channel is measured in similar way, but it had to be implemented. Now 
    ``LteTestSinrChunkProcessor`` is added to ``DataPowerChunkProcessor`` list in UE 
-   DownlinkSpectrumPhy. Test vector contain a set of all avaiable P_A values. Test 
-   pass if power diffrence equals P_A value. 
+   DownlinkSpectrumPhy. Test vector contain a set of all available P_A values. Test 
+   pass if power difference equals P_A value. 
 
  * LteDownlinkPowerControlRrcConnectionReconfiguration test case check if 
    RrcConnectionReconfiguration is performed correctly. When FR entity gets UE 

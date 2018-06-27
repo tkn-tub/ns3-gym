@@ -48,7 +48,7 @@ public:
    *
    * \param nRows total number of rows in the grid
    *
-   * \param nCols total number of colums in the grid
+   * \param nCols total number of columns in the grid
    *
    * \param pointToPoint the PointToPointHelper which is used 
    *                     to connect all of the nodes together 

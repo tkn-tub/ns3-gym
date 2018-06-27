@@ -144,7 +144,7 @@ public:
   bool operator >  (const QueueSize& rhs) const;
 
   /**
-   * \return true if this size is greather than or equal to rhs
+   * \return true if this size is greater than or equal to rhs
    *
    * \param rhs the queue size to compare to this queue size
    */

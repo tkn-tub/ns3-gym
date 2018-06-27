@@ -106,12 +106,12 @@ public:
      */
     uint32_t currentSize;
     /**
-     * how many bytes were trimed from the start of a fragment.
+     * how many bytes were trimmed from the start of a fragment.
      * if isFragment is true, this field is zero.
      */
     uint32_t currentTrimedFromStart;
     /**
-     * how many bytes were trimed from the end of a fragment.
+     * how many bytes were trimmed from the end of a fragment.
      * if isFragment is true, this field is zero.
      */
     uint32_t currentTrimedFromEnd;
@@ -463,7 +463,7 @@ private:
        is used to test whether two items are equal in the sense 
        that they represent the same header or trailer instance.
        That equality test is based on the typeUid and chunkUid
-       fields so, the likelyhood that two header instances 
+       fields so, the likelihood that two header instances 
        share the same chunkUid _and_ typeUid is very small 
        unless they are really representations of the same header
        instance.

@@ -242,7 +242,7 @@ private:
 
   Ptr<LteFfrAlgorithm> m_ffrAlgorithm; /**< DEPRECATED - It is maintained for backward compatibility after adding CA feature*/
 
-  uint16_t m_cellId; /**< Cell Identifer. Part of the CGI, see TS 29.274, section 8.21.1  */
+  uint16_t m_cellId; /**< Cell Identifier. Part of the CGI, see TS 29.274, section 8.21.1  */
 
   uint8_t m_dlBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- downlink bandwidth in RBs */
   uint8_t m_ulBandwidth; /**<DEPRECATE - It is maintained for backward compatibility after adding CA feature- uplink bandwidth in RBs */

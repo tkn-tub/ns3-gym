@@ -200,7 +200,7 @@ protected:
 
   /**
    * \brief DoGetMinContinuousUlBandwidth in number of RB
-   * \return number of RB in min continous UL Bandwidth
+   * \return number of RB in min continuous UL Bandwidth
    */
   virtual uint8_t DoGetMinContinuousUlBandwidth () = 0;
 

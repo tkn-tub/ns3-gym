@@ -67,7 +67,7 @@ ClientMainObjectReceived (Ptr<const ThreeGppHttpClient>, Ptr<const Packet> packe
   if (header.GetContentLength () == p->GetSize ()
       && header.GetContentType () == ThreeGppHttpHeader::MAIN_OBJECT)
     {
-      NS_LOG_INFO ("Client has succesfully received a main object of "
+      NS_LOG_INFO ("Client has successfully received a main object of "
                    << p->GetSize () << " bytes.");
     }
   else
@@ -85,7 +85,7 @@ ClientEmbeddedObjectReceived (Ptr<const ThreeGppHttpClient>, Ptr<const Packet> p
   if (header.GetContentLength () == p->GetSize ()
       && header.GetContentType () == ThreeGppHttpHeader::EMBEDDED_OBJECT)
     {
-      NS_LOG_INFO ("Client has succesfully received an embedded object of "
+      NS_LOG_INFO ("Client has successfully received an embedded object of "
                    << p->GetSize () << " bytes.");
     }
   else

@@ -43,7 +43,7 @@ OutputStreamWrapper::OutputStreamWrapper (std::ostream* os)
 {
   NS_LOG_FUNCTION (this << os);
   FatalImpl::RegisterStream (m_ostream);
-  NS_ABORT_MSG_UNLESS (m_ostream->good (), "Output stream is not vaild for writing.");
+  NS_ABORT_MSG_UNLESS (m_ostream->good (), "Output stream is not valid for writing.");
 }
 
 OutputStreamWrapper::~OutputStreamWrapper ()

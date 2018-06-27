@@ -336,7 +336,7 @@ public:
    * \param duration switching delay duration.
    *
    * This method is typically invoked by the PhyMacLowListener to notify
-   * the MAC layer that a channel switching occured. When a channel switching
+   * the MAC layer that a channel switching occurred. When a channel switching
    * occurs, pending MAC transmissions (RTS, CTS, DATA and ACK) are cancelled.
    */
   void NotifySwitchingStartNow (Time duration);
@@ -388,9 +388,9 @@ public:
    */
   void RegisterEdcaForAc (AcIndex ac, Ptr<QosTxop> edca);
   /**
-   * \param packet the packet to be aggregated. If the aggregation is succesfull, it corresponds either to the first data packet that will be aggregated or to the BAR that will be piggybacked at the end of the A-MPDU.
+   * \param packet the packet to be aggregated. If the aggregation is successful, it corresponds either to the first data packet that will be aggregated or to the BAR that will be piggybacked at the end of the A-MPDU.
    * \param hdr the WifiMacHeader for the packet.
-   * \return the A-MPDU packet if aggregation is successfull, the input packet otherwise
+   * \return the A-MPDU packet if aggregation is successful, the input packet otherwise
    *
    * This function adds the packets that will be added to an A-MPDU to an aggregate queue
    *
@@ -438,7 +438,7 @@ public:
    * Start NAV with the given duration.
    *
    * \param duration the duration
-   * \return true if NAV is resetted
+   * \return true if NAV is reset
    */
   bool DoNavStartNow (Time duration);
   /**
@@ -627,7 +627,7 @@ private:
    */
   void NotifyAckTimeoutStartNow (Time duration);
   /**
-   * Notify ChannelAccessManager that ACK timer should be resetted.
+   * Notify ChannelAccessManager that ACK timer should be reset.
    */
   void NotifyAckTimeoutResetNow ();
   /**
@@ -637,12 +637,12 @@ private:
    */
   void NotifyCtsTimeoutStartNow (Time duration);
   /**
-   * Notify ChannelAccessManager that CTS timer should be resetted.
+   * Notify ChannelAccessManager that CTS timer should be reset.
    */
   void NotifyCtsTimeoutResetNow ();
   /**
    * Reset NAV after CTS was missed when the NAV was
-   * setted with RTS.
+   * set with RTS.
    *
    * \param rtsEndRxTime
    */

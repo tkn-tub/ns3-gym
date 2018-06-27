@@ -83,7 +83,7 @@ public:
    *
    * \param kass Fraction of total bandwidth assigned to mode.
    * \param fc Mode center frequency offset.
-   * \param upperblock Sign choise in setting the center frequency.
+   * \param upperblock Sign choice in setting the center frequency.
    * \param name Mode name.
    * \return The new mode.
    */

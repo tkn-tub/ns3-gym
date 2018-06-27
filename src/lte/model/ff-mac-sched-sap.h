@@ -298,7 +298,7 @@ public:
 
     uint8_t m_nrOfPdcchOfdmSymbols; ///< number of PDCCH OFDM symbols
 
-    std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specfic list
+    std::vector <struct VendorSpecificListElement_s> m_vendorSpecificList; ///< vendor specific list
   };
 
   /**

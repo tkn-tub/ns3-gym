@@ -122,7 +122,7 @@ UnregisterStream (std::ostream* stream)
 
 /**
  * \ingroup fatalimpl
- * Unnamed namespace for fatal streams signal hander.
+ * Unnamed namespace for fatal streams signal handler.
  *
  * This is private to the fatal implementation.
  */

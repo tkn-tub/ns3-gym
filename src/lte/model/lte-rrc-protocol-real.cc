@@ -289,7 +289,7 @@ LteUeRrcProtocolReal::DoReceivePdcpPdu (Ptr<Packet> p)
   LteRrcSap::RrcConnectionSetup rrcConnectionSetupMsg;
   LteRrcSap::RrcConnectionReject rrcConnectionRejectMsg;
 
-  // Deserialize packet and call member recv function with appropiate structure
+  // Deserialize packet and call member recv function with appropriate structure
   switch ( rrcDlCcchMessage.GetMessageType () )
     {
     case 0:
@@ -334,7 +334,7 @@ LteUeRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameters
   LteRrcSap::RrcConnectionReconfiguration rrcConnectionReconfigurationMsg;
   LteRrcSap::RrcConnectionRelease rrcConnectionReleaseMsg;
 
-  // Deserialize packet and call member recv function with appropiate structure
+  // Deserialize packet and call member recv function with appropriate structure
   switch ( rrcDlDcchMessage.GetMessageType () )
     {
     case 4:
@@ -653,7 +653,7 @@ LteEnbRrcProtocolReal::DoReceivePdcpPdu (uint16_t rnti, Ptr<Packet> p)
   RrcConnectionReestablishmentRequestHeader rrcConnectionReestablishmentRequestHeader;
   RrcConnectionRequestHeader rrcConnectionRequestHeader;
 
-  // Deserialize packet and call member recv function with appropiate structure
+  // Deserialize packet and call member recv function with appropriate structure
   switch ( rrcUlCcchMessage.GetMessageType () )
     {
     case 0:
@@ -690,7 +690,7 @@ LteEnbRrcProtocolReal::DoReceivePdcpSdu (LtePdcpSapUser::ReceivePdcpSduParameter
   LteRrcSap::RrcConnectionReestablishmentComplete rrcConnectionReestablishmentCompleteMsg;
   LteRrcSap::RrcConnectionSetupCompleted rrcConnectionSetupCompletedMsg;
 
-  // Deserialize packet and call member recv function with appropiate structure
+  // Deserialize packet and call member recv function with appropriate structure
   switch ( rrcUlDcchMessage.GetMessageType () )
     {
     case 1:

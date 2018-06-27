@@ -49,7 +49,7 @@ do
 done
 
 #
-#Another SQL command which just collects raw numbers of frames receved.
+#Another SQL command which just collects raw numbers of frames received.
 #
 #CMD="select Experiments.input,avg(Singletons.value) \
 #    from Singletons,Experiments \

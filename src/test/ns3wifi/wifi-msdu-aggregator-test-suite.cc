@@ -134,7 +134,7 @@ WifiMsduAggregatorThroughputTest::DoRun (void)
 
   // The packet source is an on-off application on the AP
   // device. Given that we have fixed the transmit rate at 1 Mbps
-  // above, a 1 Mbps stream at the transport layer should be sufficent
+  // above, a 1 Mbps stream at the transport layer should be sufficient
   // to determine whether aggregation is working or not.
   //
   // We configure this traffic stream to operate between 1 and 9 seconds.

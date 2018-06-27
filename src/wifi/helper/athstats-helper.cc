@@ -264,7 +264,7 @@ AthstatsWifiTraceSink::WriteStats ()
   //I know C strings are ugly but that's the quickest way to use exactly the same format as in madwifi
   char str[200];
   snprintf (str, 200, "%8u %8u %7u %7u %7u %6u %6u %6u %7u %4u %3uM\n",
-            (unsigned int) m_txCount, // /proc/net/dev transmitted packets to which we should subract mgmt frames
+            (unsigned int) m_txCount, // /proc/net/dev transmitted packets to which we should subtract mgmt frames
             (unsigned int) m_rxCount, // /proc/net/dev received packets but subracts mgmt frames from it
             (unsigned int) 0, // ast_tx_altrate
             (unsigned int) m_shortRetryCount, // ast_tx_shortretry

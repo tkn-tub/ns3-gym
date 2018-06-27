@@ -250,7 +250,7 @@ private:
    * \brief LC active per flow
    *
    * \param rnti the RNTI
-   * \returns the LC acive per flow
+   * \returns the LC active per flow
    */
   unsigned int LcActivePerFlow (uint16_t rnti);
 
@@ -387,7 +387,7 @@ private:
 
   // HARQ attributes
   /**
-  * m_harqOn when false inhibit te HARQ mechanisms (by default active)
+  * m_harqOn when false inhibit the HARQ mechanisms (by default active)
   */
   bool m_harqOn;
   std::map <uint16_t, uint8_t> m_dlHarqCurrentProcessId; ///< DL HARQ current process ID

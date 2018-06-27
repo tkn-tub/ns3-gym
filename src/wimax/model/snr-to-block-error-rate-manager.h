@@ -82,7 +82,7 @@ public:
    */
   GetSNRToBlockErrorRateRecord (double SNR, uint8_t modulation);
   /**
-   * \brief Loads the traces form the repository specified in the constructor or setted by SetTraceFilePath function. If
+   * \brief Loads the traces form the repository specified in the constructor or set by SetTraceFilePath function. If
    * no repository is provided, default traces will be loaded from default-traces.h file
    */
 

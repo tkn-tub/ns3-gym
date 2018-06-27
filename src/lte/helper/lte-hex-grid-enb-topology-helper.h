@@ -29,7 +29,7 @@ namespace ns3 {
  * \ingroup lte
  *
  * This helper class allows to easily create a topology with eNBs
- * grouped in three-sector sites layed out on an hexagonal grid. The
+ * grouped in three-sector sites laid out on an hexagonal grid. The
  * layout is done row-wise. 
  *
  */

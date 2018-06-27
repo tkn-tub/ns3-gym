@@ -412,7 +412,7 @@ private:
   uint16_t m_nrDlMapElements; ///< number DL Map elements
   uint16_t m_nrUlMapElements; ///< number UL Map elements
 
-  Ptr<WimaxConnection> m_basicConnection; ///< basci connection
+  Ptr<WimaxConnection> m_basicConnection; ///< basic connection
   Ptr<WimaxConnection> m_primaryConnection; ///< primary connection
 
   EventId m_lostDlMapEvent; ///< lost DL map event
@@ -430,7 +430,7 @@ private:
   OfdmUlBurstProfile *m_ulBurstProfile; ///< UL burst profile
 
   /*represents the (least robust) modulation type of the SS which it then requests in RNG-REQ and if accepted by BS uses it for receiving and
-   transmiting. currently it is set by user in simulation script, shall actually be determined based on SS's distance, power, signal etc*/
+   transmitting. currently it is set by user in simulation script, shall actually be determined based on SS's distance, power, signal etc*/
   WimaxPhy::ModulationType m_modulationType; ///< modulation type
 
   bool m_areManagementConnectionsAllocated; ///< are management connections allocated

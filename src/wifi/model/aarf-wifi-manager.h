@@ -56,7 +56,7 @@ public:
   void SetHeSupported (bool enable);
 
 private:
-  //overriden from base class
+  //overridden from base class
   WifiRemoteStation * DoCreateStation (void) const;
   void DoReportRxOk (WifiRemoteStation *station,
                      double rxSnr, WifiMode txMode);

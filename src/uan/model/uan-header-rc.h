@@ -331,7 +331,7 @@ public:
    * \param rtsTs RX time of RTS packet at gateway.
    * \param delay Delay until transmission.
    * \param addr Destination of CTS packet.
-   * \note Times are serialized, with ms precission, into 32 bit fields.
+   * \note Times are serialized, with ms precision, into 32 bit fields.
    */
   UanHeaderRcCts (uint8_t frameNo, uint8_t retryNo, Time rtsTs, Time delay, Mac8Address addr);
   /** Destructor */

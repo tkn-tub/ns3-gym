@@ -61,7 +61,7 @@ public:
    * \param dlBandwidth the DL bandwidth
    * \param ulBandwidth the UL bandwidth
    * \param availableDlRb the available DL per RB
-   * \param availableUlRb the avaialble UL per RB
+   * \param availableUlRb the available UL per RB
    */
   LteFrTestCase (std::string name,
                  uint32_t userNum,uint8_t dlBandwidth,uint8_t ulBandwidth,

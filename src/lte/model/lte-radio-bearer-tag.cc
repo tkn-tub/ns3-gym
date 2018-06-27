@@ -38,7 +38,7 @@ LteRadioBearerTag::GetTypeId (void)
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteRadioBearerTag::GetRnti),
                    MakeUintegerChecker<uint16_t> ())
-    .AddAttribute ("lcid", "The id whithin the UE identifying the logical channel to which the packet belongs",
+    .AddAttribute ("lcid", "The id within the UE identifying the logical channel to which the packet belongs",
                    UintegerValue (0),
                    MakeUintegerAccessor (&LteRadioBearerTag::GetLcid),
                    MakeUintegerChecker<uint8_t> ())

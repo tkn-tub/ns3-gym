@@ -222,7 +222,7 @@ public:
 
 
 private:
-  // Overriden from base class.
+  // Overridden from base class.
   void DoInitialize (void);
   WifiRemoteStation * DoCreateStation (void) const;
   void DoReportRxOk (WifiRemoteStation *station,
@@ -437,7 +437,7 @@ private:
    * Perform EWMSD (Exponentially Weighted Moving Standard Deviation) calculation.
    *
    * \param oldEwmsd the old EWMSD
-   * \param currentProb the current probabilty
+   * \param currentProb the current probability
    * \param ewmaProb the EWMA probability
    * \param weight the weight
    * \returns the EWMSD

@@ -40,7 +40,7 @@ class UanChannel;
 class UanHelper
 {
 public:
-  UanHelper ();           //!< Defalt constructor.
+  UanHelper ();           //!< Default constructor.
   virtual ~UanHelper ();  //!< Destructor.
 
   /**

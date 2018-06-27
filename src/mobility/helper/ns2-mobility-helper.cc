@@ -539,7 +539,7 @@ TrimNs2Line (const std::string& s)
 
   while (ret.size () > 0 && isblank (ret[0]))
     {
-      ret.erase (0, 1);    // Removes blank spaces at the begining of the line
+      ret.erase (0, 1);    // Removes blank spaces at the beginning of the line
     }
 
   while (ret.size () > 0 && (isblank (ret[ret.size () - 1]) || (ret[ret.size () - 1] == ';')))

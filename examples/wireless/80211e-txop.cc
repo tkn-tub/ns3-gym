@@ -35,7 +35,7 @@
 #include "ns3/wifi-mac.h"
 
 // This is an example that illustrates 802.11 QoS for different Access Categories.
-// It defines 4 independant Wi-Fi networks (working on different logical channels
+// It defines 4 independent Wi-Fi networks (working on different logical channels
 // on the same "ns3::YansWifiPhy" channel object).
 // Each network contains one access point and one station. Each station continuously
 // transmits data packets to its respective AP.
@@ -57,7 +57,7 @@
 // and can choose the payload size and the simulation duration.
 // Example: ./waf --run "80211e-txop --distance=10 --simulationTime=20 --payloadSize=1000"
 //
-// The output prints the throughput measured for the 4 cases/networks decribed above. When TXOP is enabled, results show
+// The output prints the throughput measured for the 4 cases/networks described above. When TXOP is enabled, results show
 // increased throughput since the channel is granted for a longer duration. TXOP is enabled by default for AC_VI and AC_VO,
 // so that they can use the channel for a longer duration than AC_BE and AC_BK.
 

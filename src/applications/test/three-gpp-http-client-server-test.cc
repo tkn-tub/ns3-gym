@@ -167,7 +167,7 @@ private:
 
   // The following defines one tracker for each HTTP object type.
   ThreeGppHttpObjectTracker m_requestObjectTracker;   ///< Tracker of request objects.
-  ThreeGppHttpObjectTracker m_mainObjectTracker;      ///< Tracker of main objectss.
+  ThreeGppHttpObjectTracker m_mainObjectTracker;      ///< Tracker of main objects.
   ThreeGppHttpObjectTracker m_embeddedObjectTracker;  ///< Tracker of embedded objects.
 
   // CALLBACK TO TRACE SOURCES.

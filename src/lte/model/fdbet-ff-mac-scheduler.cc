@@ -957,7 +957,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
                   (*itMap).second.push_back (i);
                 }
 
-              // caculate expected throughput for current UE
+              // calculate expected throughput for current UE
               std::map <uint16_t,uint8_t>::iterator itCqi;
               itCqi = m_p10CqiRxed.find ((*itMax).first);
               std::map <uint16_t,uint8_t>::iterator itTxMode;
@@ -1149,7 +1149,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
           (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
 
-      // ...more parameters -> ingored in this version
+      // ...more parameters -> ignored in this version
 
       ret.m_buildDataList.push_back (newEl);
       // update UE stats

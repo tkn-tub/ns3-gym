@@ -72,7 +72,7 @@
  * \defgroup dataoutput Data Output
  *
  * Classes in Data Output group are used to collect and prepare and output data
- * for subsequent ouput in a specific format, e.g., Omnet++, SQLite, etc.
+ * for subsequent output in a specific format, e.g., Omnet++, SQLite, etc.
  */
 
 #endif /* STATS_H */

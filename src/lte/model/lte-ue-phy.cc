@@ -976,7 +976,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
                   else
                     {
                       NS_LOG_INFO ("received RAR RNTI " << m_raRnti);
-                      // set the uplink bandwidht according to the UL grant
+                      // set the uplink bandwidth according to the UL grant
                       std::vector <int> ulRb;
                       for (int i = 0; i < it->rarPayload.m_grant.m_rbLen; i++)
                         {

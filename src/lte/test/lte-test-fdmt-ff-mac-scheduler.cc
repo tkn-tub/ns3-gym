@@ -314,7 +314,7 @@ LenaFdMtFfMacSchedulerTestCase::DoRun (void)
     }
   /**
   * Check that the assignation is done in a "proportional fair" manner among users
-  * with equal SINRs: the bandwidht should be distributed according to the 
+  * with equal SINRs: the bandwidth should be distributed according to the 
   * ratio of the estimated throughput per TTI of each user; therefore equally 
   * partitioning the whole bandwidth achievable from a single users in a TTI
   */

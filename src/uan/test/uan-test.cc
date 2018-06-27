@@ -213,7 +213,7 @@ UanTest::DoPhyTests ()
 
   // Should correctly receive first arriving packet
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (1.0126), 50, 50, prop),
-                                      17, "Should have recieved 17 bytes from first arriving packet");
+                                      17, "Should have received 17 bytes from first arriving packet");
 
   // Packets should collide and both be lost
   NS_TEST_ASSERT_MSG_EQ_RETURNS_BOOL (DoOnePhyTest (Seconds (1.0), Seconds (1.0 + 7.01 * (13.0 / 80.0)), 50, 50, prop),

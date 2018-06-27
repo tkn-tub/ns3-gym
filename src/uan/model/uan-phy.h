@@ -280,7 +280,7 @@ public:
    *
    * \deprecated See UanPhyPer.
    *
-   * \param thresh Threshold SINR for propper reception in dB re 1 uPa.
+   * \param thresh Threshold SINR for proper reception in dB re 1 uPa.
    */
   virtual void SetRxThresholdDb (double thresh) = 0;
 
@@ -363,7 +363,7 @@ public:
 
   /**
    * Called when a transmission is beginning
-   * on the attched transducer.
+   * on the attached transducer.
    *
    * \param packet Packet that is beginning transmission.
    * \param txPowerDb Transmit power of packet.
@@ -373,7 +373,7 @@ public:
 
   /**
    * Called when there has been a change in the
-   * ammount of interference this node is experiencing
+   * amount of interference this node is experiencing
    * from other transmissions.
    */
   virtual void NotifyIntChange (void) = 0;

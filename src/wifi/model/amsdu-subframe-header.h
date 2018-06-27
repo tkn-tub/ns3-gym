@@ -79,7 +79,7 @@ public:
 
 private:
   Mac48Address m_da; ///< destination address
-  Mac48Address m_sa; ///< source addresss
+  Mac48Address m_sa; ///< source address
   uint16_t m_length; ///< length
 };
 

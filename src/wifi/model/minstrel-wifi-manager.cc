@@ -566,7 +566,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
            */
           tempProb = (station->m_minstrelTable[i].numRateSuccess * 18000) / station->m_minstrelTable[i].numRateAttempt;
 
-          //bookeeping
+          //bookkeeping
           station->m_minstrelTable[i].prob = tempProb;
 
           if (station->m_minstrelTable[i].successHist == 0)
@@ -589,7 +589,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
           station->m_minstrelTable[i].numSamplesSkipped++;
         }
 
-      //bookeeping
+      //bookkeeping
       station->m_minstrelTable[i].successHist += station->m_minstrelTable[i].numRateSuccess;
       station->m_minstrelTable[i].attemptHist += station->m_minstrelTable[i].numRateAttempt;
       station->m_minstrelTable[i].prevNumRateSuccess = station->m_minstrelTable[i].numRateSuccess;
@@ -627,7 +627,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
         }
     }
 
-  NS_LOG_DEBUG ("Attempt/success resetted to 0");
+  NS_LOG_DEBUG ("Attempt/success reset to 0");
 
   uint32_t max_tp = 0;
   uint8_t index_max_tp = 0, index_max_tp2 = 0;
@@ -890,7 +890,7 @@ MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
   uint8_t bitrate = station->m_sampleTable[station->m_index][station->m_col];
   station->m_index++;
 
-  //bookeeping for m_index and m_col variables
+  //bookkeeping for m_index and m_col variables
   NS_ABORT_MSG_IF (station->m_nModes < 2, "Integer overflow detected");
   if (station->m_index > station->m_nModes - 2)
     {

@@ -106,7 +106,7 @@ public:
    * @param [in] schedulerFactory The configured ObjectFactory.
    *
    * The event scheduler can be set at any time: the events scheduled
-   * in the previous scheduler will be transfered to the new scheduler
+   * in the previous scheduler will be transferred to the new scheduler
    * before we start to use it.
    */
   static void SetScheduler (ObjectFactory schedulerFactory);

@@ -74,7 +74,7 @@ public:
     uint16_t expectedCellId1; ///< The cell ID that the UE is expected to attach to (0 means that the UE should not attach to any cell).
     uint16_t expectedCellId2; ///< An alternative cell ID that the UE is expected to attach to (0 means that this no alternative cell is expected).
     /**
-     * \brief UE test setup funtion.
+     * \brief UE test setup function.
      * \param relPosX relative position to the inter site distance in X
      * \param relPosY relative position to the inter site distance in Y
      * \param isCsgMember if true, simulation is allowed access to CSG cell

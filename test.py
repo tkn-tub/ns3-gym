@@ -159,7 +159,7 @@ def parse_examples_to_run_file(
         cpp_examples = get_list_from_file(examples_to_run_path, "cpp_examples")
         for example_name, do_run, do_valgrind_run in cpp_examples:
 
-            # Seperate the example name from its arguments.
+            # Separate the example name from its arguments.
             example_name_original = example_name
             example_name_parts = example_name.split(' ', 1)
             if len(example_name_parts) == 1:
@@ -204,7 +204,7 @@ def parse_examples_to_run_file(
         #
         python_examples = get_list_from_file(examples_to_run_path, "python_examples")
         for example_name, do_run in python_examples:
-            # Seperate the example name from its arguments.
+            # Separate the example name from its arguments.
             example_name_parts = example_name.split(' ', 1)
             if len(example_name_parts) == 1:
                 example_name      = example_name_parts[0]
@@ -340,7 +340,7 @@ def translate_to_html(results_file, html_file):
 
         #
         # If the suite crashed or is skipped, there is no further information, so just
-        # delare a new table row with the result (CRASH or SKIP) in it.  Looks like:
+        # declare a new table row with the result (CRASH or SKIP) in it.  Looks like:
         #
         #   +--------+
         #   | Result |
@@ -572,7 +572,7 @@ def sigint_hook(signal, frame):
 # for relevant configuration items.  
 #
 # XXX This function pokes around in the waf internal state file.  To be a
-# little less hacky, we should add a commmand to waf to return this info
+# little less hacky, we should add a command to waf to return this info
 # and use that result.
 #
 def read_waf_config():
@@ -733,7 +733,7 @@ def make_paths():
 # I added the following to the testpy.supp file for this particular error:
 #
 #   {
-#     Supress invalid read size errors in SendPreq() when using HwmpProtocolMac
+#     Suppress invalid read size errors in SendPreq() when using HwmpProtocolMac
 #     Memcheck:Addr8
 #     fun:*HwmpProtocolMac*SendPreq*
 #   }
@@ -857,7 +857,7 @@ class Job:
         self.build_path = build_path
 
     #
-    # This is the dispaly name of the job, typically the test suite or example 
+    # This is the display name of the job, typically the test suite or example 
     # name.  For example,
     #
     #  "some-test-suite" or "udp-echo"
@@ -1217,7 +1217,7 @@ def run_tests():
     # pass.
     #
     # The second main use case is when detailed status is requested (with the
-    # --text or --html options).  Typicall this will be text if a developer
+    # --text or --html options).  Typically this will be text if a developer
     # finds a problem, or HTML for nightly builds.  In these cases, an
     # XML file is written containing the status messages from the test suites.
     # This file is then read and translated into text or HTML.  It is expected
@@ -1572,7 +1572,7 @@ def run_tests():
                             # well together, so we skip them under valgrind.
                             # We go through the trouble of doing all of this
                             # work to report the skipped tests in a consistent
-                            # way throught the output formatter.
+                            # way through the output formatter.
                             #
                             if options.valgrind:
                                 job.set_is_skip (True)

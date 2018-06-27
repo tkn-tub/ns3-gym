@@ -115,7 +115,7 @@ public:
    * \brief start the reception of a fec block
    * \param burstSize the burst size
    * \param isFirstBlock true if this block is the first one, false otherwise
-   * \param frequency the frequency in wich the fec block is being received
+   * \param frequency the frequency in which the fec block is being received
    * \param modulationType the modulation used to transmit this fec Block
    * \param direction set to uplink and downlink
    * \param rxPower the received power.

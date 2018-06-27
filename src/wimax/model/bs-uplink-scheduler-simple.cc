@@ -97,7 +97,7 @@ UplinkSchedulerSimple::GetChannelDescriptorsToUpdate (bool &updateDcd,
 {
   /*DCD and UCD shall actually be updated when channel or burst profile definitions
    change. burst profiles are updated based on number of SSs, network conditions and etc.
-   for now temporarily assuming DCD/UCD shall be updated everytime */
+   for now temporarily assuming DCD/UCD shall be updated every time */
 
   uint32_t randNr = rand ();
   if (randNr % 5 == 0 || GetBs ()->GetNrDcdSent () == 0)

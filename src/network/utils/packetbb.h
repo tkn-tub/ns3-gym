@@ -1604,7 +1604,7 @@ private:
    */
   bool HasZeroTail (const uint8_t *tail, uint8_t taillen) const;
 
-  std::list<Address> m_addressList; //!< Addreses container
+  std::list<Address> m_addressList; //!< Addresses container
   std::list<uint8_t> m_prefixList; //!< Prefixes container
   PbbAddressTlvBlock m_addressTlvList; //!< PbbAddressTlv container
 };

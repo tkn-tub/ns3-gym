@@ -1265,9 +1265,9 @@ public:
   uint32_t Deserialize (Buffer::Iterator start);
 
   /**
-   * Check if the initiator bit in the DELBA is setted.
+   * Check if the initiator bit in the DELBA is set.
    *
-   * \return true if the initiator bit in the DELBA is setted,
+   * \return true if the initiator bit in the DELBA is set,
    *         false otherwise
    */
   bool IsByOriginator (void) const;

@@ -644,7 +644,7 @@ UeManager::RecvHandoverRequestAck (EpcX2SapUser::HandoverRequestAckParams params
 
   // note: the Handover command from the target eNB to the source eNB
   // is expected to be sent transparently to the UE; however, here we
-  // decode the message and eventually reencode it. This way we can
+  // decode the message and eventually re-encode it. This way we can
   // support both a real RRC protocol implementation and an ideal one
   // without actual RRC protocol encoding. 
 

@@ -123,7 +123,7 @@ public:
   RrcHeaderTestCase (std::string s);
   virtual void DoRun (void) = 0;
   /**
-   * \brief Create radio resoure config dedicated
+   * \brief Create radio resource config dedicated
    * \returns LteRrcSap::RadioResourceConfigDedicated
    */
   LteRrcSap::RadioResourceConfigDedicated CreateRadioResourceConfigDedicated ();

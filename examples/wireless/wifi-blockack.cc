@@ -32,7 +32,7 @@
  *
  * In this example a QoS sta sends UDP datagram packets to access point. On the access point
  * there is no application installed so it replies to every packet with an ICMP frame. However
- * our attention is on originator sta n1. We have set blockAckThreshold (mininum number of packets to use
+ * our attention is on originator sta n1. We have set blockAckThreshold (minimum number of packets to use
  * block ack) to 2 so if there are in the BestEffort queue more than 2 packets a block ack will be
  * negotiated. We also set a timeout for block ack inactivity to 3 blocks of 1024 microseconds. This timer is
  * reset when:

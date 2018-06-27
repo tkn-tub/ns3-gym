@@ -289,7 +289,7 @@ main (int argc, char *argv[])
     }
 
 
-  // Add X2 inteface
+  // Add X2 interface
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover

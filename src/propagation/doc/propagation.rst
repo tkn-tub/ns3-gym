@@ -310,7 +310,7 @@ MatrixPropagationLossModel
 ==========================
 
 The propagation loss is fixed for each pair of nodes and doesn't depend on their actual positions.
-This model shoud be useful for synthetic tests. Note that by default the propagation loss is 
+This model should be useful for synthetic tests. Note that by default the propagation loss is 
 assumed to be symmetric.
 
 RangePropagationLossModel

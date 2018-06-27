@@ -201,7 +201,7 @@ private:
   void DoSchedUlNoiseInterferenceReq (const struct FfMacSchedSapProvider::SchedUlNoiseInterferenceReqParameters& params);
 
   /**
-   * Sched UL SR infor request function
+   * Sched UL SR info request function
    * \param params the Sched UL SR info request parameters
    */
   void DoSchedUlSrInfoReq (const struct FfMacSchedSapProvider::SchedUlSrInfoReqParameters& params);
@@ -366,7 +366,7 @@ private:
   std::map <uint16_t, uint8_t> m_dlHarqCurrentProcessId; ///< DL HARQ current process ID
   //HARQ status
   // 0: process Id available
-  // x>0: process Id equal to `x` trasmission count
+  // x>0: process Id equal to `x` transmission count
   std::map <uint16_t, DlHarqProcessesStatus_t> m_dlHarqProcessesStatus; ///< DL HARQ process status
   std::map <uint16_t, DlHarqProcessesTimer_t> m_dlHarqProcessesTimer; ///< DL HARDQ process timer
   std::map <uint16_t, DlHarqProcessesDciBuffer_t> m_dlHarqProcessesDciBuffer; ///< DL HARQ process DCI buffer
@@ -376,7 +376,7 @@ private:
   std::map <uint16_t, uint8_t> m_ulHarqCurrentProcessId; ///< UL HARQ current process ID
   //HARQ status
   // 0: process Id available
-  // x>0: process Id equal to `x` trasmission count
+  // x>0: process Id equal to `x` transmission count
   std::map <uint16_t, UlHarqProcessesStatus_t> m_ulHarqProcessesStatus; ///< UL HARQ process status
   std::map <uint16_t, UlHarqProcessesDciBuffer_t> m_ulHarqProcessesDciBuffer; ///< UL HARQ process DCI buffer
 

@@ -63,7 +63,7 @@ RraaWifiManager::GetTypeId (void)
     .SetGroupName ("Wifi")
     .AddConstructor<RraaWifiManager> ()
     .AddAttribute ("Basic",
-                   "If true the RRAA-BASIC algorithm will be used, otherwise the RRAA wil be used",
+                   "If true the RRAA-BASIC algorithm will be used, otherwise the RRAA will be used",
                    BooleanValue (false),
                    MakeBooleanAccessor (&RraaWifiManager::m_basic),
                    MakeBooleanChecker ())

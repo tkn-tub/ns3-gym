@@ -247,7 +247,7 @@ public:
    * extended.
    */
   friend class ExtendedSupportedRatesIE;
-  ExtendedSupportedRatesIE extended; //!< extended suppoted rates info element
+  ExtendedSupportedRatesIE extended; //!< extended supported rates info element
 
 
 private:

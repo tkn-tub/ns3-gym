@@ -51,7 +51,7 @@ HeapScheduler::GetTypeId (void)
 HeapScheduler::HeapScheduler ()
 {
   NS_LOG_FUNCTION (this);
-  // we purposedly waste an item at the start of
+  // we purposely waste an item at the start of
   // the array to make sure the indexes in the
   // array start at one.
   Scheduler::Event empty = { 0,{ 0,0}};

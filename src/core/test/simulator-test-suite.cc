@@ -250,7 +250,7 @@ static void cber5 (const int &, const int &, const int &, const int &, const int
 {}
 
 SimulatorTemplateTestCase::SimulatorTemplateTestCase ()
-  : TestCase ("Check that all templates are instanciated correctly. This is a compilation test, it cannot fail at runtime.")
+  : TestCase ("Check that all templates are instantiated correctly. This is a compilation test, it cannot fail at runtime.")
 {
 }
 void

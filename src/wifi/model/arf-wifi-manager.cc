@@ -60,7 +60,7 @@ ArfWifiManager::GetTypeId (void)
                    MakeUintegerAccessor (&ArfWifiManager::m_timerThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SuccessThreshold",
-                   "The minimum number of sucessfull transmissions to try a new rate.",
+                   "The minimum number of successful transmissions to try a new rate.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&ArfWifiManager::m_successThreshold),
                    MakeUintegerChecker<uint32_t> ())

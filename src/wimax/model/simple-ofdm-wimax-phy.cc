@@ -914,7 +914,7 @@ SimpleOfdmWimaxPhy::DoGetFrameDuration (uint8_t frameDurationCode) const
 }
 
 /*
- Retruns number of blocks (FEC blocks) the burst will be splitted in.
+ Retruns number of blocks (FEC blocks) the burst will be split in.
  The size of the block is specific for each modulation type.
  */
 uint16_t

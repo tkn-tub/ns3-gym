@@ -318,7 +318,7 @@ void
 GnuplotAggregator::SetKeyLocation (enum GnuplotAggregator::KeyLocation keyLocation)
 {
   NS_LOG_FUNCTION (this << keyLocation);
-  // Set the specifed key location.
+  // Set the specified key location.
   switch (keyLocation)
     {
     case NO_KEY:

@@ -125,7 +125,7 @@ GetWildcardMatches (const std::string &configPath,
           wildcardMatches += matchedPath.substr (matchStart,
                                                  matchEnd - matchStart + 1);
 
-          // See if all of the wilcard matches have been set.
+          // See if all of the wildcard matches have been set.
           wildcardMatchesSet++;
           if (wildcardMatchesSet == wildcardCount)
             {

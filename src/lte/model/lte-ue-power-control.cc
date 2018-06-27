@@ -85,7 +85,7 @@ LteUePowerControl::GetTypeId (void)
                    MakeBooleanAccessor (&LteUePowerControl::m_accumulationEnabled),
                    MakeBooleanChecker ())
     .AddAttribute ("Alpha",
-                   "Value of Alpha paramter",
+                   "Value of Alpha parameter",
                    DoubleValue (1.0),
                    MakeDoubleAccessor (&LteUePowerControl::SetAlpha),
                    MakeDoubleChecker<double> ())

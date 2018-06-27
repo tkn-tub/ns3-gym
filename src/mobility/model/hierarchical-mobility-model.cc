@@ -129,7 +129,7 @@ HierarchicalMobilityModel::DoSetPosition (const Vector &position)
     {
       return;
     }
-  // This implementation of DoSetPosition is really an arbitraty choice.
+  // This implementation of DoSetPosition is really an arbitrary choice.
   // anything else would have been ok.
   if (m_parent)
     {

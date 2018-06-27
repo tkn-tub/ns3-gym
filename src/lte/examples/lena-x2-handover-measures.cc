@@ -159,7 +159,7 @@ main (int argc, char *argv[])
   CommandLine cmd;
   cmd.AddValue ("simTime", "Total duration of the simulation (in seconds)", simTime);
   cmd.AddValue ("speed", "Speed of the UE (default = 20 m/s)", speed);
-  cmd.AddValue ("enbTxPowerDbm", "TX power [dBm] used by HeNBs (defalut = 46.0)", enbTxPowerDbm);
+  cmd.AddValue ("enbTxPowerDbm", "TX power [dBm] used by HeNBs (default = 46.0)", enbTxPowerDbm);
 
   cmd.Parse (argc, argv);
 
@@ -326,7 +326,7 @@ main (int argc, char *argv[])
     }
 
 
-  // Add X2 inteface
+  // Add X2 interface
   lteHelper->AddX2Interface (enbNodes);
 
   // X2-based Handover

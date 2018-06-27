@@ -339,7 +339,7 @@ LogComponent::GetLevelLabel(const enum LogLevel level)
     }
   else if (level == LOG_WARN)
     {
-      // whitespace left at the end for aligment
+      // whitespace left at the end for alignment
       return "WARN ";
     }
   else if (level == LOG_DEBUG)
@@ -348,7 +348,7 @@ LogComponent::GetLevelLabel(const enum LogLevel level)
     }
   else if (level == LOG_INFO)
     {
-      // whitespace left at the end for aligment
+      // whitespace left at the end for alignment
       return "INFO ";
     }
   else if (level == LOG_FUNCTION)

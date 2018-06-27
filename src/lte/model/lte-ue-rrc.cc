@@ -494,9 +494,9 @@ LteUeRrc::InitializeSap (void)
 {
   if (m_numberOfComponentCarriers < MIN_NO_CC || m_numberOfComponentCarriers > MAX_NO_CC)
     {
-      // this check is neede in order to maintain backward compatibility with scripts and tests
+      // this check is needed in order to maintain backward compatibility with scripts and tests
       // if case lte-helper is not used (like in several tests) the m_numberOfComponentCarriers
-      // is not set and then an error is rised
+      // is not set and then an error is raised
       // In this case m_numberOfComponentCarriers is set to 1
       m_numberOfComponentCarriers = MIN_NO_CC;
     }

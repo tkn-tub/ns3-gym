@@ -144,7 +144,7 @@ public:
     return *this;
   }
   /**
-   * Copy from a TracedValue of a compatable type.
+   * Copy from a TracedValue of a compatible type.
    * \tparam U \deduced The underlying type of the other TracedValue.
    * \param [in] other The other TracedValuet to copy.
    */

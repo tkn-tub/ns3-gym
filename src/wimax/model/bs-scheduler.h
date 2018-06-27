@@ -68,7 +68,7 @@ public:
   /**
    * \brief This function adds a downlink burst to the list of downlink bursts
    * scheduled for the next downlink sub-frame
-   * \param connection a pointer to connection in wich the burst will be sent
+   * \param connection a pointer to connection in which the burst will be sent
    * \param diuc downlink iuc
    * \param modulationType the modulation type of the burst
    * \param burst the downlink burst to add to the downlink sub frame

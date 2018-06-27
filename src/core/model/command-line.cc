@@ -257,7 +257,7 @@ CommandLine::PrintHelp (std::ostream &os) const
     {
       width = std::max (width, it->m_name.size ());
     }
-  width += 3;  // room for ":  " betwen option and help
+  width += 3;  // room for ":  " between option and help
 
   if (!m_options.empty ())
     {

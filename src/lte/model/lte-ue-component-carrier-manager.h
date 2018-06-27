@@ -89,7 +89,7 @@ public:
 
   /**
    * \brief Sets number of component carriers that are supported by this UE.
-   * \param noOfComponentCarriers numbr of compoent carriers
+   * \param noOfComponentCarriers numbr of component carriers
    */
   void SetNumberOfComponentCarriers (uint8_t noOfComponentCarriers);
 

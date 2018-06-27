@@ -64,7 +64,7 @@ class TimeWithUnit;
  *
  * This class defines all the classic C++ addition/subtraction
  * operators: +, -, +=, -=; and all the classic comparison operators:
- * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or
+ * ==, !=, <, >, <=, >=. It is thus easy to add, subtract, or
  * compare Time objects.
  *
  * For example:

@@ -127,7 +127,7 @@ public:
    * Set the arrival value for a tap.
    *
    * The delay time is the index multiplied by the resolution.
-   * The tap vector will be expanded to accomadate the requested
+   * The tap vector will be expanded to accommodate the requested
    * index.
    *
    * \param arrival Complex arrival value.

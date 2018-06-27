@@ -1229,7 +1229,7 @@ MinstrelHtWifiManager::UpdateStats (MinstrelHtWifiRemoteStation *station)
                        */
                       tempProb = (100 * station->m_groupsTable[j].m_ratesTable[i].numRateSuccess) / station->m_groupsTable[j].m_ratesTable[i].numRateAttempt;
 
-                      /// Bookeeping.
+                      /// Bookkeeping.
                       station->m_groupsTable[j].m_ratesTable[i].prob = tempProb;
 
                       if (station->m_groupsTable[j].m_ratesTable[i].successHist == 0)
@@ -1256,7 +1256,7 @@ MinstrelHtWifiManager::UpdateStats (MinstrelHtWifiRemoteStation *station)
                       station->m_groupsTable[j].m_ratesTable[i].numSamplesSkipped++;
                     }
 
-                  /// Bookeeping.
+                  /// Bookkeeping.
                   station->m_groupsTable[j].m_ratesTable[i].prevNumRateSuccess = station->m_groupsTable[j].m_ratesTable[i].numRateSuccess;
                   station->m_groupsTable[j].m_ratesTable[i].prevNumRateAttempt = station->m_groupsTable[j].m_ratesTable[i].numRateAttempt;
                   station->m_groupsTable[j].m_ratesTable[i].numRateSuccess = 0;
@@ -1293,7 +1293,7 @@ MinstrelHtWifiManager::CalculateThroughput (MinstrelHtWifiRemoteStation *station
 {
   /**
   * Calculating throughput.
-  * Do not account throughput if sucess prob is below 10%
+  * Do not account throughput if success prob is below 10%
   * (as done in minstrel_ht linux implementation).
   */
   if (ewmaProb < 10)

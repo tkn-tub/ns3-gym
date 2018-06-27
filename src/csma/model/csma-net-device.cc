@@ -131,7 +131,7 @@ CsmaNetDevice::GetTypeId (void)
                      MakeTraceSourceAccessor (&CsmaNetDevice::m_macTxBackoffTrace),
                      "ns3::Packet::TracedCallback")
     //
-    // Trace souces at the "bottom" of the net device, where packets transition
+    // Trace sources at the "bottom" of the net device, where packets transition
     // to/from the channel.
     //
     .AddTraceSource ("PhyTxBegin", 

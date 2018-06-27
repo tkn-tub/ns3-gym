@@ -913,7 +913,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
                 }
               else
                 {
-                  wbCqi = 1; // lowest value fro trying a transmission
+                  wbCqi = 1; // lowest value for trying a transmission
                 }
 
               uint8_t cqi1 = sbCqi.at (0);
@@ -1144,7 +1144,7 @@ TtaFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sche
           (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
 
-      // ...more parameters -> ingored in this version
+      // ...more parameters -> ignored in this version
 
       ret.m_buildDataList.push_back (newEl);
 

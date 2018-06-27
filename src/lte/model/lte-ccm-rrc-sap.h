@@ -55,7 +55,7 @@ public:
   
   virtual ~LteCcmRrcSapProvider ();
   
-  /// LcsConfig sructure
+  /// LcsConfig structure
   struct LcsConfig
   {
     uint16_t componentCarrierId; ///< component carrier ID
@@ -130,7 +130,7 @@ public:
   virtual std::vector<uint8_t> ReleaseDataRadioBearer (uint16_t rnti, uint8_t lcid) = 0;
 
   /**
-   * \brief Add the Signal Bearer for a specif Ue in LteEnbComponenCarrierManager
+   * \brief Add the Signal Bearer for a specific Ue in LteEnbComponenCarrierManager
    * \param lcInfo this structure it is hard-coded in the LteEnbRrc
    * \param rlcMacSapUser it is the MacSapUser of the Rlc istance
    * \return the LteMacSapUser of the ComponentCarrierManager

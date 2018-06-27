@@ -228,7 +228,7 @@ private:
   uint8_t m_broadcastTwtSupport; //!< broadcast TXT support
   uint8_t m_32bitBaBitmapSupport; //!< 32bit BA bitmap support
   uint8_t m_muCascadeSupport; //!< MU cascade support
-  uint8_t m_ackEnabledMultiTidAggregationSupport; //!< ack enabled multi TID aggregation suport
+  uint8_t m_ackEnabledMultiTidAggregationSupport; //!< ack enabled multi TID aggregation support
   uint8_t m_groupAddressedMultiStaBlockAckInDlMuSupport; //!< group addressed multi STA block ack in DL support
   uint8_t m_omiAcontrolSupport; //!< OMI A control support
   uint8_t m_ofdmaRaSupport; //!< OFDM RA support

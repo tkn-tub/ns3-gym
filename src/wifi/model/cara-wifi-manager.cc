@@ -62,7 +62,7 @@ CaraWifiManager::GetTypeId (void)
                    MakeUintegerAccessor (&CaraWifiManager::m_failureThreshold),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("SuccessThreshold",
-                   "The minimum number of sucessfull transmissions to try a new rate.",
+                   "The minimum number of successful transmissions to try a new rate.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&CaraWifiManager::m_successThreshold),
                    MakeUintegerChecker<uint32_t> ())

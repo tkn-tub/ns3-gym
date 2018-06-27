@@ -141,7 +141,7 @@ public:
  *        piecewise configuration and 120 ms report interval. During the simulation 
  *        the placement of UE is being changed several times. Four different 
  *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB, 
- *        UE is far from eNodeB and UE is very far from eNodeB. Test checkes 
+ *        UE is far from eNodeB and UE is very far from eNodeB. Test checks 
  *        if the measurments correspond to the real conditions of the UE, i.e. 
  *        wnen the signal from serving cell becomes weak, the measurements should 
  *        also start to correspond to the new channel conditions. Additionally, it 
@@ -285,7 +285,7 @@ public:
  *        In this test UE is being transported several times during the simulation 
  *        duration. Then the test checks if measurement report contains correct 
  *        RSRP and RSRQ result, than if CQI info is correctly generated, if the 
- *        reporting occurs at the corret time stamp in the simulation and according 
+ *        reporting occurs at the correct time stamp in the simulation and according 
  *        to the measurements configuration. It also checks if the reported values 
  *        of RSRP and RSRQ are equal to expected reference values.
  *        

@@ -136,7 +136,7 @@ EmuEpcHelper::DoInitialize ()
   int retval = sgwPgwS1uSocket->Bind (InetSocketAddress (Ipv4Address::GetAny (), m_gtpuUdpPort));
   NS_ASSERT (retval == 0);
 
-  // create TUN device containg IPv4 address and implementing tunneling of user data over GTP-U/UDP/IP 
+  // create TUN device containing IPv4 address and implementing tunneling of user data over GTP-U/UDP/IP 
   m_tunDevice = CreateObject<VirtualNetDevice> ();
 
   // allow jumbo packets

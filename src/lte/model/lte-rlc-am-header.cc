@@ -454,7 +454,7 @@ void LteRlcAmHeader::Serialize (Buffer::Iterator start) const
             {
               // The variable oddNack has the current NACK value to write, also
               // either the setup to enter this loop or the previous loop would
-              // have written the highest order bit to the previouse octet.
+              // have written the highest order bit to the previous octet.
               // Write the next set of bits (2 - 9) into the next octet
               i.WriteU8( ((oddNack >> 1) & 0xFF) );
 

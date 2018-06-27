@@ -38,7 +38,7 @@ class MacLow;
  *
  * Handle a set of independent ns3::Txop, each of which represents
  * a single DCF within a MAC stack. Each ns3::Txop has a priority
- * implicitely associated with it (the priority is determined when the
+ * implicitly associated with it (the priority is determined when the
  * ns3::Txop is added to the ChannelAccessManager: the first Txop to be
  * added gets the highest priority, the second, the second highest
  * priority, and so on.) which is used to handle "internal" collisions.
@@ -196,7 +196,7 @@ public:
    */
   void NotifyAckTimeoutStartNow (Time duration);
   /**
-   * Notify that ACK timer has resetted.
+   * Notify that ACK timer has reset.
    */
   void NotifyAckTimeoutResetNow ();
   /**
@@ -206,7 +206,7 @@ public:
    */
   void NotifyCtsTimeoutStartNow (Time duration);
   /**
-   * Notify that CTS timer has resetted.
+   * Notify that CTS timer has reset.
    */
   void NotifyCtsTimeoutResetNow ();
 

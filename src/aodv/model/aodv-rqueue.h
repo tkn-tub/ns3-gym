@@ -275,7 +275,7 @@ private:
    * Determine if queue matches a destination address
    * \param en The queue entry
    * \param dst The destination IPv4 address
-   * \returns true if the queue entry matches the desination address
+   * \returns true if the queue entry matches the destination address
    */
   static bool IsEqual (QueueEntry en, const Ipv4Address dst)
   {

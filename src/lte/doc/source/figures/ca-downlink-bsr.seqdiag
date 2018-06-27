@@ -8,7 +8,7 @@ diagram {
          LteEnbComponentCarrierManager -> LteEnbMac1 [label="ReportBufferStatus ((100-x)%)"];
          LteEnbComponentCarrierManager <- LteEnbMac0 [label="NotifyTxOpportunity ()"];
          LteEnbComponentCarrierManager <- LteEnbMac1 [label="NotifyTxOpportunity ()"];
-         LteEnbComponentCarrierManager -> "LteRlc at eNb" [label="NotifyTx Oportunity (Mac0)"];         
+         LteEnbComponentCarrierManager -> "LteRlc at eNb" [label="NotifyTx Opportunity (Mac0)"];         
          LteEnbComponentCarrierManager -> "LteRlc at eNb" [label="NotifyTxOpportunity (Mac1)"];
          "LteRlc at eNb" -> LteEnbComponentCarrierManager [label="TransmitPdu ()"];
          "LteRlc at eNb" -> LteEnbComponentCarrierManager [label="TransmitPdu ()"];

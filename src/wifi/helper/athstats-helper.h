@@ -76,7 +76,7 @@ private:
  *
  * The AthstatsWifiTraceSink class is a trace sink to be connected to several of the traces
  * available within a wifi device. The purpose of AthstatsWifiTraceSink is to
- * mimic the behavior of the athstats tool distributed wih the madwifi
+ * mimic the behavior of the athstats tool distributed with the madwifi
  * driver. In particular, the reproduced behavior is that obtained
  * when executing athstats without parameters: a report written in
  * text format is produced every fixed interval, based on the events

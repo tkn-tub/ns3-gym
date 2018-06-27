@@ -189,7 +189,7 @@ private:
  /**
   * Send RA preamble function
   *
-  * \param contention if true randomly select and send te RA preamble
+  * \param contention if true randomly select and send the RA preamble
   */
   void SendRaPreamble (bool contention);
   /// Start waiting for RA response function
@@ -203,7 +203,7 @@ private:
  /**
   * RA response timeout function
   *
-  * \param contention if true randomly select and send te RA preamble
+  * \param contention if true randomly select and send the RA preamble
   */
   void RaResponseTimeout (bool contention);
   /// Send report buffer status
@@ -242,7 +242,7 @@ private:
   bool m_freshUlBsr; ///< true when a BSR has been received in the last TTI
 
   uint8_t m_harqProcessId; ///< HARQ process ID
-  std::vector < Ptr<PacketBurst> > m_miUlHarqProcessesPacket; ///< Packets under trasmission of the UL HARQ processes
+  std::vector < Ptr<PacketBurst> > m_miUlHarqProcessesPacket; ///< Packets under transmission of the UL HARQ processes
   std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; ///< timer for packet life in the buffer
 
   uint16_t m_rnti; ///< RNTI

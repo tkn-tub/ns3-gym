@@ -65,7 +65,7 @@ public:
    * Check that a generic Address is compatible with Mac8Address.
    *
    * \param address  Address to test.
-   * \return True if address given is consistant with Mac8Address.
+   * \return True if address given is consistent with Mac8Address.
    */
   static bool IsMatchingType  (const Address &address);
 

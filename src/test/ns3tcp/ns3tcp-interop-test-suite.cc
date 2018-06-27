@@ -261,7 +261,7 @@ Ns3TcpInteroperabilityTestCase::DoRun (void)
 
   //
   // We need something to shove data down the pipe, so we create an on-off 
-  // application on the soure node with the reference TCP implementation.
+  // application on the source node with the reference TCP implementation.
   // The default behavior is to send for one second, then go quiet for one
   // second, and repeat.
   //

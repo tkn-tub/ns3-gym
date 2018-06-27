@@ -187,7 +187,7 @@ public:
   /**
    * Get the value of an attribute without raising erros.
    *
-   * If the atttribute could not be read this will return \c false,
+   * If the attribute could not be read this will return \c false,
    * but not raise any errors.
    *
    * \param [in]  name The name of the attribute to read.

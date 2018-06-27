@@ -85,7 +85,7 @@ public:
 
   
   /**
-   * \brief Add the Signal Bearer for a specif Ue in LteUeComponenCarrierManager
+   * \brief Add the Signal Bearer for a specific Ue in LteUeComponenCarrierManager
    * \param lcid the Logical Channel Id
    * \param lcConfig this structure it is hard-coded in the LteEnbRrc
    * \param msu it is the MacSapUser of the Rlc istance

@@ -163,7 +163,7 @@ private:
       // The endl is in the sink function.
       
       if (ok)
-        // Odd form here is to accomodate the uneven operator support
+        // Odd form here is to accommodate the uneven operator support
         // of Time and SequenceNumber32.
         m_value = m_value + (T) 1; 
       else

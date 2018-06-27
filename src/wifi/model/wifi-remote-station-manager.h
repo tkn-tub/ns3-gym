@@ -78,7 +78,7 @@ private:
   double CalculateAveragingCoefficient ();
   /// averaging coefficient depends on the memory time
   Time m_memoryTime;
-  /// when last update has occured
+  /// when last update has occurred
   Time m_lastUpdate;
   /// moving percentage of failed frames
   double m_failAvg;
@@ -520,7 +520,7 @@ public:
    */
   void AddAllSupportedMcs (Mac48Address address);
   /**
-   * Invoked in a STA or AP to delete all of the suppported MCS by a destination.
+   * Invoked in a STA or AP to delete all of the supported MCS by a destination.
    *
    * \param address the address of the station being recorded
    */

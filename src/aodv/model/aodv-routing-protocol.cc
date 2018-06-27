@@ -1341,7 +1341,7 @@ RoutingProtocol::RecvRequest (Ptr<Packet> p, Ipv4Address receiver, Ipv4Address s
   if (m_routingTable.LookupRoute (dst, toDst))
     {
       /*
-       * Drop RREQ, This node RREP wil make a loop.
+       * Drop RREQ, This node RREP will make a loop.
        */
       if (toDst.GetNextHop () == src)
         {

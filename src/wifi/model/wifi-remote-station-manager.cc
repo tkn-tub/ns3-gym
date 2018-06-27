@@ -435,7 +435,7 @@ WifiRemoteStationManager::SetupPhy (const Ptr<WifiPhy> phy)
   NS_LOG_FUNCTION (this << phy);
   //We need to track our PHY because it is the object that knows the
   //full set of transmit rates that are supported. We need to know
-  //this in order to find the relevant mandatory rates when chosing a
+  //this in order to find the relevant mandatory rates when choosing a
   //transmit rate for automatic control responses like
   //acknowledgements.
   m_wifiPhy = phy;

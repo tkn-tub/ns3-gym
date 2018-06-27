@@ -116,7 +116,7 @@ PointToPointNetDevice::GetTypeId (void)
                      "ns3::Packet::TracedCallback")
 #endif
     //
-    // Trace souces at the "bottom" of the net device, where packets transition
+    // Trace sources at the "bottom" of the net device, where packets transition
     // to/from the channel.
     //
     .AddTraceSource ("PhyTxBegin", 

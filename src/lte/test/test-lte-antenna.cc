@@ -50,7 +50,7 @@ NS_LOG_COMPONENT_DEFINE ("LteAntennaTest");
  * \ingroup tests
  *
  * \brief Tests that the propagation model and the antenna parameters are 
- * generate the correct values. Different test cases are created by specifing different 
+ * generate the correct values. Different test cases are created by specifying different 
  * antenna configurations and it is tested if for the given information the pathloss 
  * value is as expected.
  */

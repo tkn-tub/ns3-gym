@@ -34,9 +34,9 @@
 #include "ns3/yans-wifi-channel.h"
 
 // This is an example that illustrates how 802.11n aggregation is configured.
-// It defines 4 independant Wi-Fi networks (working on different channels).
+// It defines 4 independent Wi-Fi networks (working on different channels).
 // Each network contains one access point and one station. Each station
-// continously transmits data packets to its respective AP.
+// continuously transmits data packets to its respective AP.
 //
 // Network topology (numbers in parentheses are channel numbers):
 //
@@ -57,7 +57,7 @@
 // The user can select the distance between the stations and the APs and can enable/disable the RTS/CTS mechanism.
 // Example: ./waf --run "wifi-aggregation --distance=10 --enableRts=0 --simulationTime=20"
 //
-// The output prints the throughput measured for the 4 cases/networks decribed above. When default aggregation parameters are enabled, the
+// The output prints the throughput measured for the 4 cases/networks described above. When default aggregation parameters are enabled, the
 // maximum A-MPDU size is 65 kB and the throughput is maximal. When aggregation is disabled, the throughput is about the half of the
 // physical bitrate as in legacy wifi networks. When only A-MSDU is enabled, the throughput is increased but is not maximal, since the maximum
 // A-MSDU size is limited to 7935 bytes (whereas the maximum A-MPDU size is limited to 65535 bytes). When A-MSDU and A-MPDU are both enabled

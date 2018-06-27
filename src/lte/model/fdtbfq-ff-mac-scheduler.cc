@@ -1086,7 +1086,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
         }
       budget = budget + (*itMax).second.tokenPoolSize;
 
-      // calcualte how much bytes this UE actally need
+      // calculate how much bytes this UE actally need
       if (budget == 0)
         {
           // there are no tokens for this UE
@@ -1463,7 +1463,7 @@ FdTbfqFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::S
           (*itHarqTimer).second.at (newDci.m_harqProcess) = 0;
         }
 
-      // ...more parameters -> ingored in this version
+      // ...more parameters -> ignored in this version
 
       ret.m_buildDataList.push_back (newEl);
 

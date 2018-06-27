@@ -351,7 +351,7 @@ is, by default, set to the value 0.  The value 0 indicates that no
 channel number has been set by the user.
 
 In |ns3|, a ChannelNumber may be defined or unknown.  These terms
-are not found in the code; they are just used to describe behavoir herein.
+are not found in the code; they are just used to describe behavior herein.
 
 If a ChannelNumber is defined, it means that WifiPhy has stored a
 map of ChannelNumber to the center frequency and channel width commonly
@@ -596,7 +596,7 @@ the ``ns3::WifiMacHelper`` can be also used to set:
 * MSDU aggregation parameters for a particular Access Category (AC) in order to use 802.11n/ac A-MSDU feature;
 * MPDU aggregation parameters for a particular Access Category (AC) in order to use 802.11n/ac A-MPDU feature.
 
-By defaut, MSDU aggregation feature is disabled for all ACs and MPDU aggregation is enabled for AC_VI and AC_BE, with a maximum aggregation size of 65535 bytes.
+By default, MSDU aggregation feature is disabled for all ACs and MPDU aggregation is enabled for AC_VI and AC_BE, with a maximum aggregation size of 65535 bytes.
 
 For example the following user code configures a MAC that will be a non-AP STA with HT and QoS enabled, MPDU aggregation enabled for AC_VO with a maximum aggregation size of 65535 bytes, and MSDU aggregation enabled for AC_BE with a maximum aggregation size of 7935 bytes,
 in an infrastructure network where the AP has SSID ``ns-3-ssid``::

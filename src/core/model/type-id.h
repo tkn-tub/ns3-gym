@@ -266,7 +266,7 @@ public:
   /**
    * Get the constructor callback.
    *
-   * \returns A callback which can be used to instanciate an object
+   * \returns A callback which can be used to instantiate an object
    *          of this type.
    */
   Callback<ObjectBase *> GetConstructor (void) const;
@@ -388,7 +388,7 @@ public:
    *
    * \param [in] i The attribute to manipulate
    * \param [in] initialValue The new initial value to use for this attribute.
-   * \returns \c true if the call was successfuly.
+   * \returns \c true if the call was successfully.
    */
   bool SetAttributeInitialValue (std::size_t i,
                                  Ptr<const AttributeValue> initialValue);

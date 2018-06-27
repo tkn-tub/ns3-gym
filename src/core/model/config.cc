@@ -293,7 +293,7 @@ private:
    * Parse the next element in the Config path.
    *
    * \param [in] path The remaining portion of the Config path.
-   * \param [in] root The object corresponding to the current positon
+   * \param [in] root The object corresponding to the current position
    *                  in the Config path.
    */
   void DoResolve (std::string path, Ptr<Object> root);

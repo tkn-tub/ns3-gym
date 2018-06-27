@@ -61,7 +61,7 @@ public:
 
   /**
    * Get cell identifier
-   * \return cell identifer
+   * \return cell identifier
    */
   uint16_t GetCellId ();
 
@@ -120,7 +120,7 @@ protected:
 
 private:
 
-  uint16_t m_cellId; ///< Cell identifer
+  uint16_t m_cellId; ///< Cell identifier
   Ptr<LteEnbPhy> m_phy; ///< the Phy instance of this eNodeB component carrier
   Ptr<LteEnbMac> m_mac; ///< the MAC instance of this eNodeB component carrier
   Ptr<FfMacScheduler> m_scheduler; ///< the scheduler instance of this eNodeB component carrier

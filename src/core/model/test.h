@@ -1356,7 +1356,7 @@ public:
   };
 
   /**
-   * \brief Constuct a new test suite.
+   * \brief Construct a new test suite.
    *
    * \param [in] name The name of the test suite.
    * \param [in] type The TestType of the test suite (defaults to UNIT test).
@@ -1410,7 +1410,7 @@ public:
    */
   TestVectors ();
   /**
-   * Virtual desctructor
+   * Virtual destructor
    */
   virtual ~TestVectors ();
 

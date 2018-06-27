@@ -84,7 +84,7 @@ public:
   /**
    * \brief This function adds a downlink burst to the list of downlink bursts
    * scheduled for the next downlink sub-frame
-   * \param connection a pointer to connection in wich the burst will be sent
+   * \param connection a pointer to connection in which the burst will be sent
    * \param diuc downlink iuc
    * \param modulationType the modulation type of the burst
    * \param burst the downlink burst to add to the downlink sub frame
@@ -98,7 +98,7 @@ public:
   /**
    * \brief Check for IR and Broadcast connections that have packets to transmit.
    * \param connection will point to a initial ranging or broadcast connection
-   * wich have packets to transmit
+   * which have packets to transmit
    * \returns false if no initial ranging or broadcast connection has packets
    * to transmit, true otherwise
    */
@@ -106,7 +106,7 @@ public:
   /**
    * \brief Check for Basic and Primary connections that have packets to transmit.
    * \param connection will point to a basic or primary connection
-   * wich have packets to transmit
+   * which have packets to transmit
    * \returns false if no basic or primary connection has packets
    * to transmit, true otherwise
    */

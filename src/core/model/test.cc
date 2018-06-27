@@ -81,7 +81,7 @@ struct TestCaseFailure
    * \param [in] _actual  The actual value returned by the test.
    * \param [in] _limit   The expected value.
    * \param [in] _message The associated message.
-   * \param [in] _file    The soure file.
+   * \param [in] _file    The source file.
    * \param [in] _line    The source line.
    */
   TestCaseFailure (std::string _cond, std::string _actual, 
@@ -91,7 +91,7 @@ struct TestCaseFailure
   std::string actual;  /**< The actual value returned by the test. */
   std::string limit;   /**< The expected value. */
   std::string message; /**< The associated message. */
-  std::string file;    /**< The soure file. */
+  std::string file;    /**< The source file. */
   int32_t line;        /**< The source line. */
 };
 /**
@@ -229,7 +229,7 @@ private:
   /**
    * Generate the list of tests matching the constraints.
    *
-   * Test name and type contraints are or'ed.  The duration constraint
+   * Test name and type constraints are or'ed.  The duration constraint
    * is and'ed.
    *
    * \param [in] testName Include a specific test by name.

@@ -84,7 +84,7 @@ public:
    */
   void SetIsFirstBlock (bool isFirstBlock);
   /**
-   * \param Frequency set the frequency of the channel in wich this fec block will be sent
+   * \param Frequency set the frequency of the channel in which this fec block will be sent
    */
   void SetFrequency (uint64_t Frequency);
   /**
@@ -135,7 +135,7 @@ public:
 private:
   bvec m_fecBlock; ///< FEC block
   uint32_t m_burstSize; ///< burst size
-  bool m_isFirstBlock; ///< is frist block
+  bool m_isFirstBlock; ///< is first block
   uint64_t m_frequency; ///< frequency
   WimaxPhy::ModulationType m_modulationType; ///< modulation type
   uint8_t m_direction; ///< direction

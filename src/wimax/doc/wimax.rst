@@ -458,7 +458,7 @@ generate trace files used by the reception process to evaluate if a FEC block
 can be correctly decoded or not.
 
 Transmission Process: A burst is a set of WiMAX MAC PDUs. At the sending
-process, a burst is converted into bit-streams and then splitted into smaller
+process, a burst is converted into bit-streams and then split into smaller
 FEC blocks which are then sent to the channel with a power equal P_tx.
 
 Reception Process: The reception process includes the following operations:

@@ -70,7 +70,7 @@ public:
    * \param availableSymbols the available resources in symbols
    * \param modulationType the used modulation
    * \param packetType the type of packets to select from
-   * \param connection the connection from wich packets will be selected
+   * \param connection the connection from which packets will be selected
    */
   Ptr<PacketBurst> Schedule (uint16_t availableSymbols,
                              WimaxPhy::ModulationType modulationType,
@@ -89,7 +89,7 @@ private:
   SSScheduler & operator= (const SSScheduler &);
 
   /**
-   * Select connnection
+   * Select connection
    * \returns pointer to the wimax connection
    */
   Ptr<WimaxConnection> SelectConnection (void);

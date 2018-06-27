@@ -256,7 +256,7 @@ public:
    *
    * \param packet the packet that has been received.
    * \param from the MAC address of the device that sent the packet.
-   * \param to the MAC address ot the device that the packet is destined for.
+   * \param to the MAC address of the device that the packet is destined for.
    */
   typedef Callback<void, Ptr<Packet>, Mac48Address, Mac48Address> ForwardUpCallback;
   /**
@@ -350,7 +350,7 @@ protected:
    * This method is called by ns3::WifiMac::ConfigureStandard to
    * complete the configuration process for a requested phy standard.
    *
-   * This method may be overriden by a derived class (e.g., in order
+   * This method may be overridden by a derived class (e.g., in order
    * to apply DCF or EDCA parameters specific to the usage model it is
    * dealing with), in which case the reimplementation may choose to
    * deal with certain values in the WifiPhyStandard enumeration, and
@@ -382,9 +382,9 @@ protected:
    * invoked to notify us that a frame has been received. The
    * implementation is intended to capture logic that is going to be
    * common to all (or most) derived classes. Specifically, handling
-   * of Block Ack managment frames is dealt with here.
+   * of Block Ack management frames is dealt with here.
    *
-   * This method will need, however, to be overriden by derived
+   * This method will need, however, to be overridden by derived
    * classes so that they can perform their data handling before
    * invoking the base version.
    *

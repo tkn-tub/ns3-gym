@@ -1093,7 +1093,7 @@ IntegerTraceSourceTestCase::DoRun (void)
   NS_TEST_ASSERT_MSG_NE (p, 0, "Unable to CreateObject");
 
   //
-  // Check to make sure changing an Attibute value triggers a trace callback
+  // Check to make sure changing an Attribute value triggers a trace callback
   // that sets a member variable.
   //
   m_got1 = 1234;
@@ -1273,7 +1273,7 @@ PointerAttributeTestCase::DoRun (void)
   //
   p->GetAttribute ("Pointer", ptr);
   Ptr<Derived> stored = ptr.Get<Derived> ();
-  NS_TEST_ASSERT_MSG_EQ (stored, derived, "Retreived Attribute does not match stored PointerValue");
+  NS_TEST_ASSERT_MSG_EQ (stored, derived, "Retrieved Attribute does not match stored PointerValue");
 
   //
   // We should be able to use the Attribute Get() just like GetObject<type>,
@@ -1283,7 +1283,7 @@ PointerAttributeTestCase::DoRun (void)
   //
   p->GetAttribute ("Pointer", ptr);
   Ptr<Object> storedBase = ptr.Get<Object> ();
-  NS_TEST_ASSERT_MSG_EQ (storedBase, stored, "Retreived Ptr<Object> does not match stored Ptr<Derived>");
+  NS_TEST_ASSERT_MSG_EQ (storedBase, stored, "Retrieved Ptr<Object> does not match stored Ptr<Derived>");
 
   //
   // If we try to Get() something that is unrelated to what we stored, we should
@@ -1291,7 +1291,7 @@ PointerAttributeTestCase::DoRun (void)
   //
   p->GetAttribute ("Pointer", ptr);
   Ptr<AttributeObjectTest> x = ptr.Get<AttributeObjectTest> ();
-  NS_TEST_ASSERT_MSG_EQ (x, 0, "Unexpectedly retreived unrelated Ptr<type> from stored Ptr<Derived>");
+  NS_TEST_ASSERT_MSG_EQ (x, 0, "Unexpectedly retrieved unrelated Ptr<type> from stored Ptr<Derived>");
 
   //
   // Test whether the initialized pointers from two different objects
@@ -1371,7 +1371,7 @@ CallbackValueTestCase::DoRun (void)
 
   //
   // The member variable m_cbValue is declared as a Callback<void, int8_t>.  The
-  // Attibute named "Callback" also points to m_cbValue and allows us to set the
+  // Attribute named "Callback" also points to m_cbValue and allows us to set the
   // callback using that Attribute.
   //
   // NotifyCallbackValue is going to be the target of the callback and will just set

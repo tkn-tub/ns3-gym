@@ -452,7 +452,7 @@ It has to be noted that the ns-3 LTE module is able to work with any fading trac
 Fading Traces Usage
 *******************
 
-When using a fading trace, it is of paramount importance to specify correctly the trace parameters in the simulation, so that the fading model can load and use it correcly.
+When using a fading trace, it is of paramount importance to specify correctly the trace parameters in the simulation, so that the fading model can load and use it correctly.
 The parameters to be configured are:
 
  * ``TraceFilename`` : the name of the trace to be loaded (absolute path, or relative path w.r.t. the path from where the simulation program is executed);
@@ -1940,7 +1940,7 @@ compare the effect of each built-in handover algorithm of the LTE module.
 
 The campaign will use the ``lena-dual-stripe`` example program. First, we have
 to modify the example program to produce the output that we need. In this
-occassion, we want to produce the number of handovers, user average throughput,
+occasion, we want to produce the number of handovers, user average throughput,
 and average SINR.
 
 The number of handovers can be obtained by counting the number of times the

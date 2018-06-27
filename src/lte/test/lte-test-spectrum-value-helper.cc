@@ -98,7 +98,7 @@ public:
    * \param earfcn
    * \param bw bandwidth
    * \param noiseFigureDb noise figure in dB
-   * \param expected exected spectrum value
+   * \param expected executed spectrum value
    */
   LteNoisePsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double noiseFigureDb, SpectrumValue& expected);
   virtual ~LteNoisePsdTestCase ();
@@ -152,7 +152,7 @@ public:
    * \param bw bandwidth
    * \param txPowerDbm tranmit power in dBm
    * \param activeRbs active RBs
-   * \param expected exected spectrum value
+   * \param expected executed spectrum value
    */
   LteTxPsdTestCase (const char* str, uint16_t earfcn, uint8_t bw, double txPowerDbm, std::vector<int> activeRbs, SpectrumValue& expected);
   virtual ~LteTxPsdTestCase ();

@@ -143,13 +143,13 @@ public:
   void SetCsgId (uint32_t csgId);
 
   /**
-   * \brief Set the targer eNB where the UE is registered
+   * \brief Set the target eNB where the UE is registered
    * \param enb
    */
   void SetTargetEnb (Ptr<LteEnbNetDevice> enb);
 
   /**
-   * \brief Get the targer eNB where the UE is registered
+   * \brief Get the target eNB where the UE is registered
    * \return the pointer to the enb
    */
   Ptr<LteEnbNetDevice> GetTargetEnb (void);

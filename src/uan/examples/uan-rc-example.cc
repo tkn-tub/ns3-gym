@@ -22,7 +22,7 @@
  * \file uan-rc-example.cc
  * \ingroup UAN
  * This example uses UanMacRc and UanMacRcGw which combined form a system
- * using what is reffered to as RC-MAC.  Details of RC-MAC will be published
+ * using what is referred to as RC-MAC.  Details of RC-MAC will be published
  * soon.  In brief terms, RC-MAC is a dual channel protocol wherein the
  * available bandwidth is dynamically divided into two channels,
  * a reservation channel and a data channel.  The network is assumed

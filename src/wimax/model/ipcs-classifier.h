@@ -48,7 +48,7 @@ public:
    * \brief classify a packet in a service flow
    * \param packet the packet to classify
    * \param sfm the service flow manager to be used to classify packets
-   * \param dir The direction on wich the packet should be sent (UP or DOWN)
+   * \param dir The direction on which the packet should be sent (UP or DOWN)
    * \return The service flow that should be used to send this packet
    */
   ServiceFlow * Classify (Ptr<const Packet> packet, Ptr<ServiceFlowManager> sfm, ServiceFlow::Direction dir);

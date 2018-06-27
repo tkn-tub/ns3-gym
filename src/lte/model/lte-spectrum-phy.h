@@ -44,7 +44,7 @@
 
 namespace ns3 {
 
-/// TbId_t sturcture
+/// TbId_t structure
 struct TbId_t
 {
   uint16_t m_rnti; ///< RNTI

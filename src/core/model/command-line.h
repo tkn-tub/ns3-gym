@@ -103,7 +103,7 @@ namespace ns3 {
  * Because arguments can be repeated it can be hard to decipher what
  * value each variable ended up with, especially when using boolean toggles.
  * Suggested best practice is for scripts to report the values of all items
- * settable throught CommandLine, as done by the example below.
+ * settable through CommandLine, as done by the example below.
  * 
  *
  * CommandLine can set the initial value of every attribute in the system
@@ -291,7 +291,7 @@ public:
   /**
    * Get extra non-option arguments by index.
    * This allows CommandLine to accept more non-option arguments than
-   * have been configured explictly with AddNonOption().
+   * have been configured explicitly with AddNonOption().
    *
    * This is only valid after calling Parse().
    *

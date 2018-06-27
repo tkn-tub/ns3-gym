@@ -100,7 +100,7 @@ public:
   void SetI2 (double);
 
 private:
-  double m_snrValue; ///< SNR vaue
+  double m_snrValue; ///< SNR value
   double m_bitErrorRate; ///< bit error rate
   double m_blockErrorRate; ///< block error rate
   double m_sigma2; ///< sigma2

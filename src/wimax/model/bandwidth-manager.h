@@ -109,7 +109,7 @@ private:
   BandwidthManager& operator= (const BandwidthManager &);
 
   Ptr<WimaxNetDevice> m_device; ///< the device
-  uint16_t m_nrBwReqsSent; ///< bandwith requests sent
+  uint16_t m_nrBwReqsSent; ///< bandwidth requests sent
 };
 
 } // namespace ns3

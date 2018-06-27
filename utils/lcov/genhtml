@@ -643,7 +643,7 @@ sub print_overall_rate($$$$$$$$$)
 # Generate a set of HTML pages from contents of .info file INFO_FILENAME.
 # Files will be written to the current directory. If provided, test case
 # descriptions will be read from .tests file TEST_FILENAME and included
-# in ouput.
+# in output.
 #
 # Die on error.
 #

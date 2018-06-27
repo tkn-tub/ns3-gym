@@ -62,7 +62,7 @@ private:
   /// Force updates
   void ForceUpdates (void);
   /**
-   * Course cange callback
+   * Course change callback
    * \param model the mobility model
    */
   void CourseChangeCallback (Ptr<const MobilityModel> model);

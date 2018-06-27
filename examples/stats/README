@@ -23,7 +23,7 @@ Use the wifi-example-omnet.sh script to generate the results in OMNeT++ format.
 
 If you want to analyse the results with OMNeT++'s result analyser tool:
 a) Download OMNeT++ 4 and install it. Start the IDE. (www.omnetpp.org)
-b) If you do not want to install the whole simulator framework, there is a seperate 
+b) If you do not want to install the whole simulator framework, there is a separate 
    package which contains only the analysis tool from the OMNeT++ package.
    You can download it from http://omnetpp.org/download/release/omnetpp-scave.tgz
 

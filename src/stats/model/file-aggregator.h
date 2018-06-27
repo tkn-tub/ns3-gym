@@ -309,7 +309,7 @@ public:
    * \param v6 sixth value for the new data point.
    * \param v7 seventh value for the new data point.
    * \param v8 eighth value for the new data point.
-   * \param v9 nineth value for the new data point.
+   * \param v9 ninth value for the new data point.
    *
    * \brief Writes 9 values to the file.
    */
@@ -334,7 +334,7 @@ public:
    * \param v6 sixth value for the new data point.
    * \param v7 seventh value for the new data point.
    * \param v8 eighth value for the new data point.
-   * \param v9 nineth value for the new data point.
+   * \param v9 ninth value for the new data point.
    * \param v10 tenth value for the new data point.
    *
    * \brief Writes 10 values to the file.

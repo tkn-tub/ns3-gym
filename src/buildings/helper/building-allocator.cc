@@ -52,7 +52,7 @@ GridBuildingAllocator::GetTypeId (void)
     .SetParent<Object> ()
     .AddConstructor<GridBuildingAllocator> ()
     .SetGroupName ("Buildings")
-    .AddAttribute ("GridWidth", "The number of objects layed out on a line.",
+    .AddAttribute ("GridWidth", "The number of objects laid out on a line.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&GridBuildingAllocator::m_n),
                    MakeUintegerChecker<uint32_t> ())

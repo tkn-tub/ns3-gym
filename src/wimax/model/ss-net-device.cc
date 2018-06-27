@@ -746,7 +746,7 @@ SubscriberStationNetDevice::DoReceive (Ptr<Packet> packet)
   uint32_t pktSize = packet->GetSize ();
   packet->RemoveHeader (gnrcMacHdr);
   FragmentationSubheader fragSubhdr;
-  bool fragmentation = false;  // it becames true when there is a fragmentation subheader
+  bool fragmentation = false;  // it becomes true when there is a fragmentation subheader
 
   if (gnrcMacHdr.GetHt () == MacHeaderType::HEADER_TYPE_GENERIC)
     {
@@ -1191,7 +1191,7 @@ SubscriberStationNetDevice::ProcessDcd (const Dcd &dcd)
   m_nrDcdRecvd++;
   if (dcd.GetConfigurationChangeCount () == GetCurrentDcd ().GetConfigurationChangeCount ())
     {
-      return; // nothing new in DCD so dont read
+      return; // nothing new in DCD so don't read
 
     }
   SetCurrentDcd (dcd);

@@ -1188,7 +1188,7 @@ public:
    * The energy of a received signal should be higher than
    * this threshold (dbm) to allow the PHY layer to detect the signal.
    *
-   * \param threshold the energy detction threshold in dBm
+   * \param threshold the energy detection threshold in dBm
    */
   void SetEdThreshold (double threshold);
   /**

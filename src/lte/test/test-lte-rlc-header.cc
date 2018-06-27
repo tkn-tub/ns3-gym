@@ -92,7 +92,7 @@ public:
   }
 
   /**
-   * Log packet infor function
+   * Log packet info function
    * \param source T
    * \param s text string to log
    */

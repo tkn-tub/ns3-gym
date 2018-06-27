@@ -38,7 +38,7 @@ namespace ns3 {
 
 /**
  * \ingroup names-tests
- * Simple test object to excercise the Name service.
+ * Simple test object to exercise the Name service.
  */
 class TestObject : public Object
 {
@@ -225,7 +225,7 @@ StringContextAddTestCase::DoRun (void)
 /**
  * \ingroup names-tests
  * Test the Object Name Service can correctly use a 
- * fully qualified path to add assocations.
+ * fully qualified path to add associations.
  *
  *     Add (std::string name, Ptr<Object> object);
  * 
@@ -292,7 +292,7 @@ FullyQualifiedAddTestCase::DoRun (void)
 /**
  * \ingroup names-tests
  * Test the Object Name Service can correctly use a
- * relative path to add assocations.
+ * relative path to add associations.
  *
  * This functionality is provided as a convenience so clients
  * don't always have to provide the name service namespace name

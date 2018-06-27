@@ -141,7 +141,7 @@ public:
 
 
   /**
-  * \returns the RB gruop size according to the bandwidth
+  * \returns the RB group size according to the bandwidth
   */
   uint8_t GetRbgSize (void) const;
   
@@ -272,7 +272,7 @@ protected:
    * Specified by the upper layer through CPHY SAP.
    */
   uint8_t m_dlBandwidth;
-  /// The RB gruop size according to the bandwidth.
+  /// The RB group size according to the bandwidth.
   uint8_t m_rbgSize;
   /**
    * The downlink carrier frequency.

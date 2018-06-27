@@ -56,7 +56,7 @@ public:
 
 
 private:
-  //overriden from base class
+  //overridden from base class
   void DoInitialize (void);
   WifiRemoteStation* DoCreateStation (void) const;
   void DoReportRxOk (WifiRemoteStation *station,

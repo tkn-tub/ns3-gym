@@ -107,7 +107,7 @@ public:
    * Attach the device to a channel.
    *
    * \param ch Ptr to the channel to which this object is being attached.
-   * \return true if the operation was successfull (always true actually)
+   * \return true if the operation was successful (always true actually)
    */
   bool Attach (Ptr<PointToPointChannel> ch);
 

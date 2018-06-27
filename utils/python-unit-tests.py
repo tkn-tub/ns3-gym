@@ -119,7 +119,7 @@ class TestSimulator(unittest.TestCase):
 
     def testTimeNumericOperations(self):
         """! Test numeric operations
-        @param self ths object
+        @param self this object
         @return none
         """
         self.assertEqual(Seconds(10) + Seconds(5), Seconds(15))
@@ -198,7 +198,7 @@ class TestSimulator(unittest.TestCase):
 
     def testIdentity(self):
         """! Test identify
-        @param self thsi object
+        @param self this object
         @return none
         """
         csma = ns.csma.CsmaNetDevice()

@@ -64,7 +64,7 @@ public:
   virtual ~CommandLineTestCaseBase () {}
 
   /**
-   * Excercise the CommandLine with the provided arguments
+   * Exercise the CommandLine with the provided arguments
    *
    * \param cmd the configured CommandLine
    * \param n the number of arguments

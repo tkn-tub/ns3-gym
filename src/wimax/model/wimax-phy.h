@@ -279,7 +279,7 @@ public:
   /**
    * \brief scan a frequency for maximum timeout seconds and call the callback if the frequency can be used
    * \param frequency the frequency to scan
-   * \param timeout the timout before considering the channel as unusable
+   * \param timeout the timeout before considering the channel as unusable
    * \param callback the function to call if the channel could be used
    */
   void StartScanning (uint64_t frequency, Time timeout, Callback<void, bool, uint64_t> callback);

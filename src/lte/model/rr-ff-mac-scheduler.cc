@@ -859,7 +859,7 @@ RrFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sched
             }
           else
             {
-              cqi = 1; // lowest value fro trying a transmission
+              cqi = 1; // lowest value for trying a transmission
             }
           if (cqi != 0)
             {

@@ -429,7 +429,7 @@ private:
 
   //Basic MCS Set field
   uint8_t m_reservedMcsSet1; ///< reserved MCS set 1
-  uint16_t m_rxHighestSupportedDataRate; ///< receive highest suppoted data rate
+  uint16_t m_rxHighestSupportedDataRate; ///< receive highest supported data rate
   uint8_t m_reservedMcsSet2; ///< reserved MCS set2
   uint8_t m_txMcsSetDefined; ///< transmit MCS set defined
   uint8_t m_txRxMcsSetUnequal; ///< transmit / receive MCS set unequal

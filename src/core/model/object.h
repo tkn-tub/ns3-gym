@@ -230,7 +230,7 @@ protected:
    *
    * This method is invoked whenever two sets of Objects are aggregated
    * together.  It is invoked exactly once for each Object in both sets.
-   * This method can be overriden by subclasses who wish to be notified
+   * This method can be overridden by subclasses who wish to be notified
    * of aggregation events. These subclasses must chain up to their
    * base class NotifyNewAggregate() method.
    *
@@ -257,7 +257,7 @@ protected:
    * destructor, whichever comes first.
    *
    * Subclasses are expected to implement their real destruction
-   * code in an overriden version of this method and chain
+   * code in an overridden version of this method and chain
    * up to their parent's implementation once they are done.
    * _i.e_, for simplicity, the destructor of every subclass should
    * be empty and its content should be moved to the associated

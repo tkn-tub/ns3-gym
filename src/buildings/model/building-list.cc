@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Jaume Nin <jaume.nin@cttc,cat>
- * Based on BuildingList implemenation by Mathieu Lacage  <mathieu.lacage@sophia.inria.fr>
+ * Based on BuildingList implementation by Mathieu Lacage  <mathieu.lacage@sophia.inria.fr>
  *
  */
 #include "building-list.h"

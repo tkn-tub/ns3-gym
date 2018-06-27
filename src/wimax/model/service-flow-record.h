@@ -176,7 +176,7 @@ public:
   void SetBwSinceLastExpiry (uint32_t bwSinceLastExpiry);
   /**
     * \brief update BW since last expiry
-    * \param bwSinceLastExpiry bandwith since last expiry
+    * \param bwSinceLastExpiry bandwidth since last expiry
     */
   void UpdateBwSinceLastExpiry (uint32_t bwSinceLastExpiry);
   /**

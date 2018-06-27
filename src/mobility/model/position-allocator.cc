@@ -102,7 +102,7 @@ GridPositionAllocator::GetTypeId (void)
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<GridPositionAllocator> ()
-    .AddAttribute ("GridWidth", "The number of objects layed out on a line.",
+    .AddAttribute ("GridWidth", "The number of objects laid out on a line.",
                    UintegerValue (10),
                    MakeUintegerAccessor (&GridPositionAllocator::m_n),
                    MakeUintegerChecker<uint32_t> ())

@@ -672,7 +672,7 @@ Depending on your goal, the common tasks are (in no particular order):
   ``Txop`` and ``QosTxop``.
 * Fragmentation and RTS threholds are handled by Wi-Fi remote station manager.  Note that Wi-Fi remote
   station manager simply indicates if fragmentation and RTS are needed.  Fragmentation is handled by
-  ``Txop`` or ``QosTxop`` while RTS/CTS transaction is hanled by ``MacLow``.
+  ``Txop`` or ``QosTxop`` while RTS/CTS transaction is handled by ``MacLow``.
 * Modifying or creating new rate control algorithms can be done by creating a new child class of Wi-Fi remote
   station manager or modifying the existing ones.
 

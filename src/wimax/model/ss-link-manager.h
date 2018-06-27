@@ -114,7 +114,7 @@ public:
   void SendRangingRequest (uint8_t uiuc, uint16_t allocationSize);
   /// Start contention resolution
   void StartContentionResolution (void);
-  /// Perfrom backoff
+  /// Perform backoff
   void PerformBackoff (void);
   /**
    * Is UL channel usable

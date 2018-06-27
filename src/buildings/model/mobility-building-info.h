@@ -40,7 +40,7 @@ namespace ns3 {
  * \ingroup buildings
  * \brief mobility buildings information (to be used by mobility models)
  *
- * This model implements the managment of scenarios where users might be
+ * This model implements the management of scenarios where users might be
  * either indoor (e.g., houses, offices, etc.) and outdoor.
  * 
  */

@@ -62,7 +62,7 @@ namespace ns3 {
  *  ...          ...  ...     ...                 ...                   ...
  *
  *
- *  Aditional notes: from Esteban Municio   <esteban.municio@urjc.es>
+ *  Additional notes: from Esteban Municio   <esteban.municio@urjc.es>
  *
  *  This trace file has been edited for the 16 QAM 3/4 modulation (modulation4) since the original SNR traces for
  *  this modulation were not long enough, giving inflated BER and BLER figures for typical SNR values. Due to the impossibility

@@ -19,7 +19,7 @@ Framework description
 Simulation scripts
 ~~~~~~~~~~~~~~~~~~
 
-The simulation script used for all the E-UTRAN results showed in this documentation is located at ``src/lte/examples/lena-profiling.cc``. It uses the complete PHY and MAC UE/eNodeB implementation with a simplified RLC implementation on top. This script generates a squared grid topology, placing a eNodeB at the centre of each square. UEs attached to this node are scattered randomly across the square (using a random uniform distribution along X and Y axis). If *BuildingPropagationModel* is used, the squares are replaced by rooms. To generate the UL and DL traffic, the RLC implementation always report data to be transfered.
+The simulation script used for all the E-UTRAN results showed in this documentation is located at ``src/lte/examples/lena-profiling.cc``. It uses the complete PHY and MAC UE/eNodeB implementation with a simplified RLC implementation on top. This script generates a squared grid topology, placing a eNodeB at the centre of each square. UEs attached to this node are scattered randomly across the square (using a random uniform distribution along X and Y axis). If *BuildingPropagationModel* is used, the squares are replaced by rooms. To generate the UL and DL traffic, the RLC implementation always report data to be transferred.
 
 .. _fig-eutranProfilingScenario:
 
@@ -119,7 +119,7 @@ The figure shows the expected behaviour, since it increases linearly respect the
 Propagation model
 -----------------
 
-The objective of this scenario is to evaluate the impact of the propagation model complexity in the overall run time figures. Therefore, the same scenario is simulated twice: once using the more simple Friis model, once with the more complex Building model. The rest of the parameters (e.g. number of eNodeB and of UE attached per eNodeB) were mantained. The timing results for both models are compared in the following figure.
+The objective of this scenario is to evaluate the impact of the propagation model complexity in the overall run time figures. Therefore, the same scenario is simulated twice: once using the more simple Friis model, once with the more complex Building model. The rest of the parameters (e.g. number of eNodeB and of UE attached per eNodeB) were maintained. The timing results for both models are compared in the following figure.
 
 .. _fig-propagationModel:
 

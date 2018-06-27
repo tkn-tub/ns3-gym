@@ -132,7 +132,7 @@ public:
    */
   WimaxNetDevice::RangingStatus GetRangingStatus (void) const;
 
-  /// Enable poll for ranging funtion
+  /// Enable poll for ranging function
   void EnablePollForRanging (void);
   /// Disable poll for ranging
   void DisablePollForRanging (void);

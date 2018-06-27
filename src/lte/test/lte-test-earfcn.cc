@@ -43,7 +43,7 @@ public:
   /**
    * Constructor
    *
-   * \param str referene name
+   * \param str reference name
    * \param earfcn EARFCN
    * \param f frequency
    */
@@ -92,7 +92,7 @@ public:
   /**
    * Constructor
    *
-   * \param str referene name
+   * \param str reference name
    * \param earfcn EARFCN
    * \param f frequency
    */
@@ -133,7 +133,7 @@ public:
   /**
    * Constructor
    *
-   * \param str referene name
+   * \param str reference name
    * \param earfcn EARFCN
    * \param f frequency
    */

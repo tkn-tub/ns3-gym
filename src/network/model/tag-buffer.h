@@ -40,7 +40,7 @@ namespace ns3 {
  * This class allows subclasses of the ns3::Tag base class
  * to serialize and deserialize their data through a stream-like
  * API. This class keeps track of the "current" point in the
- * buffer and advances that "current" point everytime data is 
+ * buffer and advances that "current" point every time data is 
  * written. The in-memory format of the data written by 
  * this class is unspecified.
  *

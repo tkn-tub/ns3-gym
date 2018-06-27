@@ -269,7 +269,7 @@ public:
    * \param packet packet to send
    * \param dest layer 2 destination address
    * \param protocolNumber protocol number
-   * \return true if successfull, false otherwise (drop, ...)
+   * \return true if successful, false otherwise (drop, ...)
    */
   virtual bool Send (Ptr<Packet> packet, const Address& dest, 
                      uint16_t protocolNumber);
@@ -280,7 +280,7 @@ public:
    * \param source layer 2 source address
    * \param dest layer 2 destination address
    * \param protocolNumber protocol number
-   * \return true if successfull, false otherwise (drop, ...)
+   * \return true if successful, false otherwise (drop, ...)
    */
   virtual bool SendFrom (Ptr<Packet> packet, const Address& source, const Address& dest, 
                          uint16_t protocolNumber);

@@ -326,7 +326,7 @@ void Asn1Header::SerializeInteger (int n, int nmin, int nmax) const
 
   // Clause 11.5.3 ITU-T X.691
   int range = nmax - nmin + 1;
-  // Substract nmin to n
+  // Subtract nmin to n
   n -= nmin;
 
   // Clause 11.5.4 ITU-T X.691
