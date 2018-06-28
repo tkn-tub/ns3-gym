@@ -143,7 +143,7 @@ public:
   int GetExpectedRxPktCount (int index);
 
   /**
-   * \brief Increments the count of actual packets recevied within range(index)
+   * \brief Increments the count of actual packets received within range(index)
    * \param index index for statistics
    * \return the count of actual packets received within range(index)
    */

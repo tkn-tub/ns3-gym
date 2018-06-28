@@ -117,7 +117,7 @@ public:
   bool Install (Ptr<MeshPointDevice>);
   /**
    * Peer link status function
-   * \param meshPontAddress The MAC address of the mesh pont
+   * \param meshPontAddress The MAC address of the mesh point
    * \param peerAddress The MAC address of the peer
    * \param interface The interface number
    * \param status The status of the peer link

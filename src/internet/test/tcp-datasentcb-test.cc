@@ -105,7 +105,7 @@ public:
 
   /**
    * Constructor.
-   * \param desc Test desctiption.
+   * \param desc Test description.
    * \param size Packet size.
    * \param packets Number of packets.
    */

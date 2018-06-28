@@ -343,7 +343,7 @@ This will enable forwarding on the node *0* and will setup a default route in
 requires that Ipv6StaticRouting is present in the nodes. 
 
 The IPv6 routing helpers enable the user to perform specific tasks on the
-particular routing algorith and to print the routing tables. 
+particular routing algorithm and to print the routing tables. 
 
 
 Attributes

@@ -1153,7 +1153,7 @@ necessary because window updates can be lost.
    Doxygen documentation. As a brief summary, the strategy is to have a class
    that sets up a TCP connection, and that calls protected members of itself.
    In this way, subclasses can implement the necessary members, which will
-   be called by the main TcpGeneralTest class when events occour. For example,
+   be called by the main TcpGeneralTest class when events occur. For example,
    after processing an ACK, the method ProcessedAck will be invoked. Subclasses
    interested in checking some particular things which must have happened during
    an ACK processing, should implement the ProcessedAck method and check
@@ -1284,7 +1284,7 @@ RECEIVER. As said before, check the Doxygen documentation for class TcpGeneralTe
 to be aware of the various possibilities that it offers.
 
 .. note::
-   By design, we choose to mantain a close relationship between TcpSocketBase
+   By design, we choose to maintain a close relationship between TcpSocketBase
    and TcpGeneralTest: they are connected by a friendship relation. Since
    friendship is not passed through inheritance, if one discovers that one
    needs to access or to modify a private (or protected) member of TcpSocketBase,
@@ -1369,7 +1369,7 @@ If we run the experiment, enabling the logging, we can see the following:
 
 The output is cut to show the threeway handshake. As we can see from the headers,
 the rWnd of RECEIVER is set to 0, and thankfully our tests are not failing.
-Now we need to test for the persistent timer, which sould be started by
+Now we need to test for the persistent timer, which should be started by
 the SENDER after it receives the SYN-ACK. Since the Rx method is called before
 any computation on the received packet, we should utilize another method, namely
 ProcessedAck, which is the method called after each processed ACK. In the
@@ -1426,7 +1426,7 @@ We divide the events by simulated time. At line 1, we check everything that
 happens before the 6.0 seconds mark; for instance, that no data packets are sent,
 and that the state remains OPEN for both sender and receiver.
 
-Since the persist timeout is initialized at 6 seconds (excercise left for the
+Since the persist timeout is initialized at 6 seconds (exercise left for the
 reader: edit the test, getting this value from the Attribute system), we need
 to check (line 6) between 6.0 and 7.0 simulated seconds that the probe is sent.
 Only one probe is allowed, and this is the reason for the check at line 11.
@@ -1557,7 +1557,7 @@ and then, hit "Run".
    This code magically runs without any reported errors; however, in real cases,
    when you discover a bug you should expect the existing test to fail (this
    could indicate a well-written test and a bad-writted model, or a bad-written
-   test; hopefull the first situation). Correcting bugs is an iterative
+   test; hopefully the first situation). Correcting bugs is an iterative
    process. For instance, commits created to make this test case running without
    errors are 11633:6b74df04cf44, (others to be merged).
 

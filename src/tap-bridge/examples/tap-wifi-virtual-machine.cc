@@ -115,7 +115,7 @@ main (int argc, char *argv[])
   wifiMac.SetType ("ns3::AdhocWifiMac");
 
   //
-  // Configure the physcial layer.
+  // Configure the physical layer.
   //
   YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper wifiPhy = YansWifiPhyHelper::Default ();

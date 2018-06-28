@@ -16,7 +16,7 @@
  * - ns3::InetTopologyReader for Inet 3.0 traces (http://topology.eecs.umich.edu/inet/)
  * - ns3::RocketfuelTopologyReader for Rocketfuel traces (http://www.cs.washington.edu/research/networking/rocketfuel/)
  *
- * See the ns-3 modules manual for further informations.
+ * See the ns-3 modules manual for further information.
  *
  * Examples can be found in the directory src/topology-read/examples/
  */

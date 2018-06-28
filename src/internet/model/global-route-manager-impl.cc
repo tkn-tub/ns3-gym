@@ -151,7 +151,7 @@ SPFVertex::~SPFVertex ()
   // delete children
   while (m_children.size () > 0)
     {
-      // pop out children one by one. Some children may disapper 
+      // pop out children one by one. Some children may disappear 
       // when deleting some other children in the list. As a result,
       // it is necessary to use pop to walk through all children, instead
       // of using iterator.

@@ -230,7 +230,7 @@ set to "mytap" and the "Mode" attribute would be set to "UseBridge".
 
 This mode is especially  useful in the case of virtualization where the 
 configuration of the virtual hosts may be dictated by another system and 
-not be changable to suit ns-3.  For example, a particular VM scheme may create
+not be changeable to suit ns-3.  For example, a particular VM scheme may create
 virtual "vethx" or "vmnetx" devices that appear local to virtual hosts.  In 
 order to connect to such systems, one would need to manually create TAP devices
 on the host system and brigde these TAP devices to the existing (VM) virtual 

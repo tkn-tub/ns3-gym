@@ -274,7 +274,7 @@ def lcm(a, b, precision=None):
     >>> str(lcm(1.5e-8, 2.5e-8, precision=1e9))
     '7.5e-08'
 
-    By (an arbitary) definition:
+    By (an arbitrary) definition:
     >>> lcm(0, 0)
     0
 
@@ -390,7 +390,7 @@ def trim(l):
         index = int(len(l_sort) / 2)  # Integer division correct
         median = float(l_sort[index] + l_sort[index-1]) / 2
     else:
-        # int divsion gives mid value when count from 0
+        # int division gives mid value when count from 0
         index = int(len(l_sort) / 2)
         median = l_sort[index]
     # Calculate IQR.
@@ -414,7 +414,7 @@ def nice_units(value, dp=0, sigfigs=None, suffix='', space=' ',
     sigfigs -- number of significant figures to display (rounded)
                This overrides dp if set.
     suffix -- optional unit suffix to append to unit multiplier
-    space -- seperator between value and unit multiplier (default: ' ')
+    space -- separator between value and unit multiplier (default: ' ')
     use_extra_prefixes -- use hecto, deka, deci and centi as well if set.
                           (default: False)
     use_full_name -- use full name for multiplier symbol,

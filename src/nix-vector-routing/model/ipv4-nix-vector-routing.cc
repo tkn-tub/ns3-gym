@@ -268,7 +268,7 @@ Ipv4NixVectorRouting::BuildNixVector (const std::vector< Ptr<Node> > & parentVec
           continue;
         }
 
-      // this function takes in the local net dev, and channnel, and
+      // this function takes in the local net dev, and channel, and
       // writes to the netDeviceContainer the adjacent net devs
       NetDeviceContainer netDeviceContainer;
       GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
@@ -390,7 +390,7 @@ Ipv4NixVectorRouting::FindTotalNeighbors (void)
           continue;
         }
 
-      // this function takes in the local net dev, and channnel, and
+      // this function takes in the local net dev, and channel, and
       // writes to the netDeviceContainer the adjacent net devs
       NetDeviceContainer netDeviceContainer;
       GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
@@ -462,7 +462,7 @@ Ipv4NixVectorRouting::FindNetDeviceForNixIndex (uint32_t nodeIndex, Ipv4Address 
           continue;
         }
 
-      // this function takes in the local net dev, and channnel, and
+      // this function takes in the local net dev, and channel, and
       // writes to the netDeviceContainer the adjacent net devs
       NetDeviceContainer netDeviceContainer;
       GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);
@@ -827,7 +827,7 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
               return false;
             }
 
-          // this function takes in the local net dev, and channnel, and
+          // this function takes in the local net dev, and channel, and
           // writes to the netDeviceContainer the adjacent net devs
           NetDeviceContainer netDeviceContainer;
           GetAdjacentNetDevices (oif, channel, netDeviceContainer);
@@ -883,7 +883,7 @@ Ipv4NixVectorRouting::BFS (uint32_t numberOfNodes, Ptr<Node> source,
                   continue;
                 }
 
-              // this function takes in the local net dev, and channnel, and
+              // this function takes in the local net dev, and channel, and
               // writes to the netDeviceContainer the adjacent net devs
               NetDeviceContainer netDeviceContainer;
               GetAdjacentNetDevices (localNetDevice, channel, netDeviceContainer);

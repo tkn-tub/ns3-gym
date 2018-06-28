@@ -174,7 +174,7 @@ public:
 
   /**
    * Start CSMA-CA algorithm (step 1), initialize NB, BE for both slotted and unslotted
-   * CSMA-CA. For the slotted intialize CW plus also start on the backoff boundary
+   * CSMA-CA. For the slotted initialize CW plus also start on the backoff boundary
    */
   void Start (void);
 
@@ -265,7 +265,7 @@ private:
   bool m_isSlotted;
 
   /**
-   * The MAC instance for which this CSMAÄ/CA implemenation is configured.
+   * The MAC instance for which this CSMAÄ/CA implementation is configured.
    */
   Ptr<LrWpanMac> m_mac;
 

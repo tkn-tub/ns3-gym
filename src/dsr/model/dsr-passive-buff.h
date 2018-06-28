@@ -309,7 +309,7 @@ public:
   }
   /**
    * Get passive buffer timeout
-   * \returns the passive buffer tiemout
+   * \returns the passive buffer timeout
    */
   Time GetPassiveBufferTimeout () const
   {

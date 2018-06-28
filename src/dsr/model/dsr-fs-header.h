@@ -148,7 +148,7 @@ public:
    */
   uint16_t GetPayloadLength () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -297,7 +297,7 @@ public:
    */
   virtual ~DsrRoutingHeader ();
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */

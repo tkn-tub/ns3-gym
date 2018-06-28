@@ -414,7 +414,7 @@ public:
   /**
    * CSMA-CA algorithm calls back the MAC after executing channel assessment.
    *
-   * \param macState indicate BUSY oder IDLE channel condition
+   * \param macState indicate BUSY or IDLE channel condition
    */
   void SetLrWpanMacState (LrWpanMacState macState);
 

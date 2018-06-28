@@ -242,7 +242,7 @@ private:
   PeerManagementProtocol (const PeerManagementProtocol &);
 
   /**
-   * Initiate link functon
+   * Initiate link function
    *
    * \param interface the interface to use
    * \param peerAddress the peer address
@@ -288,7 +288,7 @@ private:
   void NotifyLinkClose (Mac48Address peerMp, Mac48Address peerIface, Mac48Address myIface, uint32_t interface);
 private:
   PeerManagementProtocolMacMap m_plugins; ///< plugins
-  Mac48Address m_address; ///< addresss
+  Mac48Address m_address; ///< address
   Ptr<IeMeshId> m_meshId; ///< mesh ID
 
   uint16_t m_lastAssocId; ///< last associated ID

@@ -81,7 +81,7 @@ int main (int argc, char** argv)
   ipv6.SetBase (Ipv6Address ("2001:2::"), Ipv6Prefix (64));
   Ipv6InterfaceContainer deviceInterfaces;
   deviceInterfaces = ipv6.Assign (devices);
-  // check if adresses are assigned
+  // check if addresses are assigned
   //std::cout<< deviceInterfaces.GetAddress(0,1)<<std::endl;
   //std::cout<< deviceInterfaces.GetAddress(1,1)<<std::endl;
 

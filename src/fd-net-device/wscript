@@ -6,7 +6,7 @@ from waflib import Options
 
 def options(opt):
     opt.add_option('--force-planetlab',
-                   help=('Forces compilation of PlanetLab even if not suported by the local system'),
+                   help=('Forces compilation of PlanetLab even if not supported by the local system'),
                    dest='force_planetlab', default=False, action="store_true")
 
 def configure(conf):

@@ -51,7 +51,7 @@
 //     So for Linux systems, make sure to configure:
 //     # echo 1 > /proc/sys/net/ipv4/ip_forward
 //
-//     Also enable natting so the ICMP replys from the remote host can reach 
+//     Also enable natting so the ICMP replies from the remote host can reach 
 //     back the TAP. 
 //     - TAP-network-address is the same as 'tapNetwork'
 //     - TAP-network-mask is the same as 'tapMask'

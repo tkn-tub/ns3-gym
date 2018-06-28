@@ -96,7 +96,7 @@ public:
   uint16_t GetPeerPort ();
 
   /**
-   * \brief Set the peer informations (address and port).
+   * \brief Set the peer information (address and port).
    * \param addr peer address
    * \param port peer port
    */

@@ -58,7 +58,7 @@ public:
   void SetOriginatorAddress (Mac48Address originator_address);
   /**
    * Set destination sequence number value
-   * \param dest_seq_number the destiantion sequence number
+   * \param dest_seq_number the destination sequence number
    */
   void SetDestSeqNumber (uint32_t dest_seq_number);
   /**
@@ -89,7 +89,7 @@ public:
   Mac48Address GetOriginatorAddress ();
   /**
    * Get destination sequence number value
-   * \returns the destiantion sequence number
+   * \returns the destination sequence number
    */
   uint32_t GetDestSeqNumber ();
   /**
@@ -113,7 +113,7 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  uint8_t m_flags; ///< falgs
+  uint8_t m_flags; ///< flags
   uint8_t m_hopcount; ///< hop count
   uint8_t m_ttl; ///< TTL
   Mac48Address m_originatorAddress; ///< originator address

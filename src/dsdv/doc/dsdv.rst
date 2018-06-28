@@ -31,7 +31,7 @@ Each node uses 2 mechanisms to send out the DSDV updates. They are,
 2. Trigger Updates
     Trigger Updates are small updates in-between the periodic updates. These updates are sent out whenever a node
     receives a DSDV packet that caused a change in its routing table. The original paper did not clearly mention
-    when for what change in the table should a DSDV update be sent out. The current implemntation sends out an update
+    when for what change in the table should a DSDV update be sent out. The current implementation sends out an update
     irrespective of the change in the routing table.
 
 The updates are accepted based on the metric for a particular node. The first factor determinig the acceptance of

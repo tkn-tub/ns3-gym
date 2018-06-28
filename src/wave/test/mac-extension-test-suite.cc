@@ -347,7 +347,7 @@ private:
    */
   bool Receive (Ptr<NetDevice> dev, Ptr<const Packet> pkt, uint16_t mode, const Address &sender);
   /**
-   * Receive VSA functon
+   * Receive VSA function
    * \param pkt the packet
    * \param address the address
    * \returns true if successful

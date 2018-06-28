@@ -229,24 +229,24 @@ private:
   virtual bool GetTcpNoDelay (void) const = 0;
 
   /**
-   * \brief Set the timout for persistent connection
+   * \brief Set the timeout for persistent connection
    *
-   * When the timout expires, send 1-byte data to probe for the window
+   * When the timeout expires, send 1-byte data to probe for the window
    * size at the receiver when the local knowledge tells that the
    * receiver has zero window size
    *
-   * \param timeout the persistent timout
+   * \param timeout the persistent timeout
    */
   virtual void SetPersistTimeout (Time timeout) = 0;
 
   /**
-   * \brief Get the timout for persistent connection
+   * \brief Get the timeout for persistent connection
    *
-   * When the timout expires, send 1-byte data to probe for the window
+   * When the timeout expires, send 1-byte data to probe for the window
    * size at the receiver when the local knowledge tells that the
    * receiver has zero window size
    *
-   * \returns the persistent timout
+   * \returns the persistent timeout
    */
   virtual Time GetPersistTimeout (void) const = 0;
 

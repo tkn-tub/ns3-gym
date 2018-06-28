@@ -156,8 +156,8 @@ public:
     return tstamp;
   }
   /**
-   * Set inserted tiem stamp function
-   * \param time tje inserted timestamp
+   * Set inserted time stamp function
+   * \param time the inserted timestamp
    */
   void SetInsertedTimeStamp (Time time)
   {

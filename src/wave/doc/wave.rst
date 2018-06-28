@@ -133,7 +133,7 @@ of an OcbWifiMac.
 MAC extension layer
 ###################
 
-Although 1609.4 is still in the MAC layer, the implemention 
+Although 1609.4 is still in the MAC layer, the implementation 
 approach for |ns3| does not do much modification in the
 source code of the wifi module. Instead, if some feature is related 
 to wifi MAC classes, then a relevant subclass is defined; if some 
@@ -146,7 +146,7 @@ from ``ns3::NetDeivce``, composed of the objects of
 ``ns3::ChannelCoordinator`` and ``ns3::VsaManager`` 
 classes to provide the features described in 1609.4 while still 
 containing the objects of ``ns3::OcbWifiMac`` and ``ns3::WifiPhy`` 
-classes.  Morever, ``ns3::OcbWifiMac`` class is further extended with 
+classes.  Moreover, ``ns3::OcbWifiMac`` class is further extended with 
 support for IEEE 1609.4 associating with ``ns3::HigherLayerTxVectorTag`` 
 and ``ns3::WaveMacLow``. The main work of the WaveNetDevice is to create 
 objects, configure, check arguments and provide new APIs for multiple 
@@ -186,7 +186,7 @@ channel operation as follows:
 4. SetChannelManager and GetChannelManager
 
   class ``ns3::ChannelManager`` is a WAVE channel set which contains 
-  valid WAVE channel numbers. Morever, the tx information in this channel 
+  valid WAVE channel numbers. Moreover, the tx information in this channel 
   set such as data rate and tx power level is used for transmitting management frames.
 
 5. SetVsaManager and GetVsaManager
@@ -280,7 +280,7 @@ channel number, priority,
 data rate and tx power level (expiration time is not supported now). 
 For IP datagrams, the Send () method is a virtual method from ``ns3::NetDevice`` that implements the service primitive MA-UNITDATA.
 Users should insert QoS tags into packets themselves if they want to use QoS. 
-Morever, a tx profile should be registered
+Moreover, a tx profile should be registered
 before the Send method is called for transmit; the profile contains SCH number, data rate, power level and adaptable mode. 
 For management information, StartVsa method implements the service primitive 
 MLMEX-VSA. The tx information is already configured 
@@ -382,7 +382,7 @@ routing protocols.
 The current module provides two helpers to create two kinds of NetDevice. 
 The first is an object of WifiNetDevice (802.11p device) which mainly 
 contains class ``ns3::OcbWifiMac`` to enable OCB mode. The second 
-is an object of WaveNetDevice (WAVE device) which contains addtional 
+is an object of WaveNetDevice (WAVE device) which contains additional 
 classes ``ns3::ChannelScheduler``, ``ns3::ChannelManager``, 
 ``ns3::ChannelCoordinator`` and ``ns3::VsaManager`` to support 
 multi-channel operation mode.  The reason to provide a special 802.11p 
@@ -475,7 +475,7 @@ is described as below:
       
 From the above diagram, WaveHelper is not the subclass of WifiHelper and should only 
 use QosWaveMacHelper because WAVE MAC layer is based on QoS mechanism. But 
-the WaveHelper is recommened if there is a need for multiple channel operation.
+the WaveHelper is recommended if there is a need for multiple channel operation.
 Usage is as follows:
 
 ::
@@ -854,7 +854,7 @@ with new assignment mechanisms.  Usage is as follows:
 ::
 
     WaveHelper helper = WaveHelper::Default ();
-    helper.helper.CreateMacForChannel (ChannelManager::GetWaveChannels ());    // create all 7 MAC entites for WAVE
+    helper.helper.CreateMacForChannel (ChannelManager::GetWaveChannels ());    // create all 7 MAC entities for WAVE
     helper.CreatePhys (2);        // or other number which should be less than 7
     helper.SetChannelScheduler ("ns3::AnotherScheduler");    // The AnotherScheduler should be implemented by users.
     helper.SetRemoteStationManager ("ns3::ConstantRateWifiManager");    // or other  rate control algorithms
@@ -918,7 +918,7 @@ The ``ns3::VanetRoutingExample`` example was studied using mobility trace
 files in the Raleigh, NC USA area generated using Simulation for Urban 
 Mobility (SUMO).  Three environments were studied:  a) an open highway
 scenario, b) a residential neighborhood scenario, and c) and urban downtown
-scenario.  For each environment, a contant number of 50-750 vehicles was
+scenario.  For each environment, a constant number of 50-750 vehicles was
 maintained for 2000 simulation seconds (> 30 minutes).  The mobility trace
 file were played back using ``ns3::Ns2MobilityHelper``.  All vehicular nodes
 transmitted a 200-byte BSM at 10 Hz and the PDR was determined for 

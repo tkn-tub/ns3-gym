@@ -86,7 +86,7 @@ TcpHighSpeed::Fork (void)
  * For instance, when it is equal to 2, we need to increase the window by the
  * quantity 2/w. But, this means that one segment acked is equivalent (from
  * the point of view of incrementing cWnd) to two segments acked in NewReno
- * (1/w + 1/w). That a coefficent is, in other word, the weight of each segment
+ * (1/w + 1/w). That a coefficient is, in other word, the weight of each segment
  * acked. More weight, less ACK are necessary to increment cWnd, which is
  * exactly the Highspeed principle.
  *

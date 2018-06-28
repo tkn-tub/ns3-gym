@@ -252,7 +252,7 @@ class IterableIPShell:
 
   def _getHistory(self):
     """!
-    Get's the command string of the current history level.
+    Gets the command string of the current history level.
     
     @param self this object
     @return: Historic command string.
@@ -274,7 +274,7 @@ class IterableIPShell:
 
   def complete(self, line):
     """!
-    Returns an auto completed line and/or posibilities for completion.
+    Returns an auto completed line and/or possibilities for completion.
     
     @param line: Given line so far.
     @return: Line completed as for as possible, and possible further completions.
@@ -513,7 +513,7 @@ class ConsoleView(gtk.TextView):
   def onKeyPress(self, widget, event):
     """!
     Key press callback used for correcting behavior for console-like 
-    interfaces. For example 'home' should go to prompt, not to begining of
+    interfaces. For example 'home' should go to prompt, not to beginning of
     line.
     
     @param widget: Widget that key press accored in.
@@ -597,9 +597,9 @@ class IPythonView(ConsoleView, IterableIPShell):
 
   def raw_input(self, prompt=''):
     """!
-    Custom raw_input() replacement. Get's current line from console buffer.
+    Custom raw_input() replacement. Gets current line from console buffer.
     
-    @param prompt: Prompt to print. Here for compatability as replacement.
+    @param prompt: Prompt to print. Here for compatibility as replacement.
     @return The current command line text.
     """
     if self.interrupt:

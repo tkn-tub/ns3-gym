@@ -31,7 +31,7 @@ LrWpanMacHeader::LrWpanMacHeader ()
   SetType (LRWPAN_MAC_DATA);     // Assume Data frame
   SetSecDisable ();              // Assume there is No Aux Sec but
   SetNoFrmPend ();               // No Frame Pending
-  SetNoAckReq ();                // No Ack Frame will be expected from recepient
+  SetNoAckReq ();                // No Ack Frame will be expected from recipient
   SetNoPanIdComp ();             // No PAN Id Compression since no addresses
   SetFrmCtrlRes (0);             // Initialize the 3 reserved bits to 0
   SetDstAddrMode (NOADDR);       // Assume there will be no src and dst address
@@ -47,7 +47,7 @@ LrWpanMacHeader::LrWpanMacHeader (enum LrWpanMacType wpanMacType,
   SetSeqNum (seqNum);
   SetSecDisable ();              // Assume there is No Aux Sec but
   SetNoFrmPend ();               // No Frame Pending
-  SetNoAckReq ();                // No Ack Frame will be expected from recepient
+  SetNoAckReq ();                // No Ack Frame will be expected from recipient
   SetNoPanIdComp ();             // No PAN Id Compression since no addresses
   SetFrmCtrlRes (0);             // Initialize the 3 reserved bits to 0
   SetDstAddrMode (NOADDR);       // Assume there will be no src and dst address

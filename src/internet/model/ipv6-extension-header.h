@@ -87,7 +87,7 @@ public:
   uint16_t GetLength () const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -246,7 +246,7 @@ public:
   virtual ~Ipv6ExtensionHopByHopHeader ();
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -303,7 +303,7 @@ public:
   virtual ~Ipv6ExtensionDestinationHeader ();
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -396,7 +396,7 @@ public:
   uint32_t GetIdentification () const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -488,7 +488,7 @@ public:
   uint8_t GetSegmentsLeft () const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -588,7 +588,7 @@ public:
   Ipv6Address GetRouterAddress (uint8_t index) const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -656,7 +656,7 @@ public:
   virtual ~Ipv6ExtensionESPHeader ();
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -713,7 +713,7 @@ public:
   virtual ~Ipv6ExtensionAHHeader ();
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */

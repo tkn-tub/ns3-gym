@@ -219,7 +219,7 @@ public:
 
   /**
    * \brief Increment the number of bytes transmitted
-   * \param txBytes the number of addtional bytes transmitted
+   * \param txBytes the number of additional bytes transmitted
    * \return none
    */
   void IncTxBytes (uint32_t txBytes);

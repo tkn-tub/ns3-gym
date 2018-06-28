@@ -247,7 +247,7 @@ public:
   Ipv6Address GetDestinationAddress (void) const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */

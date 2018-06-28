@@ -710,7 +710,7 @@ RedQueueDisc::DropEarly (Ptr<QueueDiscItem> item, uint32_t qSize)
   return 0; // no drop/mark
 }
 
-// Returns a probability using these function parameters for the DropEarly funtion
+// Returns a probability using these function parameters for the DropEarly function
 double
 RedQueueDisc::CalculatePNew (void)
 {
@@ -756,7 +756,7 @@ RedQueueDisc::CalculatePNew (void)
   return p;
 }
 
-// Returns a probability using these function parameters for the DropEarly funtion
+// Returns a probability using these function parameters for the DropEarly function
 double 
 RedQueueDisc::ModifyP (double p, uint32_t size)
 {

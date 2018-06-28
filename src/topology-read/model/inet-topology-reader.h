@@ -36,7 +36,7 @@ namespace ns3 {
  * \brief Topology file reader (Inet-format type).
  *
  * This class takes an input file in Inet format and extracts all
- * the informations needed to build the topology
+ * the information needed to build the topology
  * (i.e.number of nodes, links and links structure).
  * It have been tested with Inet 3.0
  * http://topology.eecs.umich.edu/inet/
@@ -62,7 +62,7 @@ public:
    * This method opens an input stream and reads the Inet-format file.
    * From the first line it takes the total number of nodes and links.
    * Then discards a number of rows equals to total nodes (containing
-   * useless geographical informations).
+   * useless geographical information).
    * Then reads until the end of the file (total links number rows) and saves
    * the structure of every single link in the topology.
    *

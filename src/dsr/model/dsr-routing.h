@@ -729,9 +729,9 @@ private:
 
   DsrErrorBuffer m_errorBuffer;                         ///< The error buffer to save the error messages
 
-  uint32_t  m_maxMaintainLen;                           ///< Max # of entries for maintainance buffer
+  uint32_t  m_maxMaintainLen;                           ///< Max # of entries for maintenance buffer
 
-  Time     m_maxMaintainTime;                           ///< Time out for maintainance buffer
+  Time     m_maxMaintainTime;                           ///< Time out for maintenance buffer
 
   uint32_t m_maxCacheLen;                               ///< Max # of cache entries for route cache
 

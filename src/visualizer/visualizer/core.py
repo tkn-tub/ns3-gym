@@ -676,7 +676,7 @@ class ShowTransmissionsMode(object):
     ## @var NONE
     #  none
     ## @var SELECTED
-    #  seleced
+    #  selected
     ## @var __slots__ 
     #  enumeration
     __slots__ = []

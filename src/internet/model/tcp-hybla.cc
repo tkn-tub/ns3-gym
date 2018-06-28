@@ -143,7 +143,7 @@ TcpHybla::CongestionAvoidance (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 
   if (m_cWndCnt >= 1.0)
     {
-      // double to int truncates everytime.
+      // double to int truncates every time.
       uint32_t inc = static_cast<uint32_t> (m_cWndCnt);
       m_cWndCnt -= inc;
 

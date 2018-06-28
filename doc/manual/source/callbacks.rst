@@ -446,7 +446,7 @@ does precisely that.  In this case, when ``two ()`` is invoked::
 
   int result = two (1.0);
 
-will result in a call tothe ``CbTwo`` member function (method) on the object 
+will result in a call to the ``CbTwo`` member function (method) on the object 
 pointed to by ``&cb``.   
 
 Building Null Callbacks

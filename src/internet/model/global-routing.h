@@ -43,7 +43,7 @@
  * If the topology changes during the simulation, by default, routing
  * will not adjust.  There are two ways to make it adjust.
  * - Set the attribute Ipv4GlobalRouting::RespondToInterfaceEvents to true 
- * - Manually call the sequence of GlobalRouteManager methods to delte global
+ * - Manually call the sequence of GlobalRouteManager methods to delete global
  *   routes, build global routing database, and initialize routes.
  *   There is a helper method that encapsulates this 
  *   (Ipv4GlobalRoutingHelper::RecomputeRoutingTables())

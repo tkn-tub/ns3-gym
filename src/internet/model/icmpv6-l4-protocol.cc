@@ -366,7 +366,7 @@ void Icmpv6L4Protocol::HandleRA (Ptr<Packet> packet, Ipv6Address const &src, Ipv
             }
           break;
         default:
-          /* unknow option, quit */
+          /* unknown option, quit */
           next = false;
         }
     }
@@ -1436,7 +1436,7 @@ void Icmpv6L4Protocol::FunctionDadTimeout (Ptr<Icmpv6L4Protocol> icmpv6, Ipv6Int
       if (!ipv6->IsForwarding (ipv6->GetInterfaceForDevice (interface->GetDevice ())) && addr.IsLinkLocal ())
         {
           /* \todo Add random delays before sending RS
-           * because all nodes start at the same time, there will be many of RS arround 1 second of simulation time
+           * because all nodes start at the same time, there will be many of RS around 1 second of simulation time
            */
           Simulator::Schedule (Seconds (0.0), &Icmpv6L4Protocol::SendRS, PeekPointer (icmpv6), ifaddr.GetAddress (), Ipv6Address::GetAllRoutersMulticast (), interface->GetDevice ()->GetAddress ());
         }

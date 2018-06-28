@@ -36,7 +36,7 @@ namespace ns3 {
  * \brief Congestion control abstract class
  *
  * The design is inspired on what Linux v4.0 does (but it has been
- * in place since years). The congestion control is splitted from the main
+ * in place since years). The congestion control is split from the main
  * socket code, and it is a pluggable component. An interface has been defined;
  * variables are maintained in the TcpSocketState class, while subclasses of
  * TcpCongestionOps operate over an instance of that class.
@@ -140,7 +140,7 @@ public:
   }
 
   /**
-   * \brief Trigger events/calculations on occurance congestion window event
+   * \brief Trigger events/calculations on occurrence congestion window event
    *
    * This function mimics the function cwnd_event in Linux.
    * The function is called in case of congestion window events.

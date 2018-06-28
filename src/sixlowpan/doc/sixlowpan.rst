@@ -46,7 +46,7 @@ with PointToPointNedevice, CsmaNetDevice and LrWpanNetDevice).
 
 For this reason, the module implements a virtual NetDevice, and all the calls are passed
 without modifications to the underlying NetDevice. The only important difference is in
-GetMtu behaviour. It will always return *at least* 1280 bytes, as is the minumum IPv6 MTU.
+GetMtu behaviour. It will always return *at least* 1280 bytes, as is the minimum IPv6 MTU.
 
 The module does provide some attributes and some tracesources.
 The attributes are:

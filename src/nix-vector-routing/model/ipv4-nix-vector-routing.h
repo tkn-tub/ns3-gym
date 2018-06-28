@@ -147,7 +147,7 @@ private:
   /**
    * Iterates through the node list and finds the one
    * corresponding to the given Ipv4Address
-   * \param dest detination node IP
+   * \param dest destination node IP
    * \return The node with the specified IP.
    */
   Ptr<Node> GetNodeByIp (Ipv4Address dest);

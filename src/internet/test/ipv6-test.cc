@@ -153,7 +153,7 @@ Ipv6L3ProtocolTestCase::DoRun ()
   num = interface->GetNAddresses ();
   NS_TEST_ASSERT_MSG_EQ (num, 1, "Number of addresses should be 1??");
 
-  /* Test Ipv6Address::RemoveAddress(index, addresss) */
+  /* Test Ipv6Address::RemoveAddress(index, address) */
   index = ipv6->GetInterfaceForAddress ("2001:ffff:5678:9001::2");
   bool result = ipv6->RemoveAddress (index, Ipv6Address 
                                      ("2001:ffff:5678:9001::2"));

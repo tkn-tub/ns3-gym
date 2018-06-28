@@ -123,7 +123,7 @@ TunAlloc (int iftype, char *if_name)
 
   /* passing type param */
   ret = send (control_fd, &iftype, sizeof(iftype), 0);
-  ABORT_IF (ret != sizeof(iftype), "Could not send paramater to Vsys control socket", 0);
+  ABORT_IF (ret != sizeof(iftype), "Could not send parameter to Vsys control socket", 0);
 
   return ReceiveVifFd (control_fd, if_name);
 

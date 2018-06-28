@@ -114,7 +114,7 @@ PrrRecoveryTest::DoRun ()
   recovery->EnterRecovery (m_state, 3, m_unAckDataCount, 0);
 
   NS_TEST_ASSERT_MSG_GT_OR_EQ (m_state->m_cWnd.Get (), m_cWnd + m_segmentSize,
-                               "There should be atleast one transmission on entering recovery");
+                               "There should be at least one transmission on entering recovery");
 
   for (uint32_t iterator = 0; iterator < m_bytesSent; )
     {
@@ -130,12 +130,12 @@ PrrRecoveryTest::DoRun ()
   if (m_bytesInFlight > m_state->m_ssThresh)
     {
       NS_TEST_ASSERT_MSG_LT_OR_EQ (m_state->m_cWnd.Get (), m_cWnd,
-                                   "Updated cwnd should be less than or equal to the exising cwnd");
+                                   "Updated cwnd should be less than or equal to the existing cwnd");
     }
   else
     {
       NS_TEST_ASSERT_MSG_GT_OR_EQ (m_state->m_cWnd.Get (), m_cWnd,
-                                   "Updated cwnd should be greater than or equal to the exising cwnd");
+                                   "Updated cwnd should be greater than or equal to the existing cwnd");
     }
 }
 

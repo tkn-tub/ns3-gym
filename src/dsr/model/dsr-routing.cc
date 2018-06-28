@@ -1850,7 +1850,7 @@ DsrRouting::SendPacketFromBuffer (DsrOptionSRHeader const &sourceRoute, Ipv4Addr
         }
     }
   /*
-   * Here we try to find data packet from send buffer, if packet with this destiantion found, send it out
+   * Here we try to find data packet from send buffer, if packet with this destination found, send it out
    */
   else if (m_errorBuffer.Find (destination))
     {
@@ -2032,7 +2032,7 @@ DsrRouting::CallCancelPacketTimer (uint16_t ackId, Ipv4Header const& ipv4Header,
   Ipv4Address sender = ipv4Header.GetDestination ();
   Ipv4Address receiver = ipv4Header.GetSource ();
   /*
-   * Create a packet to fill maintenance buffer, not used to compare with maintainance entry
+   * Create a packet to fill maintenance buffer, not used to compare with maintenance entry
    * The reason is ack header doesn't have the original packet copy
    */
   Ptr<Packet> mainP = Create<Packet> ();
@@ -3478,7 +3478,7 @@ DsrRouting::Receive (Ptr<Packet> p,
       rerrUnsupportHeader.SetSalvage (salvage);           // Set the value about whether to salvage a packet or not
 
       /*
-       * The unknow option error is not supported currently in this implementation, and it's also not likely to
+       * The unknown option error is not supported currently in this implementation, and it's also not likely to
        * happen in simulations
        */
 //            SendError (rerrUnsupportHeader, 0, protocol); // Send the error packet

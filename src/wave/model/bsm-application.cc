@@ -125,9 +125,9 @@ void BsmApplication::StartApplication () // Called at time specified by Start
   // 2) Transmit delay requirements - The US
   // minimum performance requirements for V2V
   // BSM transmission expect a random delay of
-  // +/- 5 ms, to avoid simultanous transmissions
+  // +/- 5 ms, to avoid simultaneous transmissions
   // by all vehicles congesting the channel.  Thus,
-  // we need to adjust the start trasmission time by
+  // we need to adjust the start transmission time by
   // some value, t_tx_delay.
   // Therefore, the actual transmit time should be:
   // t_start = t_time + t_drift + t_tx_delay

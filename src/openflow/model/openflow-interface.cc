@@ -898,7 +898,7 @@ ExecuteActions (Ptr<OpenFlowSwitchNetDevice> swtch, uint64_t packet_uid, ofpbuf*
    * freeing the original buffer is wasteful.  So the following code is
    * slightly obscure just to avoid that. */
   int prev_port;
-  size_t max_len = 0;     // Initialze to make compiler happy
+  size_t max_len = 0;     // Initialize to make compiler happy
   uint16_t in_port = key->flow.in_port; // ntohs(key->flow.in_port);
   uint8_t *p = (uint8_t *)actions;
 

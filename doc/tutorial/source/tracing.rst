@@ -720,7 +720,7 @@ you to the documentation for the latest stable release of |ns3|.  If
 you select the "API Documentation" link, you will be taken to the
 |ns3| API documentation page.
 
-In the sidebar you should see a hierachy that begins
+In the sidebar you should see a hierarchy that begins
 
 *  ns-3
 
@@ -1216,7 +1216,7 @@ return type for a ``TracedValue`` callback function is always
 The ``.AddTraceSource`` in the ``GetTypeId`` method provides the
 "hooks" used for connecting the trace source to the outside world
 through the Config system.  We already discussed the first three
-agruments to ``AddTraceSource``: the Attribute name for the Config
+arguments to ``AddTraceSource``: the Attribute name for the Config
 system, a help string, and the address of the TracedValue class data
 member.
 
@@ -1511,7 +1511,7 @@ models, you probably want to understand this section.
 
 The most common way to start pumping events is to start an
 ``Application``.  This is done as the result of the following
-(hopefully) familar lines of an |ns3| script::
+(hopefully) familiar lines of an |ns3| script::
 
   ApplicationContainer apps = ...
   apps.Start (Seconds (1.0));

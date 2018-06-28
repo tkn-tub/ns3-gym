@@ -81,7 +81,7 @@ private:
 
   /// Create nodes function
   void CreateNodes ();
-  /// Creat devices function
+  /// Create devices function
   void CreateDevices ();
   /// Install application function
   void InstallApplications ();

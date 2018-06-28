@@ -189,7 +189,7 @@ TcpNewReno::IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
    * slow start we receive a cumulative ACK, it counts only for 1 SMSS of
    * increase, wasting the others.
    *
-   * // Uncorrect assert, I am sorry
+   * // Incorrect assert, I am sorry
    * NS_ASSERT (segmentsAcked == 0);
    */
 }

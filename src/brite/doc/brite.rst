@@ -46,7 +46,7 @@ Design
 
 To generate the BRITE topology, ns-3 helpers call out to the external BRITE library, 
 and using a standard BRITE configuration file, the BRITE code builds a graph with nodes 
-and edges according to this configuration file. Please see the BRITE documenation
+and edges according to this configuration file. Please see the BRITE documentation
 or the example configuration files in src/brite/examples/conf_files to get a better
 grasp of BRITE configuration options. The graph built by BRITE is returned to ns-3, 
 and a ns-3 implementation of the graph is built.  Leaf nodes for each AS are available

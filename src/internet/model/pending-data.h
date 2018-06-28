@@ -179,6 +179,6 @@ public:
   uint32_t responseSize; //!< Size of response requested
 };
 
-} //namepsace ns3
+} //namespace ns3
 
 #endif /* PENDING_DATA_H */

@@ -65,7 +65,7 @@ PacketQueue::Enqueue (QueueEntry & entry)
     }
   numPacketswithdst = GetCountForPacketsWithDst (entry.GetIpv4Header ().GetDestination ());
   NS_LOG_DEBUG ("Number of packets with this destination: " << numPacketswithdst);
-  /** For Brock Paper comparision*/
+  /** For Brock Paper comparison*/
   if (numPacketswithdst >= m_maxLenPerDst || m_queue.size () >= m_maxLen)
     {
       NS_LOG_DEBUG ("Max packets reached for this destination. Not queuing any further packets");

@@ -42,7 +42,7 @@ class TcpSocketState;
  * \brief recovery abstract class
  *
  * The design is inspired by the TcpCongestionOps class in ns-3. The fast
- * recovery is splitted from the main socket code, and it is a pluggable
+ * recovery is split from the main socket code, and it is a pluggable
  * component. Subclasses of TcpRecoveryOps should modify TcpSocketState variables
  * upon three condition:
  *

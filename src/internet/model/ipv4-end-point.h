@@ -87,7 +87,7 @@ public:
   uint16_t GetPeerPort (void);
 
   /**
-   * \brief Set the peer informations (address and port).
+   * \brief Set the peer information (address and port).
    * \param address peer address
    * \param port peer port
    */

@@ -46,7 +46,7 @@ public:
   /**
    * \brief Set an attribute for the to-be-created FlowMonitor object
    * \param n1 attribute name
-   * \param v1 attibute value
+   * \param v1 attribute value
    */
   void SetMonitorAttribute (std::string n1, const AttributeValue &v1);
 

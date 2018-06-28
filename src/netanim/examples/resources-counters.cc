@@ -188,7 +188,7 @@ int main (int argc, char *argv[])
 
   Simulator::Schedule (Seconds (0.1), modify);
   
-  // Set up the acutal simulation
+  // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Run ();

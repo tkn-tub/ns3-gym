@@ -346,7 +346,7 @@ public:
    * \brief Set the entire sent list as lost (typically after an RTO)
    *
    * Used to set all the sent list as lost, so the bytes in flight is not counting
-   * them as in flight, but we will continue to use SACK informations for
+   * them as in flight, but we will continue to use SACK information for
    * recovering the timeout.
    *
    * Moreover, reset the retransmit flag for every item.
@@ -634,6 +634,6 @@ std::ostream & operator<< (std::ostream & os, TcpTxBuffer const & tcpTxBuf);
  */
 std::ostream & operator<< (std::ostream & os, TcpTxItem const & item);
 
-} // namepsace ns3
+} // namespace ns3
 
 #endif /* TCP_TX_BUFFER_H */

@@ -242,7 +242,7 @@ Bugs fixed
 - Bug 2534 - traffic-control: ARED and PIE examples should return 1 upon exit
 - Bug 2535 - utils: memory leak in bench-simulator.cc
 - Bug 2536 - wimax: fixed dead assignment and potential memory leak in wimax
-- Bug 2537 - traffic-control: Fix dead assigment on CoDel::DoDequeue
+- Bug 2537 - traffic-control: Fix dead assignment on CoDel::DoDequeue
 - Bug 2538 - tap-bridge: fixed dead assignment on tap-bridge
 - Bug 2540 - mesh: fixed dead assignment on mesh/ie-dot11s-perr
 - Bug 2541 - wifi: preamble not assigned correctly
@@ -527,7 +527,7 @@ New user-visible features
      error models
   3) The WiFi helper API for the WifiMac sublayer, and the configuration
      of HT modes and parameters, has been simplified
-  4) Better support for backward compatibilty with legacy modes
+  4) Better support for backward compatibility with legacy modes
 
 - (wifi) 802.11g was made backward compatible with 802.11b networks
 
@@ -1444,7 +1444,7 @@ New user-visible features
 Bugs fixed
 ----------
 - bug 1256 - Unnecessary SND.NXT advance, missing ACK for Out of Order segments
-- bug 1318 - Ipv6L3Protocol::LocalDeliver can get stuck in an infinte loop
+- bug 1318 - Ipv6L3Protocol::LocalDeliver can get stuck in an infinite loop
 - bug 1409 - Add an attribute "SystemId" to configure the ID for MPI
 - bug 1421 - Frequency dependent propagation loss models need uniform Frequency / Lambda attribute
 - bug 1434 - DSR throughput not comparable to other protocols for manet example
@@ -1457,7 +1457,7 @@ Bugs fixed
 - bug 1563 - Reduce valgrind test scope
 - bug 1564 - Packet meta data isn't shown in dumbbell-animation.xml
 - bug 1566 - WiFi SNR tag improvements
-- bug 1568 - Deserialized addresses are implicity marked as Mac48Address
+- bug 1568 - Deserialized addresses are implicitly marked as Mac48Address
 - bug 1569 - droptail_vs_red example doesn't run
 - bug 1570 - Valgrind errors in new test examples
 - bug 1574 - Node color overwritten, by mobility updates in netanim
@@ -2022,7 +2022,7 @@ since ns-3.10, in many cases referencing the Bugzilla bug number.
    - bug 1047 - Multicast routes on nodes with >16 interfaces
    - bug 1048 - suggested MatrixPropagationLossModel::SetLoss() API change
    - bug 1049 - Issues with OLSR HNA messages sent by multiple gateways
-   - bug 1052 - olsr::RoutingProtocol::LinkTupleUpdated incorrect detection of asymetric link with multiple interface nodes
+   - bug 1052 - olsr::RoutingProtocol::LinkTupleUpdated incorrect detection of asymmetric link with multiple interface nodes
    - bug 1054 - ipv6 InternetStackHelper EnablePcapIpv6All() broken
    - bug 1056 - CSMA: padding not handled correctly for LLC encapsulation
    - bug 1058 - InternetStackHelper pitfall: calling Install before adding routing protocols
@@ -2508,7 +2508,7 @@ many cases referencing the Bugzilla bug number
    - bug 860 - waf sometimes dies while executing ns3header or gen_ns3_module_header tasks in case of 
                parallel jobs
    - bug 862 - NotifyInterfaceUp() Adds network route even when netmask is /32
-   - bug 863 - Wrong Scalar arithmetics
+   - bug 863 - Wrong Scalar arithmetic
    - bug 864 - Invalid return value in UdpSocketImpl::Send and Ipv4RawSocketImpl::Send
    - bug 865 - Ipv4RawSocketImpl::RecvFrom does not return from address all the time.
    - bug 866 - WiMAX mobility models not aggregated to Node
@@ -2520,7 +2520,7 @@ many cases referencing the Bugzilla bug number
    - bug 877 - python bindings broken with multiple inheritance ?
    - bug 880 - Node sending a packet to itself via 127.0.0.1 aborts
    - bug 885 - Error in Ascii tracing in Python examples
-   - bug 888 - Writing ascii trace to addtional tests fails
+   - bug 888 - Writing ascii trace to additional tests fails
    - bug 891 - WiMAX device helper does not include propagation loss model by default 
    - bug 894 - ./waf --run error message upon segfault
    - bug 895 - SimpleOfdmWimaxPhy SNR computation
@@ -2624,7 +2624,7 @@ many cases referencing the Bugzilla bug number
    - bug 738 ReceiveErrorModel called too late
    - Fix NSC improper response to FIN
    - Fixed bug in serialization of PbbAddressBlock.
-   - Fix bug 780 (problem in RoutingTableComputation with asymetric links), 
+   - Fix bug 780 (problem in RoutingTableComputation with asymmetric links), 
      while adding debugging methods to OLSR.  
    - bug 759: Ipv6 uses wrong outgoing interface.
    - bug 770: IPv6 size calculation for unknown options is wrong.
@@ -2827,7 +2827,7 @@ New user-visible features
      and simulated networks.
 
   d) A new build option (ns-3-allinone) has been provided to make it easier for
-     users to download and bulid commonly used ns-3 configurations.
+     users to download and build commonly used ns-3 configurations.
 
   e) The ns-3 calendar queue scheduler has been ported to ns-3.
 
@@ -3082,7 +3082,7 @@ Release 3.0.12 (2008/04/07)
 attribute support to all in-tree models
     - Add a mid-level helper API to build simulation topologies 
 and perform simple ascii and pcap link-level tracing.
-    - Large amount of structural changes to accomodate the needs
+    - Large amount of structural changes to accommodate the needs
 of the upcoming python bindings
     - new rate control algorithm (RRAA) and a jakes propagation model
 in the 802.11 model (Federico Maguolo).

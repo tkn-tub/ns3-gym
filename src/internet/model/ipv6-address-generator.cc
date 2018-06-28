@@ -548,7 +548,7 @@ Ipv6AddressGeneratorImpl::AddAllocated (const Ipv6Address address)
       // couldn't have been extended to include this new address since the
       // code immediately above would have been executed and that next lower
       // block extended upward.  So we know it's safe to extend the current
-      // block down to includ the new address.
+      // block down to include the new address.
       //
       for (uint32_t j = 0; j < 16; j++)
         {

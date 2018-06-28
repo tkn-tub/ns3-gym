@@ -276,7 +276,7 @@ for every class
 * Documentation for any ``Trace`` sources defined by the class.
 * The memory footprint for each class.
 
-Doxygen operates by scaning the source code, looking for
+Doxygen operates by scanning the source code, looking for
 specially marked comments.  It also creates a cross reference,
 indicating *where* each file, class, method, and variable is used.
 
@@ -529,11 +529,11 @@ usage for |ns3|.
 
     /**
      *  \defgroup foo Foo protocol.
-     *  Implemenation of the Foo protocol.
+     *  Implementation of the Foo protocol.
      */
 
   The symbol ``foo`` is how other items can add themselves to this group.
-  The string following that will be the title for the group.  Any futher
+  The string following that will be the title for the group.  Any further
   text will be the detailed description for the group page.
 
 * Document each file, assigning it to the relevant group.  In a header file::

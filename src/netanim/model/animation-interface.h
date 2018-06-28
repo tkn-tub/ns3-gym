@@ -754,7 +754,7 @@ private:
    */
   void AddByteTag (uint64_t animUid, Ptr<const Packet> p);
   /**
-   * WriteN functon
+   * WriteN function
    * \param data the data t write
    * \param count the number of bytes to write
    * \param f the file to write to
@@ -995,7 +995,7 @@ private:
    */
   void WifiPhyTxDropTrace (std::string context, Ptr<const Packet> p);
   /**
-   * wifi Phy recieve drop trace function
+   * wifi Phy receive drop trace function
    * \param context the context
    * \param p the packet
    */
@@ -1234,7 +1234,7 @@ private:
    * Update position function
    * \param n the node
    * \param v the vector
-   * \returns the postition vector
+   * \returns the position vector
    */
   Vector UpdatePosition (Ptr <Node> n, Vector v);
   /**

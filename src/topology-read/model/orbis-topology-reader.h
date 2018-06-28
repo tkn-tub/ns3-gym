@@ -36,7 +36,7 @@ namespace ns3 {
  * \brief Topology file reader (Orbis-format type).
  *
  * This class takes an input file in Orbis format and extracts all
- * the informations needed to build the topology
+ * the information needed to build the topology
  * (i.e.number of nodes, links and links structure).
  * It have been tested with Orbis 0.70
  * http://www.sysnet.ucsd.edu/~pmahadevan/topo_research/topo.html

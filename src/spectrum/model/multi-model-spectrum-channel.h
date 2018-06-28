@@ -147,7 +147,7 @@ private:
   /**
    * This method checks if m_rxSpectrumModelInfoMap contains an entry
    * for the given TX SpectrumModel. If such entry exists, it returns
-   * an interator pointing to it. If not, it creates a new entry in
+   * an iterator pointing to it. If not, it creates a new entry in
    * m_txSpectrumMpodelInfoMap, and returns an iterator to it.
    *
    * @param txSpectrumModel The TX SpectrumModel  being considered
@@ -159,7 +159,7 @@ private:
   /**
    * Used internally to reschedule transmission after the propagation delay.
    *
-   * @param params The signal paramters.
+   * @param params The signal parameters.
    * @param receiver A pointer to the receiver SpectrumPhy.
    */
   virtual void StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver);

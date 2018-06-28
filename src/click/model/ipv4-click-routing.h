@@ -205,7 +205,7 @@ private:
   struct timeval GetTimevalFromNow () const;
 
   /**
-   * \brief This method has to be scheduled everytime Click calls SIMCLICK_SCHEDULE
+   * \brief This method has to be scheduled every time Click calls SIMCLICK_SCHEDULE
    */
   void RunClickEvent ();
 

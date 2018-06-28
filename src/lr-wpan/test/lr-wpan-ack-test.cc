@@ -184,7 +184,7 @@ LrWpanAckTestCase::DoRun (void)
   // immediately answers with a reply packet on reception of the request.
   // We expect the ACK of the request packet to always arrive at node 1 before
   // the reply packet sent by node 2.
-  // The same is repeated for extened addressing mode.
+  // The same is repeated for extended addressing mode.
 
   // Enable calculation of FCS in the trailers. Only necessary when interacting with real devices or wireshark.
   // GlobalValue::Bind ("ChecksumEnabled", BooleanValue (true));

@@ -38,7 +38,7 @@ consisting of two methods:  RouteOutput () and RouteInput ().  For packets
 traveling outbound from a host, the transport protocol will query Ipv4 for the
 Ipv4RoutingProtocol object interface, and will request a route via
 Ipv4RoutingProtocol::RouteOutput ().  A Ptr to Ipv4Route object is returned.
-This is analagous to a dst_cache entry in Linux. The Ipv4Route is carried down
+This is analogous to a dst_cache entry in Linux. The Ipv4Route is carried down
 to the Ipv4L3Protocol to avoid a second lookup there. However, some cases (e.g.
 Ipv4 raw sockets) will require a call to RouteOutput()
 directly from Ipv4L3Protocol.

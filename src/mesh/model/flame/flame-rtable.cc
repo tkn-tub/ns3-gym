@@ -41,7 +41,7 @@ FlameRtable::GetTypeId ()
     .SetGroupName ("Mesh")
     .AddConstructor<FlameRtable> ()
     .AddAttribute ( "Lifetime",
-                    "The lifetime of the routing enrty",
+                    "The lifetime of the routing entry",
                     TimeValue (Seconds (120)), MakeTimeAccessor (
                       &FlameRtable::m_lifetime),
                     MakeTimeChecker ()

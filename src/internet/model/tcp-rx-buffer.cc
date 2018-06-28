@@ -326,7 +326,7 @@ TcpRxBuffer::UpdateSackList (const SequenceNumber32 &head, const SequenceNumber3
       m_sackList.pop_back ();
     }
 
-  // Please note that, if a block b is discarded and then a block contiguos
+  // Please note that, if a block b is discarded and then a block contiguous
   // to b is received, only that new block (without the b part) is reported.
   // This is perfectly fine for the RFC point (a), given that we do not report any
   // overlapping blocks shortly after.
@@ -405,4 +405,4 @@ TcpRxBuffer::Extract (uint32_t maxSize)
   return outPkt;
 }
 
-} //namepsace ns3
+} //namespace ns3

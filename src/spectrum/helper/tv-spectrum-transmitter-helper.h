@@ -273,7 +273,7 @@ private:
    * @param density the density (high, medium, or low) of the location being 
    * simulated, which determines how many transmitters are created
    *
-   * @return a list contaning the indices in startFrequencies that transmitters 
+   * @return a list containing the indices in startFrequencies that transmitters 
    * will be created for
    */
   std::list<int> GenerateRegionalTransmitterIndices (const double startFrequencies[], 
@@ -309,7 +309,7 @@ private:
    * Installs each randomly generated regional TV transmitter
    * 
    * @param region the region that the transmitters are in
-   * @param transmitterIndicesToCreate a list contaning the channel number 
+   * @param transmitterIndicesToCreate a list containing the channel number 
    * indices (for region's start frequencies array) that transmitters will be 
    * created for; this is returned from GenerateRegionalTransmitterIndices()
    * @param transmitterLocations a list containing the vectors 

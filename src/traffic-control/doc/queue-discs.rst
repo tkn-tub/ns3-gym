@@ -276,7 +276,7 @@ interface). In particular:
 
 * when notified that a netdevice queue interface has been aggregated, traffic control \
   aware devices can cache the pointer to the \
-  netdevice queue interface created by the traffic contol layer into a member variable. \
+  netdevice queue interface created by the traffic control layer into a member variable. \
   Also, multi-queue devices can set the number of device transmission queues and set the \
   select queue callback through the netdevice queue interface
 

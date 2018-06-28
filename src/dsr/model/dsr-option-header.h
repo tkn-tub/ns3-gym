@@ -98,7 +98,7 @@ public:
    */
   uint8_t GetLength () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -169,7 +169,7 @@ public:
    */
   virtual ~DsrOptionPad1Header ();
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -219,7 +219,7 @@ public:
    */
   virtual ~DsrOptionPadnHeader ();
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -348,7 +348,7 @@ public:
    */
   uint16_t GetId () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -500,7 +500,7 @@ public:
    */
   Ipv4Address GetNodeAddress (uint8_t index) const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -641,7 +641,7 @@ public:
    */
   uint8_t GetSalvage () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -793,7 +793,7 @@ public:
    */
   virtual Ipv4Address GetErrorDst () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -949,7 +949,7 @@ public:
    */
   Ipv4Address GetOriginalDst () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -1096,7 +1096,7 @@ public:
    */
   uint16_t GetUnsupported () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -1195,7 +1195,7 @@ public:
    */
   uint16_t GetAckId () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -1302,7 +1302,7 @@ public:
    */
   Ipv4Address GetRealDst () const;
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */

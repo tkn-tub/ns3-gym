@@ -339,7 +339,7 @@ TapBridge::CreateTap (void)
   NS_LOG_INFO ("Encoded Unix socket as \"" << path << "\"");
 
   //
-  // Tom Goff reports the possiblility of a deadlock when trying to acquire the
+  // Tom Goff reports the possibility of a deadlock when trying to acquire the
   // python GIL here.  He says that this might be due to trying to access Python
   // objects after fork() without calling PyOS_AfterFork() to properly reset 
   // Python state (including the GIL).  Originally these next three lines were

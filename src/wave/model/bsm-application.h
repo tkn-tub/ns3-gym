@@ -175,7 +175,7 @@ private:
    * for V2V Safety Systems Version 1.0, December 17, 2014
    * max transmit delay (default 10ms) */
   Time m_txMaxDelay;
-  Time m_prevTxDelay; ///< prevous transmit delay
+  Time m_prevTxDelay; ///< previous transmit delay
 };
 
 } // namespace ns3

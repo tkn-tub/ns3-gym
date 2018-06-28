@@ -151,7 +151,7 @@ int main (int argc, char *argv[])
   pAnim = new AnimationInterface (animFile);
   Simulator::Schedule (Seconds (1), modify);
   
-  // Set up the acutal simulation
+  // Set up the actual simulation
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   Simulator::Run ();

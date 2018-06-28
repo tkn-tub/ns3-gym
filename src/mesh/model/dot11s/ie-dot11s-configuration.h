@@ -96,7 +96,7 @@ public:
    */
   uint8_t GetUint8 () const;  
   bool acceptPeerLinks; ///< accept peer links
-  bool MCCASupported; ///< MCCA suported
+  bool MCCASupported; ///< MCCA supported
   bool MCCAEnabled; ///< MCCA enabled
   bool forwarding; ///< forwarding?
   bool beaconTimingReport; ///< beacon timing report 

@@ -682,7 +682,7 @@ GlobalRouter::DiscoverLSAs ()
         }
 
       //
-      // We have a net device that we need to check out.  If it suports 
+      // We have a net device that we need to check out.  If it supports 
       // broadcast and is not a point-point link, then it will be either a stub 
       // network or a transit network depending on the number of routers on
       // the segment.  We add the appropriate link record to the LSA.

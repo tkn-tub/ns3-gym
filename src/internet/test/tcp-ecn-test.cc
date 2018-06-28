@@ -57,7 +57,7 @@ public:
    * \brief Constructor
    *
    * \param testcase test case number
-   * \param desc Description about the ECN capabilities of sender and reciever
+   * \param desc Description about the ECN capabilities of sender and receiver
    */
   TcpEcnTest (uint32_t testcase, const std::string &desc);
 
@@ -437,11 +437,11 @@ TcpEcnTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
           NS_TEST_ASSERT_MSG_NE (((h.GetFlags ()) & TcpHeader::SYN), 0, "SYN should be received as first message at the receiver");
           if (m_testcase == 2 || m_testcase == 4 || m_testcase == 5 ||m_testcase == 6)
             {
-              NS_TEST_ASSERT_MSG_NE (((h.GetFlags ()) & TcpHeader::ECE) && ((h.GetFlags ()) & TcpHeader::CWR), 0, "The flags ECE + CWR should be set in the TCP header of first message receieved at receiver when sender is ECN Capable");
+              NS_TEST_ASSERT_MSG_NE (((h.GetFlags ()) & TcpHeader::ECE) && ((h.GetFlags ()) & TcpHeader::CWR), 0, "The flags ECE + CWR should be set in the TCP header of first message received at receiver when sender is ECN Capable");
             }
           else
             {
-              NS_TEST_ASSERT_MSG_EQ (((h.GetFlags ()) & TcpHeader::ECE) && ((h.GetFlags ()) & TcpHeader::CWR), 0, "The flags ECE + CWR should not be set in the TCP header of first message receieved at receiver when sender is not ECN Capable");
+              NS_TEST_ASSERT_MSG_EQ (((h.GetFlags ()) & TcpHeader::ECE) && ((h.GetFlags ()) & TcpHeader::CWR), 0, "The flags ECE + CWR should not be set in the TCP header of first message received at receiver when sender is not ECN Capable");
             }
         }
       else if (m_receiverReceived == 1)
@@ -461,11 +461,11 @@ TcpEcnTest::Rx (const Ptr<const Packet> p, const TcpHeader &h, SocketWho who)
           NS_TEST_ASSERT_MSG_NE (((h.GetFlags ()) & TcpHeader::SYN) && ((h.GetFlags ()) & TcpHeader::ACK), 0, "SYN+ACK received as first message at sender");
           if (m_testcase == 4 || m_testcase == 5 || m_testcase == 6)
             {
-              NS_TEST_ASSERT_MSG_NE ((h.GetFlags () & TcpHeader::ECE), 0, "The flag ECE should be set in the TCP header of first message receieved at sender when both receiver and sender are ECN Capable");
+              NS_TEST_ASSERT_MSG_NE ((h.GetFlags () & TcpHeader::ECE), 0, "The flag ECE should be set in the TCP header of first message received at sender when both receiver and sender are ECN Capable");
             }
           else
             {
-              NS_TEST_ASSERT_MSG_EQ (((h.GetFlags ()) & TcpHeader::ECE), 0, "The flag ECE should not be set in the TCP header of first message receieved at sender when  either receiver or sender are not ECN Capable");
+              NS_TEST_ASSERT_MSG_EQ (((h.GetFlags ()) & TcpHeader::ECE), 0, "The flag ECE should not be set in the TCP header of first message received at sender when  either receiver or sender are not ECN Capable");
             }
         }
       if (m_senderReceived == 3 && m_testcase == 5)

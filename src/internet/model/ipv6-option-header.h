@@ -97,7 +97,7 @@ public:
   uint8_t GetLength () const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -179,7 +179,7 @@ public:
   virtual ~Ipv6OptionPad1Header ();
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -237,7 +237,7 @@ public:
   virtual ~Ipv6OptionPadnHeader ();
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -306,7 +306,7 @@ public:
   uint32_t GetDataLength () const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */
@@ -387,7 +387,7 @@ public:
   uint16_t GetValue () const;
 
   /**
-   * \brief Print some informations about the packet.
+   * \brief Print some information about the packet.
    * \param os output stream
    * \return info about this packet
    */

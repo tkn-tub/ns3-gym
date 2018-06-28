@@ -152,12 +152,12 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
 <li>Included the TCP SACK-based loss recovery algorithm outlined in RFC 6675.</li>
 <li>Added <b>TCP SACK</b> and the <b>SACK emulation</b>. Added an Attribute to TcpSocketBase class,
     called "Sack", to enable or disable the SACK option usage.</li>
-<li>In 'src/wifi', several changes were made to enable partial <b>802.11ax</b> High Effiency (HE) support:
+<li>In 'src/wifi', several changes were made to enable partial <b>802.11ax</b> High Efficiency (HE) support:
     <ul>
       <li>A new standard value has been added that enables the new 11ax data rates.</li>
       <li>A new 11ax preamble has been added.</li>
       <li>A new attribute was added to configure the guard interval duration for High Efficiency (HE) PHY entities. This attribute can be set using the YansWifiPhyHelper.</li>
-      <li>A new information element has been added:  HeCapabilities. This information element is added to the MAC frame header if the node is a HE node. This HeCapabilites information element is used to advertise the HE capabilites of the node to other nodes in the network.</li>
+      <li>A new information element has been added:  HeCapabilities. This information element is added to the MAC frame header if the node is a HE node. This HeCapabilites information element is used to advertise the HE capabilities of the node to other nodes in the network.</li>
     </ul>
 </li>
 <li> A new class were added for the RRPAA WiFi rate control mechanism.</li>
@@ -168,7 +168,7 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
       <li>InstallSingleEnbDevice and InstalSingeUeDevice functions of LteHelper are now constructing LteEnbDevice and LteUeDevice 
       according to CA architecture. Each device, UE and eNodeB contains an instance of component carrier manager, and may 
       have several component carrier instances.</li>
-      <li>SAP interfaces are extended to include CA message exchange funtionality.</li>
+      <li>SAP interfaces are extended to include CA message exchange functionality.</li>
       <li>RRC connection procedure is extended to allow RRC connection reconfiguration for the configuration of the secondary carriers.</li>
       <li>RRC measurement reporting is extended to allow measurement reporting from the secondary carriers.</li>
       <li>LTE traces are extended to include component carrier id.</li>
@@ -443,7 +443,7 @@ register callbacks used for flow control.</li>
       <li>Added the concept of Congestion State Machine inside TcpSocketBase.</li>
       <li>Merged Fast Recovery and Fast Retransmit inside TcpSocketBase.</li>
       <li>Some member variables have been moved from TcpSocketBase inside TcpSocketState. Attributes are not touched.</li>
-      <li>Congestion control splitted from TcpSocketBase as subclass of TcpCongestionOps.</li>
+      <li>Congestion control split from TcpSocketBase as subclass of TcpCongestionOps.</li>
       <li>Added Rx and Tx callbacks on TcpSocketBase.</li>
       <li>Added BytesInFlight trace source on TcpSocketBase. The trace is updated when the implementation requests the value.</li>
       <li>Added attributes about the number of connection and data retransmission attempts.</li>
@@ -462,7 +462,7 @@ register callbacks used for flow control.</li>
   </li>
   <li> Users of advanced queues (RED, CoDel) who have been using them directly in the NetDevice will need to adjust to the following changes:
     <ul>
-      <li> RED and CoDel are no longer specializations of the Queue classe, but are now specializations of the new QueueDisc class. This means that RED and CoDel can now be installed in the context of the new Traffic Control layer instead of as queues in (some) NetDevices. The reason for such a change is to make the ns-3 stack much more similar to that of real operating systems (Linux has been taken as a reference).  Queuing disciplines such as RED and CoDel can now be tested with all the NetDevices, including WifiNetDevices. </li>
+      <li> RED and CoDel are no longer specializations of the Queue class, but are now specializations of the new QueueDisc class. This means that RED and CoDel can now be installed in the context of the new Traffic Control layer instead of as queues in (some) NetDevices. The reason for such a change is to make the ns-3 stack much more similar to that of real operating systems (Linux has been taken as a reference).  Queuing disciplines such as RED and CoDel can now be tested with all the NetDevices, including WifiNetDevices. </li>
       <li> NetDevices still use queues to buffer packets. The only subclass of Queue currently available for this purpose is DropTailQueue. If one wants to approximate the old behavior, one needs to set the DropTailQueue MaxPackets attribute to very low values, e.g., 1.</li>
       <li> The Traffic Control layer features a mechanism by which packets dropped by the NetDevice are requeued in the queue disc (more precisely: if NetDevice::Send returns false, the packet is requeued), so that they are retransmitted later. This means that the MAC drop traces may include packets that have not been actually lost, because they have been dropped by the device, requeued by the traffic control layer and successfully retransmitted. To get the correct number of packets that have been actually lost, one has to subtract the number of packets requeued from the number of packets dropped as reported by the MAC drop trace. </li>
     </ul>
@@ -498,7 +498,7 @@ This section is for behavioral changes to the models that were not due to a bug 
       <li>A new helper (VhtWifiMacHelper) was added to set up a Very high throughput (VHT) MAC entity.</li>
       <li>A new standard value has been added that enables the new 11ac data rates.</li>
       <li>A new 11ac preamble has been added.</li>
-      <li>A new information element has been added:  VhtCapabilities. This information element is added to the MAC frame header if the node is a VHT node. This VhtCapabilites information element is used to advertise the VHT capabilites of the node to other nodes in the network.</li>
+      <li>A new information element has been added:  VhtCapabilities. This information element is added to the MAC frame header if the node is a VHT node. This VhtCapabilites information element is used to advertise the VHT capabilities of the node to other nodes in the network.</li>
     </ul>
   </li>
   <li>The ArpCache API was extended to allow the manual removal of ArpCache entries and the addition of permanent (static) entries for IPv4.
@@ -557,7 +557,7 @@ distributed geographic coordinates.
 <h2>Changed behavior:</h2>
 This section is for behavioral changes to the models that were not due to a bug fix.
 <ul>
-  <li> In Wi-Fi, HT stations (802.11n) now support two-level aggregation. The InterferenceHelper now distinguishes between the PLCP and regular payload reception, for higher fidelity modeling.  ACKs are now sent using legacy rates and preambles.  Acces points now establish BSSBasicRateSet for control frame transmissions.  PLCP header and PLCP payload reception have been decoupled to improve PHY layer modeling accuracy.  RTS/CTS with A-MPDU is now fully supported.  
+  <li> In Wi-Fi, HT stations (802.11n) now support two-level aggregation. The InterferenceHelper now distinguishes between the PLCP and regular payload reception, for higher fidelity modeling.  ACKs are now sent using legacy rates and preambles.  Access points now establish BSSBasicRateSet for control frame transmissions.  PLCP header and PLCP payload reception have been decoupled to improve PHY layer modeling accuracy.  RTS/CTS with A-MPDU is now fully supported.  
   </li>
   <li> The mesh module was made more compliant to the IEEE 802.11s-2012 standard and packet traces are now parseable by Wireshark.  
   </li>
@@ -642,7 +642,7 @@ This section is for behavioral changes to the models that were not due to a bug 
   </li>
   <li> A new TraceSource has been added to TCP sockets: SlowStartThreshold.
   </li>
-  <li> New method CommmandLine::AddValue (name, attibutePath) to provide a
+  <li> New method CommandLine::AddValue (name, attibutePath) to provide a
        shorthand argument "name" for the Attribute "path".  This also has
        the effect of including the help string for the Attribute in the
        Usage message.
@@ -694,7 +694,7 @@ This section is for behavioral changes to the models that were not due to a bug 
   </li>
   <li> all schedulers were updated to interact with FR entity via FFR-SAP. Only PF, PSS, CQA, 
        FD-TBFQ, TD-TBFQ schedulers supports Frequency Reuse functionality. In the beginning 
-       of scheduling process, schedulers ask FR entity for avaiable RBGs and then ask if UE 
+       of scheduling process, schedulers ask FR entity for available RBGs and then ask if UE 
        can be scheduled on RB</li>
   <li> eNB RRC interacts with FFR entity via RRC-FFR SAP</li>
   <li> new DL-CQI generation approach was implemented. Now DL-CQI is computed from control channel as signal
@@ -953,7 +953,7 @@ failure.  </li>
       <li>New attributes were added to help the user setup a High Throughput (HT) PHY entity. These attributes can be set using the YansWifiPhyHelper</li>
       <li>A new standard value has been added that enables the new 11n data rates.</li>
       <li>New 11n preambles has been added (Mixed format and greenfield). To be able to change Tx duration according to the preamble used, a new class TxVector has been added to carry the transmission parameters (mode, preamble, stbc,..).  Several functions have been updated to allow the passage of TxVector instead of WifiMode in MacLow, WifiRemoteStationManager, WifiPhy, YansWifiPhy,.. </li>
-      <li>A new information element has been added:  HTCapabilities. This information element is added to the MAC frame header if the node is an HT node. This HTCapabilites information element is used to advertise the HT capabilites of the node to other nodes in the network</li>
+      <li>A new information element has been added:  HTCapabilities. This information element is added to the MAC frame header if the node is an HT node. This HTCapabilites information element is used to advertise the HT capabilities of the node to other nodes in the network</li>
     </ul>
   <li>InternetStackHelper has two new functions:<tt>SetIpv4ArpJitter (bool enable)</tt>
       and <tt>SetIpv6NsRsJitter (bool enable)</tt> to enable/disable
@@ -1425,7 +1425,7 @@ instead of CXXDEFINES
 <li> In the mobility module, there is a new MobilityModel::GetRelativeSpeed() method returning the relative speed of two objects. </li>
 <li> A new Ipv6AddressGenerator class was added to generate sequential
 addresses from a provided base prefix and interfaceId.  It also will detect
-duplicate address assigments. </li> 
+duplicate address assignments. </li> 
 </ul>
 
 <h2>Changes to existing API:</h2>
@@ -1538,7 +1538,7 @@ C++ native types. It is a 64.64 integer type which means that it is a 128bit int
 64 bits of fractional precision. The existing <b>Time</b> type is now automatically convertible to
 <b>int64x64_t</b> to allow arbitrarily complex arithmetic operations on the content of <b>Time</b>
 objects. The implementation of <b>int64x64_t</b> is based on the previously-existing
-<b>HighPrecision</b> type and supercedes it.
+<b>HighPrecision</b> type and supersedes it.
 </p></li>
 </ul>
 

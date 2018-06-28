@@ -128,7 +128,7 @@ public:
    * \param device network device
    * \param p the packet
    * \param protocol protocol value
-   * \param from address of the correspondant
+   * \param from address of the correspondent
    * \param to address of the destination
    * \param packetType type of the packet
    */

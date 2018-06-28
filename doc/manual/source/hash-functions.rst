@@ -76,7 +76,7 @@ Using an Alternative Hash Function
 **********************************
 
 The default hash function is murmur3_.  FNV1a_ is also available.  To specify
-the hash function explicitly, use this contructor::
+the hash function explicitly, use this constructor::
 
   Hasher hasher = Hasher ( Create<Hash::Function::Fnv1a> () );
 

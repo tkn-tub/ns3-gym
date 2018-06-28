@@ -404,7 +404,7 @@ DsrRouteCache::RebuildBestRouteTable (Ipv4Address source)
   m_bestRoutesTable_link.clear ();
   for (std::map<Ipv4Address, Ipv4Address>::iterator i = pre.begin (); i != pre.end (); ++i)
     {
-      // loop for all vertexes
+      // loop for all vertices
       DsrRouteCacheEntry::IP_VECTOR route;
       Ipv4Address iptemp = i->first;
 

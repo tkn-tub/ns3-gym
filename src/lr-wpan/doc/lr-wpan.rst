@@ -90,7 +90,7 @@ MAC
 ###
 
 The MAC at present implements the unslotted CSMA/CA variant, without beaconing.
-Currently there is no support for coordinators and the relavant APIs.
+Currently there is no support for coordinators and the relevant APIs.
 
 The implemented MAC is similar to Contiki's NullMAC, i.e., a MAC without sleep
 features. The radio is assumed to be always active (receiving or transmitting),

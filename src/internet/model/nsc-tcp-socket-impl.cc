@@ -897,7 +897,7 @@ NscTcpSocketImpl::GetNativeNs3Errno (int error) const
     {
     case NSC_EADDRINUSE:   // fallthrough
     case NSC_EADDRNOTAVAIL: return ERROR_AFNOSUPPORT;
-    case NSC_EINPROGRESS:   // Altough nsc sockets are nonblocking, we pretend they're not.
+    case NSC_EINPROGRESS:   // Although nsc sockets are nonblocking, we pretend they're not.
     case NSC_EAGAIN: return ERROR_AGAIN;
     case NSC_EISCONN:   // fallthrough
     case NSC_EALREADY: return ERROR_ISCONN;

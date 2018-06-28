@@ -372,7 +372,7 @@ protected:
   virtual void DoRun (void);
 
   /**
-   * \brief Change the configuration of the evironment
+   * \brief Change the configuration of the environment
    */
   virtual void ConfigureEnvironment (void);
 
@@ -479,7 +479,7 @@ protected:
   Time GetRto (SocketWho who);
 
   /**
-   * \brief Get the minimun RTO attribute
+   * \brief Get the minimum RTO attribute
    *
    * \param who node to get the parameter from
    * \return minimum RTO time

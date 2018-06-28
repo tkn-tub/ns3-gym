@@ -179,7 +179,7 @@ Ipv4ClickRouting::GetInterfaceId (const char *ifname)
   // be used in the Click configuration files.
   // Thus eth0 will refer to the first network device of
   // the node, and is to be named so in the Click graph.
-  // This function is called by Click during the intialisation
+  // This function is called by Click during the initialisation
   // phase of the Click graph, during which it tries to map
   // interface IDs to interface names. The return value
   // corresponds to the interface ID that Click will use.
@@ -798,7 +798,7 @@ int simclick_sim_command (simclick_node_t *simnode, int cmd, ...)
         // the size variable and return an error code.
         // Otherwise return the bytes actually writte into the buffer in size.
 
-        // Append key/value pair, seperated by \0.
+        // Append key/value pair, separated by \0.
         std::map<std::string, std::string> defines = clickInstance->GetDefines ();
         std::map<std::string, std::string>::const_iterator it = defines.begin ();
         while (it != defines.end ())

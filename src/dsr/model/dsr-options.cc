@@ -588,7 +588,7 @@ uint8_t DsrOptionRreq::Process (Ptr<Packet> packet, Ptr<Packet> dsrP, Ipv4Addres
 
   if (dupRequest)
     {
-      // We have received this same route reqeust before, not forwarding it now
+      // We have received this same route request before, not forwarding it now
       NS_LOG_LOGIC ("Duplicate request. Drop!");
       m_dropTrace (packet); // call drop trace
       return 0;

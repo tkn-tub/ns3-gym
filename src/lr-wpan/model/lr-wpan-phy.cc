@@ -363,7 +363,7 @@ LrWpanPhy::StartRx (Ptr<SpectrumSignalParameters> spectrumRxParams)
       CheckInterference ();
 
       // Add the incoming packet to the current interference after we have
-      // checked for successfull reception of the current packet for the time
+      // checked for successful reception of the current packet for the time
       // before the additional interference.
       m_signal->AddSignal (lrWpanRxParams->psd);
     }

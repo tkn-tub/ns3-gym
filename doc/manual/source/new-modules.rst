@@ -213,7 +213,7 @@ with include statements like
     #include "ns3/spectrum-model.h"
     	
 Headers used strictly internally in your implementation should not
-be included here.  They are still accessible to your implemenation by
+be included here.  They are still accessible to your implementation by
 include statements like
 
 .. sourcecode:: cpp
