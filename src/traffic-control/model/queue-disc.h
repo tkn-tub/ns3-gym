@@ -574,14 +574,16 @@ private:
    * The implementation of this method is based on the qdisc_peek_dequeued
    * function of the Linux kernel, which dequeues a packet and retains it in the
    * queue disc as a requeued packet. The packet is not traced as requeued, nor
-   * is the total count of requeued packets increased. The dequeued packet is
-   * not counted in the backlog of the queue disc and is actually extracted from
-   * the queue disc by calling Dequeue. This approach is especially recommended
-   * for queue discs for which it is not obvious what is the next packet that
-   * will be dequeued (e.g., queue discs having multiple internal queues or
-   * child queue discs or queue discs that drop packets after dequeue).
-   * Subclasses can however provide their own implementation of this method that
-   * overrides the default one.
+   * is the total count of requeued packets increased. The packet is still
+   * considered to be part of the queue disc and the dequeue trace is fired
+   * when Dequeue is called and the packet is actually extracted from the
+   * queue disc.
+   *
+   * This approach is especially recommended for queue discs for which it is not
+   * obvious what is the next packet that will be dequeued (e.g., queue discs
+   * having multiple internal queues or child queue discs or queue discs that
+   * drop packets after dequeue). Subclasses can however provide their own
+   * implementation of this method that overrides the default one.
    *
    * \return 0 if the operation was not successful; the packet otherwise.
    */
@@ -672,6 +674,7 @@ private:
   Ptr<NetDeviceQueueInterface> m_devQueueIface;   //!< NetDevice queue interface
   bool m_running;                   //!< The queue disc is performing multiple dequeue operations
   Ptr<QueueDiscItem> m_requeued;    //!< The last packet that failed to be transmitted
+  bool m_peeked;                    //!< A packet was dequeued because Peek was called
   std::string m_childQueueDiscDropMsg;  //!< Reason why a packet was dropped by a child queue disc
   QueueDiscSizePolicy m_sizePolicy;     //!< The queue disc size policy
   bool m_prohibitChangeMode;            //!< True if changing mode is prohibited
