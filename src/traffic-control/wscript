@@ -33,6 +33,7 @@ def build(bld):
       'test/pie-queue-disc-test-suite.cc',
       'test/fifo-queue-disc-test-suite.cc',
       'test/prio-queue-disc-test-suite.cc',
+      'test/queue-disc-traces-test-suite.cc',
       'test/tbf-queue-disc-test-suite.cc',
       'test/tc-flow-control-test-suite.cc'
         ]
