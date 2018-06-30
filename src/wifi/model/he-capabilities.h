@@ -63,17 +63,17 @@ public:
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
 
   /**
-   * Set the HE MAC Capabilties Info field in the HE Capabilities information element.
+   * Set the HE MAC Capabilities Info field in the HE Capabilities information element.
    *
-   * \param ctrl1 the HE MAC Capabilties Info field 1 in the HE Capabilities information element
-   * \param ctrl2 the HE MAC Capabilties Info field 2 in the HE Capabilities information element
+   * \param ctrl1 the HE MAC Capabilities Info field 1 in the HE Capabilities information element
+   * \param ctrl2 the HE MAC Capabilities Info field 2 in the HE Capabilities information element
    */
   void SetHeMacCapabilitiesInfo (uint32_t ctrl1, uint8_t ctrl2);
   /**
-   * Set the HE PHY Capabilties Info field in the HE Capabilities information element.
+   * Set the HE PHY Capabilities Info field in the HE Capabilities information element.
    *
-   * \param ctrl1 the HE PHY Capabilties Info field 1 in the HE Capabilities information element
-   * \param ctrl2 the HE PHY Capabilties Info field 2 in the HE Capabilities information element
+   * \param ctrl1 the HE PHY Capabilities Info field 1 in the HE Capabilities information element
+   * \param ctrl2 the HE PHY Capabilities Info field 2 in the HE Capabilities information element
    */
   void SetHePhyCapabilitiesInfo (uint64_t ctrl1, uint8_t ctrl2);
   /**
@@ -84,27 +84,27 @@ public:
   void SetSupportedMcsAndNss (uint16_t ctrl);
 
   /**
-   * Return the 4 first octets of the HE MAC Capabilties Info field in the HE Capabilities information element.
+   * Return the 4 first octets of the HE MAC Capabilities Info field in the HE Capabilities information element.
    *
-   * \return the 4 first octets of the HE MAC Capabilties Info field in the HE Capabilities information element
+   * \return the 4 first octets of the HE MAC Capabilities Info field in the HE Capabilities information element
    */
   uint32_t GetHeMacCapabilitiesInfo1 () const;
   /**
-   * Return the last octet of the HE MAC Capabilties Info field in the HE Capabilities information element.
+   * Return the last octet of the HE MAC Capabilities Info field in the HE Capabilities information element.
    *
-   * \return the last octet of the HE MAC Capabilties Info field in the HE Capabilities information element
+   * \return the last octet of the HE MAC Capabilities Info field in the HE Capabilities information element
    */
   uint8_t GetHeMacCapabilitiesInfo2 () const;
   /**
-   * Return the 8 first octets of the HE PHY Capabilties Info field in the HE Capabilities information element.
+   * Return the 8 first octets of the HE PHY Capabilities Info field in the HE Capabilities information element.
    *
-   * \return the 8 first octets of the HE PHY Capabilties Info field in the HE Capabilities information element
+   * \return the 8 first octets of the HE PHY Capabilities Info field in the HE Capabilities information element
    */
   uint64_t GetHePhyCapabilitiesInfo1 () const;
   /**
-   * Return the last octet of the HE PHY Capabilties Info field in the HE Capabilities information element.
+   * Return the last octet of the HE PHY Capabilities Info field in the HE Capabilities information element.
    *
-   * \return the last octet of the HE PHY Capabilties Info field in the HE Capabilities information element
+   * \return the last octet of the HE PHY Capabilities Info field in the HE Capabilities information element
    */
   uint8_t GetHePhyCapabilitiesInfo2 () const;
   /**

@@ -70,9 +70,9 @@ public:
   uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
 
   /**
-   * Set the VHT Capabilties Info field in the VHT Capabilities information element.
+   * Set the VHT Capabilities Info field in the VHT Capabilities information element.
    *
-   * \param ctrl the VHT Capabilties Info field in the VHT Capabilities information element
+   * \param ctrl the VHT Capabilities Info field in the VHT Capabilities information element
    */
   void SetVhtCapabilitiesInfo (uint32_t ctrl);
   /**
@@ -83,9 +83,9 @@ public:
   void SetSupportedMcsAndNssSet (uint64_t ctrl);
 
   /**
-   * Return the VHT Capabilties Info field in the VHT Capabilities information element.
+   * Return the VHT Capabilities Info field in the VHT Capabilities information element.
    *
-   * \return the VHT Capabilties Info field in the VHT Capabilities information element
+   * \return the VHT Capabilities Info field in the VHT Capabilities information element
    */
   uint32_t GetVhtCapabilitiesInfo () const;
   /**

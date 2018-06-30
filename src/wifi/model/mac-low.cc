@@ -2633,7 +2633,7 @@ MacLow::AggregateToAmpdu (Ptr<const Packet> packet, const WifiMacHeader hdr)
               else if (hdr.IsBlockAckReq ())
                 {
                   blockAckSize = static_cast<uint8_t> (packet->GetSize () + hdr.GetSize () + WIFI_MAC_FCS_LENGTH);
-                  qosPolicy = 3; //if the last subrame is block ack req then set ack policy of all frames to blockack
+                  qosPolicy = 3; //if the last subframe is block ack req then set ack policy of all frames to blockack
                   packet->PeekHeader (blockAckReq);
                   startingSequenceNumber = blockAckReq.GetStartingSequence ();
                 }
