@@ -42,8 +42,9 @@ are supported, with NewReno the default, and Westwood, Hybla, HighSpeed,
 Vegas, Scalable, Veno, Binary Increase Congestion Control (BIC), Yet Another
 HighSpeed TCP (YeAH), Illinois, H-TCP, Low Extra Delay Background Transport
 (LEDBAT) and TCP Low Priority (TCP-LP) also supported. The model also supports
-Selective Acknowledgements (SACK) and Explicit Congestion Notification (ECN).
-Multipath-TCP is not yet supported in the |ns3| releases.
+Selective Acknowledgements (SACK), Proportional Rate Reduction (PRR) and
+Explicit Congestion Notification (ECN). Multipath-TCP is not yet supported in
+the |ns3| releases.
 
 Model history
 +++++++++++++
