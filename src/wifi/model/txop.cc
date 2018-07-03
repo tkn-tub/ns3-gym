@@ -624,7 +624,8 @@ Txop::MissedAck (void)
   if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
     {
       NS_LOG_DEBUG ("Ack Fail");
-      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                               m_currentPacket->GetSize ());
       if (!m_txFailedCallback.IsNull ())
         {
           m_txFailedCallback (m_currentHdr);
@@ -667,7 +668,8 @@ Txop::MissedCfPollResponse (bool expectedCfAck)
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
         {
           NS_LOG_DEBUG ("Ack Fail");
-          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket->GetSize ());
           m_currentPacket = 0;
         }
       else
@@ -735,7 +737,8 @@ Txop::SendCfFrame (WifiMacType frameType, Mac48Address addr)
     {
       if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
         {
-          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+          m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                                   m_currentPacket->GetSize ());
           m_currentPacket = 0;
         }
       else

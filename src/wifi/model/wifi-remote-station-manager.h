@@ -659,8 +659,10 @@ public:
    *
    * \param address the address of the receiver
    * \param header MAC header of the DATA packet
+   * \param packetSize the size of the DATA packet
    */
-  void ReportDataFailed (Mac48Address address, const WifiMacHeader *header);
+  void ReportDataFailed (Mac48Address address, const WifiMacHeader *header,
+                         uint32_t packetSize);
   /**
    * Should be invoked whenever we receive the Cts associated to an RTS
    * we just sent. Note that we also get the SNR of the RTS we sent since
@@ -683,9 +685,11 @@ public:
    * \param ackSnr the SNR of the ACK we received
    * \param ackMode the WifiMode the receiver used to send the ACK
    * \param dataSnr the SNR of the DATA we sent
+   * \param packetSize the size of the DATA packet
    */
   void ReportDataOk (Mac48Address address, const WifiMacHeader *header,
-                     double ackSnr, WifiMode ackMode, double dataSnr);
+                     double ackSnr, WifiMode ackMode, double dataSnr,
+                     uint32_t packetSize);
   /**
    * Should be invoked after calling ReportRtsFailed if
    * NeedRetransmission returns false
@@ -700,8 +704,10 @@ public:
    *
    * \param address the address of the receiver
    * \param header MAC header of the DATA packet
+   * \param packetSize the size of the DATA packet
    */
-  void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header);
+  void ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header,
+                              uint32_t packetSize);
   /**
    * Typically called per A-MPDU, either when a Block ACK was successfully
    * received or when a BlockAckTimeout has elapsed.
@@ -1082,7 +1088,7 @@ private:
    *       or data) has been attempted and has failed.
    */
   virtual bool DoNeedRetransmission (WifiRemoteStation *station,
-                                         Ptr<const Packet> packet, bool normally);
+                                     Ptr<const Packet> packet, bool normally);
   /**
    * \param station the station that we need to communicate
    * \param packet the packet to send

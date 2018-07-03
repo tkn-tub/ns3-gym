@@ -932,12 +932,21 @@ WifiRemoteStationManager::ReportRtsFailed (Mac48Address address, const WifiMacHe
 }
 
 void
-WifiRemoteStationManager::ReportDataFailed (Mac48Address address, const WifiMacHeader *header)
+WifiRemoteStationManager::ReportDataFailed (Mac48Address address, const WifiMacHeader *header,
+                                            uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << address << *header);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
-  station->m_slrc++;
+  bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  if (longMpdu)
+    {
+      station->m_slrc++;
+    }
+  else
+    {
+      station->m_ssrc++;
+    }
   m_macTxDataFailed (address);
   DoReportDataFailed (station);
 }
@@ -956,13 +965,23 @@ WifiRemoteStationManager::ReportRtsOk (Mac48Address address, const WifiMacHeader
 
 void
 WifiRemoteStationManager::ReportDataOk (Mac48Address address, const WifiMacHeader *header,
-                                        double ackSnr, WifiMode ackMode, double dataSnr)
+                                        double ackSnr, WifiMode ackMode, double dataSnr,
+                                        uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << address << *header << ackSnr << ackMode << dataSnr);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
-  station->m_state->m_info.NotifyTxSuccess (station->m_slrc);
-  station->m_slrc = 0;
+  bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  if (longMpdu)
+    {
+      station->m_state->m_info.NotifyTxSuccess (station->m_slrc);
+      station->m_slrc = 0;
+    }
+  else
+    {
+      station->m_state->m_info.NotifyTxSuccess (station->m_ssrc);
+      station->m_ssrc = 0;
+    }
   DoReportDataOk (station, ackSnr, ackMode, dataSnr);
 }
 
@@ -979,13 +998,22 @@ WifiRemoteStationManager::ReportFinalRtsFailed (Mac48Address address, const Wifi
 }
 
 void
-WifiRemoteStationManager::ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header)
+WifiRemoteStationManager::ReportFinalDataFailed (Mac48Address address, const WifiMacHeader *header,
+                                                 uint32_t packetSize)
 {
   NS_LOG_FUNCTION (this << address << *header);
   NS_ASSERT (!address.IsGroup ());
   WifiRemoteStation *station = Lookup (address, header);
   station->m_state->m_info.NotifyTxFailed ();
-  station->m_slrc = 0;
+  bool longMpdu = (packetSize + header->GetSize () + WIFI_MAC_FCS_LENGTH) > m_rtsCtsThreshold;
+  if (longMpdu)
+    {
+      station->m_slrc = 0;
+    }
+  else
+    {
+      station->m_ssrc = 0;
+    }
   m_macTxFinalDataFailed (address);
   DoReportFinalDataFailed (station);
 }
@@ -1145,7 +1173,7 @@ WifiRemoteStationManager::GetUseGreenfieldProtection (void) const
 
 bool
 WifiRemoteStationManager::NeedRetransmission (Mac48Address address, const WifiMacHeader *header,
-                                                 Ptr<const Packet> packet)
+                                              Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (this << address << packet << *header);
   NS_ASSERT (!address.IsGroup ());

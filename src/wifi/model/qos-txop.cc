@@ -378,11 +378,11 @@ void QosTxop::NotifyInternalCollision (void)
           if (!NeedDataRetransmission (packet, header))
             {
               resetDcf = true;
-              m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header);
+              m_stationManager->ReportFinalDataFailed (header.GetAddr1 (), &header, packet->GetSize ());
             }
           else
             {
-              m_stationManager->ReportDataFailed (header.GetAddr1 (), &header);
+              m_stationManager->ReportDataFailed (header.GetAddr1 (), &header, packet->GetSize ());
             }
         }
       if (resetDcf)
@@ -561,7 +561,8 @@ QosTxop::MissedAck (void)
   if (!NeedDataRetransmission (m_currentPacket, m_currentHdr))
     {
       NS_LOG_DEBUG ("Ack Fail");
-      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr);
+      m_stationManager->ReportFinalDataFailed (m_currentHdr.GetAddr1 (), &m_currentHdr,
+                                               m_currentPacket->GetSize ());
       bool resetCurrentPacket = true;
       if (!m_txFailedCallback.IsNull ())
         {
