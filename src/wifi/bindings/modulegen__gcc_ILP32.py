@@ -12,7 +12,7 @@ pybindgen.settings.error_handler = ErrorHandler()
 
 
 import sys
-h
+
 def module_init():
     root_module = Module('ns.wifi', cpp_namespace='::ns3')
     return root_module
