@@ -1399,7 +1399,7 @@ WifiPhy::SetChannelNumber (uint8_t nch)
     }
   else
     {
-      NS_FATAL_ERROR ("Frequency not found for channel number " << nch);
+      NS_FATAL_ERROR ("Frequency not found for channel number " << +nch);
     }
 }
 
