@@ -303,7 +303,6 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint32_t earfcn, uint8_t t
   Ptr<SpectrumValue> txPsd = Create <SpectrumValue> (model);
 
   // powerTx is expressed in dBm. We must convert it into natural unit.
-  double powerTxW = std::pow (10., (powerTx - 30) / 10);
   double basicPowerTxW = std::pow (10., (powerTx - 30) / 10);
 
 
@@ -317,7 +316,7 @@ LteSpectrumValueHelper::CreateTxPowerSpectralDensity (uint32_t earfcn, uint8_t t
 
       if (powerIt != powerTxMap.end ())
         {
-          powerTxW = std::pow (10., (powerIt->second - 30) / 10);
+          double powerTxW = std::pow (10., (powerIt->second - 30) / 10);
           txPowerDensity = (powerTxW / (txBandwidthConfiguration * 180000));
         }
       else
