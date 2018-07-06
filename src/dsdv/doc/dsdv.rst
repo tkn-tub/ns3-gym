@@ -34,7 +34,7 @@ Each node uses 2 mechanisms to send out the DSDV updates. They are,
     when for what change in the table should a DSDV update be sent out. The current implementation sends out an update
     irrespective of the change in the routing table.
 
-The updates are accepted based on the metric for a particular node. The first factor determinig the acceptance of
+The updates are accepted based on the metric for a particular node. The first factor determining the acceptance of
 an update is the sequence number. It has to accept the update if the sequence number of the update message is higher
 irrespective of the metric. If the update with same sequence number is received, then the update with least metric
 (hopCount) is given precedence.
