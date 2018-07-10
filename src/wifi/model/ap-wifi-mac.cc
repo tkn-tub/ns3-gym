@@ -563,6 +563,7 @@ ApWifiMac::GetHtOperation (void) const
   if (GetHtSupported ())
     {
       operation.SetHtSupported (1);
+      operation.SetPrimaryChannel (m_phy->GetChannelNumber ());
       operation.SetRifsMode (GetRifsMode ());
       operation.SetNonGfHtStasPresent (IsNonGfHtStasPresent ());
       if (m_phy->GetChannelWidth () > 20)
