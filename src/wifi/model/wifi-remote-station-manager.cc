@@ -800,7 +800,7 @@ WifiTxVector
 WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHeader *header, Ptr<const Packet> packet)
 {
   NS_LOG_FUNCTION (this << address << *header << packet);
-  if (address.IsGroup ())
+  if (!header->IsMgt () && address.IsGroup ())
     {
       WifiMode mode = GetNonUnicastMode ();
       WifiTxVector v;
