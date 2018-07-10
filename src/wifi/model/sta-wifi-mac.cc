@@ -1087,19 +1087,19 @@ SupportedRates
 StaWifiMac::GetSupportedRates (void) const
 {
   SupportedRates rates;
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
-    {
-      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
-        {
-          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
-        }
-    }
   for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
       uint64_t modeDataRate = mode.GetDataRate (m_phy->GetChannelWidth ());
       NS_LOG_DEBUG ("Adding supported rate of " << modeDataRate);
       rates.AddSupportedRate (modeDataRate);
+    }
+  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+    {
+      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+        {
+          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
+        }
     }
   return rates;
 }

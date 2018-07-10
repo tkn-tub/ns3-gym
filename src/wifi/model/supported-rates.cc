@@ -101,7 +101,7 @@ SupportedRates::AddBssMembershipSelectorRate (uint64_t bs)
     {
       NS_ASSERT_MSG (false, "Value " << bs << " not a BSS Membership Selector");
     }
-  uint8_t rate = (static_cast<uint8_t> (bs / 500000) | 0x80);
+  uint8_t rate = static_cast<uint8_t> (bs / 500000);
   for (uint8_t i = 0; i < m_nRates; i++)
     {
       if (rate == m_rates[i])

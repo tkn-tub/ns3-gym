@@ -403,18 +403,6 @@ ApWifiMac::GetSupportedRates (void) const
 {
   NS_LOG_FUNCTION (this);
   SupportedRates rates;
-  //If it is an HT-AP or VHT-AP or HE-AP, then add the BSSMembershipSelectorSet
-  //The standard says that the BSSMembershipSelectorSet
-  //must have its MSB set to 1 (must be treated as a Basic Rate)
-  //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
-  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
-    {
-      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
-        {
-          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
-        }
-    }
-  //
   //Send the set of supported rates and make sure that we indicate
   //the Basic Rate set in this set of supported rates.
   for (uint8_t i = 0; i < m_phy->GetNModes (); i++)
@@ -440,7 +428,17 @@ ApWifiMac::GetSupportedRates (void) const
       NS_LOG_DEBUG ("Setting basic rate " << mode.GetUniqueName ());
       rates.SetBasicRate (modeDataRate);
     }
-
+  //If it is an HT-AP or VHT-AP or HE-AP, then add the BSSMembershipSelectorSet
+  //The standard says that the BSSMembershipSelectorSet
+  //must have its MSB set to 1 (must be treated as a Basic Rate)
+  //Also the standard mentioned that at least 1 element should be included in the SupportedRates the rest can be in the ExtendedSupportedRates
+  if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
+    {
+      for (uint8_t i = 0; i < m_phy->GetNBssMembershipSelectors (); i++)
+        {
+          rates.AddBssMembershipSelectorRate (m_phy->GetBssMembershipSelector (i));
+        }
+    }
   return rates;
 }
 
