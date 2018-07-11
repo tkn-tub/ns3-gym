@@ -53,7 +53,7 @@ enum
 WifiMacHeader::WifiMacHeader ()
   : m_ctrlMoreData (0),
     m_ctrlWep (0),
-    m_ctrlOrder (1),
+    m_ctrlOrder (0),
     m_amsduPresent (0)
 {
 }

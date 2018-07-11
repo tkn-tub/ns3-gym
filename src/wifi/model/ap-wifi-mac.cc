@@ -347,7 +347,7 @@ ApWifiMac::ForwardDown (Ptr<const Packet> packet, Mac48Address from,
 
   if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
-      hdr.SetNoOrder ();
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
     }
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (GetAddress ());
@@ -715,7 +715,6 @@ ApWifiMac::SendProbeResp (Mac48Address to)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtProbeResponseHeader probe;
   probe.SetSsid (GetSsid ());
@@ -772,7 +771,6 @@ ApWifiMac::SendAssocResp (Mac48Address to, bool success, bool isReassoc)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtAssocResponseHeader assoc;
   StatusCode code;
@@ -851,7 +849,6 @@ ApWifiMac::SendOneBeacon (void)
   hdr.SetAddr3 (GetAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtBeaconHeader beacon;
   beacon.SetSsid (GetSsid ());

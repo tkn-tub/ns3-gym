@@ -139,7 +139,7 @@ AdhocWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 
   if (GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
-      hdr.SetNoOrder ();
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
     }
   hdr.SetAddr1 (to);
   hdr.SetAddr2 (m_low->GetAddress ());

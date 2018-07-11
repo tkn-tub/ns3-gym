@@ -606,7 +606,7 @@ private:
   uint8_t m_ctrlRetry; ///< control retry
   uint8_t m_ctrlMoreData; ///< control more data
   uint8_t m_ctrlWep; ///< control WEP
-  uint8_t m_ctrlOrder; ///< control order
+  uint8_t m_ctrlOrder; ///< control order (set to 1 for QoS Data and Management frames to signify that HT/VHT/HE control field is present, knowing that the latter are not implemented yet)
   uint16_t m_duration; ///< duration
   Mac48Address m_addr1; ///< address 1
   Mac48Address m_addr2; ///< address 2

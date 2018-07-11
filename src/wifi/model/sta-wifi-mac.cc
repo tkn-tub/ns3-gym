@@ -150,7 +150,6 @@ StaWifiMac::SendProbeRequest (void)
   hdr.SetAddr3 (Mac48Address::GetBroadcast ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   MgtProbeRequestHeader probe;
   probe.SetSsid (GetSsid ());
@@ -188,7 +187,6 @@ StaWifiMac::SendAssociationRequest (bool isReassoc)
   hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  hdr.SetNoOrder ();
   Ptr<Packet> packet = Create<Packet> ();
   if (!isReassoc)
     {
@@ -467,7 +465,7 @@ StaWifiMac::Enqueue (Ptr<const Packet> packet, Mac48Address to)
     }
   if (GetQosSupported () || GetHtSupported () || GetVhtSupported () || GetHeSupported ())
     {
-      hdr.SetNoOrder ();
+      hdr.SetNoOrder (); // explicitly set to 0 for the time being since HT/VHT/HE control field is not yet implemented (set it to 1 when implemented)
     }
 
   hdr.SetAddr1 (GetBssid ());
