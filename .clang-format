@@ -18,7 +18,15 @@ AlwaysBreakTemplateDeclarations: true
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: GNU
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  IndentBraces: true
+  BeforeElse: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
 ColumnLimit: 100
