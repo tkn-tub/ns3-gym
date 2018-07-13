@@ -443,25 +443,24 @@ uint32_t
 BlockAckManager::GetNBufferedPackets (Mac48Address recipient, uint8_t tid) const
 {
   NS_LOG_FUNCTION (this << recipient << +tid);
-  uint32_t nPackets = 0;
-  if (ExistsAgreement (recipient, tid))
+  AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
+  if (it == m_agreements.end ())
     {
-      AgreementsCI it = m_agreements.find (std::make_pair (recipient, tid));
-      PacketQueueCI queueIt = (*it).second.second.begin ();
-      uint16_t currentSeq = 0;
-      while (queueIt != (*it).second.second.end ())
-        {
-          currentSeq = (*queueIt).hdr.GetSequenceNumber ();
-          nPackets++;
-          /* a fragmented packet must be counted as one packet */
-          while (queueIt != (*it).second.second.end () && (*queueIt).hdr.GetSequenceNumber () == currentSeq)
-            {
-              queueIt++;
-            }
-        }
-      return nPackets;
+      return 0;
     }
-  return 0;
+  uint32_t nPackets = 0;
+  PacketQueueCI queueIt = (*it).second.second.begin ();
+  while (queueIt != (*it).second.second.end ())
+    {
+      uint16_t currentSeq = (*queueIt).hdr.GetSequenceNumber ();
+      nPackets++;
+      /* a fragmented packet must be counted as one packet */
+      while (queueIt != (*it).second.second.end () && (*queueIt).hdr.GetSequenceNumber () == currentSeq)
+        {
+          queueIt++;
+        }
+    }
+  return nPackets;
 }
 
 uint32_t
