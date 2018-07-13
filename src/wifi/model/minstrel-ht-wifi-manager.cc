@@ -1706,10 +1706,10 @@ MinstrelHtWifiManager::StatsDump (MinstrelHtWifiRemoteStation *station, uint8_t 
             }
           else
             {
-              of << std::setw (7) << "   MCS" << i << "/" << (int) group.streams;
+              of << std::setw (7) << "   MCS" << +i << "/" << (int) group.streams;
             }
 
-          of << "  " << std::setw (3) << idx << "  ";
+          of << "  " << std::setw (3) << +idx << "  ";
 
           /* tx_time[rate(i)] in usec */
           txTime = GetFirstMpduTxTime (groupId, GetMcsSupported (station, station->m_groupsTable[groupId].m_ratesTable[i].mcsIndex));
