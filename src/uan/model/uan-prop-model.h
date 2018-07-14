@@ -233,7 +233,12 @@ public:
    * \return Coherent sum of arrivals after max in given window.
    */
   std::complex<double> SumTapsFromMaxC (Time delay, Time duration) const;
-
+   /**
+   * Creates a new UanPdp normalized to its non coherent sum.
+   * \see SumTapsNc
+   * \returns the new PDP
+   */
+  UanPdp NormalizeToSumNc (void) const;
   /**
    * Get a unit impulse PDP at time 0.
    *
