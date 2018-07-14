@@ -22,6 +22,7 @@
 
 #include "ns3/object.h"
 #include "ns3/traced-value.h"
+#include "ns3/traced-callback.h"
 #include "ns3/net-device.h"
 #include "ns3/queue-item.h"
 #include "ns3/queue-size.h"
@@ -665,7 +666,7 @@ private:
 
   TracedValue<uint32_t> m_nPackets; //!< Number of packets in the queue
   TracedValue<uint32_t> m_nBytes;   //!< Number of bytes in the queue
-  TracedValue<Time> m_sojourn;      //!< Sojourn time of the latest dequeued packet
+  TracedCallback<Time> m_sojourn;   //!< Sojourn time of the latest dequeued packet
   QueueSize m_maxSize;              //!< max queue size
 
   Stats m_stats;                    //!< The collected statistics

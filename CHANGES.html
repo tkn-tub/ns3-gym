@@ -93,6 +93,7 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
   <li>QueueDisc::DequeuePeeked has been merged into QueueDisc::Dequeue and hence no longer exists.</li>
   <li>The QueueDisc base class now provides a default implementation of the DoPeek private method
   based on the QueueDisc::PeekDequeue method, which is now no longer available.</li>
+  <li>The QueueDisc::SojournTime trace source is changed from a TracedValue to a TracedCallback; callbacks that hook this trace must provide one ns3::Time argument, not two.</li>
 </ul>
 <h2>Changes to build system:</h2>
 <ul>
