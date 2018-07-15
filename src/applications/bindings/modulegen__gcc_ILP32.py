@@ -34,9 +34,6 @@ def register_types(module):
     module.add_enum('MaxSize_e', ['MAX_SIZE'], outer_class=root_module['ns3::Address'], import_from_module='ns.network')
     ## application-container.h (module 'network'): ns3::ApplicationContainer [class]
     module.add_class('ApplicationContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Application > > const_iterator', u'ns3::ApplicationContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Application > > const_iterator*', u'ns3::ApplicationContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Application > > const_iterator&', u'ns3::ApplicationContainer::Iterator&')
     ## ascii-file.h (module 'network'): ns3::AsciiFile [class]
     module.add_class('AsciiFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::AsciiTraceHelper [class]
@@ -47,9 +44,6 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -70,9 +64,6 @@ def register_types(module):
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## channel-list.h (module 'network'): ns3::ChannelList [class]
     module.add_class('ChannelList', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Channel > > const_iterator', u'ns3::ChannelList::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Channel > > const_iterator*', u'ns3::ChannelList::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Channel > > const_iterator&', u'ns3::ChannelList::Iterator&')
     ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback [class]
     module.add_class('DataOutputCallback', allow_subclassing=True, import_from_module='ns.stats')
     ## data-rate.h (module 'network'): ns3::DataRate [class]
@@ -105,6 +96,8 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::PbbTlv'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::QueueItem> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::QueueItem'])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> [struct]
+    module.add_class('DefaultDeleter', template_parameters=['ns3::ThreeGppHttpServerTxBuffer'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::TraceSourceAccessor> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor'])
     ## delay-jitter-estimation.h (module 'network'): ns3::DelayJitterEstimation [class]
@@ -135,18 +128,12 @@ def register_types(module):
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
     ## log.h (module 'core'): ns3::LogComponent [class]
     module.add_class('LogComponent', import_from_module='ns.core')
-    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >', u'ns3::LogComponent::ComponentList')
-    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >*', u'ns3::LogComponent::ComponentList*')
-    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >&', u'ns3::LogComponent::ComponentList&')
     ## mac16-address.h (module 'network'): ns3::Mac16Address [class]
     module.add_class('Mac16Address', import_from_module='ns.network')
     ## mac16-address.h (module 'network'): ns3::Mac16Address [class]
     root_module['ns3::Mac16Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )', u'ns3::Mac48Address::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )*', u'ns3::Mac48Address::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )&', u'ns3::Mac48Address::TracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac64-address.h (module 'network'): ns3::Mac64Address [class]
@@ -159,19 +146,10 @@ def register_types(module):
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', u'ns3::NetDeviceContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator*', u'ns3::NetDeviceContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator&', u'ns3::NetDeviceContainer::Iterator&')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
     module.add_class('NodeContainer', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeContainer::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeContainer::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeContainer::Iterator&')
     ## node-list.h (module 'network'): ns3::NodeList [class]
     module.add_class('NodeList', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeList::Iterator')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeList::Iterator*')
-    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeList::Iterator&')
     ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
     module.add_class('NonCopyable', destructor_visibility='protected', import_from_module='ns.core')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
@@ -212,20 +190,8 @@ def register_types(module):
     module.add_class('ParameterLogger', import_from_module='ns.core')
     ## packetbb.h (module 'network'): ns3::PbbAddressTlvBlock [class]
     module.add_class('PbbAddressTlvBlock', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > iterator', u'ns3::PbbAddressTlvBlock::Iterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > iterator*', u'ns3::PbbAddressTlvBlock::Iterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > iterator&', u'ns3::PbbAddressTlvBlock::Iterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > const_iterator', u'ns3::PbbAddressTlvBlock::ConstIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > const_iterator*', u'ns3::PbbAddressTlvBlock::ConstIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > const_iterator&', u'ns3::PbbAddressTlvBlock::ConstIterator&')
     ## packetbb.h (module 'network'): ns3::PbbTlvBlock [class]
     module.add_class('PbbTlvBlock', import_from_module='ns.network')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator', u'ns3::PbbTlvBlock::Iterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator*', u'ns3::PbbTlvBlock::Iterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator&', u'ns3::PbbTlvBlock::Iterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator', u'ns3::PbbTlvBlock::ConstIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator*', u'ns3::PbbTlvBlock::ConstIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator&', u'ns3::PbbTlvBlock::ConstIterator&')
     ## pcap-file.h (module 'network'): ns3::PcapFile [class]
     module.add_class('PcapFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
@@ -252,6 +218,10 @@ def register_types(module):
     module.add_class('Tag', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## tag-buffer.h (module 'network'): ns3::TagBuffer [class]
     module.add_class('TagBuffer', import_from_module='ns.network')
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ThreeGppHttpClientHelper [class]
+    module.add_class('ThreeGppHttpClientHelper')
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ThreeGppHttpServerHelper [class]
+    module.add_class('ThreeGppHttpServerHelper')
     ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
     module.add_class('TimeWithUnit', import_from_module='ns.core')
     ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int> [class]
@@ -266,9 +236,6 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
-    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
-    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
-    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper [class]
     module.add_class('UdpClientHelper')
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper [class]
@@ -301,9 +268,6 @@ def register_types(module):
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
     module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )', u'ns3::PacketBurst::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )*', u'ns3::PacketBurst::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )&', u'ns3::PacketBurst::TracedCallback&')
     ## packet-socket.h (module 'network'): ns3::PacketSocketTag [class]
     module.add_class('PacketSocketTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
@@ -364,6 +328,8 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::PbbTlv', 'ns3::empty', 'ns3::DefaultDeleter<ns3::PbbTlv>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::QueueItem', 'ns3::empty', 'ns3::DefaultDeleter<ns3::QueueItem>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::ThreeGppHttpServerTxBuffer', 'ns3::empty', 'ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::TraceSourceAccessor', 'ns3::empty', 'ns3::DefaultDeleter<ns3::TraceSourceAccessor>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## sll-header.h (module 'network'): ns3::SllHeader [class]
@@ -394,6 +360,14 @@ def register_types(module):
     module.add_class('SocketPriorityTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## socket.h (module 'network'): ns3::SocketSetDontFragmentTag [class]
     module.add_class('SocketSetDontFragmentTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
+    ## three-gpp-http-header.h (module 'applications'): ns3::ThreeGppHttpHeader [class]
+    module.add_class('ThreeGppHttpHeader', parent=root_module['ns3::Header'])
+    ## three-gpp-http-header.h (module 'applications'): ns3::ThreeGppHttpHeader::ContentType_t [enumeration]
+    module.add_enum('ContentType_t', ['NOT_SET', 'MAIN_OBJECT', 'EMBEDDED_OBJECT'], outer_class=root_module['ns3::ThreeGppHttpHeader'])
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServerTxBuffer [class]
+    module.add_class('ThreeGppHttpServerTxBuffer', parent=root_module['ns3::SimpleRefCount< ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> >'])
+    ## three-gpp-http-variables.h (module 'applications'): ns3::ThreeGppHttpVariables [class]
+    module.add_class('ThreeGppHttpVariables', parent=root_module['ns3::Object'])
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
@@ -520,35 +494,14 @@ def register_types(module):
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) (  )', u'ns3::NetDevice::LinkChangeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) (  )*', u'ns3::NetDevice::LinkChangeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) (  )&', u'ns3::NetDevice::LinkChangeTracedCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::ReceiveCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::ReceiveCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::ReceiveCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::PromiscReceiveCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::PromiscReceiveCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueue [class]
     module.add_class('NetDeviceQueue', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NetDeviceQueue, ns3::empty, ns3::DefaultDeleter<ns3::NetDeviceQueue> >'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDeviceQueue::WakeCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDeviceQueue::WakeCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDeviceQueue::WakeCallback&')
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueueInterface [class]
     module.add_class('NetDeviceQueueInterface', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDeviceQueueInterface::SelectQueueCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDeviceQueueInterface::SelectQueueCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDeviceQueueInterface::SelectQueueCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::ProtocolHandler')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::ProtocolHandler*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::ProtocolHandler&')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::DeviceAdditionListener')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::DeviceAdditionListener*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
     module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -561,21 +514,6 @@ def register_types(module):
     module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )*', u'ns3::Packet::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )&', u'ns3::Packet::TracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )', u'ns3::Packet::SizeTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )*', u'ns3::Packet::SizeTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )&', u'ns3::Packet::SizeTracedCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )', u'ns3::Packet::SinrTracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', u'ns3::Packet::SinrTracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## packet-sink.h (module 'applications'): ns3::PacketSink [class]
     module.add_class('PacketSink', parent=root_module['ns3::Application'])
     ## packet-data-calculators.h (module 'network'): ns3::PacketSizeMinMaxAvgTotalCalculator [class]
@@ -592,60 +530,18 @@ def register_types(module):
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## packetbb.h (module 'network'): ns3::PbbAddressBlock [class]
     module.add_class('PbbAddressBlock', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty, ns3::DefaultDeleter<ns3::PbbAddressBlock> >'])
-    typehandlers.add_type_alias(u'std::list< ns3::Address > iterator', u'ns3::PbbAddressBlock::AddressIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Address > iterator*', u'ns3::PbbAddressBlock::AddressIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Address > iterator&', u'ns3::PbbAddressBlock::AddressIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Address > const_iterator', u'ns3::PbbAddressBlock::ConstAddressIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Address > const_iterator*', u'ns3::PbbAddressBlock::ConstAddressIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Address > const_iterator&', u'ns3::PbbAddressBlock::ConstAddressIterator&')
-    typehandlers.add_type_alias(u'std::list< unsigned char > iterator', u'ns3::PbbAddressBlock::PrefixIterator')
-    typehandlers.add_type_alias(u'std::list< unsigned char > iterator*', u'ns3::PbbAddressBlock::PrefixIterator*')
-    typehandlers.add_type_alias(u'std::list< unsigned char > iterator&', u'ns3::PbbAddressBlock::PrefixIterator&')
-    typehandlers.add_type_alias(u'std::list< unsigned char > const_iterator', u'ns3::PbbAddressBlock::ConstPrefixIterator')
-    typehandlers.add_type_alias(u'std::list< unsigned char > const_iterator*', u'ns3::PbbAddressBlock::ConstPrefixIterator*')
-    typehandlers.add_type_alias(u'std::list< unsigned char > const_iterator&', u'ns3::PbbAddressBlock::ConstPrefixIterator&')
-    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::Iterator', u'ns3::PbbAddressBlock::TlvIterator')
-    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::Iterator*', u'ns3::PbbAddressBlock::TlvIterator*')
-    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::Iterator&', u'ns3::PbbAddressBlock::TlvIterator&')
-    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::ConstIterator', u'ns3::PbbAddressBlock::ConstTlvIterator')
-    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::ConstIterator*', u'ns3::PbbAddressBlock::ConstTlvIterator*')
-    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::ConstIterator&', u'ns3::PbbAddressBlock::ConstTlvIterator&')
     ## packetbb.h (module 'network'): ns3::PbbAddressBlockIpv4 [class]
     module.add_class('PbbAddressBlockIpv4', import_from_module='ns.network', parent=root_module['ns3::PbbAddressBlock'])
     ## packetbb.h (module 'network'): ns3::PbbAddressBlockIpv6 [class]
     module.add_class('PbbAddressBlockIpv6', import_from_module='ns.network', parent=root_module['ns3::PbbAddressBlock'])
     ## packetbb.h (module 'network'): ns3::PbbMessage [class]
     module.add_class('PbbMessage', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty, ns3::DefaultDeleter<ns3::PbbMessage> >'])
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator', u'ns3::PbbMessage::TlvIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator*', u'ns3::PbbMessage::TlvIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator&', u'ns3::PbbMessage::TlvIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator', u'ns3::PbbMessage::ConstTlvIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator*', u'ns3::PbbMessage::ConstTlvIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator&', u'ns3::PbbMessage::ConstTlvIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > iterator', u'ns3::PbbMessage::AddressBlockIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > iterator*', u'ns3::PbbMessage::AddressBlockIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > iterator&', u'ns3::PbbMessage::AddressBlockIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > const_iterator', u'ns3::PbbMessage::ConstAddressBlockIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > const_iterator*', u'ns3::PbbMessage::ConstAddressBlockIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > const_iterator&', u'ns3::PbbMessage::ConstAddressBlockIterator&')
     ## packetbb.h (module 'network'): ns3::PbbMessageIpv4 [class]
     module.add_class('PbbMessageIpv4', import_from_module='ns.network', parent=root_module['ns3::PbbMessage'])
     ## packetbb.h (module 'network'): ns3::PbbMessageIpv6 [class]
     module.add_class('PbbMessageIpv6', import_from_module='ns.network', parent=root_module['ns3::PbbMessage'])
     ## packetbb.h (module 'network'): ns3::PbbPacket [class]
     module.add_class('PbbPacket', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header, ns3::DefaultDeleter<ns3::PbbPacket> >'])
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator', u'ns3::PbbPacket::TlvIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator*', u'ns3::PbbPacket::TlvIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator&', u'ns3::PbbPacket::TlvIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator', u'ns3::PbbPacket::ConstTlvIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator*', u'ns3::PbbPacket::ConstTlvIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator&', u'ns3::PbbPacket::ConstTlvIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > iterator', u'ns3::PbbPacket::MessageIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > iterator*', u'ns3::PbbPacket::MessageIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > iterator&', u'ns3::PbbPacket::MessageIterator&')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > const_iterator', u'ns3::PbbPacket::ConstMessageIterator')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > const_iterator*', u'ns3::PbbPacket::ConstMessageIterator*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > const_iterator&', u'ns3::PbbPacket::ConstMessageIterator&')
     ## packetbb.h (module 'network'): ns3::PbbTlv [class]
     module.add_class('PbbTlv', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty, ns3::DefaultDeleter<ns3::PbbTlv> >'])
     ## probe.h (module 'stats'): ns3::Probe [class]
@@ -658,9 +554,6 @@ def register_types(module):
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
     ## queue-item.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
     module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )', u'ns3::QueueItem::TracedCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )*', u'ns3::QueueItem::TracedCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )&', u'ns3::QueueItem::TracedCallback&')
     ## queue-size.h (module 'network'): ns3::QueueSizeChecker [class]
     module.add_class('QueueSizeChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## queue-size.h (module 'network'): ns3::QueueSizeValue [class]
@@ -675,6 +568,14 @@ def register_types(module):
     module.add_class('SimpleChannel', import_from_module='ns.network', parent=root_module['ns3::Channel'])
     ## simple-net-device.h (module 'network'): ns3::SimpleNetDevice [class]
     module.add_class('SimpleNetDevice', import_from_module='ns.network', parent=root_module['ns3::NetDevice'])
+    ## three-gpp-http-client.h (module 'applications'): ns3::ThreeGppHttpClient [class]
+    module.add_class('ThreeGppHttpClient', parent=root_module['ns3::Application'])
+    ## three-gpp-http-client.h (module 'applications'): ns3::ThreeGppHttpClient::State_t [enumeration]
+    module.add_enum('State_t', ['NOT_STARTED', 'CONNECTING', 'EXPECTING_MAIN_OBJECT', 'PARSING_MAIN_OBJECT', 'EXPECTING_EMBEDDED_OBJECT', 'READING', 'STOPPED'], outer_class=root_module['ns3::ThreeGppHttpClient'])
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer [class]
+    module.add_class('ThreeGppHttpServer', parent=root_module['ns3::Application'])
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer::State_t [enumeration]
+    module.add_enum('State_t', ['NOT_STARTED', 'STARTED', 'STOPPED'], outer_class=root_module['ns3::ThreeGppHttpServer'])
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -713,12 +614,24 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['unsigned char', 'ns3::Ptr<ns3::QueueItem>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'const ns3::Time &', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'const std::basic_string<char> &', 'const std::basic_string<char> &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'const ns3::Address &', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::QueueDiscItem>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::ThreeGppHttpClient>', 'ns3::Ptr<const ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::ThreeGppHttpClient>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::ThreeGppHttpServer>', 'ns3::Ptr<ns3::Socket>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<ns3::NetDevice>', 'ns3::Ptr<const ns3::Packet>', 'unsigned short', 'const ns3::Address &', 'const ns3::Address &', 'ns3::NetDevice::PacketType', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -731,6 +644,8 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## basic-data-calculators.h (module 'stats'): ns3::CounterCalculator<unsigned int> [class]
@@ -934,6 +849,7 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3PbbMessage_methods(root_module, root_module['ns3::DefaultDeleter< ns3::PbbMessage >'])
     register_Ns3DefaultDeleter__Ns3PbbTlv_methods(root_module, root_module['ns3::DefaultDeleter< ns3::PbbTlv >'])
     register_Ns3DefaultDeleter__Ns3QueueItem_methods(root_module, root_module['ns3::DefaultDeleter< ns3::QueueItem >'])
+    register_Ns3DefaultDeleter__Ns3ThreeGppHttpServerTxBuffer_methods(root_module, root_module['ns3::DefaultDeleter< ns3::ThreeGppHttpServerTxBuffer >'])
     register_Ns3DefaultDeleter__Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::DefaultDeleter< ns3::TraceSourceAccessor >'])
     register_Ns3DelayJitterEstimation_methods(root_module, root_module['ns3::DelayJitterEstimation'])
     register_Ns3EventId_methods(root_module, root_module['ns3::EventId'])
@@ -982,6 +898,8 @@ def register_methods(root_module):
     register_Ns3SystemWallClockMs_methods(root_module, root_module['ns3::SystemWallClockMs'])
     register_Ns3Tag_methods(root_module, root_module['ns3::Tag'])
     register_Ns3TagBuffer_methods(root_module, root_module['ns3::TagBuffer'])
+    register_Ns3ThreeGppHttpClientHelper_methods(root_module, root_module['ns3::ThreeGppHttpClientHelper'])
+    register_Ns3ThreeGppHttpServerHelper_methods(root_module, root_module['ns3::ThreeGppHttpServerHelper'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
     register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
@@ -1025,6 +943,7 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3PbbPacket_Ns3Header_Ns3DefaultDeleter__lt__ns3PbbPacket__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header, ns3::DefaultDeleter<ns3::PbbPacket> >'])
     register_Ns3SimpleRefCount__Ns3PbbTlv_Ns3Empty_Ns3DefaultDeleter__lt__ns3PbbTlv__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty, ns3::DefaultDeleter<ns3::PbbTlv> >'])
     register_Ns3SimpleRefCount__Ns3QueueItem_Ns3Empty_Ns3DefaultDeleter__lt__ns3QueueItem__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
+    register_Ns3SimpleRefCount__Ns3ThreeGppHttpServerTxBuffer_Ns3Empty_Ns3DefaultDeleter__lt__ns3ThreeGppHttpServerTxBuffer__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> >'])
     register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     register_Ns3SllHeader_methods(root_module, root_module['ns3::SllHeader'])
     register_Ns3Socket_methods(root_module, root_module['ns3::Socket'])
@@ -1035,6 +954,9 @@ def register_methods(root_module):
     register_Ns3SocketIpv6TclassTag_methods(root_module, root_module['ns3::SocketIpv6TclassTag'])
     register_Ns3SocketPriorityTag_methods(root_module, root_module['ns3::SocketPriorityTag'])
     register_Ns3SocketSetDontFragmentTag_methods(root_module, root_module['ns3::SocketSetDontFragmentTag'])
+    register_Ns3ThreeGppHttpHeader_methods(root_module, root_module['ns3::ThreeGppHttpHeader'])
+    register_Ns3ThreeGppHttpServerTxBuffer_methods(root_module, root_module['ns3::ThreeGppHttpServerTxBuffer'])
+    register_Ns3ThreeGppHttpVariables_methods(root_module, root_module['ns3::ThreeGppHttpVariables'])
     register_Ns3Time_methods(root_module, root_module['ns3::Time'])
     register_Ns3TraceSourceAccessor_methods(root_module, root_module['ns3::TraceSourceAccessor'])
     register_Ns3Trailer_methods(root_module, root_module['ns3::Trailer'])
@@ -1130,6 +1052,8 @@ def register_methods(root_module):
     register_Ns3ReceiveListErrorModel_methods(root_module, root_module['ns3::ReceiveListErrorModel'])
     register_Ns3SimpleChannel_methods(root_module, root_module['ns3::SimpleChannel'])
     register_Ns3SimpleNetDevice_methods(root_module, root_module['ns3::SimpleNetDevice'])
+    register_Ns3ThreeGppHttpClient_methods(root_module, root_module['ns3::ThreeGppHttpClient'])
+    register_Ns3ThreeGppHttpServer_methods(root_module, root_module['ns3::ThreeGppHttpServer'])
     register_Ns3TimeValue_methods(root_module, root_module['ns3::TimeValue'])
     register_Ns3TypeIdChecker_methods(root_module, root_module['ns3::TypeIdChecker'])
     register_Ns3TypeIdValue_methods(root_module, root_module['ns3::TypeIdValue'])
@@ -1149,15 +1073,22 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Unsigned_char_Ns3Ptr__lt__ns3QueueItem__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Const_ns3Time___amp___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Const_stdBasic_string__lt__char__gt_____amp___Const_stdBasic_string__lt__char__gt_____amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Const_ns3Address___amp___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3QueueDiscItem__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3ThreeGppHttpClient__gt___Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3ThreeGppHttpClient__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3ThreeGppHttpServer__gt___Ns3Ptr__lt__ns3Socket__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CounterCalculator__Unsigned_int_methods(root_module, root_module['ns3::CounterCalculator< unsigned int >'])
     register_Ns3ErrorChannel_methods(root_module, root_module['ns3::ErrorChannel'])
@@ -2147,6 +2078,18 @@ def register_Ns3DefaultDeleter__Ns3QueueItem_methods(root_module, cls):
     cls.add_method('Delete', 
                    'void', 
                    [param('ns3::QueueItem *', 'object')], 
+                   is_static=True)
+    return
+
+def register_Ns3DefaultDeleter__Ns3ThreeGppHttpServerTxBuffer_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer>::DefaultDeleter(ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::ThreeGppHttpServerTxBuffer > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer>::Delete(ns3::ThreeGppHttpServerTxBuffer * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::ThreeGppHttpServerTxBuffer *', 'object')], 
                    is_static=True)
     return
 
@@ -4348,6 +4291,58 @@ def register_Ns3TagBuffer_methods(root_module, cls):
                    [param('uint8_t', 'v')])
     return
 
+def register_Ns3ThreeGppHttpClientHelper_methods(root_module, cls):
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ThreeGppHttpClientHelper::ThreeGppHttpClientHelper(ns3::ThreeGppHttpClientHelper const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpClientHelper const &', 'arg0')])
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ThreeGppHttpClientHelper::ThreeGppHttpClientHelper(ns3::Address const & address) [constructor]
+    cls.add_constructor([param('ns3::Address const &', 'address')])
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ApplicationContainer ns3::ThreeGppHttpClientHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ApplicationContainer ns3::ThreeGppHttpClientHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ApplicationContainer ns3::ThreeGppHttpClientHelper::Install(std::string const & nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string const &', 'nodeName')], 
+                   is_const=True)
+    ## three-gpp-http-helper.h (module 'applications'): void ns3::ThreeGppHttpClientHelper::SetAttribute(std::string const & name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string const &', 'name'), param('ns3::AttributeValue const &', 'value')])
+    return
+
+def register_Ns3ThreeGppHttpServerHelper_methods(root_module, cls):
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ThreeGppHttpServerHelper::ThreeGppHttpServerHelper(ns3::ThreeGppHttpServerHelper const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpServerHelper const &', 'arg0')])
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ThreeGppHttpServerHelper::ThreeGppHttpServerHelper(ns3::Address const & address) [constructor]
+    cls.add_constructor([param('ns3::Address const &', 'address')])
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ApplicationContainer ns3::ThreeGppHttpServerHelper::Install(ns3::NodeContainer c) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::NodeContainer', 'c')], 
+                   is_const=True)
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ApplicationContainer ns3::ThreeGppHttpServerHelper::Install(ns3::Ptr<ns3::Node> node) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('ns3::Ptr< ns3::Node >', 'node')], 
+                   is_const=True)
+    ## three-gpp-http-helper.h (module 'applications'): ns3::ApplicationContainer ns3::ThreeGppHttpServerHelper::Install(std::string const & nodeName) const [member function]
+    cls.add_method('Install', 
+                   'ns3::ApplicationContainer', 
+                   [param('std::string const &', 'nodeName')], 
+                   is_const=True)
+    ## three-gpp-http-helper.h (module 'applications'): void ns3::ThreeGppHttpServerHelper::SetAttribute(std::string const & name, ns3::AttributeValue const & value) [member function]
+    cls.add_method('SetAttribute', 
+                   'void', 
+                   [param('std::string const &', 'name'), param('ns3::AttributeValue const &', 'value')])
+    return
+
 def register_Ns3TimeWithUnit_methods(root_module, cls):
     cls.add_output_stream_operator()
     ## nstime.h (module 'core'): ns3::TimeWithUnit::TimeWithUnit(ns3::TimeWithUnit const & arg0) [constructor]
@@ -5830,6 +5825,13 @@ def register_Ns3SimpleRefCount__Ns3QueueItem_Ns3Empty_Ns3DefaultDeleter__lt__ns3
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter< ns3::QueueItem > > const &', 'o')])
     return
 
+def register_Ns3SimpleRefCount__Ns3ThreeGppHttpServerTxBuffer_Ns3Empty_Ns3DefaultDeleter__lt__ns3ThreeGppHttpServerTxBuffer__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> >::SimpleRefCount(ns3::SimpleRefCount<ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter<ns3::ThreeGppHttpServerTxBuffer> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::ThreeGppHttpServerTxBuffer, ns3::empty, ns3::DefaultDeleter< ns3::ThreeGppHttpServerTxBuffer > > const &', 'o')])
+    return
+
 def register_Ns3SimpleRefCount__Ns3TraceSourceAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3TraceSourceAccessor__gt___methods(root_module, cls):
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >::SimpleRefCount() [constructor]
     cls.add_constructor([])
@@ -6547,6 +6549,258 @@ def register_Ns3SocketSetDontFragmentTag_methods(root_module, cls):
                    'void', 
                    [param('ns3::TagBuffer', 'i')], 
                    is_const=True, is_virtual=True)
+    return
+
+def register_Ns3ThreeGppHttpHeader_methods(root_module, cls):
+    ## three-gpp-http-header.h (module 'applications'): ns3::ThreeGppHttpHeader::ThreeGppHttpHeader(ns3::ThreeGppHttpHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpHeader const &', 'arg0')])
+    ## three-gpp-http-header.h (module 'applications'): ns3::ThreeGppHttpHeader::ThreeGppHttpHeader() [constructor]
+    cls.add_constructor([])
+    ## three-gpp-http-header.h (module 'applications'): uint32_t ns3::ThreeGppHttpHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## three-gpp-http-header.h (module 'applications'): ns3::Time ns3::ThreeGppHttpHeader::GetClientTs() const [member function]
+    cls.add_method('GetClientTs', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-header.h (module 'applications'): uint32_t ns3::ThreeGppHttpHeader::GetContentLength() const [member function]
+    cls.add_method('GetContentLength', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-header.h (module 'applications'): ns3::ThreeGppHttpHeader::ContentType_t ns3::ThreeGppHttpHeader::GetContentType() const [member function]
+    cls.add_method('GetContentType', 
+                   'ns3::ThreeGppHttpHeader::ContentType_t', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-header.h (module 'applications'): ns3::TypeId ns3::ThreeGppHttpHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## three-gpp-http-header.h (module 'applications'): uint32_t ns3::ThreeGppHttpHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## three-gpp-http-header.h (module 'applications'): ns3::Time ns3::ThreeGppHttpHeader::GetServerTs() const [member function]
+    cls.add_method('GetServerTs', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-header.h (module 'applications'): static ns3::TypeId ns3::ThreeGppHttpHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## three-gpp-http-header.h (module 'applications'): void ns3::ThreeGppHttpHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## three-gpp-http-header.h (module 'applications'): void ns3::ThreeGppHttpHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## three-gpp-http-header.h (module 'applications'): void ns3::ThreeGppHttpHeader::SetClientTs(ns3::Time clientTs) [member function]
+    cls.add_method('SetClientTs', 
+                   'void', 
+                   [param('ns3::Time', 'clientTs')])
+    ## three-gpp-http-header.h (module 'applications'): void ns3::ThreeGppHttpHeader::SetContentLength(uint32_t contentLength) [member function]
+    cls.add_method('SetContentLength', 
+                   'void', 
+                   [param('uint32_t', 'contentLength')])
+    ## three-gpp-http-header.h (module 'applications'): void ns3::ThreeGppHttpHeader::SetContentType(ns3::ThreeGppHttpHeader::ContentType_t contentType) [member function]
+    cls.add_method('SetContentType', 
+                   'void', 
+                   [param('ns3::ThreeGppHttpHeader::ContentType_t', 'contentType')])
+    ## three-gpp-http-header.h (module 'applications'): void ns3::ThreeGppHttpHeader::SetServerTs(ns3::Time serverTs) [member function]
+    cls.add_method('SetServerTs', 
+                   'void', 
+                   [param('ns3::Time', 'serverTs')])
+    ## three-gpp-http-header.h (module 'applications'): std::string ns3::ThreeGppHttpHeader::ToString() const [member function]
+    cls.add_method('ToString', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    return
+
+def register_Ns3ThreeGppHttpServerTxBuffer_methods(root_module, cls):
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServerTxBuffer::ThreeGppHttpServerTxBuffer(ns3::ThreeGppHttpServerTxBuffer const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpServerTxBuffer const &', 'arg0')])
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServerTxBuffer::ThreeGppHttpServerTxBuffer() [constructor]
+    cls.add_constructor([])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::AddSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('AddSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::CloseAllSockets() [member function]
+    cls.add_method('CloseAllSockets', 
+                   'void', 
+                   [])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::CloseSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('CloseSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::DepleteBufferSize(ns3::Ptr<ns3::Socket> socket, uint32_t amount) [member function]
+    cls.add_method('DepleteBufferSize', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket'), param('uint32_t', 'amount')])
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpHeader::ContentType_t ns3::ThreeGppHttpServerTxBuffer::GetBufferContentType(ns3::Ptr<ns3::Socket> socket) const [member function]
+    cls.add_method('GetBufferContentType', 
+                   'ns3::ThreeGppHttpHeader::ContentType_t', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): uint32_t ns3::ThreeGppHttpServerTxBuffer::GetBufferSize(ns3::Ptr<ns3::Socket> socket) const [member function]
+    cls.add_method('GetBufferSize', 
+                   'uint32_t', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): ns3::Time ns3::ThreeGppHttpServerTxBuffer::GetClientTs(ns3::Ptr<ns3::Socket> socket) const [member function]
+    cls.add_method('GetClientTs', 
+                   'ns3::Time', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): bool ns3::ThreeGppHttpServerTxBuffer::HasTxedPartOfObject(ns3::Ptr<ns3::Socket> socket) const [member function]
+    cls.add_method('HasTxedPartOfObject', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): bool ns3::ThreeGppHttpServerTxBuffer::IsBufferEmpty(ns3::Ptr<ns3::Socket> socket) const [member function]
+    cls.add_method('IsBufferEmpty', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): bool ns3::ThreeGppHttpServerTxBuffer::IsSocketAvailable(ns3::Ptr<ns3::Socket> socket) const [member function]
+    cls.add_method('IsSocketAvailable', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::PrepareClose(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('PrepareClose', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::RecordNextServe(ns3::Ptr<ns3::Socket> socket, ns3::EventId const & eventId, ns3::Time const & clientTs) [member function]
+    cls.add_method('RecordNextServe', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket'), param('ns3::EventId const &', 'eventId'), param('ns3::Time const &', 'clientTs')])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::RemoveSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('RemoveSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServerTxBuffer::WriteNewObject(ns3::Ptr<ns3::Socket> socket, ns3::ThreeGppHttpHeader::ContentType_t contentType, uint32_t objectSize) [member function]
+    cls.add_method('WriteNewObject', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket'), param('ns3::ThreeGppHttpHeader::ContentType_t', 'contentType'), param('uint32_t', 'objectSize')])
+    return
+
+def register_Ns3ThreeGppHttpVariables_methods(root_module, cls):
+    ## three-gpp-http-variables.h (module 'applications'): ns3::ThreeGppHttpVariables::ThreeGppHttpVariables(ns3::ThreeGppHttpVariables const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpVariables const &', 'arg0')])
+    ## three-gpp-http-variables.h (module 'applications'): ns3::ThreeGppHttpVariables::ThreeGppHttpVariables() [constructor]
+    cls.add_constructor([])
+    ## three-gpp-http-variables.h (module 'applications'): int64_t ns3::ThreeGppHttpVariables::AssignStreams(int64_t stream) [member function]
+    cls.add_method('AssignStreams', 
+                   'int64_t', 
+                   [param('int64_t', 'stream')])
+    ## three-gpp-http-variables.h (module 'applications'): ns3::Time ns3::ThreeGppHttpVariables::GetEmbeddedObjectGenerationDelay() [member function]
+    cls.add_method('GetEmbeddedObjectGenerationDelay', 
+                   'ns3::Time', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): uint32_t ns3::ThreeGppHttpVariables::GetEmbeddedObjectSize() [member function]
+    cls.add_method('GetEmbeddedObjectSize', 
+                   'uint32_t', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): ns3::Time ns3::ThreeGppHttpVariables::GetMainObjectGenerationDelay() [member function]
+    cls.add_method('GetMainObjectGenerationDelay', 
+                   'ns3::Time', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): uint32_t ns3::ThreeGppHttpVariables::GetMainObjectSize() [member function]
+    cls.add_method('GetMainObjectSize', 
+                   'uint32_t', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): uint32_t ns3::ThreeGppHttpVariables::GetMtuSize() [member function]
+    cls.add_method('GetMtuSize', 
+                   'uint32_t', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): uint32_t ns3::ThreeGppHttpVariables::GetNumOfEmbeddedObjects() [member function]
+    cls.add_method('GetNumOfEmbeddedObjects', 
+                   'uint32_t', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): ns3::Time ns3::ThreeGppHttpVariables::GetParsingTime() [member function]
+    cls.add_method('GetParsingTime', 
+                   'ns3::Time', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): ns3::Time ns3::ThreeGppHttpVariables::GetReadingTime() [member function]
+    cls.add_method('GetReadingTime', 
+                   'ns3::Time', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): uint32_t ns3::ThreeGppHttpVariables::GetRequestSize() [member function]
+    cls.add_method('GetRequestSize', 
+                   'uint32_t', 
+                   [])
+    ## three-gpp-http-variables.h (module 'applications'): static ns3::TypeId ns3::ThreeGppHttpVariables::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetEmbeddedObjectGenerationDelay(ns3::Time constant) [member function]
+    cls.add_method('SetEmbeddedObjectGenerationDelay', 
+                   'void', 
+                   [param('ns3::Time', 'constant')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetEmbeddedObjectSizeMean(uint32_t mean) [member function]
+    cls.add_method('SetEmbeddedObjectSizeMean', 
+                   'void', 
+                   [param('uint32_t', 'mean')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetEmbeddedObjectSizeStdDev(uint32_t stdDev) [member function]
+    cls.add_method('SetEmbeddedObjectSizeStdDev', 
+                   'void', 
+                   [param('uint32_t', 'stdDev')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetMainObjectGenerationDelay(ns3::Time constant) [member function]
+    cls.add_method('SetMainObjectGenerationDelay', 
+                   'void', 
+                   [param('ns3::Time', 'constant')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetMainObjectSizeMean(uint32_t mean) [member function]
+    cls.add_method('SetMainObjectSizeMean', 
+                   'void', 
+                   [param('uint32_t', 'mean')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetMainObjectSizeStdDev(uint32_t stdDev) [member function]
+    cls.add_method('SetMainObjectSizeStdDev', 
+                   'void', 
+                   [param('uint32_t', 'stdDev')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetNumOfEmbeddedObjectsMax(uint32_t max) [member function]
+    cls.add_method('SetNumOfEmbeddedObjectsMax', 
+                   'void', 
+                   [param('uint32_t', 'max')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetNumOfEmbeddedObjectsScale(uint32_t scale) [member function]
+    cls.add_method('SetNumOfEmbeddedObjectsScale', 
+                   'void', 
+                   [param('uint32_t', 'scale')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetNumOfEmbeddedObjectsShape(double shape) [member function]
+    cls.add_method('SetNumOfEmbeddedObjectsShape', 
+                   'void', 
+                   [param('double', 'shape')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetParsingTimeMean(ns3::Time mean) [member function]
+    cls.add_method('SetParsingTimeMean', 
+                   'void', 
+                   [param('ns3::Time', 'mean')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetReadingTimeMean(ns3::Time mean) [member function]
+    cls.add_method('SetReadingTimeMean', 
+                   'void', 
+                   [param('ns3::Time', 'mean')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::SetRequestSize(uint32_t constant) [member function]
+    cls.add_method('SetRequestSize', 
+                   'void', 
+                   [param('uint32_t', 'constant')])
+    ## three-gpp-http-variables.h (module 'applications'): void ns3::ThreeGppHttpVariables::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3Time_methods(root_module, cls):
@@ -7316,6 +7570,26 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, visibility='protected', template_parameters=[u'bool'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::ThreeGppHttpClient const> '])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Time const&'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'std::__cxx11::basic_string<char', u' std::char_traits<char>', u' std::allocator<char> > const&'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::ThreeGppHttpServer const> '])
     return
 
 def register_Ns3CallbackValue_methods(root_module, cls):
@@ -7351,19 +7625,19 @@ def register_Ns3Channel_methods(root_module, cls):
     cls.add_constructor([param('ns3::Channel const &', 'arg0')])
     ## channel.h (module 'network'): ns3::Channel::Channel() [constructor]
     cls.add_constructor([])
-    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(uint32_t i) const [member function]
+    ## channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::Channel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): uint32_t ns3::Channel::GetId() const [member function]
     cls.add_method('GetId', 
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## channel.h (module 'network'): uint32_t ns3::Channel::GetNDevices() const [member function]
+    ## channel.h (module 'network'): std::size_t ns3::Channel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
     ## channel.h (module 'network'): static ns3::TypeId ns3::Channel::GetTypeId() [member function]
@@ -11008,14 +11282,14 @@ def register_Ns3SimpleChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SimpleNetDevice >', 'from'), param('ns3::Ptr< ns3::SimpleNetDevice >', 'to')], 
                    is_virtual=True)
-    ## simple-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(uint32_t i) const [member function]
+    ## simple-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::SimpleChannel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, is_virtual=True)
-    ## simple-channel.h (module 'network'): uint32_t ns3::SimpleChannel::GetNDevices() const [member function]
+    ## simple-channel.h (module 'network'): std::size_t ns3::SimpleChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## simple-channel.h (module 'network'): static ns3::TypeId ns3::SimpleChannel::GetTypeId() [member function]
@@ -11198,6 +11472,104 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    visibility='protected', is_virtual=True)
     ## simple-net-device.h (module 'network'): void ns3::SimpleNetDevice::NotifyNewAggregate() [member function]
     cls.add_method('NotifyNewAggregate', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3ThreeGppHttpClient_methods(root_module, cls):
+    ## three-gpp-http-client.h (module 'applications'): ns3::ThreeGppHttpClient::ThreeGppHttpClient(ns3::ThreeGppHttpClient const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpClient const &', 'arg0')])
+    ## three-gpp-http-client.h (module 'applications'): ns3::ThreeGppHttpClient::ThreeGppHttpClient() [constructor]
+    cls.add_constructor([])
+    ## three-gpp-http-client.h (module 'applications'): ns3::Ptr<ns3::Socket> ns3::ThreeGppHttpClient::GetSocket() const [member function]
+    cls.add_method('GetSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-client.h (module 'applications'): ns3::ThreeGppHttpClient::State_t ns3::ThreeGppHttpClient::GetState() const [member function]
+    cls.add_method('GetState', 
+                   'ns3::ThreeGppHttpClient::State_t', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-client.h (module 'applications'): std::string ns3::ThreeGppHttpClient::GetStateString() const [member function]
+    cls.add_method('GetStateString', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-client.h (module 'applications'): static std::string ns3::ThreeGppHttpClient::GetStateString(ns3::ThreeGppHttpClient::State_t state) [member function]
+    cls.add_method('GetStateString', 
+                   'std::string', 
+                   [param('ns3::ThreeGppHttpClient::State_t', 'state')], 
+                   is_static=True)
+    ## three-gpp-http-client.h (module 'applications'): static ns3::TypeId ns3::ThreeGppHttpClient::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## three-gpp-http-client.h (module 'applications'): void ns3::ThreeGppHttpClient::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## three-gpp-http-client.h (module 'applications'): void ns3::ThreeGppHttpClient::StartApplication() [member function]
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## three-gpp-http-client.h (module 'applications'): void ns3::ThreeGppHttpClient::StopApplication() [member function]
+    cls.add_method('StopApplication', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3ThreeGppHttpServer_methods(root_module, cls):
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer::ThreeGppHttpServer(ns3::ThreeGppHttpServer const & arg0) [constructor]
+    cls.add_constructor([param('ns3::ThreeGppHttpServer const &', 'arg0')])
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer::ThreeGppHttpServer() [constructor]
+    cls.add_constructor([])
+    ## three-gpp-http-server.h (module 'applications'): ns3::Ptr<ns3::Socket> ns3::ThreeGppHttpServer::GetSocket() const [member function]
+    cls.add_method('GetSocket', 
+                   'ns3::Ptr< ns3::Socket >', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer::State_t ns3::ThreeGppHttpServer::GetState() const [member function]
+    cls.add_method('GetState', 
+                   'ns3::ThreeGppHttpServer::State_t', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): std::string ns3::ThreeGppHttpServer::GetStateString() const [member function]
+    cls.add_method('GetStateString', 
+                   'std::string', 
+                   [], 
+                   is_const=True)
+    ## three-gpp-http-server.h (module 'applications'): static std::string ns3::ThreeGppHttpServer::GetStateString(ns3::ThreeGppHttpServer::State_t state) [member function]
+    cls.add_method('GetStateString', 
+                   'std::string', 
+                   [param('ns3::ThreeGppHttpServer::State_t', 'state')], 
+                   is_static=True)
+    ## three-gpp-http-server.h (module 'applications'): static ns3::TypeId ns3::ThreeGppHttpServer::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServer::SetMtuSize(uint32_t mtuSize) [member function]
+    cls.add_method('SetMtuSize', 
+                   'void', 
+                   [param('uint32_t', 'mtuSize')])
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServer::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServer::StartApplication() [member function]
+    cls.add_method('StartApplication', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## three-gpp-http-server.h (module 'applications'): void ns3::ThreeGppHttpServer::StopApplication() [member function]
+    cls.add_method('StopApplication', 
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
@@ -11772,6 +12144,73 @@ def register_Ns3CallbackImpl__Unsigned_char_Ns3Ptr__lt__ns3QueueItem__gt___Ns3Em
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Const_ns3Time___amp___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Time const &, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Time const & arg0, ns3::Address const & arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Time const &', 'arg0'), param('ns3::Address const &', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Const_stdBasic_string__lt__char__gt_____amp___Const_stdBasic_string__lt__char__gt_____amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, std::basic_string< char > const, std::basic_string< char > const, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(std::basic_string<char, std::char_traits<char>, std::allocator<char> > const & arg0, std::basic_string<char, std::char_traits<char>, std::allocator<char> > const & arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('std::string const &', 'arg0'), param('std::string const &', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    cls.add_copy_constructor()
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Const_ns3Address___amp___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::Packet const >, ns3::Address const &, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::Packet> arg0, ns3::Address const & arg1, ns3::Address const & arg2) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet const >', 'arg0'), param('ns3::Address const &', 'arg1'), param('ns3::Address const &', 'arg2')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -11835,6 +12274,72 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3QueueDiscItem__gt___Ns3E
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::QueueDiscItem const >', 'arg0')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3ThreeGppHttpClient__gt___Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::ThreeGppHttpClient const >, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::ThreeGppHttpClient> arg0, ns3::Ptr<const ns3::Packet> arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ThreeGppHttpClient const >', 'arg0'), param('ns3::Ptr< ns3::Packet const >', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3ThreeGppHttpClient__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::ThreeGppHttpClient const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpClient>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::ThreeGppHttpClient> arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ThreeGppHttpClient const >', 'arg0')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3ThreeGppHttpServer__gt___Ns3Ptr__lt__ns3Socket__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::ThreeGppHttpServer const >, ns3::Ptr< ns3::Socket >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::ThreeGppHttpServer>, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::ThreeGppHttpServer> arg0, ns3::Ptr<ns3::Socket> arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::ThreeGppHttpServer const >', 'arg0'), param('ns3::Ptr< ns3::Socket >', 'arg1')], 
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
@@ -11970,6 +12475,28 @@ def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(unsigned int arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('unsigned int', 'arg0')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -12037,14 +12564,14 @@ def register_Ns3ErrorChannel_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::SimpleNetDevice >', 'device')], 
                    is_virtual=True)
-    ## error-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::ErrorChannel::GetDevice(uint32_t i) const [member function]
+    ## error-channel.h (module 'network'): ns3::Ptr<ns3::NetDevice> ns3::ErrorChannel::GetDevice(std::size_t i) const [member function]
     cls.add_method('GetDevice', 
                    'ns3::Ptr< ns3::NetDevice >', 
-                   [param('uint32_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True, is_virtual=True)
-    ## error-channel.h (module 'network'): uint32_t ns3::ErrorChannel::GetNDevices() const [member function]
+    ## error-channel.h (module 'network'): std::size_t ns3::ErrorChannel::GetNDevices() const [member function]
     cls.add_method('GetNDevices', 
-                   'uint32_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True, is_virtual=True)
     ## error-channel.h (module 'network'): static ns3::TypeId ns3::ErrorChannel::GetTypeId() [member function]
@@ -12335,19 +12862,19 @@ def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
-    register_functions_ns3_addressUtils(module.add_cpp_namespace('addressUtils'), root_module)
-    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
-    register_functions_ns3_tests(module.add_cpp_namespace('tests'), root_module)
+    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
+    register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
+    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
+    register_functions_ns3_tests(module.get_submodule('tests'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):

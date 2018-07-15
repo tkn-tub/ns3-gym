@@ -3208,6 +3208,11 @@ def register_Ns3UanPdp_methods(root_module, cls):
                    'ns3::Tap const &', 
                    [param('uint32_t', 'i')], 
                    is_const=True)
+    ## uan-prop-model.h (module 'uan'): ns3::UanPdp ns3::UanPdp::NormalizeToSumNc() const [member function]
+    cls.add_method('NormalizeToSumNc', 
+                   'ns3::UanPdp', 
+                   [], 
+                   is_const=True)
     ## uan-prop-model.h (module 'uan'): void ns3::UanPdp::SetNTaps(uint32_t nTaps) [member function]
     cls.add_method('SetNTaps', 
                    'void', 
