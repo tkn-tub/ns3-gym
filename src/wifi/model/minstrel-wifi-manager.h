@@ -92,20 +92,20 @@ struct MinstrelWifiRemoteStation : public WifiRemoteStation
    */
   uint8_t m_col;                 ///< vector index
   uint8_t m_index;               ///< vector index
-  uint8_t m_maxTpRate;           ///< the current throughput rate
-  uint8_t m_maxTpRate2;          ///< second highest throughput rate
-  uint8_t m_maxProbRate;         ///< rate with highest prob of success
+  uint16_t m_maxTpRate;          ///< the current throughput rate
+  uint16_t m_maxTpRate2;         ///< second highest throughput rate
+  uint16_t m_maxProbRate;        ///< rate with highest prob of success
   uint8_t m_nModes;              ///< number of modes supported
   int m_totalPacketsCount;       ///< total number of packets as of now
   int m_samplePacketsCount;      ///< how many packets we have sample so far
   int m_numSamplesDeferred;      ///< number samles deferred
   bool m_isSampling;             ///< a flag to indicate we are currently sampling
-  uint8_t m_sampleRate;          ///< current sample rate
+  uint16_t m_sampleRate;         ///< current sample rate
   bool m_sampleDeferred;         ///< a flag to indicate sample rate is on the second stage
   uint32_t m_shortRetry;         ///< short retries such as control packts
   uint32_t m_longRetry;          ///< long retries such as data packets
   uint32_t m_retry;              ///< total retries short + long
-  uint8_t m_txrate;              ///< current transmit rate
+  uint16_t m_txrate;             ///< current transmit rate
   bool m_initialized;            ///< for initializing tables
   MinstrelRate m_minstrelTable;  ///< minstrel table
   SampleRate m_sampleTable;      ///< sample table
@@ -203,7 +203,7 @@ public:
    * \param station the station object
    * \returns the rate
    */
-  uint8_t FindRate (MinstrelWifiRemoteStation *station);
+  uint16_t FindRate (MinstrelWifiRemoteStation *station);
 
   /**
    * Get data transmit vector
@@ -306,7 +306,7 @@ private:
    * \param station the station object
    * \returns the next sample
    */
-  uint8_t GetNextSample (MinstrelWifiRemoteStation *station);
+  uint16_t GetNextSample (MinstrelWifiRemoteStation *station);
 
   /**
    * Estimate the time to transmit the given packet with the given number of retries.

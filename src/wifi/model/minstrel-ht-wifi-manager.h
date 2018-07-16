@@ -112,9 +112,9 @@ struct GroupInfo
   uint8_t m_col;                  //!< Sample table column.
   uint8_t m_index;                //!< Sample table index.
   bool m_supported;               //!< If the rates of this group are supported by the station.
-  uint8_t m_maxTpRate;            //!< The max throughput rate of this group.
-  uint8_t m_maxTpRate2;           //!< The second max throughput rate of this group.
-  uint8_t m_maxProbRate;          //!< The highest success probability rate of this group.
+  uint16_t m_maxTpRate;           //!< The max throughput rate of this group.
+  uint16_t m_maxTpRate2;          //!< The second max throughput rate of this group.
+  uint16_t m_maxProbRate;         //!< The highest success probability rate of this group.
   HtMinstrelRate m_ratesTable;    //!< Information about rates of this group.
 };
 
@@ -123,12 +123,6 @@ struct GroupInfo
  * A vector of a GroupInfo.
  */
 typedef std::vector<struct GroupInfo> McsGroupData;
-
-/**
- * Data structure for a Sample Rate table.
- * A vector of a vector uint8_t.
- */
-typedef std::vector<std::vector<uint8_t> > HtSampleRate;
 
 /**
  * Constants for maximum values.
@@ -335,7 +329,7 @@ private:
    * \param station the wifi remote station
    * \returns the next sample
    */
-  uint8_t GetNextSample (MinstrelHtWifiRemoteStation *station);
+  uint16_t GetNextSample (MinstrelHtWifiRemoteStation *station);
 
   /**
    * Set the next sample from Sample Table.
@@ -350,7 +344,7 @@ private:
    * \param station the minstrel HT wifi remote station
    * \returns the rate
    */
-  uint8_t FindRate (MinstrelHtWifiRemoteStation *station);
+  uint16_t FindRate (MinstrelHtWifiRemoteStation *station);
 
   /**
    * Updating the Minstrel Table every 1/10 seconds.
@@ -383,7 +377,7 @@ private:
    * \param station the minstrel HT wifi remote station
    * \param index the index
    */
-  void SetBestStationThRates (MinstrelHtWifiRemoteStation *station, uint8_t index);
+  void SetBestStationThRates (MinstrelHtWifiRemoteStation *station, uint16_t index);
 
   /**
    * Set index rate as maxProbRate if it is better than current value.
@@ -391,7 +385,7 @@ private:
    * \param station the minstrel HT wifi remote station
    * \param index the index
    */
-  void SetBestProbabilityRate (MinstrelHtWifiRemoteStation *station, uint8_t index);
+  void SetBestProbabilityRate (MinstrelHtWifiRemoteStation *station, uint16_t index);
 
   /**
    * Calculate the number of retransmissions to set for the index rate.
@@ -399,7 +393,7 @@ private:
    * \param station the minstrel HT wifi remote station
    * \param index the index
    */
-  void CalculateRetransmits (MinstrelHtWifiRemoteStation *station, uint8_t index);
+  void CalculateRetransmits (MinstrelHtWifiRemoteStation *station, uint16_t index);
 
   /**
    * Calculate the number of retransmissions to set for the (groupId, rateId) rate.
@@ -469,10 +463,10 @@ private:
    * Print group statistics.
    *
    * \param station the minstrel HT wifi remote station
-   * \param index the index
+   * \param groupId the group ID
    * \param of the output file stream
    */
-  void StatsDump (MinstrelHtWifiRemoteStation *station, uint8_t index, std::ofstream &of);
+  void StatsDump (MinstrelHtWifiRemoteStation *station, uint8_t groupId, std::ofstream &of);
 
   /**
    * Check for initializations.
@@ -513,7 +507,7 @@ private:
    * \param index the index
    * \returns the rate ID
    */
-  uint8_t GetRateId (uint8_t index);
+  uint8_t GetRateId (uint16_t index);
 
   /**
    * Return the groupId from the global index.
@@ -521,7 +515,7 @@ private:
    * \param index the index
    * \returns the group ID
    */
-  uint8_t GetGroupId (uint8_t index);
+  uint8_t GetGroupId (uint16_t index);
 
   /**
    * Returns the global index corresponding to the groupId and rateId.
@@ -530,7 +524,7 @@ private:
    * \param rateId the rate ID
    * \returns the index
    */
-  uint8_t GetIndex (uint8_t groupId, uint8_t rateId);
+  uint16_t GetIndex (uint8_t groupId, uint8_t rateId);
 
   /**
    * Returns the groupId of a HT MCS with the given number of streams, if using sgi and the channel width used.
@@ -558,7 +552,7 @@ private:
    * \param station the minstrel HT wifi remote station
    * \returns the lowest global index
    */
-  uint8_t GetLowestIndex (MinstrelHtWifiRemoteStation *station);
+  uint16_t GetLowestIndex (MinstrelHtWifiRemoteStation *station);
 
   /**
    * Returns the lowest global index of the rates supported by in the group.
@@ -567,7 +561,7 @@ private:
    * \param groupId the group ID
    * \returns the lowest global index
    */
-  uint8_t GetLowestIndex (MinstrelHtWifiRemoteStation *station, uint8_t groupId);
+  uint16_t GetLowestIndex (MinstrelHtWifiRemoteStation *station, uint8_t groupId);
 
   /**
    * Returns a list of only the VHT MCS supported by the device.
@@ -581,24 +575,19 @@ private:
    */
   WifiModeList GetHtDeviceMcsList (void) const;
 
-  Time m_updateStats;         //!< How frequent do we calculate the stats (1/10 seconds).
-  uint8_t m_lookAroundRate;    //!< The % to try other rates than our current rate.
-  uint8_t m_ewmaLevel;        //!< Exponential weighted moving average level (or coefficient).
-
-  uint8_t m_nSampleCol;       //!< Number of sample columns.
-  uint32_t m_frameLength;     //!< Frame length used for calculate modes TxTime.
-
-  uint8_t m_numGroups;         //!< Number of groups Minstrel should consider.
-  uint8_t m_numRates;          //!< Number of rates per group Minstrel should consider.
-
-  bool m_useVhtOnly;           //!< If only VHT MCS should be used, instead of HT and VHT.
-
-  bool m_printStats;           //!< If statistics table should be printed.
+  Time m_updateStats;        //!< How frequent do we calculate the stats (1/10 seconds).
+  uint8_t m_lookAroundRate;  //!< The % to try other rates than our current rate.
+  uint8_t m_ewmaLevel;       //!< Exponential weighted moving average level (or coefficient).
+  uint8_t m_nSampleCol;      //!< Number of sample columns.
+  uint32_t m_frameLength;    //!< Frame length used for calculate modes TxTime.
+  uint8_t m_numGroups;       //!< Number of groups Minstrel should consider.
+  uint8_t m_numRates;        //!< Number of rates per group Minstrel should consider.
+  bool m_useVhtOnly;         //!< If only VHT MCS should be used, instead of HT and VHT.
+  bool m_printStats;         //!< If statistics table should be printed.
 
   MinstrelMcsGroups m_minstrelGroups;                 //!< Global array for groups information.
 
   Ptr<MinstrelWifiManager> m_legacyManager;           //!< Pointer to an instance of MinstrelWifiManager. Used when 802.11n/ac not supported.
-
 
   Ptr<UniformRandomVariable> m_uniformRandomVariable; //!< Provides uniform random variables.
 

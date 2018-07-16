@@ -231,7 +231,7 @@ MinstrelWifiManager::UpdateRate (MinstrelWifiRemoteStation *station)
   //for normal rate, we're not currently sampling random rates
   if (!station->m_isSampling)
     {
-      NS_LOG_DEBUG ("Failed with normal rate: current=" << +station->m_txrate << ", sample=" << +station->m_sampleRate << ", maxTp=" << +station->m_maxTpRate << ", maxTp2=" << +station->m_maxTpRate2 << ", maxProb=" << +station->m_maxProbRate);
+      NS_LOG_DEBUG ("Failed with normal rate: current=" << station->m_txrate << ", sample=" << station->m_sampleRate << ", maxTp=" << station->m_maxTpRate << ", maxTp2=" << station->m_maxTpRate2 << ", maxProb=" << station->m_maxProbRate);
       //use best throughput rate
       if (station->m_longRetry < station->m_minstrelTable[station->m_maxTpRate].adjustedRetryCount)
         {
@@ -269,7 +269,7 @@ MinstrelWifiManager::UpdateRate (MinstrelWifiRemoteStation *station)
   //for look-around rate, we're currently sampling random rates
   else
     {
-      NS_LOG_DEBUG ("Failed with look around rate: current=" << +station->m_txrate << ", sample=" << +station->m_sampleRate << ", maxTp=" << +station->m_maxTpRate << ", maxTp2=" << +station->m_maxTpRate2 << ", maxProb=" << +station->m_maxProbRate);
+      NS_LOG_DEBUG ("Failed with look around rate: current=" << station->m_txrate << ", sample=" << station->m_sampleRate << ", maxTp=" << station->m_maxTpRate << ", maxTp2=" << station->m_maxTpRate2 << ", maxProb=" << station->m_maxProbRate);
       //current sampling rate is slower than the current best rate
       if (station->m_sampleDeferred)
         {
@@ -374,7 +374,7 @@ WifiTxVector
 MinstrelWifiManager::GetRtsTxVector (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  NS_LOG_DEBUG ("DoGetRtsMode m_txrate=" << +station->m_txrate);
+  NS_LOG_DEBUG ("DoGetRtsMode m_txrate=" << station->m_txrate);
   uint16_t channelWidth = GetChannelWidth (station);
   if (channelWidth > 20 && channelWidth != 22)
     {
@@ -414,7 +414,7 @@ MinstrelWifiManager::CountRetries (MinstrelWifiRemoteStation *station)
     }
 }
 
-uint8_t
+uint16_t
 MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
@@ -424,7 +424,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
       return 0;
     }
 
-  uint8_t idx = 0;
+  uint16_t idx = 0;
   NS_LOG_DEBUG ("Total: " << station->m_totalPacketsCount << "  Sample: " << station->m_samplePacketsCount << "  Deferred: " << station->m_numSamplesDeferred);
 
   int delta = (station->m_totalPacketsCount * m_lookAroundRate / 100) - (station->m_samplePacketsCount + station->m_numSamplesDeferred / 2);
@@ -454,7 +454,7 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
       //now go through the table and find an index rate
       idx = GetNextSample (station);
 
-      NS_LOG_DEBUG ("Sample rate = " << +idx << "(" << GetSupported (station, idx) << ")");
+      NS_LOG_DEBUG ("Sample rate = " << idx << "(" << GetSupported (station, idx) << ")");
 
       //error check
       if (idx >= station->m_nModes)
@@ -502,18 +502,18 @@ MinstrelWifiManager::FindRate (MinstrelWifiRemoteStation *station)
       //using the best rate instead
       if (station->m_sampleDeferred)
         {
-          NS_LOG_DEBUG ("The next look around rate is slower than the maximum throughput rate, continue with the maximum throughput rate: " << +station->m_maxTpRate << "(" << GetSupported (station, station->m_maxTpRate) << ")");
+          NS_LOG_DEBUG ("The next look around rate is slower than the maximum throughput rate, continue with the maximum throughput rate: " << station->m_maxTpRate << "(" << GetSupported (station, station->m_maxTpRate) << ")");
           idx = station->m_maxTpRate;
         }
     }
   //continue using the best rate
   else
     {
-      NS_LOG_DEBUG ("Continue using the maximum throughput rate: " << +station->m_maxTpRate << "(" << GetSupported (station, station->m_maxTpRate) << ")");
+      NS_LOG_DEBUG ("Continue using the maximum throughput rate: " << station->m_maxTpRate << "(" << GetSupported (station, station->m_maxTpRate) << ")");
       idx = station->m_maxTpRate;
     }
 
-  NS_LOG_DEBUG ("Rate = " << +idx << "(" << GetSupported (station, idx) << ")");
+  NS_LOG_DEBUG ("Rate = " << idx << "(" << GetSupported (station, idx) << ")");
 
   return idx;
 }
@@ -534,7 +534,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
   NS_LOG_FUNCTION (this);
   station->m_nextStatsUpdate = Simulator::Now () + m_updateStats;
   NS_LOG_DEBUG ("Next update at " << station->m_nextStatsUpdate);
-  NS_LOG_DEBUG ("Currently using rate: " << +station->m_txrate << " (" << GetSupported (station, station->m_txrate) << ")");
+  NS_LOG_DEBUG ("Currently using rate: " << station->m_txrate << " (" << GetSupported (station, station->m_txrate) << ")");
 
   Time txTime;
   uint32_t tempProb;
@@ -552,7 +552,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
           txTime = Seconds (1);
         }
 
-      NS_LOG_DEBUG (i << " " << GetSupported (station, i) <<
+      NS_LOG_DEBUG (+i << " " << GetSupported (station, i) <<
                     "\t" << station->m_minstrelTable[i].numRateAttempt <<
                     "\t" << station->m_minstrelTable[i].numRateSuccess);
 
@@ -686,7 +686,7 @@ MinstrelWifiManager::UpdateStats (MinstrelWifiRemoteStation *station)
 
   NS_LOG_DEBUG ("max throughput=" << +index_max_tp << "(" << GetSupported (station, index_max_tp) <<
                 ")\tsecond max throughput=" << +index_max_tp2 << "(" << GetSupported (station, index_max_tp2) <<
-                ")\tmax prob=" << index_max_prob << "(" << GetSupported (station, index_max_prob) << ")");
+                ")\tmax prob=" << +index_max_prob << "(" << GetSupported (station, index_max_prob) << ")");
   if (m_printStats)
     {
       PrintTable (station);
@@ -701,7 +701,7 @@ void
 MinstrelWifiManager::DoReportRxOk (WifiRemoteStation *st, double rxSnr, WifiMode txMode)
 {
   NS_LOG_FUNCTION (this << st << rxSnr << txMode);
-  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << +((MinstrelWifiRemoteStation *)st)->m_txrate);
+  NS_LOG_DEBUG ("DoReportRxOk m_txrate=" << ((MinstrelWifiRemoteStation *)st)->m_txrate);
 }
 
 void
@@ -709,7 +709,7 @@ MinstrelWifiManager::DoReportRtsFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
-  NS_LOG_DEBUG ("DoReportRtsFailed m_txrate=" << +station->m_txrate);
+  NS_LOG_DEBUG ("DoReportRtsFailed m_txrate=" << station->m_txrate);
   station->m_shortRetry++;
 }
 
@@ -732,7 +732,7 @@ MinstrelWifiManager::DoReportDataFailed (WifiRemoteStation *st)
 {
   NS_LOG_FUNCTION (this << st);
   MinstrelWifiRemoteStation *station = (MinstrelWifiRemoteStation *)st;
-  NS_LOG_DEBUG ("DoReportDataFailed " << station << "\t rate " << +station->m_txrate << "\tlongRetry \t" << station->m_longRetry);
+  NS_LOG_DEBUG ("DoReportDataFailed " << station << "\t rate " << station->m_txrate << "\tlongRetry \t" << station->m_longRetry);
   CheckInit (station);
   if (!station->m_initialized)
     {
@@ -755,14 +755,14 @@ MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
       return;
     }
 
-  NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << +station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (before update).");
+  NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (before update).");
 
   station->m_minstrelTable[station->m_txrate].numRateSuccess++;
   station->m_minstrelTable[station->m_txrate].numRateAttempt++;
 
   UpdatePacketCounters (station);
 
-  NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << +station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (after update).");
+  NS_LOG_DEBUG ("DoReportDataOk m_txrate = " << station->m_txrate << ", attempt = " << station->m_minstrelTable[station->m_txrate].numRateAttempt << ", success = " << station->m_minstrelTable[station->m_txrate].numRateSuccess << " (after update).");
 
   UpdateRetry (station);
   UpdateStats (station);
@@ -771,7 +771,7 @@ MinstrelWifiManager::DoReportDataOk (WifiRemoteStation *st,
     {
       station->m_txrate = FindRate (station);
     }
-  NS_LOG_DEBUG ("Next rate to use TxRate = " << +station->m_txrate);
+  NS_LOG_DEBUG ("Next rate to use TxRate = " << station->m_txrate);
 }
 
 void
@@ -799,7 +799,7 @@ MinstrelWifiManager::DoReportFinalDataFailed (WifiRemoteStation *st)
     {
       station->m_txrate = FindRate (station);
     }
-  NS_LOG_DEBUG ("Next rate to use TxRate = " << +station->m_txrate);
+  NS_LOG_DEBUG ("Next rate to use TxRate = " << station->m_txrate);
 }
 
 void
@@ -883,11 +883,12 @@ MinstrelWifiManager::IsLowLatency (void) const
   return true;
 }
 
-uint8_t
+uint16_t
 MinstrelWifiManager::GetNextSample (MinstrelWifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
-  uint8_t bitrate = station->m_sampleTable[station->m_index][station->m_col];
+  uint16_t bitrate;
+  bitrate = station->m_sampleTable[station->m_index][station->m_col];
   station->m_index++;
 
   //bookkeeping for m_index and m_col variables
@@ -982,7 +983,7 @@ MinstrelWifiManager::InitSampleTable (MinstrelWifiRemoteStation *station)
   //for off-setting to make rates fall between 0 and nModes
   uint8_t numSampleRates = station->m_nModes;
 
-  uint8_t newIndex;
+  uint16_t newIndex;
   for (uint8_t col = 0; col < m_sampleCol; col++)
     {
       for (uint8_t i = 0; i < numSampleRates; i++ )
@@ -1027,9 +1028,9 @@ MinstrelWifiManager::PrintTable (MinstrelWifiRemoteStation *station)
   station->m_statsFile << "best   _______________rate________________    ________statistics________    ________last_______    ______sum-of________\n" <<
     "rate  [      name       idx airtime max_tp]  [avg(tp) avg(prob) sd(prob)]  [prob.|retry|suc|att]  [#success | #attempts]\n";
 
-  uint8_t maxTpRate = station->m_maxTpRate;
-  uint8_t maxTpRate2 = station->m_maxTpRate2;
-  uint8_t maxProbRate = station->m_maxProbRate;
+  uint16_t maxTpRate = station->m_maxTpRate;
+  uint16_t maxTpRate2 = station->m_maxTpRate2;
+  uint16_t maxProbRate = station->m_maxProbRate;
 
   for (uint8_t i = 0; i < station->m_nModes; i++)
     {
