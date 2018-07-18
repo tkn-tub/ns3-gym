@@ -18,19 +18,51 @@
  * Author: Sébastien Deronne <sebastien.deronne@gmail.com>
  */
 
+#include "ns3/log.h"
 #include "frame-capture-model.h"
 
 namespace ns3 {
 
-NS_OBJECT_ENSURE_REGISTERED (FrameCaptureModel);
+NS_LOG_COMPONENT_DEFINE ("FrameCaptureModel");
 
-TypeId FrameCaptureModel::GetTypeId (void)
+NS_OBJECT_ENSURE_REGISTERED (FrameCaptureModel);
+NS_OBJECT_ENSURE_REGISTERED (NoOpFrameCaptureModel);
+
+TypeId
+FrameCaptureModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::FrameCaptureModel")
     .SetParent<Object> ()
     .SetGroupName ("Wifi")
   ;
   return tid;
+}
+
+TypeId
+NoOpFrameCaptureModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::NoOpFrameCaptureModel")
+    .SetParent<FrameCaptureModel> ()
+    .SetGroupName ("Wifi")
+    .AddConstructor<NoOpFrameCaptureModel> ()
+  ;
+  return tid;
+}
+
+NoOpFrameCaptureModel::NoOpFrameCaptureModel ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+NoOpFrameCaptureModel::~NoOpFrameCaptureModel ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+bool
+NoOpFrameCaptureModel::CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const
+{
+  return false;
 }
 
 } //namespace ns3

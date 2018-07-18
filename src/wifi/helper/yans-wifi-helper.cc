@@ -24,6 +24,7 @@
 #include "ns3/propagation-loss-model.h"
 #include "ns3/propagation-delay-model.h"
 #include "ns3/error-rate-model.h"
+#include "ns3/frame-capture-model.h"
 #include "ns3/yans-wifi-phy.h"
 #include "yans-wifi-helper.h"
 
@@ -132,6 +133,7 @@ YansWifiPhyHelper::Default (void)
 {
   YansWifiPhyHelper helper;
   helper.SetErrorRateModel ("ns3::NistErrorRateModel");
+  helper.SetFrameCaptureModel ("ns3::NoOpFrameCaptureModel");
   return helper;
 }
 
@@ -153,7 +155,9 @@ YansWifiPhyHelper::Create (Ptr<Node> node, Ptr<NetDevice> device) const
 {
   Ptr<YansWifiPhy> phy = m_phy.Create<YansWifiPhy> ();
   Ptr<ErrorRateModel> error = m_errorRateModel.Create<ErrorRateModel> ();
+  Ptr<FrameCaptureModel> capture = m_frameCaptureModel.Create<FrameCaptureModel> ();
   phy->SetErrorRateModel (error);
+  phy->SetFrameCaptureModel (capture);
   phy->SetChannel (m_channel);
   phy->SetDevice (device);
   return phy;
