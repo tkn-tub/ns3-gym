@@ -81,7 +81,7 @@ public:
    *
    * \param txop the AC_BE TXOP Limit field in the EdcaParameterSet information element
    */
-  void SetBeTXOPLimit (uint16_t txop);
+  void SetBeTxopLimit (uint16_t txop);
   /**
    * Set the AC_BK AIFSN field in the EdcaParameterSet information element.
    *
@@ -111,7 +111,7 @@ public:
    *
    * \param txop the AC_BK TXOP Limit field in the EdcaParameterSet information element
    */
-  void SetBkTXOPLimit (uint16_t txop);
+  void SetBkTxopLimit (uint16_t txop);
   /**
    * Set the AC_VI AIFSN field in the EdcaParameterSet information element.
    *
@@ -141,7 +141,7 @@ public:
    *
    * \param txop the AC_VI TXOP Limit field in the EdcaParameterSet information element
    */
-  void SetViTXOPLimit (uint16_t txop);
+  void SetViTxopLimit (uint16_t txop);
   /**
    * Set the AC_VO AIFSN field in the EdcaParameterSet information element.
    *
@@ -171,7 +171,7 @@ public:
    *
    * \param txop the AC_VO TXOP Limit field in the EdcaParameterSet information element
    */
-  void SetVoTXOPLimit (uint16_t txop);
+  void SetVoTxopLimit (uint16_t txop);
 
   /**
    * Return the QoS Info field in the EdcaParameterSet information element.
@@ -202,7 +202,7 @@ public:
    *
    * \return the AC_BE TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetBeTXOPLimit (void) const;
+  uint16_t GetBeTxopLimit (void) const;
   /**
    * Return the AC_BK AIFSN field in the EdcaParameterSet information element.
    *
@@ -226,7 +226,7 @@ public:
    *
    * \return the AC_BK TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetBkTXOPLimit (void) const;
+  uint16_t GetBkTxopLimit (void) const;
   /**
    * Return the AC_VI AIFSN field in the EdcaParameterSet information element.
    *
@@ -250,7 +250,7 @@ public:
    *
    * \return the AC_VI TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetViTXOPLimit (void) const;
+  uint16_t GetViTxopLimit (void) const;
   /**
    * Return the AC_VO AIFSN field in the EdcaParameterSet information element.
    *
@@ -274,7 +274,7 @@ public:
    *
    * \return the AC_VO TXOP Limit field in the EdcaParameterSet information element
    */
-  uint16_t GetVoTXOPLimit (void) const;
+  uint16_t GetVoTxopLimit (void) const;
 
   /**
    * Element ID function

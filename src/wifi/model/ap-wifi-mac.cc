@@ -509,7 +509,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBeCWmin (edca->GetMinCw ());
       edcaParameters.SetBeCWmax (edca->GetMaxCw ());
       edcaParameters.SetBeAifsn (edca->GetAifsn ());
-      edcaParameters.SetBeTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetBeTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_BK)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -517,7 +517,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetBkCWmin (edca->GetMinCw ());
       edcaParameters.SetBkCWmax (edca->GetMaxCw ());
       edcaParameters.SetBkAifsn (edca->GetAifsn ());
-      edcaParameters.SetBkTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetBkTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_VI)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -525,7 +525,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetViCWmin (edca->GetMinCw ());
       edcaParameters.SetViCWmax (edca->GetMaxCw ());
       edcaParameters.SetViAifsn (edca->GetAifsn ());
-      edcaParameters.SetViTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetViTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edca = m_edca.find (AC_VO)->second;
       txopLimit = edca->GetTxopLimit ();
@@ -533,7 +533,7 @@ ApWifiMac::GetEdcaParameterSet (void) const
       edcaParameters.SetVoCWmin (edca->GetMinCw ());
       edcaParameters.SetVoCWmax (edca->GetMaxCw ());
       edcaParameters.SetVoAifsn (edca->GetAifsn ());
-      edcaParameters.SetVoTXOPLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
+      edcaParameters.SetVoTxopLimit (static_cast<uint16_t> (txopLimit.GetMicroSeconds () / 32));
 
       edcaParameters.SetQosInfo (0);
     }

@@ -13112,8 +13112,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBeTXOPLimit() const [member function]
-    cls.add_method('GetBeTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBeTxopLimit() const [member function]
+    cls.add_method('GetBeTxopLimit', 
                    'uint16_t', 
                    [], 
                    is_const=True)
@@ -13132,8 +13132,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBkTXOPLimit() const [member function]
-    cls.add_method('GetBkTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetBkTxopLimit() const [member function]
+    cls.add_method('GetBkTxopLimit', 
                    'uint16_t', 
                    [], 
                    is_const=True)
@@ -13167,8 +13167,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetViTXOPLimit() const [member function]
-    cls.add_method('GetViTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetViTxopLimit() const [member function]
+    cls.add_method('GetViTxopLimit', 
                    'uint16_t', 
                    [], 
                    is_const=True)
@@ -13187,8 +13187,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
                    'uint32_t', 
                    [], 
                    is_const=True)
-    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetVoTXOPLimit() const [member function]
-    cls.add_method('GetVoTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): uint16_t ns3::EdcaParameterSet::GetVoTxopLimit() const [member function]
+    cls.add_method('GetVoTxopLimit', 
                    'uint16_t', 
                    [], 
                    is_const=True)
@@ -13223,8 +13223,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     cls.add_method('SetBeCWmin', 
                    'void', 
                    [param('uint32_t', 'cwMin')])
-    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeTXOPLimit(uint16_t txop) [member function]
-    cls.add_method('SetBeTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBeTxopLimit(uint16_t txop) [member function]
+    cls.add_method('SetBeTxopLimit', 
                    'void', 
                    [param('uint16_t', 'txop')])
     ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkAci(uint8_t aci) [member function]
@@ -13243,8 +13243,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     cls.add_method('SetBkCWmin', 
                    'void', 
                    [param('uint32_t', 'cwMin')])
-    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkTXOPLimit(uint16_t txop) [member function]
-    cls.add_method('SetBkTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetBkTxopLimit(uint16_t txop) [member function]
+    cls.add_method('SetBkTxopLimit', 
                    'void', 
                    [param('uint16_t', 'txop')])
     ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetQosInfo(uint8_t qosInfo) [member function]
@@ -13271,8 +13271,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     cls.add_method('SetViCWmin', 
                    'void', 
                    [param('uint32_t', 'cwMin')])
-    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViTXOPLimit(uint16_t txop) [member function]
-    cls.add_method('SetViTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetViTxopLimit(uint16_t txop) [member function]
+    cls.add_method('SetViTxopLimit', 
                    'void', 
                    [param('uint16_t', 'txop')])
     ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoAci(uint8_t aci) [member function]
@@ -13291,8 +13291,8 @@ def register_Ns3EdcaParameterSet_methods(root_module, cls):
     cls.add_method('SetVoCWmin', 
                    'void', 
                    [param('uint32_t', 'cwMin')])
-    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoTXOPLimit(uint16_t txop) [member function]
-    cls.add_method('SetVoTXOPLimit', 
+    ## edca-parameter-set.h (module 'wifi'): void ns3::EdcaParameterSet::SetVoTxopLimit(uint16_t txop) [member function]
+    cls.add_method('SetVoTxopLimit', 
                    'void', 
                    [param('uint16_t', 'txop')])
     return

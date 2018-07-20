@@ -85,7 +85,7 @@ EdcaParameterSet::SetBeCWmax (uint32_t cwMax)
 }
 
 void
-EdcaParameterSet::SetBeTXOPLimit (uint16_t txop)
+EdcaParameterSet::SetBeTxopLimit (uint16_t txop)
 {
   m_acBE |= txop << 16;
 }
@@ -117,7 +117,7 @@ EdcaParameterSet::SetBkCWmax (uint32_t cwMax)
 }
 
 void
-EdcaParameterSet::SetBkTXOPLimit (uint16_t txop)
+EdcaParameterSet::SetBkTxopLimit (uint16_t txop)
 {
   m_acBK |= txop << 16;
 }
@@ -149,7 +149,7 @@ EdcaParameterSet::SetViCWmax (uint32_t cwMax)
 }
 
 void
-EdcaParameterSet::SetViTXOPLimit (uint16_t txop)
+EdcaParameterSet::SetViTxopLimit (uint16_t txop)
 {
   m_acVI |= txop << 16;
 }
@@ -181,7 +181,7 @@ EdcaParameterSet::SetVoCWmax (uint32_t cwMax)
 }
 
 void
-EdcaParameterSet::SetVoTXOPLimit (uint16_t txop)
+EdcaParameterSet::SetVoTxopLimit (uint16_t txop)
 {
   m_acVO |= txop << 16;
 }
@@ -213,7 +213,7 @@ EdcaParameterSet::GetBeCWmax (void) const
 }
 
 uint16_t
-EdcaParameterSet::GetBeTXOPLimit (void) const
+EdcaParameterSet::GetBeTxopLimit (void) const
 {
   return (m_acBE >> 16);
 }
@@ -239,7 +239,7 @@ EdcaParameterSet::GetBkCWmax (void) const
 }
 
 uint16_t
-EdcaParameterSet::GetBkTXOPLimit (void) const
+EdcaParameterSet::GetBkTxopLimit (void) const
 {
   return (m_acBK >> 16);
 }
@@ -265,7 +265,7 @@ EdcaParameterSet::GetViCWmax (void) const
 }
 
 uint16_t
-EdcaParameterSet::GetViTXOPLimit (void) const
+EdcaParameterSet::GetViTxopLimit (void) const
 {
   return (m_acVI >> 16);
 }
@@ -291,7 +291,7 @@ EdcaParameterSet::GetVoCWmax (void) const
 }
 
 uint16_t
-EdcaParameterSet::GetVoTXOPLimit (void) const
+EdcaParameterSet::GetVoTxopLimit (void) const
 {
   return (m_acVO >> 16);
 }
