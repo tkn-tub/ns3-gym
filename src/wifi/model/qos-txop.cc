@@ -1302,9 +1302,10 @@ QosTxop::VerifyBlockAck (void)
 bool QosTxop::GetAmpduExist (Mac48Address dest) const
 {
   NS_LOG_FUNCTION (this << dest);
-  if (m_aMpduEnabled.find (dest) != m_aMpduEnabled.end ())
+  auto it = m_aMpduEnabled.find (dest);
+  if (it != m_aMpduEnabled.end ())
     {
-      return m_aMpduEnabled.find (dest)->second;
+      return it->second;
     }
   return false;
 }
@@ -1312,14 +1313,7 @@ bool QosTxop::GetAmpduExist (Mac48Address dest) const
 void QosTxop::SetAmpduExist (Mac48Address dest, bool enableAmpdu)
 {
   NS_LOG_FUNCTION (this << dest << enableAmpdu);
-  if (m_aMpduEnabled.find (dest) != m_aMpduEnabled.end () && m_aMpduEnabled.find (dest)->second != enableAmpdu)
-    {
-      m_aMpduEnabled.erase (m_aMpduEnabled.find (dest));
-    }
-  if (m_aMpduEnabled.find (dest) == m_aMpduEnabled.end ())
-    {
-      m_aMpduEnabled.insert (std::make_pair (dest, enableAmpdu));
-    }
+  m_aMpduEnabled[dest] = enableAmpdu;
 }
 
 void
