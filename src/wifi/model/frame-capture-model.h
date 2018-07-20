@@ -55,34 +55,6 @@ public:
   virtual bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const = 0;
 };
 
-/**
- * \ingroup wifi
- * \brief A frame capture model that never switches to a new incoming frame.
- */
-class NoOpFrameCaptureModel : public FrameCaptureModel
-{
-public:
-  /**
-   * \brief Get the type ID.
-   * \return the object TypeId
-   */
-  static TypeId GetTypeId (void);
-
-  NoOpFrameCaptureModel ();
-  ~NoOpFrameCaptureModel ();
-
- /**
-   * This method returns whether the reception should be switched to a
-   * new incoming frame.
-   *
-   * \param currentEvent the event of the current frame
-   * \param newEvent the event of the new incoming frame
-   *
-   * \return false
-   */
-  bool CaptureNewFrame (Ptr<Event> currentEvent, Ptr<Event> newEvent) const;
-};
-
 } //namespace ns3
 
 #endif /* FRAME_CAPTURE_MODEL_H */

@@ -160,29 +160,6 @@ WifiPhyHelper::SetErrorRateModel (std::string name,
 }
 
 void
-WifiPhyHelper::SetFrameCaptureModel (std::string name,
-                                     std::string n0, const AttributeValue &v0,
-                                     std::string n1, const AttributeValue &v1,
-                                     std::string n2, const AttributeValue &v2,
-                                     std::string n3, const AttributeValue &v3,
-                                     std::string n4, const AttributeValue &v4,
-                                     std::string n5, const AttributeValue &v5,
-                                     std::string n6, const AttributeValue &v6,
-                                     std::string n7, const AttributeValue &v7)
-{
-  m_frameCaptureModel = ObjectFactory ();
-  m_frameCaptureModel.SetTypeId (name);
-  m_frameCaptureModel.Set (n0, v0);
-  m_frameCaptureModel.Set (n1, v1);
-  m_frameCaptureModel.Set (n2, v2);
-  m_frameCaptureModel.Set (n3, v3);
-  m_frameCaptureModel.Set (n4, v4);
-  m_frameCaptureModel.Set (n5, v5);
-  m_frameCaptureModel.Set (n6, v6);
-  m_frameCaptureModel.Set (n7, v7);
-}
-
-void
 WifiPhyHelper::PcapSniffTxEvent (
   Ptr<PcapFileWrapper> file,
   Ptr<const Packet>    packet,

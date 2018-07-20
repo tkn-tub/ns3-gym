@@ -124,7 +124,6 @@ YansWavePhyHelper::Default (void)
 {
   YansWavePhyHelper helper;
   helper.SetErrorRateModel ("ns3::NistErrorRateModel");
-  helper.SetFrameCaptureModel ("ns3::NoOpFrameCaptureModel");
   return helper;
 }
 
