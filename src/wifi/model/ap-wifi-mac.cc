@@ -1592,7 +1592,7 @@ ApWifiMac::GetNextAssociationId (void)
           return nextAid;
         }
     }
-  NS_ASSERT_MSG (false, "No free association ID available!");
+  NS_FATAL_ERROR ("No free association ID available!");
   return 0;
 }
 

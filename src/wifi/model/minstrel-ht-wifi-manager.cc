@@ -655,7 +655,7 @@ MinstrelHtWifiManager::DoReportAmpduTxStatus (WifiRemoteStation *st, uint8_t nSu
 
   if (!station->m_isHt)
     {
-      NS_ASSERT_MSG (false,"A-MPDU Tx Status called but no HT or VHT supported.");
+      NS_FATAL_ERROR ("A-MPDU Tx Status called but no HT or VHT supported.");
     }
 
   NS_LOG_DEBUG ("DoReportAmpduTxStatus. TxRate=" << station->m_txrate << " SuccMpdus= " <<
@@ -766,7 +766,7 @@ MinstrelHtWifiManager::UpdateRate (MinstrelHtWifiRemoteStation *station)
         }
       else
         {
-          NS_ASSERT_MSG (false,"Max retries reached and m_longRetry not cleared properly. longRetry= " << station->m_longRetry);
+          NS_FATAL_ERROR ("Max retries reached and m_longRetry not cleared properly. longRetry= " << station->m_longRetry);
         }
     }
 
@@ -790,7 +790,7 @@ MinstrelHtWifiManager::UpdateRate (MinstrelHtWifiRemoteStation *station)
         }
       else
         {
-          NS_ASSERT_MSG (false,"Max retries reached and m_longRetry not cleared properly. longRetry= " << station->m_longRetry);
+          NS_FATAL_ERROR ("Max retries reached and m_longRetry not cleared properly. longRetry= " << station->m_longRetry);
         }
     }
   NS_LOG_DEBUG ("Next rate to use TxRate = " << station->m_txrate);
@@ -865,7 +865,7 @@ MinstrelHtWifiManager::DoGetDataTxVector (WifiRemoteStation *st)
       // Check consistency of rate selected.
       if ((group.sgi && !GetShortGuardInterval (station)) || group.chWidth > GetChannelWidth (station)  ||  group.streams > GetNumberOfSupportedStreams (station))
         {
-          NS_ASSERT_MSG (false, "Inconsistent group selected. Group: (" << +group.streams <<
+          NS_FATAL_ERROR ("Inconsistent group selected. Group: (" << +group.streams <<
                          "," << +group.sgi << "," << group.chWidth << ")" <<
                          " Station capabilities: (" << GetNumberOfSupportedStreams (station) <<
                          "," << GetShortGuardInterval (station) << "," << GetChannelWidth (station) << ")");
