@@ -26,6 +26,9 @@ def register_types(module):
     module.add_class('AttributeConstructionList')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', outer_class=root_module['ns3::AttributeConstructionList'])
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase')
     ## command-line.h (module 'core'): ns3::CommandLine [class]
@@ -54,6 +57,9 @@ def register_types(module):
     module.add_class('EventId')
     ## global-value.h (module 'core'): ns3::GlobalValue [class]
     module.add_class('GlobalValue')
+    typehandlers.add_type_alias(u'std::vector< ns3::GlobalValue * > const_iterator', u'ns3::GlobalValue::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::GlobalValue * > const_iterator*', u'ns3::GlobalValue::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::GlobalValue * > const_iterator&', u'ns3::GlobalValue::Iterator&')
     ## hash.h (module 'core'): ns3::Hasher [class]
     module.add_class('Hasher')
     ## int-to-type.h (module 'core'): ns3::IntToType<0> [struct]
@@ -86,6 +92,9 @@ def register_types(module):
     module.add_enum('v_e', ['value'], outer_class=root_module['ns3::IntToType< 6 >'])
     ## log.h (module 'core'): ns3::LogComponent [class]
     module.add_class('LogComponent')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >', u'ns3::LogComponent::ComponentList')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >*', u'ns3::LogComponent::ComponentList*')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >&', u'ns3::LogComponent::ComponentList&')
     ## names.h (module 'core'): ns3::Names [class]
     module.add_class('Names')
     ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
@@ -138,6 +147,9 @@ def register_types(module):
     module.add_class('AttributeInformation', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', outer_class=root_module['ns3::TypeId'])
+    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
+    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
+    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## vector.h (module 'core'): ns3::Vector2D [class]
     module.add_class('Vector2D')
     ## vector.h (module 'core'): ns3::Vector3D [class]
@@ -192,6 +204,9 @@ def register_types(module):
     module.add_class('Synchronizer', parent=root_module['ns3::Object'])
     ## system-thread.h (module 'core'): ns3::SystemThread [class]
     module.add_class('SystemThread', parent=root_module['ns3::SimpleRefCount< ns3::SystemThread, ns3::empty, ns3::DefaultDeleter<ns3::SystemThread> >'])
+    typehandlers.add_type_alias(u'pthread_t', u'ns3::SystemThread::ThreadId')
+    typehandlers.add_type_alias(u'pthread_t*', u'ns3::SystemThread::ThreadId*')
+    typehandlers.add_type_alias(u'pthread_t&', u'ns3::SystemThread::ThreadId&')
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
@@ -282,6 +297,9 @@ def register_types(module):
     module.add_class('ObjectPtrContainerChecker', parent=root_module['ns3::AttributeChecker'])
     ## object-ptr-container.h (module 'core'): ns3::ObjectPtrContainerValue [class]
     module.add_class('ObjectPtrContainerValue', parent=root_module['ns3::AttributeValue'])
+    typehandlers.add_type_alias(u'std::map< unsigned long, ns3::Ptr< ns3::Object > > const_iterator', u'ns3::ObjectPtrContainerValue::Iterator')
+    typehandlers.add_type_alias(u'std::map< unsigned long, ns3::Ptr< ns3::Object > > const_iterator*', u'ns3::ObjectPtrContainerValue::Iterator*')
+    typehandlers.add_type_alias(u'std::map< unsigned long, ns3::Ptr< ns3::Object > > const_iterator&', u'ns3::ObjectPtrContainerValue::Iterator&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', parent=root_module['ns3::RandomVariableStream'])
     ## pointer.h (module 'core'): ns3::PointerChecker [class]
@@ -412,6 +430,9 @@ def register_types_ns3_Config(module):
     
     ## config.h (module 'core'): ns3::Config::MatchContainer [class]
     module.add_class('MatchContainer')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Object > > const_iterator', u'ns3::Config::MatchContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Object > > const_iterator*', u'ns3::Config::MatchContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Object > > const_iterator&', u'ns3::Config::MatchContainer::Iterator&')
     module.add_container('std::vector< ns3::Ptr< ns3::Object > >', 'ns3::Ptr< ns3::Object >', container_type=u'vector')
 
 def register_types_ns3_FatalImpl(module):
@@ -5193,14 +5214,14 @@ def register_functions(root_module):
     module.add_function('Years', 
                         'ns3::Time', 
                         [param('double', 'value')])
-    register_functions_ns3_CommandLineHelper(module.get_submodule('CommandLineHelper'), root_module)
-    register_functions_ns3_Config(module.get_submodule('Config'), root_module)
-    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
-    register_functions_ns3_SystemPath(module.get_submodule('SystemPath'), root_module)
-    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_tests(module.get_submodule('tests'), root_module)
+    register_functions_ns3_CommandLineHelper(module.add_cpp_namespace('CommandLineHelper'), root_module)
+    register_functions_ns3_Config(module.add_cpp_namespace('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
+    register_functions_ns3_SystemPath(module.add_cpp_namespace('SystemPath'), root_module)
+    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
+    register_functions_ns3_tests(module.add_cpp_namespace('tests'), root_module)
     return
 
 def register_functions_ns3_CommandLineHelper(module, root_module):
@@ -5295,7 +5316,7 @@ def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):

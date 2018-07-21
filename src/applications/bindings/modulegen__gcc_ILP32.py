@@ -34,6 +34,9 @@ def register_types(module):
     module.add_enum('MaxSize_e', ['MAX_SIZE'], outer_class=root_module['ns3::Address'], import_from_module='ns.network')
     ## application-container.h (module 'network'): ns3::ApplicationContainer [class]
     module.add_class('ApplicationContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Application > > const_iterator', u'ns3::ApplicationContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Application > > const_iterator*', u'ns3::ApplicationContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Application > > const_iterator&', u'ns3::ApplicationContainer::Iterator&')
     ## ascii-file.h (module 'network'): ns3::AsciiFile [class]
     module.add_class('AsciiFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::AsciiTraceHelper [class]
@@ -44,6 +47,9 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## buffer.h (module 'network'): ns3::Buffer [class]
     module.add_class('Buffer', import_from_module='ns.network')
     ## buffer.h (module 'network'): ns3::Buffer::Iterator [class]
@@ -64,6 +70,9 @@ def register_types(module):
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## channel-list.h (module 'network'): ns3::ChannelList [class]
     module.add_class('ChannelList', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Channel > > const_iterator', u'ns3::ChannelList::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Channel > > const_iterator*', u'ns3::ChannelList::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Channel > > const_iterator&', u'ns3::ChannelList::Iterator&')
     ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback [class]
     module.add_class('DataOutputCallback', allow_subclassing=True, import_from_module='ns.stats')
     ## data-rate.h (module 'network'): ns3::DataRate [class]
@@ -128,12 +137,18 @@ def register_types(module):
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
     ## log.h (module 'core'): ns3::LogComponent [class]
     module.add_class('LogComponent', import_from_module='ns.core')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >', u'ns3::LogComponent::ComponentList')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >*', u'ns3::LogComponent::ComponentList*')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >&', u'ns3::LogComponent::ComponentList&')
     ## mac16-address.h (module 'network'): ns3::Mac16Address [class]
     module.add_class('Mac16Address', import_from_module='ns.network')
     ## mac16-address.h (module 'network'): ns3::Mac16Address [class]
     root_module['ns3::Mac16Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )', u'ns3::Mac48Address::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )*', u'ns3::Mac48Address::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )&', u'ns3::Mac48Address::TracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac64-address.h (module 'network'): ns3::Mac64Address [class]
@@ -146,10 +161,19 @@ def register_types(module):
     root_module['ns3::Mac8Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', u'ns3::NetDeviceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator*', u'ns3::NetDeviceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator&', u'ns3::NetDeviceContainer::Iterator&')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
     module.add_class('NodeContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeContainer::Iterator&')
     ## node-list.h (module 'network'): ns3::NodeList [class]
     module.add_class('NodeList', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeList::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeList::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeList::Iterator&')
     ## non-copyable.h (module 'core'): ns3::NonCopyable [class]
     module.add_class('NonCopyable', destructor_visibility='protected', import_from_module='ns.core')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
@@ -190,8 +214,20 @@ def register_types(module):
     module.add_class('ParameterLogger', import_from_module='ns.core')
     ## packetbb.h (module 'network'): ns3::PbbAddressTlvBlock [class]
     module.add_class('PbbAddressTlvBlock', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > iterator', u'ns3::PbbAddressTlvBlock::Iterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > iterator*', u'ns3::PbbAddressTlvBlock::Iterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > iterator&', u'ns3::PbbAddressTlvBlock::Iterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > const_iterator', u'ns3::PbbAddressTlvBlock::ConstIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > const_iterator*', u'ns3::PbbAddressTlvBlock::ConstIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressTlv > > const_iterator&', u'ns3::PbbAddressTlvBlock::ConstIterator&')
     ## packetbb.h (module 'network'): ns3::PbbTlvBlock [class]
     module.add_class('PbbTlvBlock', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator', u'ns3::PbbTlvBlock::Iterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator*', u'ns3::PbbTlvBlock::Iterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator&', u'ns3::PbbTlvBlock::Iterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator', u'ns3::PbbTlvBlock::ConstIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator*', u'ns3::PbbTlvBlock::ConstIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator&', u'ns3::PbbTlvBlock::ConstIterator&')
     ## pcap-file.h (module 'network'): ns3::PcapFile [class]
     module.add_class('PcapFile', import_from_module='ns.network')
     ## trace-helper.h (module 'network'): ns3::PcapHelper [class]
@@ -236,6 +272,9 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
+    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
+    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## udp-client-server-helper.h (module 'applications'): ns3::UdpClientHelper [class]
     module.add_class('UdpClientHelper')
     ## udp-echo-helper.h (module 'applications'): ns3::UdpEchoClientHelper [class]
@@ -268,6 +307,9 @@ def register_types(module):
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
     module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )', u'ns3::PacketBurst::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )*', u'ns3::PacketBurst::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )&', u'ns3::PacketBurst::TracedCallback&')
     ## packet-socket.h (module 'network'): ns3::PacketSocketTag [class]
     module.add_class('PacketSocketTag', import_from_module='ns.network', parent=root_module['ns3::Tag'])
     ## pcap-file-wrapper.h (module 'network'): ns3::PcapFileWrapper [class]
@@ -390,6 +432,12 @@ def register_types(module):
     module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## application.h (module 'network'): ns3::Application [class]
     module.add_class('Application', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )', u'ns3::Application::DelayAddressCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )*', u'ns3::Application::DelayAddressCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )&', u'ns3::Application::DelayAddressCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )', u'ns3::Application::StateTransitionCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )*', u'ns3::Application::StateTransitionCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )&', u'ns3::Application::StateTransitionCallback&')
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
     module.add_class('AttributeAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
     ## attribute.h (module 'core'): ns3::AttributeChecker [class]
@@ -494,14 +542,35 @@ def register_types(module):
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) (  )', u'ns3::NetDevice::LinkChangeTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) (  )*', u'ns3::NetDevice::LinkChangeTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) (  )&', u'ns3::NetDevice::LinkChangeTracedCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::ReceiveCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::ReceiveCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::ReceiveCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::PromiscReceiveCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::PromiscReceiveCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueue [class]
     module.add_class('NetDeviceQueue', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NetDeviceQueue, ns3::empty, ns3::DefaultDeleter<ns3::NetDeviceQueue> >'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDeviceQueue::WakeCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDeviceQueue::WakeCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDeviceQueue::WakeCallback&')
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueueInterface [class]
     module.add_class('NetDeviceQueueInterface', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDeviceQueueInterface::SelectQueueCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDeviceQueueInterface::SelectQueueCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDeviceQueueInterface::SelectQueueCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::ProtocolHandler')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::ProtocolHandler*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::ProtocolHandler&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::DeviceAdditionListener')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::DeviceAdditionListener*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
     module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -514,6 +583,24 @@ def register_types(module):
     module.add_class('OutputStreamWrapper', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::OutputStreamWrapper, ns3::empty, ns3::DefaultDeleter<ns3::OutputStreamWrapper> >'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )*', u'ns3::Packet::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )&', u'ns3::Packet::TracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )', u'ns3::Packet::SizeTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )*', u'ns3::Packet::SizeTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )&', u'ns3::Packet::SizeTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )', u'ns3::Packet::SinrTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', u'ns3::Packet::SinrTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## packet-sink.h (module 'applications'): ns3::PacketSink [class]
     module.add_class('PacketSink', parent=root_module['ns3::Application'])
     ## packet-data-calculators.h (module 'network'): ns3::PacketSizeMinMaxAvgTotalCalculator [class]
@@ -530,18 +617,60 @@ def register_types(module):
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## packetbb.h (module 'network'): ns3::PbbAddressBlock [class]
     module.add_class('PbbAddressBlock', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbAddressBlock, ns3::empty, ns3::DefaultDeleter<ns3::PbbAddressBlock> >'])
+    typehandlers.add_type_alias(u'std::list< ns3::Address > iterator', u'ns3::PbbAddressBlock::AddressIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Address > iterator*', u'ns3::PbbAddressBlock::AddressIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Address > iterator&', u'ns3::PbbAddressBlock::AddressIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Address > const_iterator', u'ns3::PbbAddressBlock::ConstAddressIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Address > const_iterator*', u'ns3::PbbAddressBlock::ConstAddressIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Address > const_iterator&', u'ns3::PbbAddressBlock::ConstAddressIterator&')
+    typehandlers.add_type_alias(u'std::list< unsigned char > iterator', u'ns3::PbbAddressBlock::PrefixIterator')
+    typehandlers.add_type_alias(u'std::list< unsigned char > iterator*', u'ns3::PbbAddressBlock::PrefixIterator*')
+    typehandlers.add_type_alias(u'std::list< unsigned char > iterator&', u'ns3::PbbAddressBlock::PrefixIterator&')
+    typehandlers.add_type_alias(u'std::list< unsigned char > const_iterator', u'ns3::PbbAddressBlock::ConstPrefixIterator')
+    typehandlers.add_type_alias(u'std::list< unsigned char > const_iterator*', u'ns3::PbbAddressBlock::ConstPrefixIterator*')
+    typehandlers.add_type_alias(u'std::list< unsigned char > const_iterator&', u'ns3::PbbAddressBlock::ConstPrefixIterator&')
+    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::Iterator', u'ns3::PbbAddressBlock::TlvIterator')
+    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::Iterator*', u'ns3::PbbAddressBlock::TlvIterator*')
+    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::Iterator&', u'ns3::PbbAddressBlock::TlvIterator&')
+    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::ConstIterator', u'ns3::PbbAddressBlock::ConstTlvIterator')
+    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::ConstIterator*', u'ns3::PbbAddressBlock::ConstTlvIterator*')
+    typehandlers.add_type_alias(u'ns3::PbbAddressTlvBlock::ConstIterator&', u'ns3::PbbAddressBlock::ConstTlvIterator&')
     ## packetbb.h (module 'network'): ns3::PbbAddressBlockIpv4 [class]
     module.add_class('PbbAddressBlockIpv4', import_from_module='ns.network', parent=root_module['ns3::PbbAddressBlock'])
     ## packetbb.h (module 'network'): ns3::PbbAddressBlockIpv6 [class]
     module.add_class('PbbAddressBlockIpv6', import_from_module='ns.network', parent=root_module['ns3::PbbAddressBlock'])
     ## packetbb.h (module 'network'): ns3::PbbMessage [class]
     module.add_class('PbbMessage', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbMessage, ns3::empty, ns3::DefaultDeleter<ns3::PbbMessage> >'])
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator', u'ns3::PbbMessage::TlvIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator*', u'ns3::PbbMessage::TlvIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator&', u'ns3::PbbMessage::TlvIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator', u'ns3::PbbMessage::ConstTlvIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator*', u'ns3::PbbMessage::ConstTlvIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator&', u'ns3::PbbMessage::ConstTlvIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > iterator', u'ns3::PbbMessage::AddressBlockIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > iterator*', u'ns3::PbbMessage::AddressBlockIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > iterator&', u'ns3::PbbMessage::AddressBlockIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > const_iterator', u'ns3::PbbMessage::ConstAddressBlockIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > const_iterator*', u'ns3::PbbMessage::ConstAddressBlockIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbAddressBlock > > const_iterator&', u'ns3::PbbMessage::ConstAddressBlockIterator&')
     ## packetbb.h (module 'network'): ns3::PbbMessageIpv4 [class]
     module.add_class('PbbMessageIpv4', import_from_module='ns.network', parent=root_module['ns3::PbbMessage'])
     ## packetbb.h (module 'network'): ns3::PbbMessageIpv6 [class]
     module.add_class('PbbMessageIpv6', import_from_module='ns.network', parent=root_module['ns3::PbbMessage'])
     ## packetbb.h (module 'network'): ns3::PbbPacket [class]
     module.add_class('PbbPacket', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbPacket, ns3::Header, ns3::DefaultDeleter<ns3::PbbPacket> >'])
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator', u'ns3::PbbPacket::TlvIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator*', u'ns3::PbbPacket::TlvIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > iterator&', u'ns3::PbbPacket::TlvIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator', u'ns3::PbbPacket::ConstTlvIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator*', u'ns3::PbbPacket::ConstTlvIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbTlv > > const_iterator&', u'ns3::PbbPacket::ConstTlvIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > iterator', u'ns3::PbbPacket::MessageIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > iterator*', u'ns3::PbbPacket::MessageIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > iterator&', u'ns3::PbbPacket::MessageIterator&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > const_iterator', u'ns3::PbbPacket::ConstMessageIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > const_iterator*', u'ns3::PbbPacket::ConstMessageIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::PbbMessage > > const_iterator&', u'ns3::PbbPacket::ConstMessageIterator&')
     ## packetbb.h (module 'network'): ns3::PbbTlv [class]
     module.add_class('PbbTlv', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::PbbTlv, ns3::empty, ns3::DefaultDeleter<ns3::PbbTlv> >'])
     ## probe.h (module 'stats'): ns3::Probe [class]
@@ -554,6 +683,9 @@ def register_types(module):
     module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
     ## queue-item.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
     module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )', u'ns3::QueueItem::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )*', u'ns3::QueueItem::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )&', u'ns3::QueueItem::TracedCallback&')
     ## queue-size.h (module 'network'): ns3::QueueSizeChecker [class]
     module.add_class('QueueSizeChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
     ## queue-size.h (module 'network'): ns3::QueueSizeValue [class]
@@ -572,10 +704,19 @@ def register_types(module):
     module.add_class('ThreeGppHttpClient', parent=root_module['ns3::Application'])
     ## three-gpp-http-client.h (module 'applications'): ns3::ThreeGppHttpClient::State_t [enumeration]
     module.add_enum('State_t', ['NOT_STARTED', 'CONNECTING', 'EXPECTING_MAIN_OBJECT', 'PARSING_MAIN_OBJECT', 'EXPECTING_EMBEDDED_OBJECT', 'READING', 'STOPPED'], outer_class=root_module['ns3::ThreeGppHttpClient'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::ThreeGppHttpClient const > )', u'ns3::ThreeGppHttpClient::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::ThreeGppHttpClient const > )*', u'ns3::ThreeGppHttpClient::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::ThreeGppHttpClient const > )&', u'ns3::ThreeGppHttpClient::TracedCallback&')
     ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer [class]
     module.add_class('ThreeGppHttpServer', parent=root_module['ns3::Application'])
     ## three-gpp-http-server.h (module 'applications'): ns3::ThreeGppHttpServer::State_t [enumeration]
     module.add_enum('State_t', ['NOT_STARTED', 'STARTED', 'STOPPED'], outer_class=root_module['ns3::ThreeGppHttpServer'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t )', u'ns3::ThreeGppHttpServer::ThreeGppHttpObjectCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t )*', u'ns3::ThreeGppHttpServer::ThreeGppHttpObjectCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t )&', u'ns3::ThreeGppHttpServer::ThreeGppHttpObjectCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::ThreeGppHttpServer const >, ns3::Ptr< ns3::Socket > )', u'ns3::ThreeGppHttpServer::ConnectionEstablishedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::ThreeGppHttpServer const >, ns3::Ptr< ns3::Socket > )*', u'ns3::ThreeGppHttpServer::ConnectionEstablishedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::ThreeGppHttpServer const >, ns3::Ptr< ns3::Socket > )&', u'ns3::ThreeGppHttpServer::ConnectionEstablishedCallback&')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -12862,19 +13003,19 @@ def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
-    register_functions_ns3_addressUtils(module.get_submodule('addressUtils'), root_module)
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
-    register_functions_ns3_tests(module.get_submodule('tests'), root_module)
+    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
+    register_functions_ns3_addressUtils(module.add_cpp_namespace('addressUtils'), root_module)
+    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
+    register_functions_ns3_tests(module.add_cpp_namespace('tests'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):

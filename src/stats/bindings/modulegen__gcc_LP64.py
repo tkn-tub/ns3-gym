@@ -24,6 +24,9 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## callback.h (module 'core'): ns3::CallbackBase [class]
     module.add_class('CallbackBase', import_from_module='ns.core')
     ## data-output-interface.h (module 'stats'): ns3::DataOutputCallback [class]
@@ -92,6 +95,9 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
+    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
+    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## empty.h (module 'core'): ns3::empty [class]
     module.add_class('empty', import_from_module='ns.core')
     ## int64x64-128.h (module 'core'): ns3::int64x64_t [class]
@@ -200,6 +206,9 @@ def register_types(module):
     module.add_class('TimeProbe', parent=root_module['ns3::Probe'])
     ## time-series-adaptor.h (module 'stats'): ns3::TimeSeriesAdaptor [class]
     module.add_class('TimeSeriesAdaptor', parent=root_module['ns3::DataCollectionObject'])
+    typehandlers.add_type_alias(u'void ( * ) ( double const, double const )', u'ns3::TimeSeriesAdaptor::OutputTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( double const, double const )*', u'ns3::TimeSeriesAdaptor::OutputTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( double const, double const )&', u'ns3::TimeSeriesAdaptor::OutputTracedCallback&')
     ## nstime.h (module 'core'): ns3::TimeValue [class]
     module.add_class('TimeValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## type-id.h (module 'core'): ns3::TypeIdChecker [class]
@@ -230,12 +239,12 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## double-probe.h (module 'stats'): ns3::DoubleProbe [class]
     module.add_class('DoubleProbe', parent=root_module['ns3::Probe'])
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >', u'ns3::DataCalculatorList')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >*', u'ns3::DataCalculatorList*')
-    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::DataCalculator >, std::allocator< ns3::Ptr< ns3::DataCalculator > > >&', u'ns3::DataCalculatorList&')
-    typehandlers.add_type_alias(u'std::list< std::pair< std::basic_string< char >, std::basic_string< char > >, std::allocator< std::pair< std::basic_string< char >, std::basic_string< char > > > >', u'ns3::MetadataList')
-    typehandlers.add_type_alias(u'std::list< std::pair< std::basic_string< char >, std::basic_string< char > >, std::allocator< std::pair< std::basic_string< char >, std::basic_string< char > > > >*', u'ns3::MetadataList*')
-    typehandlers.add_type_alias(u'std::list< std::pair< std::basic_string< char >, std::basic_string< char > >, std::allocator< std::pair< std::basic_string< char >, std::basic_string< char > > > >&', u'ns3::MetadataList&')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::DataCalculator > >', u'ns3::DataCalculatorList')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::DataCalculator > >*', u'ns3::DataCalculatorList*')
+    typehandlers.add_type_alias(u'std::list< ns3::Ptr< ns3::DataCalculator > >&', u'ns3::DataCalculatorList&')
+    typehandlers.add_type_alias(u'std::list< std::pair< std::string, std::string > >', u'ns3::MetadataList')
+    typehandlers.add_type_alias(u'std::list< std::pair< std::string, std::string > >*', u'ns3::MetadataList*')
+    typehandlers.add_type_alias(u'std::list< std::pair< std::string, std::string > >&', u'ns3::MetadataList&')
     
     ## Register a nested module for the namespace FatalImpl
     
@@ -3722,17 +3731,17 @@ def register_functions(root_module):
     module.add_function('isNaN', 
                         'bool', 
                         [param('double', 'x')])
-    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
+    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
     return
 
 def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):
