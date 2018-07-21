@@ -94,7 +94,6 @@ def main(argv):
         "--disable-python",
         "--apiscan=all",
         "--with-python=/usr/bin/python2.7",
-        "--no32bit-scan",
         "-o test_out && rm -rf test_out",
         "--out=test_out && rm -rf test_out",
         "-t test_top && rm -rf test_top",
