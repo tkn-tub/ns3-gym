@@ -62,10 +62,6 @@ def options(opt):
     opt.add_option('--with-python',
                    help=('Path to the Python interpreter to use.'),
                    default=None, dest='with_python', type="string")
-    opt.add_option('--no32bit-scan',
-                   help=("Don't scan for the 32-bit variant of the bindings on 64-bit platforms."),
-                   action="store_true", default=False,
-                   dest='no32bit_scan')
 
 
 def split_version(version):
@@ -408,6 +404,13 @@ class apiscan_task(Task.Task):
             ]
         scan = subprocess.Popen(argv, stdin=subprocess.PIPE)
         retval = scan.wait()
+
+        if retval >= 0 and "LP64" in self.target:
+            self.lp64_to_ilp32(
+                os.path.join(module_path, "bindings", 'modulegen__%s.py' % (self.target)),
+                os.path.join(module_path, "bindings", 'modulegen__%s.py' % "gcc_ILP32")
+                )
+
         return retval
 
     def runnable_status(self):
@@ -416,6 +419,15 @@ class apiscan_task(Task.Task):
         # invoked by the user, particularly since --apiscan=all will require
         # invoking this task many times, once per module.
         return RUN_ME
+
+    def lp64_to_ilp32(self, lp64path, ilp32path):
+        lp64file = open(lp64path, "r")
+        lp64bindings = lp64file.read()
+        lp64file.close()
+        ilp32file = open(ilp32path, "w")
+        ilp32bindings = re.sub("unsigned long(?!( long))", "unsigned long long", lp64bindings)
+        ilp32file.write(ilp32bindings)
+        ilp32file.close()
 
 def get_modules_and_headers(bld):
     """
@@ -481,8 +493,6 @@ def build(bld):
         else:
             import struct
             if struct.calcsize('I') == 4 and struct.calcsize('L') == 8 and struct.calcsize('P') == 8:
-                if not Options.options.no32bit_scan:
-                    scan_targets.append(('gcc_ILP32', '-m32'))
                 scan_targets.append(('gcc_LP64', '-m64'))
             elif struct.calcsize('I') == 4 and struct.calcsize('L') == 4 and struct.calcsize('P') == 4:
                 scan_targets.append(('gcc_ILP32', ''))
