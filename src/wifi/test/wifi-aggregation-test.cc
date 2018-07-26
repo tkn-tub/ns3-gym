@@ -345,8 +345,7 @@ TwoLevelAggregationTest::DoRun (void)
   m_txop->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
   m_txop->GetWifiMacQueue ()->Enqueue (Create<WifiMacQueueItem> (pkt, hdr));
 
-  Ptr<const WifiMacQueueItem> peekedItem = m_txop->GetWifiMacQueue ()->PeekByTidAndAddress (0, WifiMacHeader::ADDR1,
-                                                                                            hdr.GetAddr1 ());
+  Ptr<const WifiMacQueueItem> peekedItem = m_txop->GetWifiMacQueue ()->PeekByTidAndAddress (0, hdr.GetAddr1 ());
   Ptr<const Packet> peekedPacket = peekedItem->GetPacket ();
   peekedHdr = peekedItem->GetHeader ();
   tstamp = peekedItem->GetTimeStamp ();
