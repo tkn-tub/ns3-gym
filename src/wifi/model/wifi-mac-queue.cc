@@ -160,7 +160,7 @@ WifiMacQueue::Dequeue (void)
 }
 
 Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueByAddress (WifiMacHeader::AddressType type, Mac48Address dest)
+WifiMacQueue::DequeueByAddress (Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
 
@@ -181,8 +181,7 @@ WifiMacQueue::DequeueByAddress (WifiMacHeader::AddressType type, Mac48Address de
 }
 
 Ptr<WifiMacQueueItem>
-WifiMacQueue::DequeueByTidAndAddress (uint8_t tid,
-                                      WifiMacHeader::AddressType type, Mac48Address dest)
+WifiMacQueue::DequeueByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
   for (auto it = Head (); it != Tail (); )
@@ -241,8 +240,7 @@ WifiMacQueue::Peek (void) const
 }
 
 Ptr<const WifiMacQueueItem>
-WifiMacQueue::PeekByTidAndAddress (uint8_t tid,
-                                   WifiMacHeader::AddressType type, Mac48Address dest)
+WifiMacQueue::PeekByTidAndAddress (uint8_t tid, Mac48Address dest)
 {
   NS_LOG_FUNCTION (this << dest);
   for (auto it = Head (); it != Tail (); )

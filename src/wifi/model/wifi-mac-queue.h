@@ -102,13 +102,11 @@ public:
    * This method removes the packet from the queue.
    * It is typically used by ns3::Txop during the CF period.
    *
-   * \param type the given address type
    * \param dest the given destination
    *
    * \return the packet
    */
-  Ptr<WifiMacQueueItem> DequeueByAddress (WifiMacHeader::AddressType type,
-                                          Mac48Address dest);
+  Ptr<WifiMacQueueItem> DequeueByAddress (Mac48Address dest);
   /**
    * Search and return, if present in the queue, the first packet having the
    * address indicated by <i>type</i> equal to <i>addr</i>, and tid
@@ -117,13 +115,11 @@ public:
    * aggregation (A-MSDU).
    *
    * \param tid the given TID
-   * \param type the given address type
    * \param dest the given destination
    *
    * \return the packet
    */
   Ptr<WifiMacQueueItem> DequeueByTidAndAddress (uint8_t tid,
-                                                WifiMacHeader::AddressType type,
                                                 Mac48Address dest);
   /**
    * Return first available packet for transmission. A packet could be no available
@@ -151,13 +147,11 @@ public:
    * aggregation (A-MSDU).
    *
    * \param tid the given TID
-   * \param type the given address type
    * \param dest the given destination
    *
    * \return packet
    */
   Ptr<const WifiMacQueueItem> PeekByTidAndAddress (uint8_t tid,
-                                                   WifiMacHeader::AddressType type,
                                                    Mac48Address dest);
   /**
    * Return first available packet for transmission. The packet is not removed from queue.
