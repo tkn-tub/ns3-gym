@@ -275,12 +275,16 @@ void
 IdealWifiManager::DoReportFinalRtsFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
+  IdealWifiRemoteStation *st = (IdealWifiRemoteStation *)station;
+  st->m_lastSnrObserved = 0.0;
 }
 
 void
 IdealWifiManager::DoReportFinalDataFailed (WifiRemoteStation *station)
 {
   NS_LOG_FUNCTION (this << station);
+  IdealWifiRemoteStation *st = (IdealWifiRemoteStation *)station;
+  st->m_lastSnrObserved = 0.0;
 }
 
 WifiTxVector
