@@ -3616,7 +3616,7 @@ void
 WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, double rxPowerW, Time rxDuration, Ptr<Event> event)
 {
   NS_LOG_FUNCTION (this << packet << txVector << +mpdutype << rxPowerW << rxDuration);
-  if (rxPowerW > DbmToW (GetEdThreshold ())) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
+  if (rxPowerW > m_edThresholdW) //checked here, no need to check in the payload reception (current implementation assumes constant rx power over the packet duration)
     {
       AmpduTag ampduTag;
       WifiPreamble preamble = txVector.GetPreambleType ();
@@ -3681,7 +3681,7 @@ WifiPhy::StartRx (Ptr<Packet> packet, WifiTxVector txVector, MpduType mpdutype, 
   else
     {
       NS_LOG_DEBUG ("drop packet because signal power too Small (" <<
-                    rxPowerW << "<" << DbmToW (GetEdThreshold ()) << ")");
+                    rxPowerW << "<" << m_edThresholdW << ")");
       NotifyRxDrop (packet);
       m_plcpSuccess = false;
       MaybeCcaBusyDuration ();
