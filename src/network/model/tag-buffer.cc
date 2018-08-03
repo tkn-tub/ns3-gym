@@ -176,10 +176,9 @@ void
 TagBuffer::Read (uint8_t *buffer, uint32_t size)
 {
   NS_LOG_FUNCTION (this << &buffer << size);
-  for (uint32_t i = 0; i < size; ++i, ++buffer)
-    {
-      *buffer = ReadU8 ();
-    }
+  std::memcpy (buffer, m_current, size);
+  m_current += size;
+  NS_ASSERT (m_current <= m_end);
 }
 TagBuffer::TagBuffer (uint8_t *start, uint8_t *end)
   : m_current (start),
