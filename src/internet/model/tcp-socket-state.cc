@@ -39,39 +39,39 @@ TcpSocketState::GetTypeId (void)
     .AddTraceSource ("CongestionWindow",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketState::m_cWnd),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("CongestionWindowInflated",
                      "The TCP connection's inflated congestion window",
                      MakeTraceSourceAccessor (&TcpSocketState::m_cWndInfl),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("SlowStartThreshold",
                      "TCP slow start threshold (bytes)",
                      MakeTraceSourceAccessor (&TcpSocketState::m_ssThresh),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("CongState",
                      "TCP Congestion machine state",
                      MakeTraceSourceAccessor (&TcpSocketState::m_congState),
-                     "ns3::TracedValue::TcpCongStatesTracedValueCallback")
+                     "ns3::TracedValueCallback::TcpCongState")
     .AddTraceSource ("EcnState",
                      "Trace ECN state change of socket",
                      MakeTraceSourceAccessor (&TcpSocketState::m_ecnState),
-                     "ns3::TracedValue::EcnStatesTracedValueCallback")
+                     "ns3::TracedValueCallback::EcnState")
     .AddTraceSource ("HighestSequence",
                      "Highest sequence number received from peer",
                      MakeTraceSourceAccessor (&TcpSocketState::m_highTxMark),
-                     "ns3::SequenceNumber32TracedValueCallback")
+                     "ns3::TracedValueCallback::SequenceNumber32")
     .AddTraceSource ("NextTxSequence",
                      "Next sequence number to send (SND.NXT)",
                      MakeTraceSourceAccessor (&TcpSocketState::m_nextTxSequence),
-                     "ns3::SequenceNumber32TracedValueCallback")
+                     "ns3::TracedValueCallback::SequenceNumber32")
     .AddTraceSource ("BytesInFlight",
                      "The TCP connection's congestion window",
                      MakeTraceSourceAccessor (&TcpSocketState::m_bytesInFlight),
-                     "ns3::TracedValue::Uint32Callback")
+                     "ns3::TracedValueCallback::Uint32")
     .AddTraceSource ("RTT",
                      "Last RTT sample",
                      MakeTraceSourceAccessor (&TcpSocketState::m_lastRtt),
-                     "ns3::TracedValue::TimeCallback")
+                     "ns3::TracedValueCallback::Time")
   ;
   return tid;
 }
