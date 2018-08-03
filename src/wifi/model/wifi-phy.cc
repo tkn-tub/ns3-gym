@@ -2556,8 +2556,8 @@ WifiPhy::EndReceive (Ptr<Packet> packet, WifiPreamble preamble, MpduType mpdutyp
         {
           NotifyRxEnd (packet);
           SignalNoiseDbm signalNoise;
-          signalNoise.signal = RatioToDb (event->GetRxPowerW ()) + 30;
-          signalNoise.noise = RatioToDb (event->GetRxPowerW () / snrPer.snr) + 30;
+          signalNoise.signal = WToDbm (event->GetRxPowerW ());
+          signalNoise.noise = WToDbm (event->GetRxPowerW () / snrPer.snr);
           MpduInfo aMpdu;
           aMpdu.type = mpdutype;
           aMpdu.mpduRefNumber = m_rxMpduReferenceNumber;
