@@ -1956,13 +1956,13 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
   double Nes = 1;
   //todo: improve logic to reduce the number of if cases
   //todo: extend to NSS > 4 for VHT rates
-  if (payloadMode.GetUniqueName () == "HtMcs21"
-      || payloadMode.GetUniqueName () == "HtMcs22"
-      || payloadMode.GetUniqueName () == "HtMcs23"
-      || payloadMode.GetUniqueName () == "HtMcs28"
-      || payloadMode.GetUniqueName () == "HtMcs29"
-      || payloadMode.GetUniqueName () == "HtMcs30"
-      || payloadMode.GetUniqueName () == "HtMcs31")
+  if (payloadMode == GetHtMcs21()
+      || payloadMode == GetHtMcs22 ()
+      || payloadMode == GetHtMcs23 ()
+      || payloadMode == GetHtMcs28 ()
+      || payloadMode == GetHtMcs29 ()
+      || payloadMode == GetHtMcs30 ()
+      || payloadMode == GetHtMcs31 ())
     {
       Nes = 2;
     }
