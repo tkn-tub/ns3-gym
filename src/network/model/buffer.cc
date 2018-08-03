@@ -426,14 +426,11 @@ Buffer::AddAtEnd (const Buffer &o)
       return;
     }
 
-  Buffer dst = CreateFullCopy ();
-  Buffer src = o.CreateFullCopy ();
-
-  dst.AddAtEnd (src.GetSize ());
-  Buffer::Iterator destStart = dst.End ();
-  destStart.Prev (src.GetSize ());
-  destStart.Write (src.Begin (), src.End ());
-  *this = dst;
+  *this = CreateFullCopy ();
+  AddAtEnd (o.GetSize ());
+  Buffer::Iterator destStart = End ();
+  destStart.Prev (o.GetSize ());
+  destStart.Write (o.Begin (), o.End ());
   NS_ASSERT (CheckInternalState ());
 }
 
