@@ -545,6 +545,13 @@ public:
    */
   TimeWithUnit As (const enum Unit unit) const;
 
+  /**
+   * TracedCallback signature for Time
+   *
+   * \param [in] value Current value of Time
+   */
+  typedef void (* TracedCallback)(Time value);
+
 private:
   /** How to convert between other units and the current unit. */
   struct Information
