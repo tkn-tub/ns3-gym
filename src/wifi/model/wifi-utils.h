@@ -31,14 +31,6 @@ class Packet;
 class Time;
 
 /**
- * Return the logarithm of the given value to base 2.
- *
- * \param val
- *
- * \return the logarithm of val to base 2.
- */
-double Log2 (double val);
-/**
  * Convert from dBm to Watts.
  *
  * \param dbm the power in dBm
