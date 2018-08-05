@@ -348,6 +348,35 @@ specifically asked not to build them.  It does not mean that the
 simulator did not build successfully or that it will provide wrong 
 results for the modules listed as being built.
 
+Handling build errors
++++++++++++++++++++++
+
+|ns3| releases are tested against the most recent C++ compilers available
+in the mainstream Linux and MacOS distributions at the time of the release.
+However, over time, newer distributions are released, with newer compilers,
+and these newer compilers tend to be more pedantic about warnings.  |ns3|
+configures its build to treat all warnings as errors, so it is sometimes
+the case, if you are using an older release version on a newer system,
+that a compiler warning will cause the build to fail.
+
+For instance, ns-3.28 was released prior to Fedora 28, which included
+a new major version of gcc (gcc-8).  Building ns-3.28 or older releases
+on Fedora 28, when Gtk2+ is installed, will result in an error such as:
+
+::
+
+  /usr/include/gtk-2.0/gtk/gtkfilechooserbutton.h:59:8: error: unnecessary parentheses in declaration of ‘__gtk_reserved1’ [-Werror=parentheses]
+   void (*__gtk_reserved1);
+
+In releases starting with ns-3.28.1, an option is available in Waf to work
+around these issues.  The option disables the inclusion of the '-Werror' 
+flag to g++ and clang++.  The option is '--disable-werror' and must be
+used at configure time; e.g.:
+
+::
+
+  ./waf configure --disable-werror --enable-examples --enable-tests
+
 Building with bake
 ++++++++++++++++++
 

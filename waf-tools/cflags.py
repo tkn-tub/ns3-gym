@@ -159,6 +159,9 @@ def options(opt):
 	opt.add_option('--check-profile',
 		       help=('print out current build profile'),
 		       default=False, dest='check_profile', action="store_true")
+	opt.add_option('--disable-werror',
+		       help=('disable -Werror flag (warnings treated as errors'),
+		       default=False, dest='disable_werror', action="store_true")
 def configure(conf):
 	cc = conf.env['COMPILER_CC'] or None
 	cxx = conf.env['COMPILER_CXX'] or None
@@ -181,6 +184,12 @@ def configure(conf):
 	optimizations = compiler.get_optimization_flags(opt_level)
 	debug, debug_defs = compiler.get_debug_flags(dbg_level)
 	warnings = compiler.get_warnings_flags(warn_level)
+
+        if Options.options.disable_werror:
+                try:
+                        warnings.remove ('-Werror')
+                except ValueError:
+                        pass
 	
 	if cc and not conf.env['CCFLAGS']:
 		conf.env.append_value('CCFLAGS', optimizations)
