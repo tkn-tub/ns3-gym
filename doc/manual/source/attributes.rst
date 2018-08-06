@@ -605,6 +605,8 @@ devices (which in this simple example has the same effect as the previous
 If you run this program from the command line, you should see the following
 output corresponding to the steps we took above::
 
+.. sourcecode:: text
+
     $ ./waf --run main-attribute-value
     1.  dtq limit: 80p
     2.  txQueue limit: 80p

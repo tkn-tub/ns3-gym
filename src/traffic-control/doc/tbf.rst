@@ -111,6 +111,8 @@ The example for TBF is `tbf-example.cc` located in ``examples/traffic-control/``
 
 ::
 
+.. sourcecode:: bash
+
    $ ./waf --run "tbf-example --PrintHelp"
    $ ./waf --run "tbf-example --burst=125000 --rate=1Mbps --peakRate=1.5Mbps"
 
@@ -130,6 +132,8 @@ The test suite can be run using the following commands:
 
 ::
 
+.. sourcecode:: bash
+
   $ ./waf configure --enable-examples --enable-tests
   $ ./waf build
   $ ./test.py -s tbf-queue-disc
@@ -137,5 +141,7 @@ The test suite can be run using the following commands:
 or
 
 ::
+
+.. sourcecode:: bash
 
   $ NS_LOG="TbfQueueDisc" ./waf --run "test-runner --suite=tbf-queue-disc"
