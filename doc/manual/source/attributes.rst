@@ -263,25 +263,57 @@ Defining Attributes
 
 We provide a way for users to access values deep in the system, without having
 to plumb accessors (pointers) through the system and walk pointer chains to get
-to them. Consider a class :cpp:class:`DropTailQueue` that has a member variable
-that is an unsigned integer :cpp:member:`m_maxPackets`; this member variable controls
-the depth of the queue.  
+to them. Consider a class :cpp:class:`QueueBase` that has a member variable
+:cpp:member:`m_maxSize` controlling the depth of the queue.  
 
-If we look at the declaration of :cpp:class:`DropTailQueue`, we see
+If we look at the declaration of :cpp:class:`QueueBase`, we see
 the following::
 
-    class DropTailQueue : public Queue {
+    class QueueBase : public Object {
     public:
       static TypeId GetTypeId (void);
       ...
 
     private:
-      std::queue<Ptr<Packet> > m_packets;
-      uint32_t m_maxPackets;
+      ...
+      QueueSize m_maxSize;                //!< max queue size
+      ...
     };
 
+:cpp:class:`QueueSize` is a special type in |ns3| that allows size
+to be represented in different units::
+
+    enum QueueSizeUnit
+    {
+      PACKETS,     /**< Use number of packets for queue size */
+      BYTES,       /**< Use number of bytes for queue size */
+    };
+ 
+    class QueueSize
+    {
+      ...
+    private:
+      ...
+      QueueSizeUnit m_unit; //!< unit
+      uint32_t m_value;     //!< queue size [bytes or packets]
+    };
+
+Finally, the class :cpp:class:`DropTailQueue` inherits from this base
+class and provides the semantics that packets that are submitted to
+a full queue will be dropped from the back of the queue ("drop tail").
+
+::
+
+    /**
+     * \ingroup queue
+     *
+     * \brief A FIFO packet queue that drops tail-end packets on overflow
+     */
+    template <typename Item>
+    class DropTailQueue : public Queue<Item>
+
 Let's consider things that a user may want to do with the value of
-:cpp:member:`m_maxPackets`:
+:cpp:member:`m_maxSize`:
 
 * Set a default value for the system, such that whenever a new
   :cpp:class:`DropTailQueue` is created, this member is initialized
@@ -294,43 +326,45 @@ functions, and some type of global default value.
 In the |ns3| attribute system, these value definitions and accessor function
 registrations are moved into the :cpp:class:`TypeId` class; *e.g*.::
 
-    NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
+    NS_OBJECT_ENSURE_REGISTERED (QueueBase);
 
     TypeId
-    DropTailQueue::GetTypeId (void) 
+    QueueBase::GetTypeId (void) 
     {
       static TypeId tid = TypeId ("ns3::DropTailQueue")
         .SetParent<Queue> ()
         .SetGroupName ("Network")
-        .AddConstructor<DropTailQueue> ()
-        .AddAttribute ("MaxPackets", 
-                       "The maximum number of packets accepted by this DropTailQueue.",
-                       UintegerValue (100),
-                       MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
-                       MakeUintegerChecker<uint32_t> ())
+        ...
+        .AddAttribute ("MaxSize",
+                       "The max queue size",
+                       QueueSizeValue (QueueSize ("100p")),
+                       MakeQueueSizeAccessor (&QueueBase::SetMaxSize,
+                                              &QueueBase::GetMaxSize),
+                       MakeQueueSizeChecker ())
+        ...
         ;
       
       return tid;
     }
 
 The :cpp:func:`AddAttribute ()` method is performing a number of things for the
-:cpp:member:`m_maxPackets` value:
+:cpp:member:`m_maxSize` value:
 
-* Binding the (usually private) member variable :cpp:member:`m_maxPackets`
-  to a public string ``"MaxPackets"``.
-* Providing a default value (100 packets).
+* Binding the (usually private) member variable :cpp:member:`m_maxSize`
+  to a public string ``"MaxSize"``.
+* Providing a default value (0 packets).
 * Providing some help text defining the meaning of the value.
 * Providing a "Checker" (not used in this example) that can be used to set
   bounds on the allowable range of values.
 
 The key point is that now the value of this variable and its default value are
 accessible in the attribute namespace, which is based on strings such as
-``"MaxPackets"`` and :cpp:class:`TypeId` name strings. In the next section,
+``"MaxSize"`` and :cpp:class:`TypeId` name strings. In the next section,
 we will provide an example script that shows how users may manipulate
 these values.
 
 Note that initialization of the attribute relies on the macro
-``NS_OBJECT_ENSURE_REGISTERED (DropTailQueue)`` being called; if you leave this
+``NS_OBJECT_ENSURE_REGISTERED (QueueBase)`` being called; if you leave this
 out of your new class implementation, your attributes will not be initialized
 correctly.
 
@@ -359,50 +393,63 @@ script for illustration, with some details stripped out.  The ``main``
 function begins::
 
     // This is a basic example of how to use the attribute system to
-    // set and get a value in the underlying system; namely, an unsigned
-    // integer of the maximum number of packets in a queue
+    // set and get a value in the underlying system; namely, the maximum
+    // size of the FIFO queue in the PointToPointNetDevice
     //
 
     int 
     main (int argc, char *argv[])
     {
 
-      // By default, the MaxPackets attribute has a value of 100 packets
-      // (this default can be observed in the function DropTailQueue::GetTypeId)
-      // 
+      // Queues in ns-3 are objects that hold items (other objects) in
+      // a queue structure.  The C++ implementation uses templates to
+      // allow queues to hold various types of items, but the most
+      // common is a pointer to a packet (Ptr<Packet>).
+      //
+      // The maximum queue size can either be enforced in bytes ('b') or
+      // packets ('p').  A special type called the ns3::QueueSize can
+      // hold queue size values in either unit (bytes or packets).  The
+      // queue base class ns3::QueueBase has a MaxSize attribute that can
+      // be set to a QueueSize.
+    
+      // By default, the MaxSize attribute has a value of 100 packets ('100p')
+      // (this default can be observed in the function QueueBase::GetTypeId)
+      //
       // Here, we set it to 80 packets.  We could use one of two value types:
-      // a string-based value or a Uinteger value
-      Config::SetDefault ("ns3::DropTailQueue::MaxPackets", StringValue ("80"));
+      // a string-based value or a QueueSizeValue value
+      Config::SetDefault ("ns3::QueueBase::MaxSize", StringValue ("80p"));
       // The below function call is redundant
-      Config::SetDefault ("ns3::DropTailQueue::MaxPackets", UintegerValue (80));
-
-      // Allow the user to override any of the defaults and the above
-      // SetDefaults () at run-time, via command-line arguments
-      // For example, via "--ns3::DropTailQueue::MaxPackets=80"
-      CommandLine cmd;
-      // This provides yet another way to set the value from the command line:
-      cmd.AddValue ("maxPackets", "ns3::DropTailQueue::MaxPackets");
-      cmd.Parse (argc, argv);
-
+      Config::SetDefault ("ns3::QueueBase::MaxSize", QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, 80)));
+    
 The main thing to notice in the above are the two equivalent calls to 
 :cpp:func:`Config::SetDefault ()`.  This is how we set the default value
 for all subsequently instantiated :cpp:class:`DropTailQueue`\s.  We illustrate
 that two types of ``Value`` classes, a :cpp:class:`StringValue` and
-a :cpp:class:`UintegerValue` class, can be used to assign the value
-to the attribute named by "ns3::DropTailQueue::MaxPackets".
+a :cpp:class:`QueueSizeValue` class, can be used to assign the value
+to the attribute named by "ns3::QueueBase::MaxSize".
 
-It's also possible to manipulate Attributes using the :cpp:class:`CommandLine`;
-we saw some examples early in the Tutorial.  In particular, it is
-straightforward to add a shorthand argument name, such as ``--maxPackets``,
+It is also possible to manipulate Attributes using the :cpp:class:`CommandLine`;
+we saw some examples early in the |ns3| Tutorial.  In particular, it is
+straightforward to add a shorthand argument name, such as ``--maxSize``,
 for an Attribute that is particular relevant for your model, in this case
-``"ns3::DropTailQueue::MaxPackets"``.  This has the additional feature that
+``"ns3::QueueBase::MaxSize"``.  This has the additional feature that
 the help string for the Attribute will be printed as part of the usage
 message for the script.  For more information see
 the :cpp:class:`CommandLine` API documentation.
 
+::
+
+      // Allow the user to override any of the defaults and the above
+      // SetDefaults() at run-time, via command-line arguments
+      // For example, via "--ns3::QueueBase::MaxSize=80p"
+      CommandLine cmd;
+      // This provides yet another way to set the value from the command line:
+      cmd.AddValue ("maxSize", "ns3::QueueBase::MaxSize");
+      cmd.Parse (argc, argv);
+
 Now, we will create a few objects using the low-level API.  Our
-newly created queues will not have :cpp:member:`m_maxPackets` initialized to
-100 packets, as defined in the :cpp:func:`DropTailQueue::GetTypeId ()`
+newly created queues will not have :cpp:member:`m_maxSize` initialized to
+0 packets, as defined in the :cpp:func:`QueueBase::GetTypeId ()`
 function, but to 80 packets, because of what we did above with
 default values.::
 
@@ -411,7 +458,7 @@ default values.::
     Ptr<PointToPointNetDevice> net0 = CreateObject<PointToPointNetDevice> ();
     n0->AddDevice (net0);
 
-    Ptr<Queue> q = CreateObject<DropTailQueue> ();
+    Ptr<Queue<Packet> > q = CreateObject<DropTailQueue<Packet> > ();
     net0->AddQueue(q);
 
 At this point, we have created a single :cpp:class:`Node` (``n0``)
@@ -460,9 +507,8 @@ class instances *to be created in the future:*
 
 But what if you've already created an instance, and you want
 to change the value of the attribute?  In this example, how can we
-manipulate the :cpp:member:`m_maxPackets` value of the already instantiated
+manipulate the :cpp:member:`m_maxSize` value of the already instantiated
 :cpp:class:`DropTailQueue`?  Here are various ways to do that.
-
 
 Changing Values
 +++++++++++++++
@@ -481,39 +527,47 @@ First, we observe that we can get a pointer to the (base class)
 :cpp:class:`PointToPointNetDevice` attributes, where it is called
 ``"TxQueue"``::
 
-    PointerValue tmp;
-    net0->GetAttribute ("TxQueue", tmp);
-    Ptr<Object> txQueue = tmp.GetObject ();
+    PointerValue ptr;
+    net0->GetAttribute ("TxQueue", ptr);
+    Ptr<Queue<Packet> > txQueue = ptr.Get<Queue<Packet> > ();
 
 Using the :cpp:func:`GetObject ()` function, we can perform a safe downcast
-to a :cpp:class:`DropTailQueue`, where ``"MaxPackets"`` is an attribute::
+to a :cpp:class:`DropTailQueue`.  The `NS_ASSERT` checks that the pointer is
+valid.
 
-    Ptr<DropTailQueue> dtq = txQueue->GetObject <DropTailQueue> ();
+::
+
+    Ptr<DropTailQueue<Packet> > dtq = txQueue->GetObject <DropTailQueue<Packet> > ();
     NS_ASSERT (dtq != 0);
 
 Next, we can get the value of an attribute on this queue.  We have introduced
 wrapper ``Value`` classes for the underlying data types, similar
 to Java wrappers around these types, since the attribute system stores values
 serialized to strings, and not disparate types.  Here, the attribute value
-is assigned to a :cpp:class:`UintegerValue`, and the :cpp:func:`Get ()`
-method on this value produces the (unwrapped) ``uint32_t``.::
+is assigned to a :cpp:class:`QueueSizeValue`, and the :cpp:func:`Get ()`
+method on this value produces the (unwrapped) ``QueueSize``.  That is,
+the variable `limit` is written into by the GetAttribute method.::
 
-    UintegerValue limit;
-    dtq->GetAttribute ("MaxPackets", limit);
-    NS_LOG_INFO ("1.  dtq limit: " << limit.Get () << " packets");
+    QueueSizeValue limit;
+    dtq->GetAttribute ("MaxSize", limit);
+    NS_LOG_INFO ("1.  dtq limit: " << limit.Get ());
   
 Note that the above downcast is not really needed; we could have gotten
-the attribute value directly from ``txQueue``, which is an :cpp:class:`Object`::
+the attribute value directly from ``txQueue``::
 
-    txQueue->GetAttribute ("MaxPackets", limit);
-    NS_LOG_INFO ("2.  txQueue limit: " << limit.Get () << " packets");
+    txQueue->GetAttribute ("MaxSize", limit);
+    NS_LOG_INFO ("2.  txQueue limit: " << limit.Get ());
 
-Now, let's set it to another value (60 packets)::
+Now, let's set it to another value (60 packets).  Let's also make
+use of the StringValue shorthand notation to set the size by
+passing in a string (the string must be a positive integer suffixed
+by either the `p` or `b` character).
 
-    txQueue->SetAttribute("MaxPackets", UintegerValue (60));
-    txQueue->GetAttribute ("MaxPackets", limit);
-    NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get () << " packets");
+::
 
+    txQueue->SetAttribute ("MaxSize", StringValue ("60p"));
+    txQueue->GetAttribute ("MaxSize", limit);
+    NS_LOG_INFO ("3.  txQueue limit changed: " << limit.Get ());
 
 Config Namespace Path
 =====================
@@ -523,11 +577,11 @@ namespace.  Here, this attribute resides on a known path in this namespace; this
 approach is useful if one doesn't have access to the underlying pointers and
 would like to configure a specific attribute with a single statement.::
 
-    Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxPackets",
-                 UintegerValue (25));
-    txQueue->GetAttribute ("MaxPackets", limit); 
+    Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxSize",
+                 StringValue ("25p"));
+    txQueue->GetAttribute ("MaxSize", limit); 
     NS_LOG_INFO ("4.  txQueue limit changed through namespace: "
-                 << limit.Get () << " packets");
+                 << limit.Get ());
 
 The configuration path often has the form of
 ``".../<container name>/<index>/.../<attribute>/<attribute>"``
@@ -535,18 +589,28 @@ to refer to a specific instance by index of an object in the container.
 In this case the first container is the list of all :cpp:class:`Node`\s;
 the second container is the list of all :cpp:class:`NetDevice`\s on
 the chosen :cpp:class:`Node`.  Finally, the configuration path usually
-ends with a succession of member attributes, in this case the ``"MaxPackets"``
+ends with a succession of member attributes, in this case the ``"MaxSize"``
 attribute of the ``"TxQueue"`` of the chosen :cpp:class:`NetDevice`.
 	
 We could have also used wildcards to set this value for all nodes and all net
 devices (which in this simple example has the same effect as the previous
 :cpp:func:`Config::Set ()`)::
 
-    Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxPackets",
-                 UintegerValue (15));
-    txQueue->GetAttribute ("MaxPackets", limit); 
+    Config::Set ("/NodeList/*/DeviceList/*/TxQueue/MaxSize",
+                 StringValue ("15p"));
+    txQueue->GetAttribute ("MaxSize", limit); 
     NS_LOG_INFO ("5.  txQueue limit changed through wildcarded namespace: "
-                 << limit.Get () << " packets");
+                 << limit.Get ());
+
+If you run this program from the command line, you should see the following
+output corresponding to the steps we took above::
+
+    $ ./waf --run main-attribute-value
+    1.  dtq limit: 80p
+    2.  txQueue limit: 80p
+    3.  txQueue limit changed: 60p
+    4.  txQueue limit changed through namespace: 25p
+    5.  txQueue limit changed through wildcarded namespace: 15p
 
 Object Name Service
 ===================
@@ -936,32 +1000,37 @@ After running, you can open the ``output-attributes.txt`` file and see:
 
 .. sourcecode:: text
 
-    default ns3::RealtimeSimulatorImpl::SynchronizationMode "BestEffort"
-    default ns3::RealtimeSimulatorImpl::HardLimit "+100000000.0ns"
-    default ns3::PcapFileWrapper::CaptureSize "65535"
-    default ns3::PacketSocket::RcvBufSize "131072"
+    ...
     default ns3::ErrorModel::IsEnabled "true"
-    default ns3::RateErrorModel::ErrorUnit "EU_BYTE"
+    default ns3::RateErrorModel::ErrorUnit "ERROR_UNIT_BYTE"
     default ns3::RateErrorModel::ErrorRate "0"
-    default ns3::RateErrorModel::RanVar "Uniform:0:1"
-    default ns3::DropTailQueue::Mode "Packets"
-    default ns3::DropTailQueue::MaxPackets "100"
-    default ns3::DropTailQueue::MaxBytes "6553500"
-    default ns3::Application::StartTime "+0.0ns"
-    default ns3::Application::StopTime "+0.0ns"
+    default ns3::RateErrorModel::RanVar "ns3::UniformRandomVariable[Min=0.0|Max=1.0]"
+    default ns3::BurstErrorModel::ErrorRate "0"
+    default ns3::BurstErrorModel::BurstStart "ns3::UniformRandomVariable[Min=0.0|Max=1.0]"
+    default ns3::BurstErrorModel::BurstSize "ns3::UniformRandomVariable[Min=1|Max=4]"
+    default ns3::PacketSocket::RcvBufSize "131072"
+    default ns3::PcapFileWrapper::CaptureSize "65535"
+    default ns3::PcapFileWrapper::NanosecMode "false"
+    default ns3::SimpleNetDevice::PointToPointMode "false"
+    default ns3::SimpleNetDevice::TxQueue "ns3::DropTailQueue<Packet>"
+    default ns3::SimpleNetDevice::DataRate "0bps"
+    default ns3::PacketSocketClient::MaxPackets "100"
+    default ns3::PacketSocketClient::Interval "+1000000000.0ns"
+    default ns3::PacketSocketClient::PacketSize "1024"
+    default ns3::PacketSocketClient::Priority "0"
     default ns3::ConfigStore::Mode "Save"
     default ns3::ConfigStore::Filename "output-attributes.txt"
     default ns3::ConfigStore::FileFormat "RawText"
     default ns3::ConfigExample::TestInt16 "-5"
-    global RngSeed "1"
-    global RngRun "1"
     global SimulatorImplementationType "ns3::DefaultSimulatorImpl"
     global SchedulerType "ns3::MapScheduler"
+    global RngSeed "1"
+    global RngRun "1"
     global ChecksumEnabled "false"
     value /$ns3::ConfigExample/TestInt16 "-3"
 
-In the above, all of the default values for attributes for the core 
-module are shown.  Then, all the values for the |ns3| global values
+In the above, several of the default values for attributes for the core 
+and network modules are shown.  Then, all the values for the |ns3| global values
 are recorded.  Finally, the value of the instance of :cpp:class:`ConfigExample`
 that was rooted in the configuration namespace is shown.  In a real
 |ns3| program, many more models, attributes, and defaults would be shown.
@@ -972,27 +1041,31 @@ An XML version also exists in ``output-attributes.xml``:
 
     <?xml version="1.0" encoding="UTF-8"?>
     <ns3>
-     <default name="ns3::RealtimeSimulatorImpl::SynchronizationMode" value="BestEffort"/>
-     <default name="ns3::RealtimeSimulatorImpl::HardLimit" value="+100000000.0ns"/>
-     <default name="ns3::PcapFileWrapper::CaptureSize" value="65535"/>
-     <default name="ns3::PacketSocket::RcvBufSize" value="131072"/>
      <default name="ns3::ErrorModel::IsEnabled" value="true"/>
-     <default name="ns3::RateErrorModel::ErrorUnit" value="EU_BYTE"/>
+     <default name="ns3::RateErrorModel::ErrorUnit" value="ERROR_UNIT_BYTE"/>
      <default name="ns3::RateErrorModel::ErrorRate" value="0"/>
-     <default name="ns3::RateErrorModel::RanVar" value="Uniform:0:1"/>
-     <default name="ns3::DropTailQueue::Mode" value="Packets"/>
-     <default name="ns3::DropTailQueue::MaxPackets" value="100"/>
-     <default name="ns3::DropTailQueue::MaxBytes" value="6553500"/>
-     <default name="ns3::Application::StartTime" value="+0.0ns"/>
-     <default name="ns3::Application::StopTime" value="+0.0ns"/>
+     <default name="ns3::RateErrorModel::RanVar" value="ns3::UniformRandomVariable[Min=0.0|Max=1.0]"/>
+     <default name="ns3::BurstErrorModel::ErrorRate" value="0"/>
+     <default name="ns3::BurstErrorModel::BurstStart" value="ns3::UniformRandomVariable[Min=0.0|Max=1.0]"/>
+     <default name="ns3::BurstErrorModel::BurstSize" value="ns3::UniformRandomVariable[Min=1|Max=4]"/>
+     <default name="ns3::PacketSocket::RcvBufSize" value="131072"/>
+     <default name="ns3::PcapFileWrapper::CaptureSize" value="65535"/>
+     <default name="ns3::PcapFileWrapper::NanosecMode" value="false"/>
+     <default name="ns3::SimpleNetDevice::PointToPointMode" value="false"/>
+     <default name="ns3::SimpleNetDevice::TxQueue" value="ns3::DropTailQueue&lt;Packet&gt;"/>
+     <default name="ns3::SimpleNetDevice::DataRate" value="0bps"/>
+     <default name="ns3::PacketSocketClient::MaxPackets" value="100"/>
+     <default name="ns3::PacketSocketClient::Interval" value="+1000000000.0ns"/>
+     <default name="ns3::PacketSocketClient::PacketSize" value="1024"/>
+     <default name="ns3::PacketSocketClient::Priority" value="0"/>
      <default name="ns3::ConfigStore::Mode" value="Save"/>
      <default name="ns3::ConfigStore::Filename" value="output-attributes.xml"/>
      <default name="ns3::ConfigStore::FileFormat" value="Xml"/>
      <default name="ns3::ConfigExample::TestInt16" value="-5"/>
-     <global name="RngSeed" value="1"/>
-     <global name="RngRun" value="1"/>
      <global name="SimulatorImplementationType" value="ns3::DefaultSimulatorImpl"/>
      <global name="SchedulerType" value="ns3::MapScheduler"/>
+     <global name="RngSeed" value="1"/>
+     <global name="RngRun" value="1"/>
      <global name="ChecksumEnabled" value="false"/>
      <value path="/$ns3::ConfigExample/TestInt16" value="-3"/>
     </ns3>
@@ -1122,10 +1195,3 @@ Now, when you run the script, a GUI should pop up, allowing you to open menus of
 attributes on different nodes/objects, and then launch the simulation execution
 when you are done.  
 
-Future work
-+++++++++++
-There are a couple of possible improvements:
-
-* Save a unique version number with date and time at start of file.
-* Save rng initial seed somewhere.
-* Make each RandomVariable serialize its own initial seed and re-read it later.
