@@ -102,16 +102,6 @@ public:
   void SetTsft (uint64_t tsft);
 
   /**
-   * @brief Get the Time Synchronization Function Timer (TSFT) value.  Valid for
-   * received frames only.
-   *
-   * @returns The value in microseconds of the MAC's 64-bit 802.11 Time
-   *          Synchronization Function timer when the first bit of the MPDU
-   *          arrived at the MAC.
-   */
-  uint64_t GetTsft (void) const;
-
-  /**
    * @brief Frame flags.
    */
   enum FrameFlag
@@ -134,23 +124,10 @@ public:
   void SetFrameFlags (uint8_t flags);
 
   /**
-   * @brief Get the frame flags of the transmitted or received frame.
-   * @returns The frame flags.
-   * @see FrameFlags.
-   */
-  uint8_t GetFrameFlags (void) const;
-
-  /**
    * @brief Set the transmit/receive channel frequency in units of megahertz
    * @param rate the transmit/receive channel frequency in units of megahertz.
    */
   void SetRate (uint8_t rate);
-
-  /**
-   * @brief Get the transmit/receive channel frequency in units of megahertz.
-   * @returns The transmit/receive channel frequency in units of megahertz.
-   */
-  uint8_t GetRate (void) const;
 
   /**
    * @brief Channel flags.
@@ -177,19 +154,6 @@ public:
   void SetChannelFrequencyAndFlags (uint16_t frequency, uint16_t flags);
 
   /**
-   * @brief Get the transmit/receive data rate in units of 500 kbps.
-   * @returns The transmit/receive data rate in units of 500 kbps.
-   */
-  uint16_t GetChannelFrequency (void) const;
-
-  /**
-   * @brief Get the channel flags of the transmitted or received frame.
-   * @returns The frame flags.
-   * @see ChannelFlags.
-   */
-  uint16_t GetChannelFlags (void) const;
-
-  /**
    * @brief Set the RF signal power at the antenna as a decibel difference
    * from an arbitrary, fixed reference.
    *
@@ -199,15 +163,6 @@ public:
   void SetAntennaSignalPower (double signal);
 
   /**
-   * @brief Get the RF signal power at the antenna as a decibel difference
-   * from an arbitrary, fixed reference.
-   *
-   * @returns The RF signal power at the antenna as a decibel difference
-   *          from an arbitrary, fixed reference.
-   */
-  uint8_t GetAntennaSignalPower (void) const;
-
-  /**
    * @brief Set the RF noise power at the antenna as a decibel difference
    * from an arbitrary, fixed reference.
    *
@@ -215,15 +170,6 @@ public:
    *              from an arbitrary, fixed reference.
    */
   void SetAntennaNoisePower (double noise);
-
-  /**
-   * @brief Get the RF noise power at the antenna as a decibel difference
-   * from an arbitrary, fixed reference.
-   *
-   * @returns The RF noise power at the antenna as a decibel difference
-   *          from an arbitrary, fixed reference.
-   */
-  uint8_t GetAntennaNoisePower (void) const;
 
   /**
    * @brief MCS known bits.
@@ -267,25 +213,6 @@ public:
   void SetMcsFields (uint8_t known, uint8_t flags, uint8_t mcs);
 
   /**
-   * @brief Get the MCS known bitmap.
-   *
-   * @returns The MCS known bitmap.
-   */
-  uint8_t GetMcsKnown (void) const;
-  /**
-   * @brief Get the MCS flags.
-   *
-   * @returns The MCS flags.
-   */
-  uint8_t GetMcsFlags (void) const;
-  /**
-   * @brief Get the MCS index value.
-   *
-   * @returns The MCS index value.
-   */
-  uint8_t GetMcsRate (void) const;
-
-  /**
    * @brief A-MPDU status flags.
    */
   enum AmpduFlags
@@ -307,19 +234,6 @@ public:
    * @param crc The CRC value value.
    */
   void SetAmpduStatus (uint32_t referenceNumber, uint16_t flags, uint8_t crc);
-
-  /**
-   * @brief Get the A-MPDU reference number.
-   *
-   * @returns The A-MPDU reference number.
-   */
-  uint32_t GetAmpduStatusRef (void) const;
-  /**
-   * @brief Get the A-MPDU status flags.
-   *
-   * @returns The A-MPDU status flags.
-   */
-  uint16_t GetAmpduStatusFlags (void) const;
 
   /**
    * @brief VHT known bits.
@@ -367,68 +281,6 @@ public:
                      uint8_t bandwidth, uint8_t mcs_nss [4],
                      uint8_t coding, uint8_t group_id,
                      uint16_t partial_aid);
-
-  /**
-   * @brief Get the VHT known bitmap.
-   *
-   * @returns The MCS known bitmap.
-   */
-  uint16_t GetVhtKnown (void) const;
-  /**
-   * @brief Get the VHT flags.
-   *
-   * @returns The VHT flags.
-   */
-  uint8_t GetVhtFlags (void) const;
-  /**
-   * @brief Get the VHT bandwidth field value.
-   *
-   * @returns The VHT bandwidth field value.
-   */
-  uint8_t GetVhtBandwidth (void) const;
-  /**
-   * @brief Get the VHT mcs_nss field value for user 1.
-   *
-   * @returns The VHT mcs_nss field value for user 1.
-   */
-  uint8_t GetVhtMcsNssUser1 () const;
-  /**
-   * @brief Get the VHT mcs_nss field value for user 2.
-   *
-   * @returns The VHT mcs_nss field value for user 2.
-   */
-  uint8_t GetVhtMcsNssUser2 () const;
-  /**
-   * @brief Get the VHT mcs_nss field value for user 3.
-   *
-   * @returns The VHT mcs_nss field value for user 3.
-   */
-  uint8_t GetVhtMcsNssUser3 () const;
-  /**
-   * @brief Get the VHT mcs_nss field value for user 4.
-   *
-   * @returns The VHT mcs_nss field value for user 4.
-   */
-  uint8_t GetVhtMcsNssUser4 () const;
-  /**
-   * @brief Get the VHT coding field value.
-   *
-   * @returns The VHT coding field value.
-   */
-  uint8_t GetVhtCoding (void) const;
-  /**
-   * @brief Get the VHT group_id field value.
-   *
-   * @returns The VHT group_id field value.
-   */
-  uint8_t GetVhtGroupId (void) const;
-  /**
-   * @brief Get the VHT partial_aid field value.
-   *
-   * @returns The VHT partial_aid field value.
-   */
-  uint8_t GetVhtPartialAid (void) const;
-
 
 private:
   /**
