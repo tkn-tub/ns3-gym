@@ -282,6 +282,97 @@ public:
                      uint8_t coding, uint8_t group_id,
                      uint16_t partial_aid);
 
+  /**
+   * @brief HE data1.
+   */
+  enum HeData1
+  {
+    HE_DATA1_FORMAT_EXT_SU      = 0x0001, /**< HE EXT SU PPDU format */
+    HE_DATA1_FORMAT_MU          = 0x0002, /**< HE MU PPDU format */
+    HE_DATA1_FORMAT_TRIG        = 0x0003, /**< HE TRIG PPDU format */
+    HE_DATA1_BSS_COLOR_KNOWN    = 0x0004, /**< BSS Color known */
+    HE_DATA1_BEAM_CHANGE_KNOWN  = 0x0008, /**< Beam Change known */
+    HE_DATA1_UL_DL_KNOWN        = 0x0010, /**< UL/DL known */
+    HE_DATA1_DATA_MCS_KNOWN     = 0x0020, /**< data MCS known */
+    HE_DATA1_DATA_DCM_KNOWN     = 0x0040, /**< data DCM known */
+    HE_DATA1_CODING_KNOWN       = 0x0080, /**< Coding known */
+    HE_DATA1_LDPC_XSYMSEG_KNOWN = 0x0100, /**< LDPC extra symbol segment known */
+    HE_DATA1_STBC_KNOWN         = 0x0200, /**< STBC known */
+    HE_DATA1_SPTL_REUSE_KNOWN   = 0x0400, /**< Spatial Reuse known (Spatial Reuse 1 for HE TRIG PPDU format) */
+    HE_DATA1_SPTL_REUSE2_KNOWN  = 0x0800, /**< Spatial Reuse 2 known (HE TRIG PPDU format), STA-ID known (HE MU PPDU format) */
+    HE_DATA1_SPTL_REUSE3_KNOWN  = 0x1000, /**< Spatial Reuse 3 known (HE TRIG PPDU format) */
+    HE_DATA1_SPTL_REUSE4_KNOWN  = 0x2000, /**< Spatial Reuse 4 known (HE TRIG PPDU format) */
+    HE_DATA1_BW_RU_ALLOC_KNOWN  = 0x4000, /**< data BW/RU allocation known */
+    HE_DATA1_DOPPLER_KNOWN      = 0x8000, /**< Doppler known */
+  };
+
+  /**
+   * @brief HE data2.
+   */
+  enum HeData2
+  {
+    HE_DATA2_PRISEC_80_KNOWN    = 0x0001, /**< pri/sec 80 MHz known */
+    HE_DATA2_GI_KNOWN           = 0x0002, /**< GI known */
+    HE_DATA2_NUM_LTF_SYMS_KNOWN = 0x0004, /**< number of LTF symbols known */
+    HE_DATA2_PRE_FEC_PAD_KNOWN  = 0x0008, /**< Pre-FEC Padding Factor known */
+    HE_DATA2_TXBF_KNOWN         = 0x0010, /**< TxBF known */
+    HE_DATA2_PE_DISAMBIG_KNOWN  = 0x0020, /**< PE Disambiguity known */
+    HE_DATA2_TXOP_KNOWN         = 0x0040, /**< TXOP known */
+    HE_DATA2_MIDAMBLE_KNOWN     = 0x0080, /**< midamble periodicity known */
+    HE_DATA2_RU_OFFSET          = 0x3f00, /**< RU allocation offset */
+    HE_DATA2_RU_OFFSET_KNOWN    = 0x4000, /**< RU allocation offset known */
+    HE_DATA2_PRISEC_80_SEC      = 0x8000, /**< pri/sec 80 MHz */
+  };
+
+  /**
+   * @brief HE data3.
+   */
+  enum HeData3
+  {
+    HE_DATA3_BSS_COLOR    = 0x003f, /**< BSS Color */
+    HE_DATA3_BEAM_CHANGE  = 0x0040, /**< Beam Change */
+    HE_DATA3_UL_DL        = 0x0080, /**< UL/DL */
+    HE_DATA3_DATA_MCS     = 0x0f00, /**< data MCS */
+    HE_DATA3_DATA_DCM     = 0x1000, /**< data DCM */
+    HE_DATA3_CODING       = 0x2000, /**< Coding */
+    HE_DATA3_LDPC_XSYMSEG = 0x4000, /**< LDPC extra symbol segment */
+    HE_DATA3_STBC         = 0x8000, /**< STBC */
+  };
+
+  /**
+   * @brief HE data5.
+   */
+  enum HeData5
+  {
+    HE_DATA5_DATA_BW_RU_ALLOC_40MHZ  = 0x0001, /**< 40 MHz data Bandwidth */
+    HE_DATA5_DATA_BW_RU_ALLOC_80MHZ  = 0x0002, /**< 80 MHz data Bandwidth */
+    HE_DATA5_DATA_BW_RU_ALLOC_160MHZ = 0x0003, /**< 160 MHz data Bandwidth */
+    HE_DATA5_DATA_BW_RU_ALLOC_26T    = 0x0004, /**< 26-tone RU allocation */
+    HE_DATA5_DATA_BW_RU_ALLOC_52T    = 0x0005, /**< 52-tone RU allocation */
+    HE_DATA5_DATA_BW_RU_ALLOC_106T   = 0x0006, /**< 106-tone RU allocation */
+    HE_DATA5_DATA_BW_RU_ALLOC_242T   = 0x0007, /**< 242-tone RU allocation */
+    HE_DATA5_DATA_BW_RU_ALLOC_484T   = 0x0008, /**< 484-tone RU allocation */
+    HE_DATA5_DATA_BW_RU_ALLOC_996T   = 0x0009, /**< 996-tone RU allocation */
+    HE_DATA5_DATA_BW_RU_ALLOC_2x996T = 0x000a, /**< 2x996-tone RU allocation */
+    HE_DATA5_GI_1_6                  = 0x0010, /**< 1.6us GI */
+    HE_DATA5_GI_3_2                  = 0x0020, /**< 3.2us GI */
+    HE_DATA5_LTF_SYM_SIZE            = 0x00c0, /**< LTF symbol size */
+    HE_DATA5_NUM_LTF_SYMS            = 0x0700, /**< number of LTF symbols */
+    HE_DATA5_PRE_FEC_PAD             = 0x3000, /**< Pre-FEC Padding Factor */
+    HE_DATA5_TXBF                    = 0x4000, /**< TxBF */
+    HE_DATA5_PE_DISAMBIG             = 0x8000, /**< PE Disambiguity */
+  };
+
+  /**
+   * @brief Set the HE fields
+   *
+   * @param data1 The data1 field.
+   * @param data2 The data2 field.
+   * @param data3 The data3 field.
+   * @param data5 The data5 field.
+   */
+  void SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data5);
+
 private:
   /**
    * @brief Radiotap flags.
@@ -306,6 +397,7 @@ private:
     RADIOTAP_MCS               = 0x00080000,
     RADIOTAP_AMPDU_STATUS      = 0x00100000,
     RADIOTAP_VHT               = 0x00200000,
+    RADIOTAP_HE                = 0x00800000,
     RADIOTAP_EXT               = 0x10000000
   };
 
@@ -338,6 +430,12 @@ private:
   uint8_t m_vhtCoding;      //!< VHT coding field.
   uint8_t m_vhtGroupId;     //!< VHT group_id field.
   uint16_t m_vhtPartialAid; //!< VHT partial_aid field.
+
+  uint8_t m_hePad;         //!< HE padding.
+  uint16_t m_heData1;      //!< HE data1 field.
+  uint16_t m_heData2;      //!< HE data2 field.
+  uint16_t m_heData3;      //!< HE data3 field.
+  uint16_t m_heData5;      //!< HE data5 field.
 };
 
 } // namespace ns3

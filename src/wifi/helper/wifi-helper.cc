@@ -396,6 +396,56 @@ WifiPhyHelper::GetRadiotapHeader (
 
       header.SetVhtFields (vhtKnown, vhtFlags, vhtBandwidth, vhtMcsNss, vhtCoding, vhtGroupId, vhtPartialAid);
     }
+
+  if (txVector.GetMode ().GetModulationClass () == WIFI_MOD_CLASS_HE)
+    {
+      uint16_t data1 = RadiotapHeader::HE_DATA1_STBC_KNOWN | RadiotapHeader::HE_DATA1_DATA_MCS_KNOWN;
+      if (preamble == WIFI_PREAMBLE_HE_ER_SU)
+        {
+          data1 |= RadiotapHeader::HE_DATA1_FORMAT_EXT_SU;
+        }
+      else if (preamble == WIFI_PREAMBLE_HE_MU)
+        {
+          data1 |= RadiotapHeader::HE_DATA1_FORMAT_MU;
+        }
+      else if (preamble == WIFI_PREAMBLE_HE_TB)
+        {
+          data1 |= RadiotapHeader::HE_DATA1_FORMAT_TRIG;
+        }
+
+      uint16_t data2 = RadiotapHeader::HE_DATA2_NUM_LTF_SYMS_KNOWN | RadiotapHeader::HE_DATA2_GI_KNOWN;
+
+      uint16_t data3 = 0;
+      if (txVector.IsStbc ())
+        {
+          data3 |= RadiotapHeader::HE_DATA3_STBC;
+        }
+
+      uint16_t data5 = 0;
+      if (txVector.GetChannelWidth () == 40)
+        {
+          data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_40MHZ;
+        }
+      else if (txVector.GetChannelWidth () == 80)
+        {
+          data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_80MHZ;
+        }
+      else if (txVector.GetChannelWidth () == 160)
+        {
+          data5 |= RadiotapHeader::HE_DATA5_DATA_BW_RU_ALLOC_160MHZ;
+        }
+      if (txVector.GetGuardInterval () == 1600)
+        {
+          data5 |= RadiotapHeader::HE_DATA5_GI_1_6;
+        }
+      else if (txVector.GetGuardInterval () == 3200)
+        {
+          data5 |= RadiotapHeader::HE_DATA5_GI_3_2;
+        }
+
+      header.SetHeFields (data1, data2, data3, data5);
+    }
+
   return header;
 }
 

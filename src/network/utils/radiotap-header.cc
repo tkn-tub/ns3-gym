@@ -49,7 +49,12 @@ RadiotapHeader::RadiotapHeader ()
     m_vhtBandwidth (0),
     m_vhtCoding (0),
     m_vhtGroupId (0),
-    m_vhtPartialAid (0)
+    m_vhtPartialAid (0),
+    m_hePad (0),
+    m_heData1 (0),
+    m_heData2 (0),
+    m_heData3 (0),
+    m_heData5 (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -256,6 +261,20 @@ RadiotapHeader::Serialize (Buffer::Iterator start) const
       start.WriteU8 (m_vhtCoding);
       start.WriteU8 (m_vhtGroupId);
       start.WriteU16 (m_vhtPartialAid);
+    }
+
+  //
+  // HE field.
+  //
+  if (m_present & RADIOTAP_HE) // bit 23
+    {
+      start.WriteU8 (0, m_hePad);
+      start.WriteU16 (m_heData1);
+      start.WriteU16 (m_heData2);
+      start.WriteU16 (m_heData3);
+      start.WriteU16 (0); //HE data4 field
+      start.WriteU16 (m_heData5);
+      start.WriteU16 (0); //HE data6 field
     }
 }
 
@@ -472,6 +491,22 @@ RadiotapHeader::Deserialize (Buffer::Iterator start)
       bytesRead += (12 + m_vhtPad);
     }
 
+  //
+  // HE field.
+  //
+  if (m_present & RADIOTAP_HE) // bit 23
+    {
+      m_hePad = ((2 - bytesRead % 2) % 2);
+      start.Next (m_hePad);
+      m_heData1 = start.ReadU16 ();
+      m_heData2 = start.ReadU16 ();
+      m_heData3 = start.ReadU16 ();
+      start.ReadU16 (); //HE data4 field
+      m_heData5 = start.ReadU16 ();
+      start.ReadU16 (); //HE data6 field
+      bytesRead += (12 + m_hePad);
+    }
+
   NS_ASSERT_MSG (m_length == bytesRead, "RadiotapHeader::Deserialize(): expected and actual lengths inconsistent");
   return bytesRead;
 }
@@ -482,15 +517,15 @@ RadiotapHeader::Print (std::ostream &os) const
   NS_LOG_FUNCTION (this << &os);
   os << " tsft=" << m_tsft
      << " flags=" << std::hex << m_flags << std::dec
-     << " rate=" << (uint16_t) m_rate
+     << " rate=" << +m_rate
      << " freq=" << m_channelFreq
-     << " chflags=" << std::hex << (uint32_t)m_channelFlags << std::dec
-     << " signal=" << (int16_t) m_antennaSignal
-     << " noise=" << (int16_t) m_antennaNoise
+     << " chflags=" << std::hex << +m_channelFlags << std::dec
+     << " signal=" << +m_antennaSignal
+     << " noise=" << +m_antennaNoise
      << " mcsKnown=" << m_mcsKnown
      << " mcsFlags=" << m_mcsFlags
      << " mcsRate=" << m_mcsRate
-     << " ampduStatusFlags=" << (int16_t) m_ampduStatusFlags
+     << " ampduStatusFlags=" << +m_ampduStatusFlags
      << " vhtKnown=" << m_vhtKnown
      << " vhtFlags=" << m_vhtFlags
      << " vhtBandwidth=" << m_vhtBandwidth
@@ -500,7 +535,11 @@ RadiotapHeader::Print (std::ostream &os) const
      << " vhtMcsNss for user 4=" << m_vhtMcsNss[3]
      << " vhtCoding=" << m_vhtCoding
      << " vhtGroupId=" << m_vhtGroupId
-     << " vhtPartialAid=" << m_vhtPartialAid;
+     << " vhtPartialAid=" << m_vhtPartialAid
+     << " heData1=" << m_heData1
+     << " heData2=" << m_heData2
+     << " heData3=" << m_heData3
+     << " heData5=" << m_heData5;
 }
 
 void
@@ -521,7 +560,7 @@ RadiotapHeader::SetTsft (uint64_t value)
 void
 RadiotapHeader::SetFrameFlags (uint8_t flags)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint32_t> (flags));
+  NS_LOG_FUNCTION (this << +flags);
   m_flags = flags;
 
   if (!(m_present & RADIOTAP_FLAGS))
@@ -536,7 +575,7 @@ RadiotapHeader::SetFrameFlags (uint8_t flags)
 void
 RadiotapHeader::SetRate (uint8_t rate)
 {
-  NS_LOG_FUNCTION (this << static_cast<uint32_t> (rate));
+  NS_LOG_FUNCTION (this << +rate);
   m_rate = rate;
 
   if (!(m_present & RADIOTAP_RATE))
@@ -620,7 +659,7 @@ RadiotapHeader::SetAntennaNoisePower (double noise)
 void
 RadiotapHeader::SetMcsFields (uint8_t known, uint8_t flags, uint8_t mcs)
 {
-  NS_LOG_FUNCTION (this << known << flags << mcs);
+  NS_LOG_FUNCTION (this << known << +flags << +mcs);
   m_mcsKnown = known;
   m_mcsFlags = flags;
   m_mcsRate = mcs;
@@ -653,7 +692,7 @@ RadiotapHeader::SetAmpduStatus (uint32_t referenceNumber, uint16_t flags, uint8_
 void
 RadiotapHeader::SetVhtFields (uint16_t known, uint8_t flags, uint8_t bandwidth, uint8_t mcs_nss[4], uint8_t coding, uint8_t group_id, uint16_t partial_aid)
 {
-  NS_LOG_FUNCTION (this << known << flags << mcs_nss[0] << mcs_nss[1] << mcs_nss[2] << mcs_nss[3] << coding << group_id << partial_aid);
+  NS_LOG_FUNCTION (this << known << flags << +mcs_nss[0] << +mcs_nss[1] << +mcs_nss[2] << +mcs_nss[3] << +coding << +group_id << +partial_aid);
   m_vhtKnown = known;
   m_vhtFlags = flags;
   m_vhtBandwidth = bandwidth;
@@ -669,6 +708,24 @@ RadiotapHeader::SetVhtFields (uint16_t known, uint8_t flags, uint8_t bandwidth, 
       m_vhtPad = ((2 - m_length % 2) % 2);
       m_present |= RADIOTAP_VHT;
       m_length += (12 + m_vhtPad);
+    }
+
+  NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
+}
+
+void
+RadiotapHeader::SetHeFields (uint16_t data1, uint16_t data2, uint16_t data3, uint16_t data5)
+{
+  NS_LOG_FUNCTION (this << data1 << data2 << data3 << data5);
+  m_heData1 = data1;
+  m_heData2 = data2;
+  m_heData3 = data3;
+  m_heData5 = data5;
+  if (!(m_present & RADIOTAP_HE))
+    {
+      m_hePad = ((2 - m_length % 2) % 2);
+      m_present |= RADIOTAP_HE;
+      m_length += 12;
     }
 
   NS_LOG_LOGIC (this << " m_length=" << m_length << " m_present=0x" << std::hex << m_present << std::dec);
