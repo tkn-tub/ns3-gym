@@ -3,6 +3,8 @@
 import wutils
 from waflib import Options
 
+# Bug 2936 gcc version issue for GTK+ and -Wparentheses
+gcc_version_gtkplus_warning_issue = (8, 0, 0)
 
 def options(opt):
     opt.add_option('--disable-gtk',
@@ -24,6 +26,12 @@ def configure(conf):
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
                                      conf.env['ENABLE_GTK2'],
                                      "library 'gtk+-2.0 >= 2.12' not found")
+
+        # Bug 2936 -Wparentheses issue for gcc >= 8
+        if conf.env['ENABLE_GTK2']: 
+            if conf.env['CXX_NAME'] in ['gcc']:
+                if tuple(map(int, conf.env['CC_VERSION'])) >= gcc_version_gtkplus_warning_issue:
+                    conf.env.append_value('CXXFLAGS', '-Wno-parentheses')
 
     have_libxml2 = conf.check_cfg(package='libxml-2.0', atleast_version='2.7',
                                   args=['--cflags', '--libs'], uselib_store='LIBXML2',
