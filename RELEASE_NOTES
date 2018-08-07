@@ -47,6 +47,7 @@ Bugs fixed
 - Bug 2926 - wifi: SSRC and SLRC mechanism not fully aligned to the standard
 - Bug 2931 - Queue Disc drops the CE marked packets
 - Bug 2941 - wifi: Order bit of Frame control field of WifiMacHeader not correctly set for some frames
+- Bug 2948 - network: SetPriority does not support value 7
 - Bug 2964 - wifi: IdealWifiManager keeps using the same MCS when all transmissions fail
 
 Known issues

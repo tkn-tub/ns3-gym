@@ -388,7 +388,7 @@ Socket::IsManualIpv6HopLimit (void) const
 void
 Socket::SetPriority (uint8_t priority)
 {
-  if (priority <= 6)
+  if (priority <= 7)
     {
       m_priority = priority;
     }
