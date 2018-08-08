@@ -30,6 +30,8 @@ New user-visible features
   that are located within buildings defined in the scenario.
 - (tcp) Added PRR as recovery algorithm
 - (wifi) Add a new trace source to StaWifiMac to trace beacon arrivals
+- (network) Add a method to allow random variable-based jitter to be added
+  to the start times of applications in a container.
 
 Bugs fixed
 ----------
