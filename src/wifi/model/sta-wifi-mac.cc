@@ -75,6 +75,10 @@ StaWifiMac::GetTypeId (void)
     .AddTraceSource ("DeAssoc", "Association with an access point lost.",
                      MakeTraceSourceAccessor (&StaWifiMac::m_deAssocLogger),
                      "ns3::Mac48Address::TracedCallback")
+    .AddTraceSource ("BeaconArrival",
+                     "Time of beacons arrival from associated AP",
+                     MakeTraceSourceAccessor (&StaWifiMac::m_beaconArrival),
+                     "ns3::Time::TracedCallback")
   ;
   return tid;
 }
@@ -604,6 +608,7 @@ StaWifiMac::Receive (Ptr<Packet> packet, const WifiMacHeader *hdr)
         }
       if (goodBeacon && m_state == ASSOCIATED)
         {
+          m_beaconArrival (Simulator::Now ());
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
           UpdateApInfoFromBeacon (beacon, hdr->GetAddr2 (), hdr->GetAddr3 ());
