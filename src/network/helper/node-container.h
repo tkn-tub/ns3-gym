@@ -288,6 +288,14 @@ public:
    */
   static NodeContainer GetGlobal (void);
 
+  /**
+   * \brief Return true if container contains a Node with index id
+   *
+   * \return whether the NodeContainer contains a node with index id
+   * \param id Node Id
+   */
+  bool Contains (uint32_t id) const;
+
 private:
   std::vector<Ptr<Node> > m_nodes; //!< Nodes smart pointers
 };

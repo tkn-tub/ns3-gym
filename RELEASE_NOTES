@@ -32,6 +32,8 @@ New user-visible features
 - (wifi) Add a new trace source to StaWifiMac to trace beacon arrivals
 - (network) Add a method to allow random variable-based jitter to be added
   to the start times of applications in a container.
+- (network) Add a method to check whether a node with a given ID is within
+  a NodeContainer.
 
 Bugs fixed
 ----------
