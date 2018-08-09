@@ -594,12 +594,6 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::TcpSocketState::EcnState_t', u'ns3::TcpSocketState::EcnState_t')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::EcnState_t*', u'ns3::TcpSocketState::EcnState_t*')
     typehandlers.add_type_alias(u'ns3::TcpSocketState::EcnState_t&', u'ns3::TcpSocketState::EcnState_t&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )*', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )&', u'ns3::TcpSocketState::TcpCongStatesTracedValueCallback&')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )', u'ns3::TcpSocketState::EcnStatesTracedValueCallback')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )*', u'ns3::TcpSocketState::EcnStatesTracedValueCallback*')
-    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )&', u'ns3::TcpSocketState::EcnStatesTracedValueCallback&')
     ## tcp-tx-buffer.h (module 'internet'): ns3::TcpTxBuffer [class]
     module.add_class('TcpTxBuffer', parent=root_module['ns3::Object'])
     ## tcp-vegas.h (module 'internet'): ns3::TcpVegas [class]
@@ -618,6 +612,9 @@ def register_types(module):
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
     module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )', u'ns3::Time::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )*', u'ns3::Time::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )&', u'ns3::Time::TracedCallback&')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
@@ -1169,6 +1166,12 @@ def register_types_ns3_TracedValueCallback(module):
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time )', u'ns3::TracedValueCallback::Time')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time )*', u'ns3::TracedValueCallback::Time*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::Time, ns3::Time )&', u'ns3::TracedValueCallback::Time&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )', u'ns3::TracedValueCallback::TcpCongState')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )*', u'ns3::TracedValueCallback::TcpCongState*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::TcpCongState_t const, ns3::TcpSocketState::TcpCongState_t const )&', u'ns3::TracedValueCallback::TcpCongState&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )', u'ns3::TracedValueCallback::EcnState')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )*', u'ns3::TracedValueCallback::EcnState*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::TcpSocketState::EcnState_t const, ns3::TcpSocketState::EcnState_t const )&', u'ns3::TracedValueCallback::EcnState&')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 )', u'ns3::TracedValueCallback::SequenceNumber32')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 )*', u'ns3::TracedValueCallback::SequenceNumber32*')
     typehandlers.add_type_alias(u'void ( * ) ( ns3::SequenceNumber32, ns3::SequenceNumber32 )&', u'ns3::TracedValueCallback::SequenceNumber32&')
@@ -4527,6 +4530,11 @@ def register_Ns3NodeContainer_methods(root_module, cls):
     cls.add_method('Begin', 
                    'ns3::NodeContainer::Iterator', 
                    [], 
+                   is_const=True)
+    ## node-container.h (module 'network'): bool ns3::NodeContainer::Contains(uint32_t id) const [member function]
+    cls.add_method('Contains', 
+                   'bool', 
+                   [param('uint32_t', 'id')], 
                    is_const=True)
     ## node-container.h (module 'network'): void ns3::NodeContainer::Create(uint32_t n) [member function]
     cls.add_method('Create', 
