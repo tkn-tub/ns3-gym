@@ -185,11 +185,11 @@ def configure(conf):
 	debug, debug_defs = compiler.get_debug_flags(dbg_level)
 	warnings = compiler.get_warnings_flags(warn_level)
 
-        if Options.options.disable_werror:
-                try:
-                        warnings.remove ('-Werror')
-                except ValueError:
-                        pass
+	if Options.options.disable_werror:
+		try:
+			warnings.remove ('-Werror')
+		except ValueError:
+			pass
 	
 	if cc and not conf.env['CCFLAGS']:
 		conf.env.append_value('CCFLAGS', optimizations)
