@@ -30,7 +30,7 @@ namespace ns3 {
 /**
  * \brief Isotropic antenna model
  * 
- * This is the simplest antenna model. The gain of this antenna is unitary (=0dB) in all directions.
+ * This is the simplest antenna model. The gain of this antenna is the same in all directions.
  */
 class IsotropicAntennaModel : public AntennaModel
 {
@@ -42,6 +42,14 @@ public:
 
   // inherited from AntennaModel
   virtual double GetGainDb (Angles a);
+
+protected:
+
+  /**
+   * gain of the antenna in dB, in all directions
+   * 
+   */
+  double m_gainDb;
 };
 
 
