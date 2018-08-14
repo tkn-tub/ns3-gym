@@ -2150,6 +2150,8 @@ WifiPhy::GetPayloadDuration (uint32_t size, WifiTxVector txVector, uint16_t freq
   else if (mpdutype == NORMAL_MPDU && preamble != WIFI_PREAMBLE_NONE)
     {
       //Not an A-MPDU
+      // The number of OFDM symbols in the data field when BCC encoding 
+      // is used is given in equation 19-32 of the IEEE 802.11-2016 standard.
       numSymbols = lrint (stbc * ceil ((16 + size * 8.0 + 6.0 * Nes) / (stbc * numDataBitsPerSymbol)));
     }
   else
