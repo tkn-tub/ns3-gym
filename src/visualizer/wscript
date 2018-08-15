@@ -3,7 +3,14 @@ from waflib import Options
 
 required_python_modules = [
     'gi',
-    ]
+    'gi.repository.GObject',
+    'cairo',
+    'pygraphviz',
+    'gi.repository.Gtk',
+    'gi.repository.Gdk',
+    'gi.repository.Pango',
+    'gi.repository.GooCanvas',
+]
 
 
 def configure(conf):
@@ -44,7 +51,6 @@ def build(bld):
     # disabled.
     if not bld.env['ENABLE_PYVIZ']:
         return
-
 
     headers.source = []
 

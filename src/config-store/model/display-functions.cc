@@ -12,7 +12,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * 
+ *
  * Authors: Faker Moatamri <faker.moatamri@sophia.inria.fr>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
@@ -25,7 +25,7 @@
 namespace ns3 {
 /**
  * This function includes the name of the attribute or the editable value
- * in the second column 
+ * in the second column
  */
 void
 cell_data_function_col_1 (GtkTreeViewColumn *col, GtkCellRenderer *renderer,
@@ -107,8 +107,8 @@ get_col_number_from_tree_view_column (GtkTreeViewColumn *col)
   GList *cols;
   int num;
   g_return_val_if_fail (col != 0, -1);
-  g_return_val_if_fail (col->tree_view != 0, -1);
-  cols = gtk_tree_view_get_columns (GTK_TREE_VIEW (col->tree_view));
+  g_return_val_if_fail (gtk_tree_view_column_get_tree_view(col) != 0, -1);
+  cols = gtk_tree_view_get_columns (GTK_TREE_VIEW (gtk_tree_view_column_get_tree_view(col)));
   num = g_list_index (cols, (gpointer) col);
   g_list_free (cols);
   return num;
@@ -119,7 +119,7 @@ get_col_number_from_tree_view_column (GtkTreeViewColumn *col)
  * item or an attribute
  */
 gboolean
-cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip, 
+cell_tooltip_callback (GtkWidget *widget, gint x, gint y, gboolean keyboard_tip,
                        GtkTooltip *tooltip, gpointer user_data)
 {
   GtkTreeModel *model;
@@ -213,7 +213,7 @@ out: if (col == 0)
 }
 
 /**
- * This is the main view opening the widget, getting tooltips and drawing the 
+ * This is the main view opening the widget, getting tooltips and drawing the
  * tree of attributes...
  */
 GtkWidget *
@@ -256,9 +256,9 @@ create_view (GtkTreeStore *model)
 /**
  * This is the action done when the user presses on the save button.
  * It will save the config to a file.
- * 
+ *
  * \param button (unused)
- * \param user_data 
+ * \param user_data
  */
 void
 save_clicked (GtkButton *button, gpointer user_data)
@@ -356,7 +356,7 @@ clean_model_callback (GtkTreeModel *model, GtkTreePath *path,
  * if it is a NODE_ATTRIBUTE
  */
 void
-cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, 
+cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer,
                                          GtkTreeModel *model, GtkTreeIter *iter,
                                          gpointer user_data)
 {
@@ -377,7 +377,7 @@ cell_data_function_col_1_config_default (GtkTreeViewColumn *col, GtkCellRenderer
  * This function writes the attribute or typeid name in the column 0
  */
 void
-cell_data_function_col_0_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model, 
+cell_data_function_col_0_config_default (GtkTreeViewColumn *col, GtkCellRenderer *renderer, GtkTreeModel *model,
                                          GtkTreeIter *iter, gpointer user_data)
 {
   ModelTypeid *node;
@@ -419,9 +419,9 @@ cell_edited_callback_config_default (GtkCellRendererText *cell, gchar *path_stri
 /**
  * This function is used to display a tooltip whenever the user puts the mouse
  * over a type ID or an attribute. It will give the type and the possible values of
- * an attribute value and the type of the object for an attribute object or a 
+ * an attribute value and the type of the object for an attribute object or a
  * typeID object
- 
+
  * \param widget is the display object
  * \param x is the x position
  * \param y is the y position
@@ -492,7 +492,7 @@ cell_tooltip_callback_config_default (GtkWidget *widget, gint x, gint y,
  * It will save the config to a file.
  *
  * \param button (unused)
- * \param user_data 
+ * \param user_data
  */
 void
 save_clicked_default (GtkButton *button, gpointer user_data)
@@ -526,7 +526,7 @@ save_clicked_default (GtkButton *button, gpointer user_data)
  * If the user presses the button load, it will load the config file into memory.
  *
  * \param button (unused)
- * \param user_data 
+ * \param user_data
  */
 void
 load_clicked_default (GtkButton *button, gpointer user_data)
@@ -552,7 +552,7 @@ load_clicked_default (GtkButton *button, gpointer user_data)
 }
 
 /**
- * This is the main view opening the widget, getting tooltips and drawing the 
+ * This is the main view opening the widget, getting tooltips and drawing the
  * tree of attributes
  */
 GtkWidget *
