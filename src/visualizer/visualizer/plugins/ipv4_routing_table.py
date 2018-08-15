@@ -34,10 +34,10 @@ class ShowIpv4RoutingTable(InformationWindow):
         """
         InformationWindow.__init__(self)
         self.win = Gtk.Dialog(parent=visualizer.window,
-                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT|Gtk.DialogFlags.NO_SEPARATOR,
+                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT,
                               buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
-        self.win.set_title("IPv4 routing table for node %i" % node_index) 
+        self.win.set_title("IPv4 routing table for node %i" % node_index)
         self.visualizer = visualizer
         self.node_index = node_index
 
@@ -52,7 +52,7 @@ class ShowIpv4RoutingTable(InformationWindow):
         sw.add(treeview)
         self.win.vbox.add(sw)
         self.win.set_default_size(600, 300)
-        
+
         # Dest.
         column = Gtk.TreeViewColumn('Destination', Gtk.CellRendererText(),
                                     text=self.COLUMN_DESTINATION)
@@ -91,7 +91,7 @@ class ShowIpv4RoutingTable(InformationWindow):
         """
         self.win.destroy()
         self.visualizer.remove_information_window(self)
-    
+
     def update(self):
         """!
         Update function

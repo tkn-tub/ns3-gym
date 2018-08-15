@@ -1527,24 +1527,25 @@ class Visualizer(GObject.GObject):
 
 
     def on_root_button_press_event(self, view, target, event):
-        if event.button == 1:
+        if event.button.button == 1:
             self.select_node(None)
             return True
 
     def on_node_button_press_event(self, view, target, event, node):
-        if event.button == 1:
+        button = event.button.button
+        if button == 1:
             self.select_node(node)
             return True
-        elif event.button == 3:
+        elif button == 3:
             self.popup_node_menu(node, event)
             return True
-        elif event.button == 2:
+        elif button == 2:
             self.begin_node_drag(node)
             return True
         return False
 
     def on_node_button_release_event(self, view, target, event, node):
-        if event.button == 2:
+        if event.button.button == 2:
             self.end_node_drag(node)
             return True
         return False
@@ -1606,7 +1607,7 @@ class Visualizer(GObject.GObject):
     def popup_node_menu(self, node, event):
         menu = Gtk.Menu()
         self.emit("populate-node-menu", node, menu)
-        menu.popup(None, None, None, event.button, event.time)
+        menu.popup(None, None, None, None, event.button.button, event.time)
 
     def _update_ipython_selected_node(self):
         # If we are running under ipython -gthread, make this new
