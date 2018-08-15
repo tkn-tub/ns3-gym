@@ -416,19 +416,23 @@ class Node(PyVizObject):
 
         # If the location of the point is now beyond the bounds of the
         # canvas then those bounds now need to be increased
-        bounds = self.visualizer.canvas.get_bounds()
+        try:
+            bounds = self.visualizer.canvas.get_bounds()
 
-        (min_x, min_y, max_x, max_y) = bounds
+            (min_x, min_y, max_x, max_y) = bounds
 
-        min_x = min(x, min_x)
-        min_y = min(y, min_y)
-        max_x = max(x, max_x)
-        max_y = max(y, max_y)
+            min_x = min(x, min_x)
+            min_y = min(y, min_y)
+            max_x = max(x, max_x)
+            max_y = max(y, max_y)
 
-        new_bounds = (min_x, min_y, max_x, max_y)
+            new_bounds = (min_x, min_y, max_x, max_y)
 
-        if new_bounds != bounds:
-            self.visualizer.canvas.set_bounds(*new_bounds)
+            if new_bounds != bounds:
+                self.visualizer.canvas.set_bounds(*new_bounds)
+        except TypeError:
+            # bug 2969:  GooCanvas.Canvas.get_bounds() inconsistency
+            pass
 
     def get_position(self):
         """!
