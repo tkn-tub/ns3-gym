@@ -1887,8 +1887,8 @@ def main(argv):
     parser.add_option("-u", "--update-data", action="store_true", dest="update_data", default=False,
                       help="If examples use reference data files, get them to re-generate them")
 
-    parser.add_option("-f", "--fullness", action="store", type="string", dest="fullness", default="QUICK",
-                      metavar="FULLNESS",
+    parser.add_option("-f", "--fullness", action="store", type="choice", dest="fullness", default="QUICK",
+                      metavar="FULLNESS", choices=["QUICK", "EXTENSIVE", "TAKES_FOREVER"],
                       help="choose the duration of tests to run: QUICK, EXTENSIVE, or TAKES_FOREVER, where EXTENSIVE includes QUICK and TAKES_FOREVER includes QUICK and EXTENSIVE (only QUICK tests are run by default)")
 
     parser.add_option("-g", "--grind", action="store_true", dest="valgrind", default=False,
