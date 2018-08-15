@@ -11,21 +11,22 @@ def options(opt):
                    help=('Disable GTK+ support'),
                    dest='disable_gtk', default=False, action="store_true")
 
+
 def configure(conf):
     if Options.options.disable_gtk:
-        conf.env['ENABLE_GTK2'] = False
+        conf.env['ENABLE_GTK'] = False
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
-                                     conf.env['ENABLE_GTK2'],
+                                     conf.env['ENABLE_GTK'],
                                      "--disable-gtk option given")
     else:
-        have_gtk2 = conf.check_cfg(package='gtk+-2.0', atleast_version='2.12', 
-                                   args=['--cflags', '--libs'], uselib_store='GTK2',
-                                   mandatory=False)
+        have_gtk = conf.check_cfg(package='gtk+-3.0', atleast_version='3.0',
+                                  args=['--cflags', '--libs'], uselib_store='GTK',
+                                  mandatory=False)
 
-        conf.env['ENABLE_GTK2'] = have_gtk2
+        conf.env['ENABLE_GTK'] = have_gtk
         conf.report_optional_feature("GtkConfigStore", "GtkConfigStore",
-                                     conf.env['ENABLE_GTK2'],
-                                     "library 'gtk+-2.0 >= 2.12' not found")
+                                     conf.env['ENABLE_GTK'],
+                                     "library 'gtk+-3.0 >= 3.0' not found")
 
         # Bug 2936 -Wparentheses issue for gcc >= 8
         if conf.env['ENABLE_GTK2']: 
@@ -64,17 +65,17 @@ def build(bld):
         'model/config-store.h',
         ]
 
-    if bld.env['ENABLE_GTK2']:
-        headers.source.append ('model/gtk-config-store.h')
-        module.source.extend (['model/gtk-config-store.cc',
-                               'model/model-node-creator.cc',
-                               'model/model-typeid-creator.cc',
-                               'model/display-functions.cc',
-                               ])
-        module.use.append('GTK2')
+    if bld.env['ENABLE_GTK']:
+        headers.source.append('model/gtk-config-store.h')
+        module.source.extend(['model/gtk-config-store.cc',
+                              'model/model-node-creator.cc',
+                              'model/model-typeid-creator.cc',
+                              'model/display-functions.cc',
+                              ])
+        module.use.append('GTK')
 
     if bld.env['ENABLE_LIBXML2']:
-        module.source.append ('model/xml-config.cc')
+        module.source.append('model/xml-config.cc')
         module.use.append('LIBXML2')
 
     if bld.env['ENABLE_EXAMPLES']:

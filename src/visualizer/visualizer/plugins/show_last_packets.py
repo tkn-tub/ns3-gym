@@ -1,12 +1,11 @@
-import gobject
-import gtk
+from gi.repository import GObject
+from gi.repository import Gtk
 
 import ns.core
 import ns.network
 import ns.visualizer
 
 from visualizer.base import InformationWindow
-from visualizer.higcontainer import HIGContainer
 from kiwi.ui.objectlist import ObjectList, Column
 
 ## ShowLastPackets class
@@ -35,7 +34,7 @@ class ShowLastPackets(InformationWindow):
     #  AND button
     ## @var op_OR_button
     #  OR button
-    class PacketList(gtk.ScrolledWindow):
+    class PacketList(Gtk.ScrolledWindow):
         """
         PacketList class
         """
@@ -54,15 +53,15 @@ class ShowLastPackets(InformationWindow):
             @param self this object
             """
             super(ShowLastPackets.PacketList, self).__init__()
-            self.set_properties(hscrollbar_policy=gtk.POLICY_AUTOMATIC,
-                                vscrollbar_policy=gtk.POLICY_AUTOMATIC)
-            self.table_model = gtk.ListStore(*([str]*4))
-            treeview = gtk.TreeView(self.table_model)
+            self.set_properties(hscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+                                vscrollbar_policy=Gtk.PolicyType.AUTOMATIC)
+            self.table_model = Gtk.ListStore(*([str]*4))
+            treeview = Gtk.TreeView(self.table_model)
             treeview.show()
             self.add(treeview)
 
             def add_column(descr, colid):
-                column = gtk.TreeViewColumn(descr, gtk.CellRendererText(), text=colid)
+                column = Gtk.TreeViewColumn(descr, Gtk.CellRendererText(), text=colid)
                 treeview.append_column(column)
 
             add_column("Time", self.COLUMN_TIME)
@@ -93,7 +92,7 @@ class ShowLastPackets(InformationWindow):
                                      self.COLUMN_SIZE, str(sample.packet.GetSize ()),
                                      self.COLUMN_CONTENTS, str(sample.packet)
                                      )
-                
+
 
     def __init__(self, visualizer, node_index):
         """
@@ -103,31 +102,31 @@ class ShowLastPackets(InformationWindow):
         @param node_index the node index
         """
         InformationWindow.__init__(self)
-        self.win = gtk.Dialog(parent=visualizer.window,
-                              flags=gtk.DIALOG_DESTROY_WITH_PARENT|gtk.DIALOG_NO_SEPARATOR,
-                              buttons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        self.win = Gtk.Dialog(parent=visualizer.window,
+                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT|Gtk.DialogFlags.NO_SEPARATOR,
+                              buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
-        self.win.set_title("Last packets for node %i" % node_index) 
+        self.win.set_title("Last packets for node %i" % node_index)
         self.visualizer = visualizer
         self.viz_node = visualizer.get_node(node_index)
         self.node = ns.network.NodeList.GetNode(node_index)
 
         def smart_expand(expander, vbox):
             if expander.get_expanded():
-                vbox.set_child_packing(expander, expand=True, fill=True, padding=0, pack_type=gtk.PACK_START)
+                vbox.set_child_packing(expander, expand=True, fill=True, padding=0, pack_type=Gtk.PACK_START)
             else:
-                vbox.set_child_packing(expander, expand=False, fill=False, padding=0, pack_type=gtk.PACK_START)
+                vbox.set_child_packing(expander, expand=False, fill=False, padding=0, pack_type=Gtk.PACK_START)
 
-        main_hbox = gtk.HBox(False, 4)
+        main_hbox = Gtk.HBox(False, 4)
         main_hbox.show()
-        main_vbox = gtk.VBox(False, 4)
+        main_vbox = Gtk.VBox(False, 4)
         main_vbox.show()
         self.win.vbox.add(main_hbox)
         main_hbox.add(main_vbox)
-        
+
         self.tx_list = self.PacketList()
         self.tx_list.show()
-        group = gtk.Expander("Last transmitted packets")
+        group = Gtk.Expander("Last transmitted packets")
         group.show()
         group.add(self.tx_list)
         main_vbox.pack_start(group, expand=False, fill=False)
@@ -135,7 +134,7 @@ class ShowLastPackets(InformationWindow):
 
         self.rx_list = self.PacketList()
         self.rx_list.show()
-        group = gtk.Expander("Last received packets")
+        group = Gtk.Expander("Last received packets")
         group.show()
         group.add(self.rx_list)
         main_vbox.pack_start(group, expand=False, fill=False)
@@ -143,7 +142,7 @@ class ShowLastPackets(InformationWindow):
 
         self.drop_list = self.PacketList()
         self.drop_list.show()
-        group = gtk.Expander("Last dropped packets")
+        group = Gtk.Expander("Last dropped packets")
         group.show()
         group.add(self.drop_list)
         main_vbox.pack_start(group, expand=False, fill=False)
@@ -156,15 +155,15 @@ class ShowLastPackets(InformationWindow):
         self.packet_capture_options = ns.visualizer.PyViz.PacketCaptureOptions()
         self.packet_capture_options.numLastPackets = 100
 
-        packet_filter_vbox = gtk.VBox(False, 4)
+        packet_filter_vbox = Gtk.VBox(False, 4)
         packet_filter_vbox.show()
         main_hbox.add(packet_filter_vbox)
 
-        sel_buttons_box = gtk.HButtonBox()
+        sel_buttons_box = Gtk.HButtonBox()
         sel_buttons_box.show()
         packet_filter_vbox.pack_start(sel_buttons_box, False, False, 4)
-        select_all_button = gobject.new(gtk.Button, label="Sel. All", visible=True)
-        select_none_button = gobject.new(gtk.Button, label="Sel. None", visible=True)
+        select_all_button = GObject.new(Gtk.Button, label="Sel. All", visible=True)
+        select_none_button = GObject.new(Gtk.Button, label="Sel. None", visible=True)
         sel_buttons_box.add(select_all_button)
         sel_buttons_box.add(select_none_button)
 
@@ -234,12 +233,12 @@ class ShowLastPackets(InformationWindow):
 
         select_all_button.connect("clicked", sel_all_cb)
         select_none_button.connect("clicked", sel_none_cb)
-        
-        op_buttons_box = gtk.HButtonBox()
+
+        op_buttons_box = Gtk.HButtonBox()
         op_buttons_box.show()
         packet_filter_vbox.pack_start(op_buttons_box, False, False, 4)
-        self.op_AND_button = gobject.new(gtk.RadioButton, label="AND", visible=True)
-        self.op_OR_button = gobject.new(gtk.RadioButton, label="OR", visible=True, group=self.op_AND_button)
+        self.op_AND_button = GObject.new(Gtk.RadioButton, label="AND", visible=True)
+        self.op_OR_button = GObject.new(Gtk.RadioButton, label="OR", visible=True, group=self.op_AND_button)
         op_buttons_box.add(self.op_AND_button)
         op_buttons_box.add(self.op_OR_button)
         self.op_OR_button.props.active = True
@@ -266,7 +265,7 @@ class ShowLastPackets(InformationWindow):
         """
         self.win.destroy()
         self.visualizer.remove_information_window(self)
-    
+
     def update(self):
         """!
         Update function
@@ -281,7 +280,7 @@ class ShowLastPackets(InformationWindow):
 
 
 def populate_node_menu(viz, node, menu):
-    menu_item = gtk.MenuItem("Show Last Packets")
+    menu_item = Gtk.MenuItem("Show Last Packets")
     menu_item.show()
 
     def _show_it(dummy_menu_item):

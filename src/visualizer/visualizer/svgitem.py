@@ -1,12 +1,11 @@
-import gobject
+from gi.repository import GObject, GooCanvas
 import rsvg
 #import cairo
-import goocanvas
 import os.path
 
 
 ## SvgItem class
-class SvgItem(goocanvas.ItemSimple):
+class SvgItem(GooCanvas.ItemSimple):
     ## @var x
     #  x
     ## @var y
@@ -42,7 +41,7 @@ class SvgItem(goocanvas.ItemSimple):
               -10e6,                                    # property minimum value
               10e6,                                 # property maximum value
               0,                                    # property default value
-              gobject.PARAM_READWRITE),             # property flags
+              GObject.PARAM_READWRITE),             # property flags
 
         'y': (float,
               'Y',
@@ -50,7 +49,7 @@ class SvgItem(goocanvas.ItemSimple):
               -10e6,
               10e6,
               0,
-              gobject.PARAM_READWRITE),
+              GObject.PARAM_READWRITE),
 
         'width': (float,
                   'Width',
@@ -58,7 +57,7 @@ class SvgItem(goocanvas.ItemSimple):
                   0,
                   10e6,
                   0,
-                  gobject.PARAM_READWRITE),
+                  GObject.PARAM_READWRITE),
 
         'height': (float,
                    'Height',
@@ -66,9 +65,9 @@ class SvgItem(goocanvas.ItemSimple):
                    0,
                    10e6,
                    0,
-                   gobject.PARAM_READWRITE),
+                   GObject.PARAM_READWRITE),
         }
-    
+
     def __init__(self, x, y, rsvg_handle, **kwargs):
         """
         Initializer
@@ -96,30 +95,30 @@ class SvgItem(goocanvas.ItemSimple):
         """
         if pspec.name == 'x':
             self.x = value
-            
+
             # make sure we update the display
             self.changed(True)
-        
+
         elif pspec.name == 'y':
             self.y = value
-            
+
             # make sure we update the display
             self.changed(True)
-        
+
         elif pspec.name == 'width':
             self.custom_width = value
             self._size_changed()
-            
+
             # make sure we update the display
             self.changed(True)
 
         elif pspec.name == 'height':
             self.custom_height = value
             self._size_changed()
-            
+
             # make sure we update the display
             self.changed(True)
-        
+
         else:
             raise AttributeError, 'unknown property %s' % pspec.name
 
@@ -174,7 +173,7 @@ class SvgItem(goocanvas.ItemSimple):
 
         else:
             raise AttributeError, 'unknown property %s' % pspec.name
-    
+
     def do_simple_paint(self, cr, bounds):
         """!
         Simple Paint function
@@ -211,7 +210,7 @@ class SvgItem(goocanvas.ItemSimple):
         """
         if ((x < self.x) or (x > self.x + self.width)) or ((y < self.y) or (y > self.y + self.height)):
             return False
-        else:    
+        else:
             return True
 
 

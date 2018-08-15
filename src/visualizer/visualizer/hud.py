@@ -1,8 +1,8 @@
-import goocanvas
 import core
 import math
-import pango
-import gtk
+from gi.repository import Pango
+from gi.repository import Gtk
+from gi.repository import GooCanvas
 
 
 ## Axes class
@@ -22,16 +22,16 @@ class Axes(object):
     def __init__(self, viz):
         """!
         Initializer function
-        
+
         @param self: this object
         @param viz: visualization object
         @return none
         """
         self.viz = viz
         self.color = 0x8080C0FF
-        self.hlines = goocanvas.Path(parent=viz.canvas.get_root_item(), stroke_color_rgba=self.color)
+        self.hlines = GooCanvas.CanvasPath(parent=viz.canvas.get_root_item(), stroke_color_rgba=self.color)
         self.hlines.lower(None)
-        self.vlines = goocanvas.Path(parent=viz.canvas.get_root_item(), stroke_color_rgba=self.color)
+        self.vlines = GooCanvas.CanvasPath(parent=viz.canvas.get_root_item(), stroke_color_rgba=self.color)
         self.vlines.lower(None)
         self.labels = []
         hadj = self.viz.get_hadjustment()
@@ -49,25 +49,25 @@ class Axes(object):
     def set_visible(self, visible):
         """!
         Set visible function
-        
+
         @param self: this object
         @param visible: visible indicator
         @return none
         """
         self.visible = visible
         if self.visible:
-            self.hlines.props.visibility = goocanvas.ITEM_VISIBLE
-            self.vlines.props.visibility = goocanvas.ITEM_VISIBLE
+            self.hlines.props.visibility = GooCanvas.CanvasItemVisibility.VISIBLE
+            self.vlines.props.visibility = GooCanvas.CanvasItemVisibility.VISIBLE
         else:
-            self.hlines.props.visibility = goocanvas.ITEM_HIDDEN
-            self.vlines.props.visibility = goocanvas.ITEM_HIDDEN
+            self.hlines.props.visibility = GooCanvas.CanvasItemVisibility.HIDDEN
+            self.vlines.props.visibility = GooCanvas.CanvasItemVisibility.HIDDEN
             for label in self.labels:
-                label.props.visibility = goocanvas.ITEM_HIDDEN
-            
+                label.props.visibility = GooCanvas.CanvasItemVisibility.HIDDEN
+
     def _compute_divisions(self, xi, xf):
         """!
         Compute divisions function
-        
+
         @param self: this object
         @param xi: xi
         @param xf: xf
@@ -82,12 +82,12 @@ class Axes(object):
         def rint(x):
             """!
             Compute divisions function
-        
+
             @param x: x
             @return x rounded up
             """
             return math.floor(x+0.5)
-        
+
         dx_over_ndiv = dx / ndiv
         for n in range(5): # iterate 5 times to find optimum division size
             #/* div: length of each division */
@@ -101,12 +101,12 @@ class Axes(object):
             if n > 1:
                 ndiv = rint(size / text_width)
         return x0, div
-        
-        
+
+
     def update_view(self):
         """!
         Update view function
-        
+
         @param self: this object
         @return none
         """
@@ -116,32 +116,32 @@ class Axes(object):
         unused_labels = self.labels
         self.labels = []
         for label in unused_labels:
-            label.set_property("visibility", goocanvas.ITEM_HIDDEN)
+            label.set_property("visibility", GooCanvas.CanvasItemVisibility.HIDDEN)
         def get_label():
             """!
             Get label function
-        
+
             @param self: this object
             @return label
             """
             try:
                 label = unused_labels.pop(0)
             except IndexError:
-                label = goocanvas.Text(parent=self.viz.canvas.get_root_item(), stroke_color_rgba=self.color)
+                label = GooCanvas.CanvasText(parent=self.viz.canvas.get_root_item(), stroke_color_rgba=self.color)
             else:
-                label.set_property("visibility", goocanvas.ITEM_VISIBLE)
+                label.set_property("visibility", GooCanvas.CanvasItemVisibility.VISIBLE)
                 label.lower(None)
             self.labels.append(label)
             return label
 
         hadj = self.viz.get_hadjustment()
         vadj = self.viz.get_vadjustment()
-        zoom = self.viz.zoom.value
+        zoom = self.viz.zoom.get_value()
         offset = 10/zoom
 
-        x1, y1 = self.viz.canvas.convert_from_pixels(hadj.value, vadj.value)
-        x2, y2 = self.viz.canvas.convert_from_pixels(hadj.value + hadj.page_size, vadj.value + vadj.page_size)
-        line_width = 5.0/self.viz.zoom.value
+        x1, y1 = self.viz.canvas.convert_from_pixels(hadj.get_value(), vadj.get_value())
+        x2, y2 = self.viz.canvas.convert_from_pixels(hadj.get_value() + hadj.get_page_size(), vadj.get_value() + vadj.get_page_size())
+        line_width = 5.0/self.viz.zoom.get_value()
 
         # draw the horizontal axis
         self.hlines.set_property("line-width", line_width)
@@ -158,8 +158,8 @@ class Axes(object):
             label.set_properties(font=("Sans Serif %f" % int(12/zoom)),
                                  text=("%G" % x),
                                  fill_color_rgba=self.color,
-                                 alignment=pango.ALIGN_CENTER,
-                                 anchor=gtk.ANCHOR_S,
+                                 alignment=Pango.Alignment.CENTER,
+                                 # anchor=Gtk.Widget.ANCHOR_S,
                                  x=core.PIXELS_PER_METER*x,
                                  y=(yc - offset))
             x += xdiv
@@ -184,8 +184,8 @@ class Axes(object):
             label.set_properties(font=("Sans Serif %f" % int(12/zoom)),
                                  text=("%G" % y),
                                  fill_color_rgba=self.color,
-                                 alignment=pango.ALIGN_LEFT,
-                                 anchor=gtk.ANCHOR_W,
+                                 alignment=Pango.Alignment.LEFT,
+                                 # anchor=Gtk.ANCHOR_W,
                                  x=xc + offset,
                                  y=core.PIXELS_PER_METER*y)
             y += ydiv

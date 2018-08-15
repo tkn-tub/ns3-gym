@@ -8,17 +8,17 @@ import ns.wimax
 import ns.wimax
 import ns.lte
 
-import gobject
+from gi.repository import GObject
 import os.path
 import sys
 
 PIXELS_PER_METER = 3.0 # pixels-per-meter, at 100% zoom level
 
-## PyVizObject class 
-class PyVizObject(gobject.GObject):
+## PyVizObject class
+class PyVizObject(GObject.GObject):
     ## @var __gtype_name__
     #  global type name
-    __gtype_name__ = "PyVizObject"  
+    __gtype_name__ = "PyVizObject"
     ## Returns tooltip text string.
     #
     ## @param tooltip: tooltip object.
@@ -33,8 +33,8 @@ class Link(PyVizObject):
 
 ## InformationWindow class
 class InformationWindow(object):
-    ## update function 
-    #    
+    ## update function
+    #
     ## @return: NotImplementedError exception
     def update(self):
         raise NotImplementedError
@@ -42,13 +42,13 @@ class InformationWindow(object):
 ## NetDeviceTraits class
 class NetDeviceTraits(object):
     ## class variables
-    ## @var is_wireless 
+    ## @var is_wireless
     #  is wireless
     ## @var is_virtual
     #  is virtual
     def __init__(self, is_wireless=None, is_virtual=False):
         ''' Initialize function.
-       
+
         @param is_wireless is wireless flag
         @param is_virtual is virtual flag
         '''

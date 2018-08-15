@@ -1,4 +1,4 @@
-import gtk
+from gi.repository import Gtk
 import ns.core
 import ns.network
 from visualizer.base import InformationWindow
@@ -131,9 +131,9 @@ class ShowInterfaceStatistics(InformationWindow):
         @param statistics_collector statistics collector class
         """
         InformationWindow.__init__(self)
-        self.win = gtk.Dialog(parent=visualizer.window,
-                              flags=gtk.DIALOG_DESTROY_WITH_PARENT|gtk.DIALOG_NO_SEPARATOR,
-                              buttons=(gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        self.win = Gtk.Dialog(parent=visualizer.window,
+                              flags=Gtk.DialogFlags.DESTROY_WITH_PARENT|Gtk.DialogFlags.NO_SEPARATOR,
+                              buttons=(Gtk.STOCK_CLOSE, Gtk.ResponseType.CLOSE))
         self.win.connect("response", self._response_cb)
         self.win.set_title("Statistics for node %i" % node_index) 
         self.visualizer = visualizer
@@ -141,14 +141,14 @@ class ShowInterfaceStatistics(InformationWindow):
         self.node_index = node_index
         self.viz_node = visualizer.get_node(node_index)
 
-        self.table_model = gtk.ListStore(*([str]*13))
+        self.table_model = Gtk.ListStore(*([str]*13))
 
-        treeview = gtk.TreeView(self.table_model)
+        treeview = Gtk.TreeView(self.table_model)
         treeview.show()
         self.win.vbox.add(treeview)
         
         def add_column(descr, colid):
-            column = gtk.TreeViewColumn(descr, gtk.CellRendererText(), text=colid)
+            column = Gtk.TreeViewColumn(descr, Gtk.CellRendererText(), text=colid)
             treeview.append_column(column)
             
         add_column("Interface", self.COLUMN_INTERFACE)
@@ -209,7 +209,7 @@ class ShowInterfaceStatistics(InformationWindow):
 
 def populate_node_menu(viz, node, menu, statistics_collector):
     
-    menu_item = gtk.MenuItem("Show Interface Statistics")
+    menu_item = Gtk.MenuItem("Show Interface Statistics")
     menu_item.show()
 
     def _show_it(dummy_menu_item):
