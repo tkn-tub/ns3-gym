@@ -29,7 +29,7 @@ def configure(conf):
                                      "library 'gtk+-3.0 >= 3.0' not found")
 
         # Bug 2936 -Wparentheses issue for gcc >= 8
-        if conf.env['ENABLE_GTK2']: 
+        if conf.env['ENABLE_GTK']: 
             if conf.env['CXX_NAME'] in ['gcc']:
                 if tuple(map(int, conf.env['CC_VERSION'])) >= gcc_version_gtkplus_warning_issue:
                     conf.env.append_value('CXXFLAGS', '-Wno-parentheses')
