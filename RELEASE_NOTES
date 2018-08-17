@@ -9,8 +9,8 @@ http://www.nsnam.org including tutorials: http://www.nsnam.org/tutorials.html
 Consult the file CHANGES.html for more detailed information about changed
 API and behavior across ns-3 releases.
 
-Release 3-dev
-=============
+Release 3.29
+============
 
 Availability
 ------------
@@ -20,14 +20,27 @@ Supported platforms
 -------------------
 This release is intended to work on systems with the following minimal
 requirements (Note:  not all features available on all platforms):
+- g++-4.9 or later
+- Apple LLVM version 7.0.2 or later 
+- clang-3.3 or later
+
+In addition, Python 2.7 (Python 2 series) or Python 3.4-3.6 (Python 3 series) 
+- Note: Python 3.7 is not yet supported
 
 This release has been tested on the following platforms:
+- Ubuntu 18.04 (64 bit) with g++-7.3.0 and Python 2.7.15
+- Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12
+- Fedora Core 28 (64 bit) with g++-8.1.1 and Python 2.7.15
+- Fedora Core 26 (64 bit) with g++-7.3.1 and g++-7.1.1, and Python 2.7.14
+- macOS High Sierra 10.13.5 with Xcode 9.4.1, Apple LLVM version 9.1.0, Python 2.7.10
 
 New user-visible features
 -------------------------
 - (buildings) A new position allocator has been added to the buildings module.
   The allocator places nodes randomly but in a manner that rejects positions
   that are located within buildings defined in the scenario.
+- (applications) Add 3GPP HTTP model
+- (traffic-control) Add priority queue disc (PrioQueueDisc)
 - (tcp) Added PRR as recovery algorithm
 - (wifi) Add a new trace source to StaWifiMac to trace beacon arrivals
 - (network) Add a method to allow random variable-based jitter to be added
@@ -37,22 +50,34 @@ New user-visible features
 
 Bugs fixed
 ----------
-- Bug 2914 - Adv Win resilience to SequenceNumber wrap-around
-- Bug 2921 - tcp: Add min_cwnd variable to LEDBAT
-- Bug 2911 - aodv:  Binary exponential backoff can become unlimited
-- Bug 2901 - Add CommandLine::Parse (const std::vector<std::string>> args)
-- Bug 2891 - netanim:  dumbbell-animation breaks when RightCount > LeftCount
+- Bug 2299 - uan: WOSS integration missing patch
+- Bug 2399 - wifi: Improve scanning procedure of StaWifiMac
 - Bug 2451 - bindings: (partial fix) generating ILP32 bindings from LP64
-- Bug 2461 - CommandLine should handle non-option arguments
-- Bug 2801 - FdNetDevice device MTU is not set correctly
-- Bug 2819 - FqCoDel handling of non-IP packets
+- Bug 2461 - core: CommandLine should handle non-option arguments
+- Bug 2772 - bridge:  Bridge doesn't learn from packets sent to it
+- Bug 2801 - fd-net-device: FdNetDevice device MTU is not set correctly
+- Bug 2819 - traffic-control: FqCoDel handling of non-IP packets
+- Bug 2891 - netanim:  dumbbell-animation breaks when RightCount > LeftCount
+- Bug 2901 - core: Add CommandLine::Parse (const std::vector<std::string>> args)
+- Bug 2902 - build: missing modules cause Waf to run indefinitely
+- Bug 2908 - build:  Check if pybindgen version exists before use
+- Bug 2911 - aodv:  Binary exponential backoff can become unlimited
+- Bug 2914 - tcp: Adv Win resilience to SequenceNumber wrap-around
+- Bug 2915 - build: Enforce gcc minimum version
 - Bug 2920 - wifi: Default MaxSlrc and fragmentation threshold values differ from standard
-- Bug 2924 - documentation about Peek/Dequeue usage
+- Bug 2921 - tcp: Add min_cwnd variable to LEDBAT
+- Bug 2923 - tap-bridge: UseLocal mode uses wrong MAC address
+- Bug 2924 - traffic-control:documentation about Peek/Dequeue usage
 - Bug 2925 - wifi: MinstrelHt provides strange results at low SNR with A-MPDU enabled
 - Bug 2926 - wifi: SSRC and SLRC mechanism not fully aligned to the standard
-- Bug 2931 - Queue Disc drops the CE marked packets
+- Bug 2927 - lte:  Valgrind error in lena-x2-handover example
+- Bug 2931 - traffic-control: QueueDisc drops the CE marked packets
+- Bug 2936 - Disable -Wparentheses with GTK+ and gcc-8
+- Bug 2938 - build: add --disable-werror flag to Waf
+- Bug 2940 - traffic-control: QueueDisc SojournTime should be TracedCallback 
 - Bug 2941 - wifi: Order bit of Frame control field of WifiMacHeader not correctly set for some frames
 - Bug 2948 - network: SetPriority does not support value 7
+- Bug 2949 - test: Exit test.py if incorrect fullness option used
 - Bug 2964 - wifi: IdealWifiManager keeps using the same MCS when all transmissions fail
 
 Known issues
