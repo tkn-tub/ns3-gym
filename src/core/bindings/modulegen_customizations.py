@@ -62,7 +62,7 @@ PyObject *item = PyList_GET_ITEM(%(py_name)s, %(idx)s);
                              '"argument %s must be a list of strings");') % self.name)
         wrapper.before_call.write_code(
             '#if PY_VERSION_HEX >= 0x03000000\n'
-            '{var}[{idx}] = PyUnicode_AsUTF8(item);\n'
+            '{var}[{idx}] = const_cast<char *> (PyUnicode_AsUTF8(item));\n'
             '#else\n'
             '{var}[{idx}] = PyString_AsString(item);\n'
             '#endif\n'
