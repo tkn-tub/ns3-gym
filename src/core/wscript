@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import sys
 
-from waflib import Options
+from waflib import Options, Utils
 import wutils
 
 int64x64 = {
@@ -46,10 +46,34 @@ def options(opt):
 def configure(conf):
     int64x64_impl = Options.options.int64x64_impl
     if int64x64_impl == 'default' or int64x64_impl == 'int128':
-        have_uint128  = conf.check_nonfatal(type_name='uint128_t',
-                                            define_name='HAVE_UINT128_T')
-        have__uint128 = conf.check_nonfatal(type_name='__uint128_t',
-                                            define_name='HAVE___UINT128_T')
+
+        code_snip_type='''
+        #include <stdint.h>
+        
+        int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((uint128_t *) 0) return 0;
+	if (sizeof (uint128_t)) return 0;
+	return 1;
+        }
+        '''
+        have_uint128  = conf.check_nonfatal(msg='checking for uint128_t',
+                                            define_name='HAVE_UINT128_T',
+                                            code=code_snip_type)
+
+        code_snip_type='''
+        #include <stdint.h>
+        
+        int main(int argc, char **argv) {
+	(void)argc; (void)argv;
+	if ((__uint128_t *) 0) return 0;
+	if (sizeof (__uint128_t)) return 0;
+	return 1;
+        }
+        '''
+        have__uint128 = conf.check_nonfatal(msg='checking for __uint128_t',
+                                            define_name='HAVE___UINT128_T',
+                                            code=code_snip_type)
         if have_uint128 or have__uint128:
             int64x64_impl = 'int128'
         else:
@@ -78,7 +102,7 @@ def configure(conf):
 
     # Check for POSIX threads
     test_env = conf.env.derive()
-    if Options.platform != 'darwin' and Options.platform != 'cygwin':
+    if Utils.unversioned_sys_platform() != 'darwin' and Utils.unversioned_sys_platform() != 'cygwin':
         test_env.append_value('LINKFLAGS', '-pthread')
         test_env.append_value('CXXFLAGS', '-pthread')
         test_env.append_value('CCFLAGS', '-pthread')
@@ -102,7 +126,7 @@ int main ()
                                            errmsg='Could not find pthread support (build/config.log for details)')
     if have_pthread:
         # darwin accepts -pthread but prints a warning saying it is ignored
-        if Options.platform != 'darwin' and Options.platform != 'cygwin':
+        if Utils.unversioned_sys_platform() != 'darwin' and Utils.unversioned_sys_platform() != 'cygwin':
             conf.env['CXXFLAGS_PTHREAD'] = '-pthread'
             conf.env['CCFLAGS_PTHREAD'] = '-pthread'
             conf.env['LINKFLAGS_PTHREAD'] = '-pthread'

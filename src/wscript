@@ -147,7 +147,7 @@ def create_ns3_module(bld, name, dependencies=(), test=False):
 def apply_incpaths_ns3testlib(self):
     if not self.source:
         return
-    testdir = self.source[-1].parent.path_from(self.bld.srcnode)
+    testdir = self.to_nodes(self.source[-1])[0].parent.path_from(self.bld.srcnode)
     self.env.append_value("DEFINES", 'NS_TEST_SOURCEDIR="%s"' % (testdir,))
 
 
@@ -287,7 +287,7 @@ def ns3_python_bindings(bld):
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['DEFINES'])
     defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
-    if Options.platform == 'win32':
+    if Utils.unversioned_sys_platform()== 'win32':
         try:
             defines.remove('_DEBUG') # causes undefined symbols on win32
         except ValueError:
@@ -330,7 +330,7 @@ def build(bld):
         modheader = bld(features='ns3moduleheader')
         modheader.module = module.split('/')[-1]
 
-class ns3pcfile_task(Task.Task):
+class ns3pcfile(Task.Task):
     after = 'cxx'
 
     def __str__(self):
@@ -339,7 +339,7 @@ class ns3pcfile_task(Task.Task):
         return 'pcfile: %s' % (tgt_str)
 
     def runnable_status(self):
-        return super(ns3pcfile_task, self).runnable_status()
+        return super(ns3pcfile, self).runnable_status()
 
     def _self_libs(self, env, name, libdir):
         if env['ENABLE_STATIC_NS3']:
@@ -470,7 +470,7 @@ def apply_ns3header(self):
     self.source = '' # tell WAF not to process these files further
 
 
-class ns3header_task(Task.Task):
+class ns3header(Task.Task):
     before = 'cxx gen_ns3_module_header'
     color = 'BLUE'
 
@@ -510,7 +510,7 @@ class ns3header_task(Task.Task):
             else:
                 return Task.SKIP_ME
         else:
-            return super(ns3header_task, self).runnable_status()
+            return super(ns3header, self).runnable_status()
 
     def run(self):
         if self.mode == 'install':
@@ -561,7 +561,7 @@ def apply_ns3privateheader(self):
     self.headers = set(self.to_list(self.source))
     self.source = '' # tell WAF not to process these files further
 
-class ns3privateheader_task(Task.Task):
+class ns3privateheader(Task.Task):
     before = 'cxx gen_ns3_module_header'
     after = 'ns3header'
     color = 'BLUE'
@@ -602,7 +602,7 @@ class ns3privateheader_task(Task.Task):
             else:
                 return Task.SKIP_ME
         else:
-            return super(ns3privateheader_task, self).runnable_status()
+            return super(ns3privateheader, self).runnable_status()
 
     def run(self):
         if self.mode == 'install':
@@ -631,7 +631,7 @@ class ns3privateheader_task(Task.Task):
             return 0
 
 
-class gen_ns3_module_header_task(Task.Task):
+class gen_ns3_module_header(Task.Task):
     before = 'cxx'
     after = 'ns3header'
     color = 'BLUE'
@@ -643,7 +643,7 @@ class gen_ns3_module_header_task(Task.Task):
             else:
                 return Task.SKIP_ME
         else:
-            return super(gen_ns3_module_header_task, self).runnable_status()
+            return super(gen_ns3_module_header, self).runnable_status()
 
     def __str__(self):
         "string to display to the user"

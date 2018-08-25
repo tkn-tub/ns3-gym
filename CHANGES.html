@@ -103,6 +103,7 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
 /ul>
 <h2>Changes to build system:</h2>
 <ul>
+  <li>Waf upgraded from 1.8.19 to 2.0.9, and ns-3 build scripts aligned to the new API.</li>
   <li>The '--no32bit-scan' argument is removed from Waf apiscan; generation of ILP32 bindings is now automated from the LP64 bindings.</li>
   <li> When using on newer compilers, new warnings may trigger build failures.
 The --disable-werror flag can be passed to Waf at configuration time to turn

@@ -13,7 +13,7 @@ shellcmd.debug = debug
 
 arg_rx = re.compile(r"(?P<dollar>\$\$)|(?P<subst>\$\{(?P<var>\w+)(?P<code>.*?)\})", re.M)
 
-class command_task(Task.Task):
+class command(Task.Task):
 	color = "BLUE"
 	def __init__(self, env, generator):
 		Task.Task.__init__(self, env=env, normal=1, generator=generator)

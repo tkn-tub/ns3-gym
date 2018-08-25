@@ -24,14 +24,13 @@ requirements (Note:  not all features available on all platforms):
 - Apple LLVM version 7.0.2 or later 
 - clang-3.3 or later
 
-In addition, Python 2.7 (Python 2 series) or Python 3.4-3.6 (Python 3 series) 
-- Note: Python 3.7 is not yet supported
+In addition, Python 2.7 (Python 2 series) or Python 3.4-3.7 (Python 3 series) 
 
 This release has been tested on the following platforms:
 - Ubuntu 18.04 (64 bit) with g++-7.3.0 and Python 2.7.15
-- Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12
-- Fedora Core 28 (64 bit) with g++-8.1.1 and Python 2.7.15
-- Fedora Core 26 (64 bit) with g++-7.3.1 and g++-7.1.1, and Python 2.7.14
+- Ubuntu 16.04 (64 bit) with g++-5.4.0 and Python 2.7.12/3.5.2
+- Fedora Core 28 (64 bit) with g++-8.1.1 and Python 2.7.15/3.7.0
+- Fedora Core 26 (64 bit) with g++-7.3.1 and Python 2.7.14/3.6.5
 - macOS High Sierra 10.13.5 with Xcode 9.4.1, Apple LLVM version 9.1.0, Python 2.7.10
 
 New user-visible features
