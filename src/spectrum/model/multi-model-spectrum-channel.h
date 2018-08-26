@@ -116,9 +116,6 @@ public:
   static TypeId GetTypeId (void);
 
   // inherited from SpectrumChannel
-  virtual void AddPropagationLossModel (Ptr<PropagationLossModel> loss);
-  virtual void AddSpectrumPropagationLossModel (Ptr<SpectrumPropagationLossModel> loss);
-  virtual void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
   virtual void AddRx (Ptr<SpectrumPhy> phy);
   virtual void StartTx (Ptr<SpectrumSignalParameters> params);
 
@@ -127,18 +124,6 @@ public:
   virtual std::size_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (std::size_t i) const;
 
-  /**
-   * Get the frequency-dependent propagation loss model.
-   * \returns a pointer to the propagation loss model.
-   */
-  virtual Ptr<SpectrumPropagationLossModel> GetSpectrumPropagationLossModel (void);
-
-  /**
-   * TracedCallback signature for Ptr<const SpectrumSignalParameters>.
-   *
-   * \param [in] params SpectrumSignalParameters instance.
-   */
-  typedef void (* SignalParametersTracedCallback) (Ptr<SpectrumSignalParameters> params);
 
 protected:
   void DoDispose ();
@@ -150,35 +135,19 @@ private:
    * an iterator pointing to it. If not, it creates a new entry in
    * m_txSpectrumMpodelInfoMap, and returns an iterator to it.
    *
-   * @param txSpectrumModel The TX SpectrumModel  being considered
+   * \param txSpectrumModel The TX SpectrumModel  being considered
    *
-   * @return An iterator pointing to the corresponding entry in m_txSpectrumModelInfoMap
+   * \return An iterator pointing to the corresponding entry in m_txSpectrumModelInfoMap
    */
   TxSpectrumModelInfoMap_t::const_iterator FindAndEventuallyAddTxSpectrumModel (Ptr<const SpectrumModel> txSpectrumModel);
 
   /**
    * Used internally to reschedule transmission after the propagation delay.
    *
-   * @param params The signal parameters.
-   * @param receiver A pointer to the receiver SpectrumPhy.
+   * \param params The signal parameters.
+   * \param receiver A pointer to the receiver SpectrumPhy.
    */
   virtual void StartRx (Ptr<SpectrumSignalParameters> params, Ptr<SpectrumPhy> receiver);
-
-  /**
-   * Propagation delay model to be used with this channel.
-   */
-  Ptr<PropagationDelayModel> m_propagationDelay;
-
-  /**
-   * Single-frequency propagation loss model to be used with this channel.
-   */
-  Ptr<PropagationLossModel> m_propagationLoss;
-
-  /**
-   * Frequency-dependent propagation loss model to be used with this channel.
-   */
-  Ptr<SpectrumPropagationLossModel> m_spectrumPropagationLoss;
-
 
   /**
    * Data structure holding, for each TX SpectrumModel,  all the
@@ -200,23 +169,6 @@ private:
    */
   std::size_t m_numDevices;
 
-  /**
-   * Maximum loss [dB].
-   *
-   * Any device above this loss is considered out of range.
-   */
-  double m_maxLossDb;
-
-  /**
-   * \deprecated The non-const \c Ptr<SpectrumPhy> argument
-   * is deprecated and will be changed to \c Ptr<const SpectrumPhy>
-   * in a future release.
-   */
-  TracedCallback<Ptr<SpectrumPhy>, Ptr<SpectrumPhy>, double > m_pathLossTrace;
-  /**
-   * Traced callback for SpectrumSignalParameters in StartTx requests
-   */
-  TracedCallback<Ptr<SpectrumSignalParameters> > m_txSigParamsTrace;
 };
 
 
