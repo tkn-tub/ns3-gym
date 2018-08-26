@@ -71,6 +71,9 @@ TcpSocketBase subclasses. Starting from ns-3.25, they have been merged inside
 TcpSocketBase. In future releases, they can be extracted as separate modules,
 following the congestion control design.
 
+For an academic peer-reviewed paper on the current architecture of the TCP
+model, please see https://www.sciencedirect.com/science/article/pii/S1569190X15300939.
+
 Usage
 +++++
 
@@ -1024,6 +1027,9 @@ through two different lists of segments. TcpSocketBase actively uses the API
 provided by TcpTxBuffer to query the scoreboard; please refer to the Doxygen
 documentation (and to in-code comments) if you want to learn more about this
 implementation.
+
+For an academic peer-reviewed paper on the SACK implementation in ns-3,
+please refer to https://dl.acm.org/citation.cfm?id=3067666.
 
 Loss Recovery Algorithms
 ++++++++++++++++++++++++
