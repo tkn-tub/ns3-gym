@@ -46,6 +46,10 @@ New user-visible features
   to the start times of applications in a container.
 - (network) Add a method to check whether a node with a given ID is within
   a NodeContainer.
+- (spectrum) A new trace source named "Gain" is added to the SpectrumChannel class.
+  This trace is fired whenever a new path loss value is calculated. It exports pointers
+  to the mobility model of the transmitter and the receiver, Tx antenna gain, Rx antenna gain,
+  propagation gain and the pathloss value.
 
 Bugs fixed
 ----------
@@ -78,6 +82,7 @@ Bugs fixed
 - Bug 2948 - network: SetPriority does not support value 7
 - Bug 2949 - test: Exit test.py if incorrect fullness option used
 - Bug 2964 - wifi: IdealWifiManager keeps using the same MCS when all transmissions fail
+- Bug 2974 - lte: Inconsistent declaration of IPV6 methods
 
 Known issues
 ------------

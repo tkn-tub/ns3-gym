@@ -100,7 +100,16 @@ or with a string value with 'b' (bytes) or 'p' (packets) suffix, such as:
   <li>The QueueDisc base class now provides a default implementation of the DoPeek private method
   based on the QueueDisc::PeekDequeue method, which is now no longer available.</li>
   <li>The QueueDisc::SojournTime trace source is changed from a TracedValue to a TracedCallback; callbacks that hook this trace must provide one ns3::Time argument, not two.</li>
-/ul>
+  <li>To avoid the code duplication in SingleModelSpectrumChannel and MultiModelSpectrumChannel classes, the attributes MaxLossDb and PropagationLossModel, and the traces PathLoss and TxSigParams are moved to the base class SpectrumChannel. Similarly, the functions AddPropagationLossModel, AddSpectrumPropagationLossModel, SetPropagationDelayModel and GetSpectrumPropagationLossModel are now defined in SpectrumChannel class. Moreover, the TracedCallback signature of LossTracedCallback has been updated from :
+  <pre>
+   typedef void (* LossTracedCallback) (Ptr&#60;SpectrumPhy&#62 txPhy, Ptr&#60;SpectrumPhy&#62 rxPhy, double lossDb);
+  </pre>
+   To :
+  <pre>
+   typedef void (* LossTracedCallback) (Ptr&#60;const SpectrumPhy&#62 txPhy, Ptr&#60;const SpectrumPhy&#62 rxPhy, double lossDb);
+  </pre></li>
+  <li>For the sake of LTE module API consistency the IPV6 related functions AssignUeIpv6Address and GetUeDefaultGatewayAddress6 are now declared in EpcHelper base class. Thus, these functions are now declared as virtual in the child classes, i.e., EmuEpcHelper and PointToPointEpcHelper.</li>
+</ul>
 <h2>Changes to build system:</h2>
 <ul>
   <li>Waf upgraded from 1.8.19 to 2.0.9, and ns-3 build scripts aligned to the new API.</li>
