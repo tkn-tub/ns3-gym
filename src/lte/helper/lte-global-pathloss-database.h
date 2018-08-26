@@ -53,7 +53,7 @@ public:
    * \param rxPhy the receiving PHY
    * \param lossDb the loss in dB
    */
-  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb) = 0;
+  virtual void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb) = 0;
 
   /** 
    * 
@@ -87,7 +87,7 @@ class DownlinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase
 {
 public:
   // inherited from LteGlobalPathlossDatabase
-  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
+  virtual void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb);
 };
 
 /**
@@ -98,7 +98,7 @@ class UplinkLteGlobalPathlossDatabase : public LteGlobalPathlossDatabase
 {
 public:
   // inherited from LteGlobalPathlossDatabase
-  virtual void UpdatePathloss (std::string context, Ptr<SpectrumPhy> txPhy, Ptr<SpectrumPhy> rxPhy, double lossDb);
+  virtual void UpdatePathloss (std::string context, Ptr<const SpectrumPhy> txPhy, Ptr<const SpectrumPhy> rxPhy, double lossDb);
 };
 
 
