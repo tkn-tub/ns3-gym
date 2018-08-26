@@ -54,7 +54,7 @@ class LteCqiGenerationTestCase : public TestCase
 {
 public:
   /**
-   * \Constructor
+   * Constructor
    *
    * \param name reference name
    * \param usePdcchForCqiGeneration use PDCCH for CQI generation

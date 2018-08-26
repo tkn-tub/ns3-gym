@@ -64,6 +64,7 @@ public:
    * Constructor
    *
    * \param rrc ENB RRC
+   * \param componentCarrierId
    */
   EnbRrcMemberLteEnbCmacSapUser (LteEnbRrc* rrc, uint8_t componentCarrierId);
 

@@ -61,10 +61,16 @@ private:
    */
   virtual void DoRun ();
 
+  /**
+   * \brief Get throughput function
+   *
+   * \param numberOfComponentCarriers Number of component carriers
+   * \return The total data received (in Megabits)
+   */
   double GetThroughput (uint8_t numberOfComponentCarriers);
 
-  uint16_t m_expectedCellId; //< Cell ID UE is expected to attach to
-  uint16_t m_actualCellId; //< Cell ID UE has attached to
+  uint16_t m_expectedCellId; ///< Cell ID UE is expected to attach to
+  uint16_t m_actualCellId; ///< Cell ID UE has attached to
 };
 
 #endif /* LTE_AGGREGATION_THROUGHPUT_SCALE_H */

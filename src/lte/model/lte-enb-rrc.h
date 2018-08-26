@@ -836,7 +836,6 @@ public:
 
   /**
    * \brief Configure cell-specific parameters.
-   * \param cellId the ID of the cell
    *
    * Configure cell-specific parameters and propagate them to lower layers.
    * The parameters include bandwidth, EARFCN (E-UTRA Absolute Radio Frequency

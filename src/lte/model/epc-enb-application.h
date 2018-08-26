@@ -72,12 +72,11 @@ public:
    * Constructor
    * 
    * \param lteSocket the socket to be used to send/receive IPv4 packets to/from the LTE radio interface
-   * \param lteSocket the socket to be used to send/receive IPv6 packets to/from the LTE radio interface
-   * \param s1uSocket the socket to be used to send/receive packets
-   * to/from the S1-U interface connected with the SGW 
+   * \param lteSocket6 the socket to be used to send/receive IPv6 packets to/from the LTE radio interface
+   * \param s1uSocket the socket to be used to send/receive packets to/from the S1-U interface connected with the SGW
    * \param enbS1uAddress the IPv4 address of the S1-U interface of this eNB
    * \param sgwS1uAddress the IPv4 address at which this eNB will be able to reach its SGW for S1-U communications
-   * \param cellId the identifier of the enb
+   * \param cellId the identifier of the eNB
    */
   EpcEnbApplication (Ptr<Socket> lteSocket, Ptr<Socket> lteSocket6, Ptr<Socket> s1uSocket, Ipv4Address enbS1uAddress, Ipv4Address sgwS1uAddress, uint16_t cellId);
 

@@ -50,7 +50,7 @@ public:
   /**
    * Converts downlink EARFCN to corresponding LTE frequency band number.
    *
-   * \param earfcn the EARFCN
+   * \param nDl the EARFCN
    *
    * \return the downlink carrier band
    */
@@ -59,11 +59,11 @@ public:
   /**
    * Converts uplink EARFCN to corresponding LTE frequency band number.
    *
-   * \param earfcn the EARFCN
+   * \param nUl the EARFCN
    *
    * \return the uplink carrier band
    */
-  static uint16_t GetUplinkCarrierBand (uint32_t nDl);
+  static uint16_t GetUplinkCarrierBand (uint32_t nUl);
 
   /**
    * Calculates the downlink carrier frequency from the E-UTRA Absolute

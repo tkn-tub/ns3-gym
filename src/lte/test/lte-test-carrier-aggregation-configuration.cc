@@ -61,25 +61,33 @@ using namespace ns3;
  * is not static, as reported in BUG 2840.
  */
 
+/// ConfigToCheck structure
 struct ConfigToCheck
 {
-  uint16_t m_dlBandwidth;
-  uint16_t m_ulBandwidth;
-  uint32_t m_dlEarfcn;
-  uint32_t m_ulEarfcn;
+  uint16_t m_dlBandwidth; ///< Downlink bandwidth
+  uint16_t m_ulBandwidth; ///< Uplink bandwidth
+  uint32_t m_dlEarfcn; ///< Downlink EARFCN
+  uint32_t m_ulEarfcn; ///< Uplink EARFCN
 };
 
 NS_LOG_COMPONENT_DEFINE ("TestCarrierAggregationConfig");
 
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Carrier aggregation configuration test case.
+ */
 class CarrierAggregationConfigTestCase : public TestCase
 {
 public:
   /**
    * Constructor
    *
-   * \param numberOfNodes, Total Number of eNBs and UEs
-   * \param configToCheck, Vector containing all the configurations to check
-   * \param simulationDuration, Duration of the simulation
+   * \param numberOfNodes Total Number of eNBs and UEs
+   * \param numberOfComponentCarriers  Total number of component carriers
+   * \param configToCheck Vector containing all the configurations to check
+   * \param simulationDuration Duration of the simulation
    */
   CarrierAggregationConfigTestCase (uint32_t numberOfNodes, uint16_t numberOfComponentCarriers, std::vector<ConfigToCheck> configToCheck, Time simulationDuration)
     : TestCase (BuildNameString (numberOfNodes, numberOfComponentCarriers, configToCheck, simulationDuration)),
@@ -94,16 +102,37 @@ public:
 private:
   virtual void DoRun (void);
 
+  /**
+   * Build name string function
+   *
+   * \param numberOfNodes Total Number of eNBs and UEs
+   * \param numberOfComponentCarriers  Total number of component carriers
+   * \param configToCheck Vector containing all the configurations to check
+   * \param simulationDuration Duration of the simulation
+   * \returns the name string
+   */
   std::string BuildNameString (uint32_t numberOfNodes, uint16_t numberOfComponentCarriers, std::vector<ConfigToCheck> configToCheck, Time simulationDuration);
+  /**
+   * Evaluate function
+   *
+   * \param context The context
+   * \param ueRrc Pointer to the UE RRC
+   * \param sCellToAddModList List of the configuration parameters for secondary cell
+   */
   void Evaluate (std::string context, Ptr<LteUeRrc> ueRrc, std::list<LteRrcSap::SCellToAddMod> sCellToAddModList);
+  /**
+   * Equally spaced component carriers function
+   *
+   * \return Vector of maps containing the per component carrier configuration
+   */
   std::vector<std::map<uint16_t, ConfigToCheck> > EquallySpacedCcs ();
 
-  uint32_t m_numberOfNodes;
-  uint16_t m_numberOfComponentCarriers;
-  std::vector<ConfigToCheck> m_configToCheck;
-  uint32_t m_connectionCounter;
-  Time m_simulationDuration;
-  std::vector<std::map<uint16_t, ConfigToCheck> > m_configToCheckContainer;
+  uint32_t m_numberOfNodes; ///< Numer of nodes
+  uint16_t m_numberOfComponentCarriers; ///< Number of component carriers
+  std::vector<ConfigToCheck> m_configToCheck; ///< Vector containing all the configurations to check
+  uint32_t m_connectionCounter; ///< Connection counter
+  Time m_simulationDuration; ///< Simulation duration
+  std::vector<std::map<uint16_t, ConfigToCheck> > m_configToCheckContainer; ///< Vector of maps containing the per component carrier configuration
 };
 
 std::string
@@ -319,7 +348,12 @@ CarrierAggregationConfigTestCase::DoRun ()
   Simulator::Destroy ();
 }
 
-
+/**
+ * \ingroup lte-test
+ * \ingroup tests
+ *
+ * \brief Carrier aggregation configuration test suite.
+ */
 class CarrierAggregationConfigTestSuite : public TestSuite
 {
 public:
