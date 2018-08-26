@@ -67,7 +67,7 @@ def configure(conf):
                                      "NSC not found (see option --with-nsc)")
         return
     
-    if Options.platform in ['linux', 'freebsd']:
+    if Utils.unversioned_sys_platform() in ['linux', 'freebsd']:
         arch = os.uname()[4]
     else:
         arch = None

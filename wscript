@@ -423,7 +423,7 @@ def configure(conf):
 
     # bug 2181 on clang warning suppressions
     if conf.env['CXX_NAME'] in ['clang']:
-        if Options.platform == 'darwin':
+        if Utils.unversioned_sys_platform() == 'darwin':
             if conf.env['CC_VERSION'] >= darwin_clang_version_warn_unused_local_typedefs:
                 env.append_value('CXXFLAGS', '-Wno-unused-local-typedefs')
             if conf.env['CC_VERSION'] >= darwin_clang_version_warn_potentially_evaluated: 
@@ -435,7 +435,7 @@ def configure(conf):
                 env.append_value('CXXFLAGS', '-Wno-potentially-evaluated-expression')
     env['ENABLE_STATIC_NS3'] = False
     if Options.options.enable_static:
-        if Options.platform == 'darwin':
+        if Utils.unversioned_sys_platform() == 'darwin':
             if conf.check_compilation_flag(flag=[], linkflags=['-Wl,-all_load']):
                 conf.report_optional_feature("static", "Static build", True, '')
                 env['ENABLE_STATIC_NS3'] = True

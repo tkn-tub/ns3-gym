@@ -233,7 +233,7 @@ def ns3_python_bindings(bld):
             pymod.env.append_value('LINKFLAGS', '-Wl,-Bdynamic,--no-whole-archive')
     defines = list(pymod.env['DEFINES'])
     defines.extend(['NS_DEPRECATED=', 'NS3_DEPRECATED_H'])
-    if Options.platform == 'win32':
+    if Utils.unversioned_sys_platform() == 'win32':
         try:
             defines.remove('_DEBUG') # causes undefined symbols on win32
         except ValueError:
