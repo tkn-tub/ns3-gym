@@ -6,8 +6,8 @@ TCP models in ns-3
 
 This chapter describes the TCP models available in |ns3|.
 
-Generic support for TCP
-***********************
+Overview of support for TCP
+***************************
 
 |ns3| was written to support multiple TCP implementations. The implementations
 inherit from a few common header classes in the ``src/network`` directory, so that
@@ -23,11 +23,14 @@ There are two important abstract base classes:
 * class :cpp:class:`TcpSocketFactory`:  This is used by the layer-4 protocol
   instance to create TCP sockets of the right type.
 
-There are presently three implementations of TCP available for |ns3|.
+There are presently two active and one legacy implementations of TCP available for |ns3|.
 
 * a natively implemented TCP for ns-3
-* support for the `Network Simulation Cradle (NSC) <http://www.wand.net.nz/~stj2/nsc/>`__
-* support for `Direct Code Execution (DCE) <https://www.nsnam.org/overview/projects/direct-code-execution/>`__
+* support for kernel implementations via `Direct Code Execution (DCE) <https://www.nsnam.org/overview/projects/direct-code-execution/>`__
+* (legacy) support for kernel implementations for the `Network Simulation Cradle (NSC) <http://www.wand.net.nz/~stj2/nsc/>`__
+
+NSC is no longer actively supported; it requires use of gcc-5 or gcc-4.9, and
+only covers up to Linux kernel version 2.6.29.
 
 It should also be mentioned that various ways of combining virtual machines
 with |ns3| makes available also some additional TCP implementations, but
@@ -50,13 +53,14 @@ Model history
 +++++++++++++
 
 Until the ns-3.10 release, |ns3| contained a port of the TCP model from `GTNetS
-<http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_. 
+<http://www.ece.gatech.edu/research/labs/MANIACS/GTNetS/index.html>`_, 
+developed initially by George Riley and ported to |ns3| by Raj Bhattacharjea. 
 This implementation was substantially rewritten by Adriam Tam for ns-3.10.
-In 2015, the TCP module has been redesigned in order to create a better 
+In 2015, the TCP module was redesigned in order to create a better 
 environment for creating and carrying out automated tests. One of the main 
 changes involves congestion control algorithms, and how they are implemented.
 
-Before ns-3.25 release, a congestion control was considered as a stand-alone TCP
+Before the ns-3.25 release, a congestion control was considered as a stand-alone TCP
 through an inheritance relation: each congestion control (e.g. TcpNewReno) was
 a subclass of TcpSocketBase, reimplementing some inherited methods. The
 architecture was redone to avoid this inheritance,
@@ -71,8 +75,22 @@ TcpSocketBase subclasses. Starting from ns-3.25, they have been merged inside
 TcpSocketBase. In future releases, they can be extracted as separate modules,
 following the congestion control design.
 
-For an academic peer-reviewed paper on the current architecture of the TCP
-model, please see https://www.sciencedirect.com/science/article/pii/S1569190X15300939.
+Acknowledgments
++++++++++++++++
+
+As mentioned above, |ns3| TCP has had multiple authors and maintainers over
+the years.  Several publications exist on aspects of |ns3| TCP, and users 
+of |ns3| TCP are requested to cite one of the applicable papers when 
+publishing new work.
+
+A general reference on the current architecture is found in the following paper:
+
+* Maurizio Casoni, Natale Patriciello, Next-generation TCP for ns-3 simulator, Simulation Modelling Practice and Theory, Volume 66, 2016, Pages 81-93. (http://www.sciencedirect.com/science/article/pii/S1569190X15300939) 
+
+For an academic peer-reviewed paper on the SACK implementation in ns-3,
+please refer to:
+
+* Natale Patriciello. 2017. A SACK-based Conservative Loss Recovery Algorithm for ns-3 TCP: a Linux-inspired Proposal. In Proceedings of the Workshop on ns-3 (WNS3 '17). ACM, New York, NY, USA, 1-8. (https://dl.acm.org/citation.cfm?id=3067666)
 
 Usage
 +++++
