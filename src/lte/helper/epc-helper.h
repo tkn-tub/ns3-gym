@@ -131,12 +131,27 @@ public:
    */
   virtual Ipv4InterfaceContainer AssignUeIpv4Address (NetDeviceContainer ueDevices) = 0;
 
+  /**
+   * Assign IPv6 addresses to UE devices
+   *
+   * \param ueDevices the set of UE devices
+   *
+   * \return the interface container, \see Ipv6AddressHelper::Assign() which has similar semantics
+   */
+  virtual Ipv6InterfaceContainer AssignUeIpv6Address (NetDeviceContainer ueDevices) = 0;
+
 
   /** 
    * 
    * \return the IPv4 address of the Default Gateway to be used by UEs to reach the internet
    */
   virtual Ipv4Address GetUeDefaultGatewayAddress () = 0;
+
+  /**
+   *
+   * \return the IPv6 address of the Default Gateway to be used by UEs to reach the internet
+   */
+  virtual Ipv6Address GetUeDefaultGatewayAddress6 () = 0;
 
 
 };
