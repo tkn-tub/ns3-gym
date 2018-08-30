@@ -33,6 +33,9 @@ def configure(conf):
             if conf.env['CXX_NAME'] in ['gcc']:
                 if tuple(map(int, conf.env['CC_VERSION'])) >= gcc_version_gtkplus_warning_issue:
                     conf.env.append_value('CXXFLAGS', '-Wno-parentheses')
+            # Bug 2978 gcc and clang warnings about deprecated declarations
+            if conf.env['CXX_NAME'] in ['clang', 'gcc']:
+                    conf.env.append_value ('CXXFLAGS', '-Wno-error=deprecated-declarations')
 
     have_libxml2 = conf.check_cfg(package='libxml-2.0', atleast_version='2.7',
                                   args=['--cflags', '--libs'], uselib_store='LIBXML2',

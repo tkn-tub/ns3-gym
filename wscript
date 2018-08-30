@@ -643,7 +643,6 @@ def configure(conf):
             if conf.check_compilation_flag(flag, mode='cc'):
                 env.append_value('CCFLAGS', flag)
 
-    add_gcc_flag('-Wno-error=deprecated-declarations')
     add_gcc_flag('-fstrict-aliasing')
     add_gcc_flag('-Wstrict-aliasing')
 
