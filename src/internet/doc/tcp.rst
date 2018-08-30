@@ -1604,9 +1604,11 @@ NSC has previously been ported to |ns2| and OMNeT++, and was
 was added to |ns3| in September 2008 (ns-3.2 release).  This section 
 describes the |ns3| port of NSC and how to use it.
 
-To some extent, NSC has been superseded by the Linux kernel support within 
+NSC has been obsoleted by the Linux kernel support within 
 `Direct Code Execution (DCE) <http://www.nsnam.org/docs/dce/manual/singlehtml/index.html>`__.  However, NSC is still available through the bake build
-system.  NSC supports Linux kernels 2.6.18 and 2.6.26, but newer
+system.  NSC supports Linux kernels 2.6.18 and 2.6.26, and an experimental
+version of 2.6.29 exists on ns-3's code server
+(http://code.nsnam.org/fw/nsc-linux-2.6.29/), but newer
 versions of the kernel have not been ported.  
 
 Prerequisites
@@ -1618,21 +1620,34 @@ FreeBSD or OS X is unsupported (although it may be able to work).
 
 Building NSC requires the packages flex and bison.  
 
+NSC requires use of gcc-4.9 or gcc-5 series, and will not build on 
+newer systems lacking the older compilers.
+
 Configuring and Downloading
 +++++++++++++++++++++++++++
 
-As of ns-3.17 or later, NSC must either be downloaded separately from
+NSC must either be downloaded separately from
 its own repository, or downloading when using the 
 `bake build system <http://www.nsnam.org/docs/tutorial/html/getting-started.html#downloading-ns3-using-bake>`_ of 
 |ns3|.  
 
-For ns-3.17 or later releases, when using bake, one must configure NSC as 
-part of an "allinone" configuration, such as:
+For ns-3.17 through ns-3.28 releases, when using bake, one obtains NSC implicitly as part of an "allinone" configuration, such as:
 
 .. sourcecode:: bash
 
   $ cd bake
-  $ python bake.py configure -e ns-allinone-3.19
+  $ python bake.py configure -e ns-allinone-3.27
+  $ python bake.py download
+  $ python bake.py build
+
+For ns-3.29 and later versions, including the 'ns-3-allinone' development
+version, one must explicitly add NSC ('nsc-0.5.3') to the bake configuration, 
+such as:
+
+.. sourcecode:: bash
+
+  $ cd bake
+  $ python bake.py configure -e ns-allinone-3.29 -e nsc-0.5.3
   $ python bake.py download
   $ python bake.py build
 
