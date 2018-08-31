@@ -26,10 +26,6 @@
 #define DHCP_CLIENT_H
 
 #include "ns3/application.h"
-#include "ns3/event-id.h"
-#include "ns3/ptr.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/random-variable-stream.h"
 #include "ns3/traced-value.h"
 #include "dhcp-header.h"
 #include <list>
@@ -38,6 +34,7 @@ namespace ns3 {
 
 class Socket;
 class Packet;
+class RandomVariableStream;
 
 /**
  * \ingroup dhcp

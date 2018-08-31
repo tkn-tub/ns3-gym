@@ -39,6 +39,8 @@
 #include "ns3/icmpv6-header.h"
 #include "ns3/string.h"
 #include "ns3/pointer.h"
+#include "ns3/random-variable-stream.h"
+#include "ns3/socket.h"
 
 
 namespace ns3

@@ -22,23 +22,17 @@
  *
  */
 
+#include <algorithm>
 #include "ns3/log.h"
 #include "ns3/assert.h"
-#include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
-#include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-packet-info-tag.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
-#include "ns3/socket-factory.h"
 #include "ns3/packet.h"
-#include "ns3/uinteger.h"
-#include "ns3/config.h"
+#include "ns3/ipv4.h"
 #include "dhcp-server.h"
 #include "dhcp-header.h"
-#include "ns3/ipv4.h"
-#include <map>
-#include <algorithm>
 
 namespace ns3 {
 
