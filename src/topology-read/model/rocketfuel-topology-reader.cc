@@ -23,9 +23,9 @@
 #include <iostream>
 #include <sstream>
 #include <regex.h>
-
 #include "ns3/log.h"
 #include "ns3/unused.h"
+#include "ns3/node-container.h"
 #include "rocketfuel-topology-reader.h"
 
 namespace ns3 {

@@ -20,7 +20,6 @@
  */
 
 #include "ns3/log.h"
-
 #include "topology-reader.h"
 
 
