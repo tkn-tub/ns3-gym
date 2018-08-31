@@ -27,29 +27,29 @@ In the course of this chapter we will discuss the various ways to set or
 modify the values used by |ns3| model objects.  In increasing order of
 specificity, these are:
 
-+---------------------------------------+-------------------------------------+
-| Method                                | Scope                               |
-+=======================================+=====================================+
-| Default Attribute values set when     | Affect all instances of the class.  |
-| Attributes are defined in             |                                     |
-| :cpp:func:`GetTypeId ()`.             |                                     |
-+---------------------------------------+-------------------------------------+
-| | :cpp:class:`CommandLine`            | Affect all future instances.        |
-| | :cpp:func:`Config::SetDefault()`    |                                     |
-| | :cpp:class:`ConfigStore`            |                                     |
-+---------------------------------------+-------------------------------------+
-| :cpp:class:`ObjectFactory`            | Affects all instances created with  |
-|                                       | the factory.                        |
-+---------------------------------------+-------------------------------------+
-| Helper methods with (string/          | Affects all instances created by    |
-| AttributeValue) parameter pairs       | the helper.                         |
-+---------------------------------------+-------------------------------------+
-| | :cpp:func:`MyClass::SetX ()`        | Alters this particular instance.    |
-| | :cpp:func:`Object::SetAttribute ()` | Generally this is the only form     |
-| | :cpp:func:`Config::Set()`           | which can be scheduled to alter     |
-|                                       | an instance once the simulation     |
-|                                       | is running.                         |
-+---------------------------------------+-------------------------------------+
++-----------------------------------+-------------------------------------+----------------------------------+
+| Method                            | Scope                               |                                  |
++===================================+=====================================+==================================+
+| Default Attribute values set when | Affect all instances of the class.  |                                  |
+| Attributes are defined in         |                                     |                                  |
+| :cpp:func:`GetTypeId ()`.         |                                     |                                  |
++-----------------------------------+-------------------------------------+----------------------------------+
+|                                   | :cpp:class:`CommandLine`            | Affect all future instances.     |
+|                                   | :cpp:func:`Config::SetDefault()`    |                                  |
+|                                   | :cpp:class:`ConfigStore`            |                                  |
++-----------------------------------+-------------------------------------+----------------------------------+
+| :cpp:class:`ObjectFactory`        | Affects all instances created with  |                                  |
+|                                   | the factory.                        |                                  |
++-----------------------------------+-------------------------------------+----------------------------------+
+| Helper methods with (string/      | Affects all instances created by    |                                  |
+| AttributeValue) parameter pairs   | the helper.                         |                                  |
++-----------------------------------+-------------------------------------+----------------------------------+
+|                                   | :cpp:func:`MyClass::SetX ()`        | Alters this particular instance. |
+|                                   | :cpp:func:`Object::SetAttribute ()` | Generally this is the only form  |
+|                                   | :cpp:func:`Config::Set()`           | which can be scheduled to alter  |
+|                                   | an instance once the simulation     |                                  |
+|                                   | is running.                         |                                  |
++-----------------------------------+-------------------------------------+----------------------------------+
 
 By "specificity" we mean that methods in later rows in the table
 override the values set by, and typically affect fewer instances than,
@@ -575,7 +575,9 @@ Config Namespace Path
 An alternative way to get at the attribute is to use the configuration
 namespace.  Here, this attribute resides on a known path in this namespace; this
 approach is useful if one doesn't have access to the underlying pointers and
-would like to configure a specific attribute with a single statement.::
+would like to configure a specific attribute with a single statement.
+
+::
 
     Config::Set ("/NodeList/0/DeviceList/0/TxQueue/MaxSize",
                  StringValue ("25p"));
@@ -603,9 +605,9 @@ devices (which in this simple example has the same effect as the previous
                  << limit.Get ());
 
 If you run this program from the command line, you should see the following
-output corresponding to the steps we took above::
+output corresponding to the steps we took above:
 
-.. sourcecode:: text
+.. sourcecode:: bash
 
     $ ./waf --run main-attribute-value
     1.  dtq limit: 80p
