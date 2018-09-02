@@ -45,6 +45,11 @@ public:
    */
   WifiInformationElementId ElementId () const;
   /**
+   * Get the wifi information element ID extension
+   * \returns the wifi information element ID extension
+   */
+  WifiInformationElementId ElementIdExt () const;
+  /**
    * Get information field size
    * \returns the information field size
    */
@@ -175,14 +180,14 @@ public:
   void SetHighestNssSupported (uint8_t nss);
 
   /**
-   * Is transmit MCS supported.
+   * Is RX MCS supported.
    *
    * \param mcs the MCS
    * \returns true if MCS transmit supported
    */
   bool IsSupportedTxMcs (uint8_t mcs) const;
   /**
-   * Is reeive MCS supported.
+   * Is RX MCS supported.
    *
    * \param mcs the MCS
    * \returns true if MCS receive supported

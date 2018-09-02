@@ -185,10 +185,11 @@ typedef uint8_t WifiInformationElementId;
 #define IE_OPERATING_MODE_NOTIFICATION          ((WifiInformationElementId)199)
 // 200 to 220 are reserved
 #define IE_VENDOR_SPECIFIC                      ((WifiInformationElementId)221)
-// 222 to 255 are reserved
-#define IE_HE_CAPABILITIES                      ((WifiInformationElementId)255) //todo: not defined yet in the standard!
-#define IE_HE_OPERATION                         ((WifiInformationElementId)255) //todo: not defined yet in the standard!
+// 222 to 254 are reserved
+#define IE_EXTENSION                            ((WifiInformationElementId)255)
 
+#define IE_EXT_HE_CAPABILITIES                  ((WifiInformationElementId)35)
+#define IE_EXT_HE_OPERATION                     ((WifiInformationElementId)36)
 
 /**
  * \brief Information element, as defined in 802.11-2007 standard
@@ -302,6 +303,11 @@ public:
    */
   virtual uint8_t DeserializeInformationField (Buffer::Iterator start,
                                                uint8_t length) = 0;
+
+  /**
+   * \returns Own unique Element ID Extension
+   */
+  virtual WifiInformationElementId ElementIdExt () const;
 
   // In addition, a subclass may optionally override the following...
   /**

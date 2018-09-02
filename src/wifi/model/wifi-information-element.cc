@@ -37,13 +37,28 @@ WifiInformationElement::GetSerializedSize () const
   return (2 + GetInformationFieldSize ());
 }
 
+WifiInformationElementId
+WifiInformationElement::ElementIdExt () const
+{
+  return 0;
+}
+
 Buffer::Iterator
 WifiInformationElement::Serialize (Buffer::Iterator i) const
 {
   i.WriteU8 (ElementId ());
   i.WriteU8 (GetInformationFieldSize ());
-  SerializeInformationField (i);
-  i.Next (GetInformationFieldSize ());
+  if (ElementId () == IE_EXTENSION)
+    {
+      i.WriteU8 (ElementIdExt ());
+      SerializeInformationField (i);
+      i.Next (GetInformationFieldSize () - 1);
+    }
+  else
+    {
+      SerializeInformationField (i);
+      i.Next (GetInformationFieldSize ());
+    }
   return i;
 }
 
@@ -77,10 +92,24 @@ WifiInformationElement::DeserializeIfPresent (Buffer::Iterator i)
     }
 
   uint8_t length = i.ReadU8 ();
-
-  DeserializeInformationField (i, length);
-  i.Next (length);
-
+  if (ElementId () == IE_EXTENSION)
+  {
+    uint8_t elementIdExt = i.ReadU8 ();
+    //If the element here isn't the one we're after then we immediately
+    //return the iterator we were passed indicating that we haven't
+    //taken anything from the buffer.
+    if (elementIdExt != ElementIdExt ())
+      {
+        return start;
+      }
+    DeserializeInformationField (i, length - 1);
+    i.Next (length - 1);
+  }
+  else
+  {
+    DeserializeInformationField (i, length);
+    i.Next (length);
+  }
   return i;
 }
 
@@ -93,6 +122,11 @@ WifiInformationElement::operator== (WifiInformationElement const & a) const
     }
 
   if (GetInformationFieldSize () != a.GetInformationFieldSize ())
+    {
+      return false;
+    }
+
+  if (ElementIdExt () != a.ElementIdExt ())
     {
       return false;
     }

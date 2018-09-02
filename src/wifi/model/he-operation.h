@@ -71,7 +71,7 @@ public:
    *
    * \return the Basic HE-MCS And Nss field in the HE Operation information element
    */
-  uint32_t GetBasicHeMcsAndNssSet (void) const;
+  uint16_t GetBasicHeMcsAndNssSet (void) const;
 
   /**
    * Return the element ID.
@@ -79,6 +79,11 @@ public:
    * \returns the element ID
    */
   WifiInformationElementId ElementId () const;
+  /**
+   * Get the wifi information element ID extension
+   * \returns the wifi information element ID extension
+   */
+  WifiInformationElementId ElementIdExt () const;
   /**
    * Return the information field size.
    *
@@ -131,7 +136,7 @@ private:
   uint8_t m_dualBeacon; //!< Dual Beacon
 
   //Basic HE-MCS and NSS Set
-  uint32_t m_basicHeMcsAndNssSet; ///< basic HE MCS NSS set
+  uint16_t m_basicHeMcsAndNssSet; ///< basic HE MCS NSS set
 
   //TODO: VHT Operation Information subfields not defined in the standard yet.
 
