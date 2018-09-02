@@ -485,6 +485,15 @@ public:
    *         false otherwise
    */
   bool GetVhtSupported (Mac48Address address) const;
+  /**
+   * Return whether the station supports HE or not.
+   *
+   * \param address the address of the station
+   *
+   * \return true if HE is supported by the station,
+   *         false otherwise
+   */
+  bool GetHeSupported (Mac48Address address) const;
 
   /**
    * Return a mode for non-unicast packets.
