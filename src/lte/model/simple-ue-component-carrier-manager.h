@@ -125,8 +125,6 @@ protected:
    * \returns updated LC list
    */
   std::vector<uint16_t> DoRemoveLc (uint8_t lcid);
-  /// Notify connection reconfiguration message
-  void DoNotifyConnectionReconfigurationMsg ();
   /**
    * \brief Configure signal bearer function
    * \param lcId the LCID

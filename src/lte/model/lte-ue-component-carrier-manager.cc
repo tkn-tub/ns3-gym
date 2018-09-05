@@ -28,6 +28,7 @@ NS_LOG_COMPONENT_DEFINE ("LteUeComponentCarrierManager");
 NS_OBJECT_ENSURE_REGISTERED (LteUeComponentCarrierManager);
 
 LteUeComponentCarrierManager::LteUeComponentCarrierManager ()
+:m_noOfComponentCarriers(0)
 {
 }
 
@@ -77,6 +78,7 @@ void
 LteUeComponentCarrierManager::SetNumberOfComponentCarriers (uint8_t noOfComponentCarriers)
 {
   NS_LOG_FUNCTION (this);
+  NS_ABORT_MSG_IF (noOfComponentCarriers < MIN_NO_CC || noOfComponentCarriers > MAX_NO_CC, "Number of component carriers should be greater than 0 and less than 6");
   m_noOfComponentCarriers = noOfComponentCarriers;
 }
 

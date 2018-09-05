@@ -139,7 +139,8 @@ std::vector<LteUeCcmRrcSapProvider::LcsConfig> MemberLteUeCcmRrcSapProvider<C>::
 template <class C>
 void MemberLteUeCcmRrcSapProvider<C>::NotifyConnectionReconfigurationMsg ()
 {
-  m_owner->DoNotifyConnectionReconfigurationMsg ();
+  NS_FATAL_ERROR ("Function should not be called because it is not implemented.");
+  //m_owner->DoNotifyConnectionReconfigurationMsg ();
 }
 
 
@@ -199,7 +200,8 @@ MemberLteUeCcmRrcSapUser<C>::MemberLteUeCcmRrcSapUser (C* owner)
 template <class C>
 void MemberLteUeCcmRrcSapUser<C>::ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList)
 {
-  m_owner->DoComponentCarrierEnabling (componentCarrierList);
+  NS_FATAL_ERROR ("Function should not be called because it is not implemented.");
+  //m_owner->DoComponentCarrierEnabling (componentCarrierList);
 }
   
 } // end of namespace ns3

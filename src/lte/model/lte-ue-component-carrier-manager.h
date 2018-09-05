@@ -29,6 +29,9 @@
 #include <map>
 #include <vector>
 
+#define MIN_NO_CC 1
+#define MAX_NO_CC 5 // this is the maximum number of carrier components allowed by 3GPP up to R13
+
 namespace ns3 {
 
 
@@ -89,7 +92,7 @@ public:
 
   /**
    * \brief Sets number of component carriers that are supported by this UE.
-   * \param noOfComponentCarriers numbr of component carriers
+   * \param noOfComponentCarriers number of component carriers
    */
   void SetNumberOfComponentCarriers (uint8_t noOfComponentCarriers);
 
@@ -101,7 +104,6 @@ protected:
   std::map<uint8_t, LteMacSapUser*> m_lcAttached; //!< Map of pointers to SAP interfaces of the RLC instance of the flows of this UE.
   std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*> > m_componentCarrierLcMap; //!< Flow configuration per flow Id of this UE.
   uint16_t m_noOfComponentCarriers; //!<// The number of component carriers that this UE can support.
-  uint16_t m_noOfComponentCarriersEnabled; //!< The number of enabled component carriers that are enabled for this UE.
   std::map <uint8_t, LteMacSapProvider*> m_macSapProvidersMap; //!< Map of pointers to SAP to interfaces of the MAC instance if the flows of this UE.
 
 }; // end of class LteUeComponentCarrierManager

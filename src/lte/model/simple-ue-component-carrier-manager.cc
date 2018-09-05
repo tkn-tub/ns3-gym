@@ -133,7 +133,6 @@ SimpleUeComponentCarrierManager::SimpleUeComponentCarrierManager ()
 {
   NS_LOG_FUNCTION (this);
   m_ccmRrcSapProvider = new MemberLteUeCcmRrcSapProvider<SimpleUeComponentCarrierManager> (this);
-  m_noOfComponentCarriersEnabled = 1;
   m_ccmMacSapUser = new SimpleUeCcmMacSapUser (this);
   m_ccmMacSapProvider = new SimpleUeCcmMacSapProvider (this);
 }
@@ -289,7 +288,7 @@ SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::L
   m_lcAttached.insert (std::pair<uint8_t, LteMacSapUser*> (lcId, msu));
   LteUeCcmRrcSapProvider::LcsConfig elem;
   std::map <uint8_t, std::map<uint8_t, LteMacSapProvider*> >::iterator ccLcMapIt;
-  for (uint8_t ncc = 0; ncc < m_noOfComponentCarriersEnabled; ncc++)
+  for (uint8_t ncc = 0; ncc < m_noOfComponentCarriers; ncc++)
     {
       elem.componentCarrierId = ncc;
       elem.lcConfig = &lcConfig;
@@ -316,23 +315,6 @@ SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::L
   return res;  
 }
 
-void
-SimpleUeComponentCarrierManager::DoNotifyConnectionReconfigurationMsg ()
-{
-  NS_LOG_FUNCTION (this);
-  // this method need to be extended, now support only up to 2 ComponentCarrier Simulations
-
-  if (m_noOfComponentCarriersEnabled < m_noOfComponentCarriers)
-   {
-     // new ComponentCarrierConfiguration Requested
-     m_noOfComponentCarriersEnabled++;
-     std::vector<uint8_t> res;
-     res.insert (res.end (), m_noOfComponentCarriersEnabled);
-     //here the code to update all the Lc, since now  those should be mapped on all ComponentCarriers
-     m_ccmRrcSapUser->ComponentCarrierEnabling (res);
-   }
-  
-}
 LteMacSapUser*
 SimpleUeComponentCarrierManager::DoConfigureSignalBearer (uint8_t lcid,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu)
 {

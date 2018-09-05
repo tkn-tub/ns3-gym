@@ -3034,11 +3034,6 @@ LteUeRrc::SwitchToState (State newState)
     }
 }
 
-void
-LteUeRrc::DoComponentCarrierEnabling (std::vector<uint8_t> res)
-  {
-    NS_LOG_INFO (this);
-  }
 
 void
 LteUeRrc::SaveScellUeMeasurements (uint16_t sCellId, double rsrp, double rsrq,
