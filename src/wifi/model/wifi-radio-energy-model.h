@@ -400,6 +400,11 @@ private:
   void DoDispose (void);
 
   /**
+   * \returns draw of device, at given state.
+   */
+  double GetStateA (int state) const;
+
+  /**
    * \returns Current draw of device, at current state.
    *
    * Implements DeviceEnergyModel::GetCurrentA.
