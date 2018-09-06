@@ -277,7 +277,7 @@ WifiRadioEnergyModel::GetMaximumTimeInState (int state) const
   double remainingEnergy = m_source->GetRemainingEnergy ();
   double supplyVoltage = m_source->GetSupplyVoltage ();
   double current = GetStateA (state);
-  return NanoSeconds (static_cast<uint64_t> (1e9 * (remainingEnergy / (current * supplyVoltage))));
+  return Seconds (remainingEnergy / (current * supplyVoltage));
 }
 
 void
