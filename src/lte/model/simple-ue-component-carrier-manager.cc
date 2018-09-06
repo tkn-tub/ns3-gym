@@ -204,7 +204,19 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::Report
   NS_LOG_DEBUG ("BSR from RLC for LCID = " << (uint16_t)params.lcid);
   std::map <uint8_t, LteMacSapProvider*>::iterator it =  m_macSapProvidersMap.find (0);
   NS_ABORT_MSG_IF (it == m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier ");
-  it->second->ReportBufferStatus (params);
+
+  NS_LOG_DEBUG ("Size of component carrier LC map "<< m_componentCarrierLcMap.size());
+
+  for (std::map <uint8_t, std::map<uint8_t, LteMacSapProvider*> >::iterator ccLcMapIt = m_componentCarrierLcMap.begin();
+                                                                   ccLcMapIt != m_componentCarrierLcMap.end(); ccLcMapIt++)
+    {
+      NS_LOG_DEBUG ("BSR from RLC for CC id = "<< (uint16_t)ccLcMapIt->first);
+      std::map <uint8_t, LteMacSapProvider*>::iterator it = ccLcMapIt->second.find (params.lcid);
+      if (it !=ccLcMapIt->second.end())
+        {
+          it->second->ReportBufferStatus (params);
+        }
+    }
 }
 
 void 
