@@ -28,12 +28,14 @@ NS_LOG_COMPONENT_DEFINE ("LteUeComponentCarrierManager");
 NS_OBJECT_ENSURE_REGISTERED (LteUeComponentCarrierManager);
 
 LteUeComponentCarrierManager::LteUeComponentCarrierManager ()
-:m_noOfComponentCarriers(0)
+: m_ccmRrcSapUser (0), m_ccmRrcSapProvider (0), m_noOfComponentCarriers(0)
 {
+  NS_LOG_FUNCTION (this);
 }
 
 LteUeComponentCarrierManager::~LteUeComponentCarrierManager ()
 {
+  NS_LOG_FUNCTION (this);
 }
 
 TypeId
@@ -48,7 +50,25 @@ LteUeComponentCarrierManager::GetTypeId ()
 void
 LteUeComponentCarrierManager::DoDispose ()
 {
+  NS_LOG_FUNCTION (this);
+  delete m_ccmRrcSapProvider;
+  delete m_ccmRrcSapUser;
 }
+
+void
+LteUeComponentCarrierManager::SetLteCcmRrcSapUser (LteUeCcmRrcSapUser* s)
+{
+  NS_LOG_FUNCTION (this << s);
+  m_ccmRrcSapUser = s;
+}
+
+LteUeCcmRrcSapProvider*
+LteUeComponentCarrierManager::GetLteCcmRrcSapProvider ()
+{
+  NS_LOG_FUNCTION (this);
+  return m_ccmRrcSapProvider;
+}
+
 
 bool 
 LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders (uint8_t componentCarrierId, LteMacSapProvider* sap)
@@ -80,6 +100,8 @@ LteUeComponentCarrierManager::SetNumberOfComponentCarriers (uint8_t noOfComponen
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (noOfComponentCarriers < MIN_NO_CC || noOfComponentCarriers > MAX_NO_CC, "Number of component carriers should be greater than 0 and less than 6");
   m_noOfComponentCarriers = noOfComponentCarriers;
+  //Set the number of component carriers in UE RRC
+  m_ccmRrcSapUser->SetNumberOfComponentCarriers(noOfComponentCarriers);
 }
 
 

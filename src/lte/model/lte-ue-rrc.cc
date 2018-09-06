@@ -1118,6 +1118,13 @@ LteUeRrc::DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg)
   m_asSapUser->NotifyConnectionFailed ();  // inform upper layer
 }
 
+void
+LteUeRrc::DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers)
+{
+  NS_LOG_FUNCTION (this);
+  m_numberOfComponentCarriers = noOfComponentCarriers;
+}
+
 
 
 void

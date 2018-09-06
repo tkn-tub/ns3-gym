@@ -590,13 +590,16 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
   Ptr<LteEnbComponentCarrierManager> ccmEnbManager = m_enbComponentCarrierManagerFactory.Create<LteEnbComponentCarrierManager> ();
-  rrc->ConfigureCarriers (ccMap);
   
   //ComponentCarrierManager SAP
   rrc->SetLteCcmRrcSapProvider (ccmEnbManager->GetLteCcmRrcSapProvider ());
   ccmEnbManager->SetLteCcmRrcSapUser (rrc->GetLteCcmRrcSapUser ());
+  // Set number of component carriers. Note: eNB CCM would also set the
+  // number of component carriers in eNB RRC
   ccmEnbManager->SetNumberOfComponentCarriers (m_noOfCcs);
   ccmEnbManager->SetRrc(rrc);
+
+  rrc->ConfigureCarriers (ccMap);
 
   if (m_useIdealRrc)
     {
@@ -853,16 +856,18 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       it->second->SetPhy(phy);
     }
   Ptr<LteUeComponentCarrierManager> ccmUe = m_ueComponentCarrierManagerFactory.Create<LteUeComponentCarrierManager> ();
-  ccmUe->SetNumberOfComponentCarriers (m_noOfCcs);
 
   Ptr<LteUeRrc> rrc = CreateObject<LteUeRrc> ();
-  rrc->m_numberOfComponentCarriers = m_noOfCcs;
-  // run intializeSap to create the proper number of sap provider/users
-  rrc->InitializeSap();
   rrc->SetLteMacSapProvider (ccmUe->GetLteMacSapProvider ());
   // setting ComponentCarrierManager SAP
   rrc->SetLteCcmRrcSapProvider (ccmUe->GetLteCcmRrcSapProvider ());
   ccmUe->SetLteCcmRrcSapUser (rrc->GetLteCcmRrcSapUser ());
+  // Set number of component carriers. Note: UE CCM would also set the
+  // number of component carriers in UE RRC
+  ccmUe->SetNumberOfComponentCarriers (m_noOfCcs);
+
+  // run intializeSap to create the proper number of MAC and PHY control sap provider/users
+   rrc->InitializeSap();
 
   if (m_useIdealRrc)
     {

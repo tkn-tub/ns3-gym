@@ -170,6 +170,12 @@ public:
    * \param componentCarrierList component carrier list
    */
   virtual void ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList) = 0;
+  /**
+   * \brief Set the number of component carriers
+   *
+   * \param noOfComponentCarriers The number of component carriers
+   */
+  virtual void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers) = 0;
 
 }; // end of class LteUeCcmRrcSapUser
 
@@ -186,6 +192,7 @@ public:
     MemberLteUeCcmRrcSapUser (C* owner);
     //inherited from LteUeCcmRrcSapUser
     virtual void ComponentCarrierEnabling (std::vector<uint8_t> componentCarrierList);
+    virtual void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
   private:
   C* m_owner; ///< the owner class
@@ -202,6 +209,12 @@ void MemberLteUeCcmRrcSapUser<C>::ComponentCarrierEnabling (std::vector<uint8_t>
 {
   NS_FATAL_ERROR ("Function should not be called because it is not implemented.");
   //m_owner->DoComponentCarrierEnabling (componentCarrierList);
+}
+
+template <class C>
+void MemberLteUeCcmRrcSapUser<C>::SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers)
+{
+  m_owner->DoSetNumberOfComponentCarriers (noOfComponentCarriers);
 }
   
 } // end of namespace ns3

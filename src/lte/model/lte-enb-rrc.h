@@ -1190,6 +1190,12 @@ private:
    * \returns measure ID
    */
   uint8_t DoAddUeMeasReportConfigForComponentCarrier (LteRrcSap::ReportConfigEutra reportConfig);
+  /**
+   * \brief Set number of component carriers
+   * \param numberOfComponentCarriers the number of component carriers
+   */
+  void DoSetNumberOfComponentCarriers (uint16_t numberOfComponentCarriers);
+
 
   /**
    * Trigger handover function
@@ -1304,12 +1310,6 @@ public:
    * simulation.
    */
   void SetCsgId (uint32_t csgId, bool csgIndication);
-
-  /**
-   * \brief Set number of component carriers
-   * \param numberOfComponentCarriers the number of component carriers
-   */
-  void SetNumberOfComponentCarriers (uint16_t numberOfComponentCarriers);
 
 private:
 

@@ -484,6 +484,12 @@ private:
    */
   void DoRecvRrcConnectionReject (LteRrcSap::RrcConnectionReject msg);
 
+  /**
+   * RRC CCM SAP USER Method
+   * \param res
+   */
+  void DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
+
  
   // INTERNAL METHODS
 

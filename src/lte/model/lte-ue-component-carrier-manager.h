@@ -66,14 +66,14 @@ public:
    * \param s a reference to the "user" part of the interface, typically a
    *          member of an LteEnbRrc instance
    */
-  virtual void SetLteCcmRrcSapUser (LteUeCcmRrcSapUser* s) = 0;
+  virtual void SetLteCcmRrcSapUser (LteUeCcmRrcSapUser* s);
 
   /**
    * \brief Exports the "provider" part of the ComponentCarrier Management SAP interface.
    * \return the reference to the "provider" part of the interface, typically to
    *         be kept by an LteUeRrc instance
    */
-  virtual LteUeCcmRrcSapProvider* GetLteCcmRrcSapProvider () = 0;
+  virtual LteUeCcmRrcSapProvider* GetLteCcmRrcSapProvider ();
   
   /**
    * \brief Returns the MAC sap provider interface that if forwarding calls to the
@@ -100,6 +100,9 @@ protected:
 
   // inherited from Object
   virtual void DoDispose ();
+
+  LteUeCcmRrcSapUser* m_ccmRrcSapUser;//!< Interface to the UE RRC instance.
+  LteUeCcmRrcSapProvider* m_ccmRrcSapProvider; //!< Receive API calls from the UE RRC instance.
 
   std::map<uint8_t, LteMacSapUser*> m_lcAttached; //!< Map of pointers to SAP interfaces of the RLC instance of the flows of this UE.
   std::map<uint8_t, std::map<uint8_t, LteMacSapProvider*> > m_componentCarrierLcMap; //!< Flow configuration per flow Id of this UE.

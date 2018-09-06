@@ -211,6 +211,13 @@ public:
    */
   virtual Ptr<UeManager> GetUeManager (uint16_t rnti) = 0;
 
+  /**
+   * \brief Set the number of component carriers
+   *
+   * \param noOfComponentCarriers The number of component carriers
+   */
+  virtual void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers) = 0;
+
 }; // end of class LteCcmRrcSapUser
 
 /// MemberLteCcmRrcSapProvider class
@@ -305,6 +312,7 @@ public:
   virtual uint8_t AddUeMeasReportConfigForComponentCarrier (LteRrcSap::ReportConfigEutra reportConfig);
   virtual void TriggerComponentCarrier (uint16_t rnti, uint16_t targetCellId);
   virtual Ptr<UeManager> GetUeManager (uint16_t rnti);
+  virtual void SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 
 private:
   C* m_owner; ///< the owner class
@@ -351,6 +359,13 @@ Ptr<UeManager>
 MemberLteCcmRrcSapUser<C>::GetUeManager (uint16_t rnti)
 {
   return m_owner->GetUeManager (rnti);
+}
+
+template <class C>
+void
+MemberLteCcmRrcSapUser<C>::SetNumberOfComponentCarriers (uint16_t noOfComponentCarriers)
+{
+  return m_owner->DoSetNumberOfComponentCarriers (noOfComponentCarriers);
 }
 
 } // end of namespace ns3
