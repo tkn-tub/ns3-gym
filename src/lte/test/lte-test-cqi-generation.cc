@@ -34,6 +34,8 @@
 
 #include "lte-ffr-simple.h"
 #include "ns3/lte-rrc-sap.h"
+#include <ns3/lte-ue-net-device.h>
+#include <ns3/lte-ue-mac.h>
 
 #include "lte-test-cqi-generation.h"
 
@@ -325,10 +327,30 @@ LteCqiGenerationDlPowerControlTestCase::DoRun (void)
   NetDeviceContainer ueDevs1;
   NetDeviceContainer ueDevs2;
   lteHelper->SetSchedulerType ("ns3::PfFfMacScheduler");
-  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::PUSCH_UL_CQI));
+  //In this scenario, eNB2 with 2 UEs will assign 12 RBs to UE2.
+  //On the other hand eNB1 will assign 25 RBs to UE1. As per the new uplink power
+  //spectral density computation, UE with less RBs to Tx will have more power
+  //per RB. Therefore UE2 will harm UE1 more, thus, both the UEs will have
+  //different Uplink CQI, which will cause the test to fail.
+  //In this case, we can use SRS based CQIs, since, they are not dependent on
+  //the transmission bandwidth.
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::SRS_UL_CQI));
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs1 = lteHelper->InstallUeDevice (ueNodes1);
   ueDevs2 = lteHelper->InstallUeDevice (ueNodes2);
+  //We need to fix the stream to have control over
+  //random preamble generation by the UEs.
+  Ptr<LteUeNetDevice> lteUeDev;
+  Ptr<LteUeMac> lteUeMac;
+  lteUeDev = DynamicCast<LteUeNetDevice> (ueDevs1.Get(0));
+  lteUeMac = lteUeDev->GetMac();
+  lteUeMac->AssignStreams(1);
+  lteUeDev = DynamicCast<LteUeNetDevice> (ueDevs2.Get(0));
+  lteUeMac = lteUeDev->GetMac();
+  lteUeMac->AssignStreams(1);
+  lteUeDev = DynamicCast<LteUeNetDevice> (ueDevs2.Get(1));
+  lteUeMac = lteUeDev->GetMac();
+  lteUeMac->AssignStreams(2);
 
   // Attach a UE to a eNB
   lteHelper->Attach (ueDevs1, enbDevs.Get (0));

@@ -34,6 +34,7 @@
 #include <ns3/ptr.h>
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
+#include <ns3/ff-mac-scheduler.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
 #include <ns3/mobility-helper.h>
@@ -330,6 +331,7 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lteHelper->SetSchedulerType ("ns3::FdTbfqFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::SRS_UL_CQI));
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
@@ -412,9 +414,9 @@ LenaFdTbfqFfMacSchedulerTestCase1::DoRun (void)
     }
 
   serverApps.Start (Seconds (0.001));
-  clientApps.Start (Seconds (0.001));
+  clientApps.Start (Seconds (0.04));
 
-  double statsStartTime = 0.040; // need to allow for RRC connection establishment + SRS
+  double statsStartTime = 0.04; // need to allow for RRC connection establishment + SRS
   double statsDuration = 1;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.0001));
@@ -572,6 +574,7 @@ LenaFdTbfqFfMacSchedulerTestCase2::DoRun (void)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lteHelper->SetSchedulerType ("ns3::FdTbfqFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::SRS_UL_CQI));
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
