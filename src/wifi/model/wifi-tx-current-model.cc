@@ -64,7 +64,7 @@ LinearWifiTxCurrentModel::GetTypeId (void)
                    DoubleValue (3.0),
                    MakeDoubleAccessor (&LinearWifiTxCurrentModel::m_voltage),
                    MakeDoubleChecker<double> ())
-    .AddAttribute ("IdleCurrent", "The current in the IDLE state (in Watts).",
+    .AddAttribute ("IdleCurrent", "The current in the IDLE state (in Ampere).",
                    DoubleValue (0.273333),
                    MakeDoubleAccessor (&LinearWifiTxCurrentModel::m_idleCurrent),
                    MakeDoubleChecker<double> ())
