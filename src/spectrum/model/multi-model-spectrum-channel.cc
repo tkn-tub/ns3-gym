@@ -289,11 +289,14 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
 
               if (txMobility && receiverMobility)
                 {
+                  double txAntennaGain = 0;
+                  double rxAntennaGain = 0;
+                  double propagationGainDb = 0;
                   double pathLossDb = 0;
                   if (rxParams->txAntenna != 0)
                     {
                       Angles txAngles (receiverMobility->GetPosition (), txMobility->GetPosition ());
-                      double txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
+                      txAntennaGain = rxParams->txAntenna->GetGainDb (txAngles);
                       NS_LOG_LOGIC ("txAntennaGain = " << txAntennaGain << " dB");
                       pathLossDb -= txAntennaGain;
                     }
@@ -301,17 +304,20 @@ MultiModelSpectrumChannel::StartTx (Ptr<SpectrumSignalParameters> txParams)
                   if (rxAntenna != 0)
                     {
                       Angles rxAngles (txMobility->GetPosition (), receiverMobility->GetPosition ());
-                      double rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
+                      rxAntennaGain = rxAntenna->GetGainDb (rxAngles);
                       NS_LOG_LOGIC ("rxAntennaGain = " << rxAntennaGain << " dB");
                       pathLossDb -= rxAntennaGain;
                     }
                   if (m_propagationLoss)
                     {
-                      double propagationGainDb = m_propagationLoss->CalcRxPower (0, txMobility, receiverMobility);
+                      propagationGainDb = m_propagationLoss->CalcRxPower (0, txMobility, receiverMobility);
                       NS_LOG_LOGIC ("propagationGainDb = " << propagationGainDb << " dB");
                       pathLossDb -= propagationGainDb;
                     }                    
-                  NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");    
+                  NS_LOG_LOGIC ("total pathLoss = " << pathLossDb << " dB");
+                  // Gain trace
+                  m_gainTrace (txMobility, receiverMobility, txAntennaGain, rxAntennaGain, propagationGainDb, pathLossDb);
+                  // Pathloss trace
                   m_pathLossTrace (txParams->txPhy, *rxPhyIterator, pathLossDb);
                   if ( pathLossDb > m_maxLossDb)
                     {
