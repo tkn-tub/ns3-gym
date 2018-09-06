@@ -54,7 +54,7 @@ public:
   struct LcsConfig
   {
     uint8_t componentCarrierId; ///< component carrier ID
-    LteUeCmacSapProvider::LogicalChannelConfig *lcConfig; ///< logical channel config
+    LteUeCmacSapProvider::LogicalChannelConfig lcConfig; ///< logical channel config
     LteMacSapUser *msu; ///< MSU
   };
 

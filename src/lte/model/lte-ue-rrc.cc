@@ -486,7 +486,8 @@ LteUeRrc::DoInitialize (void)
   lcConfig.prioritizedBitRateKbps = 65535; // maximum
   lcConfig.bucketSizeDurationMs = 65535; // maximum
   lcConfig.logicalChannelGroup = 0; // all SRBs mapped to LCG 0
-  m_cmacSapProvider.at(0)->AddLc (lcid, lcConfig, rlc->GetLteMacSapUser ());
+  LteMacSapUser* msu = m_ccmRrcSapProvider->ConfigureSignalBearer(lcid, lcConfig, rlc->GetLteMacSapUser ());
+  m_cmacSapProvider.at (0)->AddLc (lcid, lcConfig, msu);
 }
 
 void
@@ -1349,7 +1350,8 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           lcConfig.prioritizedBitRateKbps = stamIt->logicalChannelConfig.prioritizedBitRateKbps;
           lcConfig.bucketSizeDurationMs = stamIt->logicalChannelConfig.bucketSizeDurationMs;
           lcConfig.logicalChannelGroup = stamIt->logicalChannelConfig.logicalChannelGroup;
-          m_cmacSapProvider.at (0)->AddLc (lcid, lcConfig, rlc->GetLteMacSapUser ());
+          LteMacSapUser* msu = m_ccmRrcSapProvider->ConfigureSignalBearer(lcid, lcConfig, rlc->GetLteMacSapUser ());
+          m_cmacSapProvider.at (0)->AddLc (lcid, lcConfig, msu);
           ++stamIt;
           NS_ASSERT_MSG (stamIt == rrcd.srbToAddModList.end (), "at most one SrbToAdd supported");
           
@@ -1437,14 +1439,26 @@ LteUeRrc::ApplyRadioResourceConfigDedicated (LteRrcSap::RadioResourceConfigDedic
           lcConfig.priority = dtamIt->logicalChannelConfig.priority;
           lcConfig.prioritizedBitRateKbps = dtamIt->logicalChannelConfig.prioritizedBitRateKbps;
           lcConfig.bucketSizeDurationMs = dtamIt->logicalChannelConfig.bucketSizeDurationMs;
-          lcConfig.logicalChannelGroup = dtamIt->logicalChannelConfig.logicalChannelGroup;      
+          lcConfig.logicalChannelGroup = dtamIt->logicalChannelConfig.logicalChannelGroup;
 
-          for (uint32_t i = 0; i < m_numberOfComponentCarriers; i++)
-          {
-            m_cmacSapProvider.at (i)->AddLc (dtamIt->logicalChannelIdentity,
-                                    lcConfig,
-                                    rlc->GetLteMacSapUser ());
-          }
+          NS_LOG_DEBUG (this << " UE RRC RNTI " << m_rnti << " Number Of Component Carriers "<<m_numberOfComponentCarriers<< " lcID " << (uint16_t) dtamIt->logicalChannelIdentity);
+          //Call AddLc of UE component carrier manager
+          std::vector <LteUeCcmRrcSapProvider::LcsConfig> lcOnCcMapping = m_ccmRrcSapProvider->AddLc (dtamIt->logicalChannelIdentity, lcConfig, rlc->GetLteMacSapUser ());
+
+         NS_LOG_DEBUG ("Size of lcOnCcMapping vector "<<lcOnCcMapping.size());
+         std::vector<LteUeCcmRrcSapProvider::LcsConfig>::iterator itLcOnCcMapping = lcOnCcMapping.begin ();
+         NS_ASSERT_MSG (itLcOnCcMapping != lcOnCcMapping.end (), "Component carrier manager failed to add LC for data radio bearer");
+
+         for (itLcOnCcMapping = lcOnCcMapping.begin (); itLcOnCcMapping != lcOnCcMapping.end (); ++itLcOnCcMapping)
+           {
+             NS_LOG_DEBUG ("RNTI " << m_rnti <<" LCG id " << (uint16_t) itLcOnCcMapping->lcConfig.logicalChannelGroup
+                                                       <<" ComponentCarrierId " << itLcOnCcMapping->componentCarrierId);
+             uint8_t index = itLcOnCcMapping->componentCarrierId;
+             LteUeCmacSapProvider::LogicalChannelConfig lcConfigFromCcm = itLcOnCcMapping->lcConfig;
+             LteMacSapUser *msu = itLcOnCcMapping->msu;
+             m_cmacSapProvider.at (index)->AddLc (dtamIt->logicalChannelIdentity, lcConfigFromCcm, msu);
+           }
+
           rlc->Initialize ();
         }
       else
