@@ -125,7 +125,7 @@ WifiRadioEnergyModel::GetTotalEnergyConsumption (void) const
   NS_LOG_FUNCTION (this);
 
   Time duration = Simulator::Now () - m_lastUpdateTime;
-  NS_ASSERT (duration.GetNanoSeconds () >= 0); // check if duration is valid
+  NS_ASSERT (duration.IsPositive ()); // check if duration is valid
 
   // energy to decrease = current * voltage * time
   double supplyVoltage = m_source->GetSupplyVoltage ();
