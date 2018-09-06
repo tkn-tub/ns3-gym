@@ -524,7 +524,6 @@ The scheduler interface include an attribute system called ``UlCqiFilter`` for m
 
   - ``SRS_UL_CQI`` for storing only SRS based CQIs.
   - ``PUSCH_UL_CQI`` for storing only PUSCH based CQIs.
-  - ``ALL_UL_CQI`` for storing all the CQIs received.
 
 It has to be noted that, the ``FfMacScheduler`` provides only the interface and it is matter of the actual scheduler implementation to include the code for managing these attributes (see scheduler related section for more information on this matter).
 
@@ -1030,7 +1029,6 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
 
   - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
   - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
-  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attribute (i.e., the last CQI received is stored independently from its nature).
 
 
 
@@ -1287,7 +1285,6 @@ The scheduler implements the filtering of the uplink CQIs according to their nat
 
   - ``SRS_UL_CQI``: only SRS based CQI are stored in the internal attributes.
   - ``PUSCH_UL_CQI``: only PUSCH based CQI are stored in the internal attributes.
-  - ``ALL_UL_CQI``: all CQIs are stored in the same internal attribute (i.e., the last CQI received is stored independently from its nature).
 
 
 Channel and QoS Aware Scheduler
