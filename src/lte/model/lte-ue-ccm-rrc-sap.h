@@ -80,6 +80,11 @@ public:
    *                where the bearer is enabled
    */
   virtual std::vector<uint16_t> RemoveLc (uint8_t lcid) = 0;
+  /**
+   * \brief Reset LC maps
+   *
+   */
+  virtual void Reset () = 0;
   /// Notify reconfiguration msg function
   virtual void NotifyConnectionReconfigurationMsg () = 0;
 
@@ -110,6 +115,7 @@ public:
 
   // inherited from LteUeCcmRrcSapProvider
   virtual std::vector<uint16_t> RemoveLc (uint8_t lcid);
+  virtual void Reset ();
   virtual std::vector<LteUeCcmRrcSapProvider::LcsConfig> AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
   virtual void NotifyConnectionReconfigurationMsg ();
   virtual LteMacSapUser* ConfigureSignalBearer (uint8_t lcid,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
@@ -129,6 +135,13 @@ std::vector<uint16_t> MemberLteUeCcmRrcSapProvider<C>::RemoveLc (uint8_t lcid)
 {
   return m_owner->DoRemoveLc (lcid);
 }
+
+template <class C>
+void MemberLteUeCcmRrcSapProvider<C>::Reset ()
+{
+  return m_owner->DoReset ();
+}
+
 
 template <class C>
 std::vector<LteUeCcmRrcSapProvider::LcsConfig> MemberLteUeCcmRrcSapProvider<C>::AddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu)

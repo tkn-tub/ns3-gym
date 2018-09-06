@@ -131,6 +131,11 @@ protected:
    * \returns LteMacSapUser *
    */
   LteMacSapUser* DoConfigureSignalBearer (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu);
+  /**
+   * \brief Reset LC map
+   *
+   */
+  void DoReset ();
   
 private:
   

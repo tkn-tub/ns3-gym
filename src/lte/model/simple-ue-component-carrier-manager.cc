@@ -260,6 +260,27 @@ SimpleUeComponentCarrierManager::DoRemoveLc (uint8_t lcid)
 
 }
 
+void
+SimpleUeComponentCarrierManager::DoReset ()
+{
+  NS_LOG_FUNCTION (this);
+  // same semantics as LteUeMac::DoRest
+  std::map<uint8_t, LteMacSapUser*>::iterator it = m_lcAttached.begin ();
+  while (it != m_lcAttached.end ())
+    {
+      // don't delete CCCH
+      if (it->first == 0)
+        {
+          ++it;
+        }
+      else
+        {
+          // note: use of postfix operator preserves validity of iterator
+          m_lcAttached.erase (it++);
+        }
+    }
+}
+
 std::vector<LteUeCcmRrcSapProvider::LcsConfig>
 SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::LogicalChannelConfig lcConfig, LteMacSapUser* msu)
 {
