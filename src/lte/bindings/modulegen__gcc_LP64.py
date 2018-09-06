@@ -6380,6 +6380,11 @@ def register_Ns3LteCcmRrcSapUser_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-ccm-rrc-sap.h (module 'lte'): void ns3::LteCcmRrcSapUser::SetNumberOfComponentCarriers(uint16_t noOfComponentCarriers) [member function]
+    cls.add_method('SetNumberOfComponentCarriers', 
+                   'void', 
+                   [param('uint16_t', 'noOfComponentCarriers')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ccm-rrc-sap.h (module 'lte'): void ns3::LteCcmRrcSapUser::TriggerComponentCarrier(uint16_t rnti, uint16_t targetCellId) [member function]
     cls.add_method('TriggerComponentCarrier', 
                    'void', 
@@ -8163,10 +8168,10 @@ def register_Ns3LteSpectrumValueHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel >', 
                    [param('uint32_t', 'earfcn'), param('uint8_t', 'bandwidth')], 
                    is_static=True)
-    ## lte-spectrum-value-helper.h (module 'lte'): static uint16_t ns3::LteSpectrumValueHelper::GetUplinkCarrierBand(uint32_t nDl) [member function]
+    ## lte-spectrum-value-helper.h (module 'lte'): static uint16_t ns3::LteSpectrumValueHelper::GetUplinkCarrierBand(uint32_t nUl) [member function]
     cls.add_method('GetUplinkCarrierBand', 
                    'uint16_t', 
-                   [param('uint32_t', 'nDl')], 
+                   [param('uint32_t', 'nUl')], 
                    is_static=True)
     ## lte-spectrum-value-helper.h (module 'lte'): static double ns3::LteSpectrumValueHelper::GetUplinkCarrierFrequency(uint32_t earfcn) [member function]
     cls.add_method('GetUplinkCarrierFrequency', 
@@ -8224,6 +8229,11 @@ def register_Ns3LteUeCcmRrcSapUser_methods(root_module, cls):
     cls.add_method('ComponentCarrierEnabling', 
                    'void', 
                    [param('std::vector< unsigned char >', 'componentCarrierList')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): void ns3::LteUeCcmRrcSapUser::SetNumberOfComponentCarriers(uint16_t noOfComponentCarriers) [member function]
+    cls.add_method('SetNumberOfComponentCarriers', 
+                   'void', 
+                   [param('uint16_t', 'noOfComponentCarriers')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -17673,10 +17683,6 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetLteMacSapProvider', 
                    'void', 
                    [param('ns3::LteMacSapProvider *', 's')])
-    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetNumberOfComponentCarriers(uint16_t numberOfComponentCarriers) [member function]
-    cls.add_method('SetNumberOfComponentCarriers', 
-                   'void', 
-                   [param('uint16_t', 'numberOfComponentCarriers')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetS1SapProvider(ns3::EpcEnbS1SapProvider * s) [member function]
     cls.add_method('SetS1SapProvider', 
                    'void', 
@@ -19841,7 +19847,7 @@ def register_Ns3LteUeComponentCarrierManager_methods(root_module, cls):
     cls.add_method('GetLteCcmRrcSapProvider', 
                    'ns3::LteUeCcmRrcSapProvider *', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapProvider * ns3::LteUeComponentCarrierManager::GetLteMacSapProvider() [member function]
     cls.add_method('GetLteMacSapProvider', 
                    'ns3::LteMacSapProvider *', 
@@ -19860,7 +19866,7 @@ def register_Ns3LteUeComponentCarrierManager_methods(root_module, cls):
     cls.add_method('SetLteCcmRrcSapUser', 
                    'void', 
                    [param('ns3::LteUeCcmRrcSapUser *', 's')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## lte-ue-component-carrier-manager.h (module 'lte'): void ns3::LteUeComponentCarrierManager::SetNumberOfComponentCarriers(uint8_t noOfComponentCarriers) [member function]
     cls.add_method('SetNumberOfComponentCarriers', 
                    'void', 
@@ -22622,11 +22628,6 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::SimpleUeComponentCarrierManager const &', 'arg0')])
     ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::SimpleUeComponentCarrierManager::SimpleUeComponentCarrierManager() [constructor]
     cls.add_constructor([])
-    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeCcmRrcSapProvider * ns3::SimpleUeComponentCarrierManager::GetLteCcmRrcSapProvider() [member function]
-    cls.add_method('GetLteCcmRrcSapProvider', 
-                   'ns3::LteUeCcmRrcSapProvider *', 
-                   [], 
-                   is_virtual=True)
     ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapProvider * ns3::SimpleUeComponentCarrierManager::GetLteMacSapProvider() [member function]
     cls.add_method('GetLteMacSapProvider', 
                    'ns3::LteMacSapProvider *', 
@@ -22637,11 +22638,6 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::SetLteCcmRrcSapUser(ns3::LteUeCcmRrcSapUser * s) [member function]
-    cls.add_method('SetLteCcmRrcSapUser', 
-                   'void', 
-                   [param('ns3::LteUeCcmRrcSapUser *', 's')], 
-                   is_virtual=True)
     ## simple-ue-component-carrier-manager.h (module 'lte'): std::vector<ns3::LteUeCcmRrcSapProvider::LcsConfig, std::allocator<ns3::LteUeCcmRrcSapProvider::LcsConfig> > ns3::SimpleUeComponentCarrierManager::DoAddLc(uint8_t lcId, ns3::LteUeCmacSapProvider::LogicalChannelConfig lcConfig, ns3::LteMacSapUser * msu) [member function]
     cls.add_method('DoAddLc', 
                    'std::vector< ns3::LteUeCcmRrcSapProvider::LcsConfig >', 
@@ -22662,11 +22658,6 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyConnectionReconfigurationMsg() [member function]
-    cls.add_method('DoNotifyConnectionReconfigurationMsg', 
-                   'void', 
-                   [], 
-                   visibility='protected')
     ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyHarqDeliveryFailure() [member function]
     cls.add_method('DoNotifyHarqDeliveryFailure', 
                    'void', 
