@@ -597,7 +597,6 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   // Set number of component carriers. Note: eNB CCM would also set the
   // number of component carriers in eNB RRC
   ccmEnbManager->SetNumberOfComponentCarriers (m_noOfCcs);
-  ccmEnbManager->SetRrc(rrc);
 
   rrc->ConfigureCarriers (ccMap);
 

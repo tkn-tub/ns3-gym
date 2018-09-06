@@ -130,10 +130,4 @@ LteEnbComponentCarrierManager::SetNumberOfComponentCarriers (uint16_t noOfCompon
   m_ccmRrcSapUser->SetNumberOfComponentCarriers (noOfComponentCarriers);
 }
 
-void
-LteEnbComponentCarrierManager::SetRrc (const Ptr<LteEnbRrc> rrc)
-{
-  m_rrc = rrc;
-}
-
 } // end of namespace ns3
