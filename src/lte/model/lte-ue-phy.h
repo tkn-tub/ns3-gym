@@ -419,7 +419,7 @@ private:
   void DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth);
   /**
    * Configure reference signal power function
-   * \param referenceSignalPower reference signal power
+   * \param referenceSignalPower reference signal power in dBm
    */
   void DoConfigureReferenceSignalPower (int8_t referenceSignalPower);
   /**
@@ -442,6 +442,13 @@ private:
    * \param pa the PA value
    */
   void DoSetPa (double pa);
+  /**
+   * \param rsrpFilterCoefficient value. Determines the strength of
+   * smoothing effect induced by layer 3 filtering of RSRP
+   * used for uplink power control in all attached UE.
+   * If equals to 0, no layer 3 filtering is applicable.
+   */
+  void DoSetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient);
 
   // UE PHY SAP methods 
   virtual void DoSendMacPdu (Ptr<Packet> p);

@@ -144,6 +144,14 @@ public:
    */
   virtual void SetPa (double pa) = 0;
 
+  /**
+   * \param rsrpFilterCoefficient value. Determines the strength of
+   * smoothing effect induced by layer 3 filtering of RSRP
+   * used for uplink power control in all attached UE.
+   * If equals to 0, no layer 3 filtering is applicable.
+   */
+  virtual void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient) = 0;
+
 };
 
 
@@ -244,6 +252,7 @@ public:
   virtual void SetTransmissionMode (uint8_t txMode);
   virtual void SetSrsConfigurationIndex (uint16_t srcCi);
   virtual void SetPa (double pa);
+  virtual void SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient);
 
 private:
   MemberLteUeCphySapProvider ();
@@ -336,6 +345,13 @@ void
 MemberLteUeCphySapProvider<C>::SetPa (double pa)
 {
   m_owner->DoSetPa (pa);
+}
+
+template <class C>
+void
+MemberLteUeCphySapProvider<C>::SetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient)
+{
+  m_owner->DoSetRsrpFilterCoefficient (rsrpFilterCoefficient);
 }
 
 

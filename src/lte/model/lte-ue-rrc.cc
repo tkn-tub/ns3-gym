@@ -1632,6 +1632,11 @@ LteUeRrc::ApplyMeasConfig (LteRrcSap::MeasConfig mc)
     {
       NS_LOG_LOGIC (this << " setting quantityConfig");
       m_varMeasConfig.quantityConfig = mc.quantityConfig;
+      //Convey the filter coefficient to PHY layer so it can configure the power control parameter
+      for (uint16_t i = 0; i < m_numberOfComponentCarriers; i++)
+        {
+          m_cphySapProvider.at (i)->SetRsrpFilterCoefficient (mc.quantityConfig.filterCoefficientRSRP);
+        }
       // we calculate here the coefficient a used for Layer 3 filtering, see 3GPP TS 36.331 section 5.5.3.2
       m_varMeasConfig.aRsrp = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRP / 4.0);
       m_varMeasConfig.aRsrq = std::pow (0.5, mc.quantityConfig.filterCoefficientRSRQ / 4.0);
