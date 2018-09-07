@@ -153,6 +153,23 @@ public:
                                                           std::vector <int> activeRbs);
 
   /**
+   * create a spectrum value representing the uplink power spectral
+   * density of a signal to be transmitted. See 3GPP TS 36.101 for
+   * a definition of most of the parameters described here.
+   * This function splits the power over the active RBs instead of
+   * the entire bandwidth
+   * \param earfcn the carrier frequency (EARFCN) of the transmission
+   * \param powerTx the total power in dBm over the whole bandwidth
+   * \param activeRbs the list of Active Resource Blocks (PRBs)
+   *
+   * \return a pointer to a newly allocated SpectrumValue representing the TX Power Spectral Density in W/Hz for each Resource Block
+   */
+  static Ptr<SpectrumValue> CreateUlTxPowerSpectralDensity (uint16_t earfcn,
+                                                            uint8_t bandwidth,
+                                                            double powerTx,
+                                                            std::vector <int> activeRbs);
+
+  /**
    * create a SpectrumValue that models the power spectral density of AWGN
    *
    * \param earfcn the carrier frequency (EARFCN) at which reception

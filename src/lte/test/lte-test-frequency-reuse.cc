@@ -524,9 +524,28 @@ LteFrAreaTestCase::UlDataRxStart (Ptr<const SpectrumValue> spectrumValue)
   NS_LOG_DEBUG ("UL DATA Power allocation :");
   Values::const_iterator it;
   uint32_t i = 0;
+  uint32_t numActiveRbs = 0;
+
+  // At the moment I could not find a better way to find total number
+  // of active RBs. This method is independent of the bandwidth
+  // configuration done in a test scenario, thus, it requires
+  // minimum change to the script.
   for (it = spectrumValue->ConstValuesBegin (); it != spectrumValue->ConstValuesEnd (); it++)
     {
-      double power =  (*it) * (m_ulBandwidth * 180000);
+      // Count the RB as active if it is part of
+      // the expected UL RBs and has Power Spectral Density (PSD) > 0
+      if (m_expectedUlRb[numActiveRbs] == true && (*it) > 0)
+        {
+          numActiveRbs++;
+        }
+    }
+  NS_LOG_DEBUG ("Total number of active RBs = " << numActiveRbs);
+
+  // The uplink power control and the uplink PSD
+  // calculation only consider active resource blocks.
+  for (it = spectrumValue->ConstValuesBegin (); it != spectrumValue->ConstValuesEnd (); it++)
+    {
+      double power =  (*it) * (numActiveRbs * 180000);
       NS_LOG_DEBUG ("RB " << i << " POWER: " << power << " expectedUlPower: " << m_expectedUlPower);
       if (m_expectedUlRb[i] == false && power > 0)
         {
