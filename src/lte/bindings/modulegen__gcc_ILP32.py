@@ -8143,6 +8143,11 @@ def register_Ns3LteSpectrumValueHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('uint32_t', 'earfcn'), param('uint8_t', 'bandwidth'), param('double', 'powerTx'), param('std::map< int, double >', 'powerTxMap'), param('std::vector< int >', 'activeRbs')], 
                    is_static=True)
+    ## lte-spectrum-value-helper.h (module 'lte'): static ns3::Ptr<ns3::SpectrumValue> ns3::LteSpectrumValueHelper::CreateUlTxPowerSpectralDensity(uint16_t earfcn, uint8_t bandwidth, double powerTx, std::vector<int, std::allocator<int> > activeRbs) [member function]
+    cls.add_method('CreateUlTxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('uint16_t', 'earfcn'), param('uint8_t', 'bandwidth'), param('double', 'powerTx'), param('std::vector< int >', 'activeRbs')], 
+                   is_static=True)
     ## lte-spectrum-value-helper.h (module 'lte'): static double ns3::LteSpectrumValueHelper::GetCarrierFrequency(uint32_t earfcn) [member function]
     cls.add_method('GetCarrierFrequency', 
                    'double', 
@@ -8385,6 +8390,11 @@ def register_Ns3LteUeCphySapProvider_methods(root_module, cls):
     cls.add_method('SetRnti', 
                    'void', 
                    [param('uint16_t', 'rnti')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient) [member function]
+    cls.add_method('SetRsrpFilterCoefficient', 
+                   'void', 
+                   [param('uint8_t', 'rsrpFilterCoefficient')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSrsConfigurationIndex(uint16_t srcCi) [member function]
     cls.add_method('SetSrsConfigurationIndex', 
@@ -20195,6 +20205,10 @@ def register_Ns3LteUePowerControl_methods(root_module, cls):
     cls.add_method('SetRsrp', 
                    'void', 
                    [param('double', 'value')])
+    ## lte-ue-power-control.h (module 'lte'): void ns3::LteUePowerControl::SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient) [member function]
+    cls.add_method('SetRsrpFilterCoefficient', 
+                   'void', 
+                   [param('uint8_t', 'rsrpFilterCoefficient')])
     ## lte-ue-power-control.h (module 'lte'): void ns3::LteUePowerControl::SetTxPower(double value) [member function]
     cls.add_method('SetTxPower', 
                    'void', 
