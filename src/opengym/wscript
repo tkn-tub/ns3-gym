@@ -1,0 +1,48 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+import os
+import sys
+import subprocess
+
+from waflib import Options
+from waflib.Errors import WafError
+
+#def options(opt):
+#    pass
+
+#  add_executable(pdsch_enodeb_lteu_multi pdsch_enodeb_lteu_multi.c vc_vector.c bf_config.c)
+#  target_link_libraries(pdsch_enodeb_lteu_multi srslte_phy srslte_rf zmq pthread)
+
+def configure(conf):
+    conf.env['ENABLE_ZMQ'] = True
+    #conf.env.append_value('DEFINES_ZMQ', 'NS3_ZMQ')
+    conf.env.append_value("LINKFLAGS", ["-lzmq"])
+
+
+def build(bld):
+    module = bld.create_ns3_module('opengym', ['core'])
+    module.source = [
+        'model/opengym.cc',
+        'helper/opengym-helper.cc',
+        ]
+
+    module_test = bld.create_ns3_module_test_library('opengym')
+    module_test.source = [
+        'test/opengym-test-suite.cc',
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'opengym'
+    headers.source = [
+        'model/opengym.h',
+        'helper/opengym-helper.h',
+        ]
+
+    if bld.env['ENABLE_ZMQ']:
+        module.use.extend(['lzmq'])
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+
