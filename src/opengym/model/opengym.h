@@ -66,6 +66,8 @@ public:
   bool ExecuteActions(std::string actionString);
 
   void SetGetActionSpaceCb(Callback<std::string> cb);
+  void SetGetObservationSpaceCb(Callback<std::string> cb);
+  void SetGetGameOverCb(Callback< bool > cb);
   void SetGetStateCb(Callback<std::string> cb);
   void SetGetRewardCb(Callback<std::string> cb);
   void SetExecuteActionsCb(Callback<bool, std::string> cb);
@@ -84,6 +86,8 @@ private:
   Time m_interval;
 
   Callback<std::string> m_actionSpaceCb;
+  Callback<std::string> m_observationSpaceCb;
+  Callback< bool > m_gameOverCb;
   Callback<std::string> m_stateCb;
   Callback<std::string> m_rewardCb;
   Callback<bool, std::string> m_actionCb;

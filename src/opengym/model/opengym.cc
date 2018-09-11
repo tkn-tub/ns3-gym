@@ -94,6 +94,20 @@ OpenGymEnv::SetGetActionSpaceCb(Callback<std::string> cb)
 }
 
 void
+OpenGymEnv::SetGetObservationSpaceCb(Callback<std::string> cb)
+{
+  NS_LOG_FUNCTION (this);
+  m_observationSpaceCb = cb;
+}
+
+void
+OpenGymEnv::SetGetGameOverCb(Callback< bool > cb)
+{
+  NS_LOG_FUNCTION (this);
+  m_gameOverCb = cb;
+}
+
+void
 OpenGymEnv::SetGetStateCb(Callback<std::string> cb)
 {
   NS_LOG_FUNCTION (this);
