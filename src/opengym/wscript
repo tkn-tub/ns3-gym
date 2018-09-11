@@ -23,6 +23,7 @@ def build(bld):
     module = bld.create_ns3_module('opengym', ['core'])
     module.source = [
         'model/opengym.cc',
+        'model/spaces.cc',
         'helper/opengym-helper.cc',
         ]
 
@@ -35,6 +36,7 @@ def build(bld):
     headers.module = 'opengym'
     headers.source = [
         'model/opengym.h',
+        'model/spaces.h',
         'helper/opengym-helper.h',
         ]
 
