@@ -132,7 +132,7 @@ class Ns3Env(gym.Env):
         return
 
     def get_random_action(self):
-        act = self.np_random.randint(self.action_size)
+        act = self.action_space.sample()
         return act
 
     def close(self):
