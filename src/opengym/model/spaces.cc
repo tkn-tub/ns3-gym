@@ -39,7 +39,6 @@ OpenGymSpace::GetTypeId (void)
   static TypeId tid = TypeId ("OpenGymSpace")
     .SetParent<Object> ()
     .SetGroupName ("OpenGym")
-    .AddConstructor<OpenGymSpace> ()
     ;
   return tid;
 }
@@ -65,5 +64,184 @@ OpenGymSpace::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
 }
+
+
+
+TypeId
+OpenGymDiscreteSpace::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("OpenGymDiscreteSpace")
+    .SetParent<Object> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<OpenGymDiscreteSpace> ()
+    ;
+  return tid;
+}
+
+OpenGymDiscreteSpace::OpenGymDiscreteSpace()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+OpenGymDiscreteSpace::OpenGymDiscreteSpace(int n):
+  m_n(n)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+OpenGymDiscreteSpace::~OpenGymDiscreteSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymDiscreteSpace::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymDiscreteSpace::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+int
+OpenGymDiscreteSpace::GetN (void)
+{
+  NS_LOG_FUNCTION (this);
+  return m_n;
+}
+
+std::string
+OpenGymDiscreteSpace::Serialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  std::string serialized = "SpaceType=0;N=" + std::to_string(m_n);
+  return serialized;
+}
+
+std::ostream& operator<< (std::ostream& os, const OpenGymDiscreteSpace& space)  
+{  
+  os << " DiscreteSpace N: " << space.m_n;  
+  return os;  
+}  
+
+
+
+TypeId
+OpenGymBoxSpace::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("OpenGymBoxSpace")
+    .SetParent<Object> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<OpenGymBoxSpace> ()
+    ;
+  return tid;
+}
+
+OpenGymBoxSpace::OpenGymBoxSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+OpenGymBoxSpace::OpenGymBoxSpace (float low, float high, std::vector<int> shape, Dtype dtype):
+  m_low(low), m_high(high), m_shape(shape), m_dtype(dtype)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+OpenGymBoxSpace::OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<int> shape, Dtype dtype):
+  m_low(0), m_high(0), m_shape(shape), m_dtype(dtype), m_lowVec(low), m_highVec(high)
+
+{
+  NS_LOG_FUNCTION (this);
+} 
+
+OpenGymBoxSpace::~OpenGymBoxSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymBoxSpace::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymBoxSpace::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+float
+OpenGymBoxSpace::GetLow()
+{
+  NS_LOG_FUNCTION (this);
+  return m_low;
+}
+
+float
+OpenGymBoxSpace::GetHigh()
+{
+  NS_LOG_FUNCTION (this);
+  return m_high;
+}
+
+std::vector<int>
+OpenGymBoxSpace::GetShape()
+{
+  NS_LOG_FUNCTION (this);
+  return m_shape;
+}
+
+Dtype
+OpenGymBoxSpace::GetDtype()
+{
+  NS_LOG_FUNCTION (this);
+  return m_dtype;
+}
+
+std::string
+OpenGymBoxSpace::Serialize (void)
+{
+  NS_LOG_FUNCTION (this);
+  std::string serialized = "SpaceType=1;Low=" + std::to_string(m_low)
+                         + ";High=" + std::to_string(m_high)
+                         + ";Shape=(";
+
+  for (auto i = m_shape.begin(); i != m_shape.end(); ++i)
+  {
+    serialized += std::to_string(*i) +",";
+  }
+  serialized += ") Dtype: " + std::to_string(m_dtype);
+
+  return serialized;
+}
+
+std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)  
+{  
+  os << " BoxSpace Low: " << box.m_low << " High: " << box.m_high << " Shape: (";
+
+  for (auto i = box.m_shape.begin(); i != box.m_shape.end(); ++i)
+  {
+    os << *i << ",";
+  }
+  os << ") Dtype: ";
+
+  if (box.m_dtype == Dtype::INT)
+  {
+    os << "INT";
+  } else if (box.m_dtype == Dtype::UINT) {
+    os << "UINT";
+  } else if (box.m_dtype == Dtype::DOUBLE) {
+    os << "DOUBLE";
+  } else {
+    os << "FLOAT";
+  }
+
+  return os;  
+}  
 
 }

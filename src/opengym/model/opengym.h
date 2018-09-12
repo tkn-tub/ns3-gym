@@ -29,19 +29,13 @@
 #include <zmq.hpp>
 #include <string>
 #include <iostream>
+#include "messages.pb.h"
 
 namespace ns3 {
 
-class CmdMessage
-{
-  public:
-  CmdMessage ();
-  virtual ~CmdMessage ();
-
-  int type;
-  float value;
-  std::string valueStr;
-};
+class OpenGymSpace;
+class OpenGymObservation;
+class OpenGymAction;
 
 class OpenGymEnv : public Object
 {
@@ -52,25 +46,28 @@ public:
   static TypeId GetTypeId ();
 
   void Init();
-  CmdMessage ReceiveMsg();
-  int SendMsg(std::string msg);
+  ns3opengym::RequestMsg ReceiveMsg();
+  int SendMsg(ns3opengym::ReplyMsg replyPbMsg);
+
   void WaitForNextStep();
   void WaitForStop();
 
   void SetGameOver();
   bool IsGameOver();
 
-  std::string GetActionSpace();
-  std::string GetState();
-  std::string GetReward();
-  bool ExecuteActions(std::string actionString);
+  Ptr<OpenGymSpace> GetActionSpace();
+  Ptr<OpenGymSpace> GetObservationSpace();
+  void FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply &spaceReplyPbMsg);
+  Ptr<OpenGymObservation> GetState();
+  float GetReward();
+  bool ExecuteActions(Ptr<OpenGymAction> action);
 
-  void SetGetActionSpaceCb(Callback<std::string> cb);
-  void SetGetObservationSpaceCb(Callback<std::string> cb);
+  void SetGetActionSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
+  void SetGetObservationSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
   void SetGetGameOverCb(Callback< bool > cb);
-  void SetGetStateCb(Callback<std::string> cb);
-  void SetGetRewardCb(Callback<std::string> cb);
-  void SetExecuteActionsCb(Callback<bool, std::string> cb);
+  void SetGetStateCb(Callback< Ptr<OpenGymObservation> > cb);
+  void SetGetRewardCb(Callback<float> cb);
+  void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymAction> > cb);
 
 protected:
   // Inherited
@@ -85,12 +82,17 @@ private:
 
   Time m_interval;
 
-  Callback<std::string> m_actionSpaceCb;
-  Callback<std::string> m_observationSpaceCb;
+  Callback< Ptr<OpenGymSpace> > m_actionSpaceCb;
+  Callback< Ptr<OpenGymSpace> > m_observationSpaceCb;
   Callback< bool > m_gameOverCb;
-  Callback<std::string> m_stateCb;
-  Callback<std::string> m_rewardCb;
-  Callback<bool, std::string> m_actionCb;
+  Callback< Ptr<OpenGymObservation> > m_stateCb;
+  Callback<float> m_rewardCb;
+  Callback<bool, Ptr<OpenGymAction> > m_actionCb;
+
+  bool m_rxGetGameOver;
+  bool m_rxGetState;
+  bool m_rxGetReward;
+  bool m_rxSetActions;
 
 };
 

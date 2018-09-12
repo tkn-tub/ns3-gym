@@ -10,20 +10,20 @@ from waflib.Errors import WafError
 #def options(opt):
 #    pass
 
-#  add_executable(pdsch_enodeb_lteu_multi pdsch_enodeb_lteu_multi.c vc_vector.c bf_config.c)
-#  target_link_libraries(pdsch_enodeb_lteu_multi srslte_phy srslte_rf zmq pthread)
-
 def configure(conf):
     conf.env['ENABLE_ZMQ'] = True
     #conf.env.append_value('DEFINES_ZMQ', 'NS3_ZMQ')
-    conf.env.append_value("LINKFLAGS", ["-lzmq"])
+    conf.env.append_value("LINKFLAGS", ["-lzmq", "-lprotobuf"])
 
 
 def build(bld):
     module = bld.create_ns3_module('opengym', ['core'])
     module.source = [
         'model/opengym.cc',
+        'model/messages.pb.cc',
         'model/spaces.cc',
+        'model/action.cc',
+        'model/observation.cc',
         'helper/opengym-helper.cc',
         ]
 
@@ -36,12 +36,16 @@ def build(bld):
     headers.module = 'opengym'
     headers.source = [
         'model/opengym.h',
+        'model/messages.pb.h',
         'model/spaces.h',
+        'model/action.h',
+        'model/observation.h',
         'helper/opengym-helper.h',
         ]
 
     if bld.env['ENABLE_ZMQ']:
         module.use.extend(['lzmq'])
+        module.use.extend(['lprotobuf'])
 
     if bld.env.ENABLE_EXAMPLES:
         bld.recurse('examples')

@@ -1,0 +1,96 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+
+package ns3opengym;
+
+enum MsgType {
+	Unknown = 0;
+	Init = 1;
+	ActionSpace = 2;
+	ObservationSpace = 3;
+	IsGameOver = 4;
+	Observation = 5;
+	Reward = 6;
+	Action = 7;
+}
+
+enum SpaceType {
+	Discrete = 0;
+	Box = 1;
+}
+
+enum Dtype {
+	INT = 0;
+	UINT = 1;
+	FLOAT = 2;
+	DOUBLE = 3;
+}
+
+message DiscreteSpace {
+	int32 n = 1;
+}
+
+message BoxSpace {
+	float low = 1;
+	float high = 2;
+	Dtype dtype = 3;
+	repeated int32 shape = 4;
+}
+
+message RequestMsg {
+	MsgType type = 1;
+	google.protobuf.Any msg = 2;
+}
+
+message ReplyMsg {
+	MsgType type = 1;
+	google.protobuf.Any msg = 2;
+}
+
+message InitializeRequest {
+	double timeStep = 1;
+}
+
+message InitializeReply {
+	bool done = 1;
+}
+
+message GetActionSpaceRequest {
+}
+
+message GetObservationSpaceRequest {
+}
+
+message GetSpaceReply {
+	SpaceType type = 1;
+	google.protobuf.Any space = 2;
+}
+
+message GetIsGameOverRequest {
+}
+
+message GetIsGameOverReply {
+	bool isGameOver = 1;
+}
+
+message GetObservationRequest {
+}
+
+message GetObservationReply {
+	string observation = 1;
+}
+
+message GetRewardRequest {
+}
+
+message GetRewardReply {
+	float reward = 1;
+}
+
+message SetActionRequest {
+	string action = 1;
+}
+
+message SetActionReply {
+	bool done = 1;
+}
