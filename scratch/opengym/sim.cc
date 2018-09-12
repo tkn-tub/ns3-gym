@@ -26,30 +26,52 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("OpenGym");
 
-std::string MyGetActionSpace(void)
+Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
-  std::string actionSpace = "0,1,0,1,0,1,0,1";
-  //NS_LOG_UNCOND ("MyGetActionSpace: " << actionSpace);
-  return actionSpace;
+  float low = -10.0;
+  float high = 10.0;
+  std::vector<int> shape = {7,};
+  Dtype dType = Dtype::INT;
+  Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dType);
+  NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
+  return space;
 }
 
-std::string MyGetState(void)
+Ptr<OpenGymSpace> MyGetObservationSpace(void)
 {
+  int n = 13;
+  Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (n);
+  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
+  return space;
+}
+
+bool MyGetGameOver(void)
+{
+  bool isGameOver = false;
+  //NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
+  return isGameOver;
+}
+
+Ptr<OpenGymObservation> MyGetState(void)
+{
+  Ptr<OpenGymObservation> obs = CreateObject<OpenGymObservation> ();
   std::string state = "1,12,15,1";
+  obs->m_obsString = state;
   //NS_LOG_UNCOND ("MyGetState: " << state);
-  return state;
+  return obs;
 }
 
-std::string MyGetReward(void)
+float MyGetReward(void)
 {
-  std::string reward = "1,1,1,1";
+  static float reward = 0.0;
+  reward += 1;
   //NS_LOG_UNCOND ("MyGetReward: " << reward);
   return reward;
 }
 
-bool MyExecuteActions(std::string actions)
+bool MyExecuteActions(Ptr<OpenGymAction> action)
 {
-  NS_LOG_UNCOND ("MyExecuteActions: " << actions);
+  NS_LOG_UNCOND ("MyExecuteActions: " << action->m_actionString);
   return true;
 }
 
@@ -70,6 +92,8 @@ main (int argc, char *argv[])
   // OpenGym Env
   Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> ();
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
+  openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
+  openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
   openGymEnv->SetGetStateCb( MakeCallback (&MyGetState) );
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );

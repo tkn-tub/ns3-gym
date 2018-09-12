@@ -32,6 +32,8 @@
 
 namespace ns3 {
 
+enum Dtype { INT, UINT, FLOAT, DOUBLE };
+
 class OpenGymSpace : public Object
 {
 public:
@@ -40,10 +42,71 @@ public:
 
   static TypeId GetTypeId ();
 
+  virtual std::string Serialize() = 0;
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
+};
+
+
+class OpenGymDiscreteSpace : public OpenGymSpace
+{
+public:
+  OpenGymDiscreteSpace ();
+  OpenGymDiscreteSpace (int n);
+  virtual ~OpenGymDiscreteSpace ();
+
+  static TypeId GetTypeId ();
+
+  virtual std::string Serialize();
+
+  int GetN(void);
+
+protected:
+  // Inherited
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
+private:
+	int m_n;
+
+	friend std::ostream& operator<< ( std::ostream& os, const OpenGymDiscreteSpace& a);
+};
+
+class OpenGymBoxSpace : public OpenGymSpace
+{
+public:
+  OpenGymBoxSpace ();
+  OpenGymBoxSpace (float low, float high, std::vector<int> shape, Dtype dtype=FLOAT);
+  OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<int> shape, Dtype dtype=FLOAT);
+  virtual ~OpenGymBoxSpace ();
+
+  static TypeId GetTypeId ();
+
+  virtual std::string Serialize();
+
+  float GetLow();
+  float GetHigh();
+  std::vector<int> GetShape();
+  Dtype GetDtype();
+
+protected:
+  // Inherited
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
+private:
+	float m_low;
+	float m_high;
+	std::vector<int> m_shape;
+  Dtype m_dtype;
+	std::vector<float> m_lowVec;
+	std::vector<float> m_highVec;
+
+
+	friend std::ostream& operator<< ( std::ostream& os, const OpenGymBoxSpace& a);
 };
 
 } // end of namespace ns3

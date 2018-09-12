@@ -28,10 +28,10 @@ try:
         stepIdx += 1
         print("Step: ", stepIdx)
 
-        action = env.get_random_action()
+        action = env.action_space.sample()
         print("---action: ", action)
-        obs, reward, done, extra = env.step(action)
-        print("---obs, reward, done, extra: ", obs, reward, done, extra)
+        obs, reward, done, info = env.step(action)
+        print("---obs, reward, done, info: ", obs, reward, done, info)
 
         if done:
             break
