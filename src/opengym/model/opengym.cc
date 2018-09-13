@@ -335,12 +335,12 @@ OpenGymEnv::WaitForNextStep()
         boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
         std::vector<float> data = box->GetData();
         *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
-
-
-        dataContainerPbMsg.set_type(ns3opengym::Box);
-        *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
-        dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
       }
+
+
+      dataContainerPbMsg.set_type(ns3opengym::Box);
+      *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
+      dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
 
       obsReplyPbMsg.mutable_container()->CopyFrom(dataContainerPbMsg);    
       replyPbMsg.set_type(ns3opengym::Observation);
