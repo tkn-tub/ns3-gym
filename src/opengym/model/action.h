@@ -28,6 +28,8 @@
 
 namespace ns3 {
 
+class OpenGymDataContainer;
+
 class OpenGymAction : public Object
 {
 public:
@@ -36,10 +38,18 @@ public:
 
   static TypeId GetTypeId ();
   std::string m_actionString;
+
+  bool AddActionContainer(Ptr<OpenGymDataContainer> container);
+  Ptr<OpenGymDataContainer> GetActionContainer(uint32_t idx);
+  std::vector<Ptr<OpenGymDataContainer> > GetActionContainers();
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
+
+private:
+  std::vector<Ptr<OpenGymDataContainer> > m_containers;
 };
 
 } // end of namespace ns3

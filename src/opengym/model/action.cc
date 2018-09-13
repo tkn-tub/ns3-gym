@@ -22,6 +22,7 @@
 #include <algorithm>
 #include "ns3/log.h"
 #include "action.h"
+#include "container.h"
 
 
 namespace ns3 {
@@ -61,6 +62,29 @@ void
 OpenGymAction::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+
+bool
+OpenGymAction::AddActionContainer(Ptr<OpenGymDataContainer> container)
+{
+  NS_LOG_FUNCTION (this);
+  m_containers.push_back(container);
+  return true;
+}
+
+Ptr<OpenGymDataContainer>
+OpenGymAction::GetActionContainer(uint32_t idx)
+{
+  NS_LOG_FUNCTION (this);
+  return m_containers[idx];
+}
+
+std::vector<Ptr<OpenGymDataContainer> >
+OpenGymAction::GetActionContainers()
+{
+  NS_LOG_FUNCTION (this);
+  return m_containers;
 }
 
 }

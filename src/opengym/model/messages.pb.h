@@ -40,7 +40,7 @@ namespace protobuf_messages_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[17];
+  static const ::google::protobuf::internal::ParseTable schema[20];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -48,9 +48,18 @@ struct TableStruct {
 void AddDescriptors();
 }  // namespace protobuf_messages_2eproto
 namespace ns3opengym {
+class BoxDataContainer;
+class BoxDataContainerDefaultTypeInternal;
+extern BoxDataContainerDefaultTypeInternal _BoxDataContainer_default_instance_;
 class BoxSpace;
 class BoxSpaceDefaultTypeInternal;
 extern BoxSpaceDefaultTypeInternal _BoxSpace_default_instance_;
+class DataContainer;
+class DataContainerDefaultTypeInternal;
+extern DataContainerDefaultTypeInternal _DataContainer_default_instance_;
+class DiscreteDataContainer;
+class DiscreteDataContainerDefaultTypeInternal;
+extern DiscreteDataContainerDefaultTypeInternal _DiscreteDataContainer_default_instance_;
 class DiscreteSpace;
 class DiscreteSpaceDefaultTypeInternal;
 extern DiscreteSpaceDefaultTypeInternal _DiscreteSpace_default_instance_;
@@ -102,7 +111,10 @@ extern SetActionRequestDefaultTypeInternal _SetActionRequest_default_instance_;
 }  // namespace ns3opengym
 namespace google {
 namespace protobuf {
+template<> ::ns3opengym::BoxDataContainer* Arena::CreateMaybeMessage<::ns3opengym::BoxDataContainer>(Arena*);
 template<> ::ns3opengym::BoxSpace* Arena::CreateMaybeMessage<::ns3opengym::BoxSpace>(Arena*);
+template<> ::ns3opengym::DataContainer* Arena::CreateMaybeMessage<::ns3opengym::DataContainer>(Arena*);
+template<> ::ns3opengym::DiscreteDataContainer* Arena::CreateMaybeMessage<::ns3opengym::DiscreteDataContainer>(Arena*);
 template<> ::ns3opengym::DiscreteSpace* Arena::CreateMaybeMessage<::ns3opengym::DiscreteSpace>(Arena*);
 template<> ::ns3opengym::GetActionSpaceRequest* Arena::CreateMaybeMessage<::ns3opengym::GetActionSpaceRequest>(Arena*);
 template<> ::ns3opengym::GetIsGameOverReply* Arena::CreateMaybeMessage<::ns3opengym::GetIsGameOverReply>(Arena*);
@@ -386,16 +398,16 @@ class BoxSpace : public ::google::protobuf::Message /* @@protoc_insertion_point(
 
   // accessors -------------------------------------------------------
 
-  // repeated int32 shape = 4;
+  // repeated uint32 shape = 4;
   int shape_size() const;
   void clear_shape();
   static const int kShapeFieldNumber = 4;
-  ::google::protobuf::int32 shape(int index) const;
-  void set_shape(int index, ::google::protobuf::int32 value);
-  void add_shape(::google::protobuf::int32 value);
-  const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+  ::google::protobuf::uint32 shape(int index) const;
+  void set_shape(int index, ::google::protobuf::uint32 value);
+  void add_shape(::google::protobuf::uint32 value);
+  const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
       shape() const;
-  ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
       mutable_shape();
 
   // float low = 1;
@@ -420,7 +432,7 @@ class BoxSpace : public ::google::protobuf::Message /* @@protoc_insertion_point(
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedField< ::google::protobuf::int32 > shape_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > shape_;
   mutable int _shape_cached_byte_size_;
   float low_;
   float high_;
@@ -1558,25 +1570,23 @@ class GetObservationReply : public ::google::protobuf::Message /* @@protoc_inser
 
   // accessors -------------------------------------------------------
 
-  // string observation = 1;
-  void clear_observation();
-  static const int kObservationFieldNumber = 1;
-  const ::std::string& observation() const;
-  void set_observation(const ::std::string& value);
-  #if LANG_CXX11
-  void set_observation(::std::string&& value);
-  #endif
-  void set_observation(const char* value);
-  void set_observation(const char* value, size_t size);
-  ::std::string* mutable_observation();
-  ::std::string* release_observation();
-  void set_allocated_observation(::std::string* observation);
+  // .ns3opengym.DataContainer container = 1;
+  bool has_container() const;
+  void clear_container();
+  static const int kContainerFieldNumber = 1;
+  private:
+  const ::ns3opengym::DataContainer& _internal_container() const;
+  public:
+  const ::ns3opengym::DataContainer& container() const;
+  ::ns3opengym::DataContainer* release_container();
+  ::ns3opengym::DataContainer* mutable_container();
+  void set_allocated_container(::ns3opengym::DataContainer* container);
 
   // @@protoc_insertion_point(class_scope:ns3opengym.GetObservationReply)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr observation_;
+  ::ns3opengym::DataContainer* container_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2eproto::TableStruct;
 };
@@ -1868,25 +1878,23 @@ class SetActionRequest : public ::google::protobuf::Message /* @@protoc_insertio
 
   // accessors -------------------------------------------------------
 
-  // string action = 1;
-  void clear_action();
-  static const int kActionFieldNumber = 1;
-  const ::std::string& action() const;
-  void set_action(const ::std::string& value);
-  #if LANG_CXX11
-  void set_action(::std::string&& value);
-  #endif
-  void set_action(const char* value);
-  void set_action(const char* value, size_t size);
-  ::std::string* mutable_action();
-  ::std::string* release_action();
-  void set_allocated_action(::std::string* action);
+  // .ns3opengym.DataContainer container = 1;
+  bool has_container() const;
+  void clear_container();
+  static const int kContainerFieldNumber = 1;
+  private:
+  const ::ns3opengym::DataContainer& _internal_container() const;
+  public:
+  const ::ns3opengym::DataContainer& container() const;
+  ::ns3opengym::DataContainer* release_container();
+  ::ns3opengym::DataContainer* mutable_container();
+  void set_allocated_container(::ns3opengym::DataContainer* container);
 
   // @@protoc_insertion_point(class_scope:ns3opengym.SetActionRequest)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::internal::ArenaStringPtr action_;
+  ::ns3opengym::DataContainer* container_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2eproto::TableStruct;
 };
@@ -1993,6 +2001,398 @@ class SetActionReply : public ::google::protobuf::Message /* @@protoc_insertion_
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2eproto::TableStruct;
 };
+// -------------------------------------------------------------------
+
+class DataContainer : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ns3opengym.DataContainer) */ {
+ public:
+  DataContainer();
+  virtual ~DataContainer();
+
+  DataContainer(const DataContainer& from);
+
+  inline DataContainer& operator=(const DataContainer& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  DataContainer(DataContainer&& from) noexcept
+    : DataContainer() {
+    *this = ::std::move(from);
+  }
+
+  inline DataContainer& operator=(DataContainer&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DataContainer& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const DataContainer* internal_default_instance() {
+    return reinterpret_cast<const DataContainer*>(
+               &_DataContainer_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    17;
+
+  void Swap(DataContainer* other);
+  friend void swap(DataContainer& a, DataContainer& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline DataContainer* New() const final {
+    return CreateMaybeMessage<DataContainer>(NULL);
+  }
+
+  DataContainer* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<DataContainer>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const DataContainer& from);
+  void MergeFrom(const DataContainer& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(DataContainer* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // .google.protobuf.Any data = 2;
+  bool has_data() const;
+  void clear_data();
+  static const int kDataFieldNumber = 2;
+  private:
+  const ::google::protobuf::Any& _internal_data() const;
+  public:
+  const ::google::protobuf::Any& data() const;
+  ::google::protobuf::Any* release_data();
+  ::google::protobuf::Any* mutable_data();
+  void set_allocated_data(::google::protobuf::Any* data);
+
+  // .ns3opengym.SpaceType type = 1;
+  void clear_type();
+  static const int kTypeFieldNumber = 1;
+  ::ns3opengym::SpaceType type() const;
+  void set_type(::ns3opengym::SpaceType value);
+
+  // @@protoc_insertion_point(class_scope:ns3opengym.DataContainer)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::Any* data_;
+  int type_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_messages_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class DiscreteDataContainer : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ns3opengym.DiscreteDataContainer) */ {
+ public:
+  DiscreteDataContainer();
+  virtual ~DiscreteDataContainer();
+
+  DiscreteDataContainer(const DiscreteDataContainer& from);
+
+  inline DiscreteDataContainer& operator=(const DiscreteDataContainer& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  DiscreteDataContainer(DiscreteDataContainer&& from) noexcept
+    : DiscreteDataContainer() {
+    *this = ::std::move(from);
+  }
+
+  inline DiscreteDataContainer& operator=(DiscreteDataContainer&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DiscreteDataContainer& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const DiscreteDataContainer* internal_default_instance() {
+    return reinterpret_cast<const DiscreteDataContainer*>(
+               &_DiscreteDataContainer_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    18;
+
+  void Swap(DiscreteDataContainer* other);
+  friend void swap(DiscreteDataContainer& a, DiscreteDataContainer& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline DiscreteDataContainer* New() const final {
+    return CreateMaybeMessage<DiscreteDataContainer>(NULL);
+  }
+
+  DiscreteDataContainer* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<DiscreteDataContainer>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const DiscreteDataContainer& from);
+  void MergeFrom(const DiscreteDataContainer& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(DiscreteDataContainer* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // int32 data = 1;
+  void clear_data();
+  static const int kDataFieldNumber = 1;
+  ::google::protobuf::int32 data() const;
+  void set_data(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:ns3opengym.DiscreteDataContainer)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::int32 data_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_messages_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class BoxDataContainer : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ns3opengym.BoxDataContainer) */ {
+ public:
+  BoxDataContainer();
+  virtual ~BoxDataContainer();
+
+  BoxDataContainer(const BoxDataContainer& from);
+
+  inline BoxDataContainer& operator=(const BoxDataContainer& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  BoxDataContainer(BoxDataContainer&& from) noexcept
+    : BoxDataContainer() {
+    *this = ::std::move(from);
+  }
+
+  inline BoxDataContainer& operator=(BoxDataContainer&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BoxDataContainer& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const BoxDataContainer* internal_default_instance() {
+    return reinterpret_cast<const BoxDataContainer*>(
+               &_BoxDataContainer_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    19;
+
+  void Swap(BoxDataContainer* other);
+  friend void swap(BoxDataContainer& a, BoxDataContainer& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline BoxDataContainer* New() const final {
+    return CreateMaybeMessage<BoxDataContainer>(NULL);
+  }
+
+  BoxDataContainer* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<BoxDataContainer>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const BoxDataContainer& from);
+  void MergeFrom(const BoxDataContainer& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(BoxDataContainer* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated uint32 shape = 2;
+  int shape_size() const;
+  void clear_shape();
+  static const int kShapeFieldNumber = 2;
+  ::google::protobuf::uint32 shape(int index) const;
+  void set_shape(int index, ::google::protobuf::uint32 value);
+  void add_shape(::google::protobuf::uint32 value);
+  const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      shape() const;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_shape();
+
+  // repeated int32 intData = 3;
+  int intdata_size() const;
+  void clear_intdata();
+  static const int kIntDataFieldNumber = 3;
+  ::google::protobuf::int32 intdata(int index) const;
+  void set_intdata(int index, ::google::protobuf::int32 value);
+  void add_intdata(::google::protobuf::int32 value);
+  const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+      intdata() const;
+  ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+      mutable_intdata();
+
+  // repeated uint32 uintData = 4;
+  int uintdata_size() const;
+  void clear_uintdata();
+  static const int kUintDataFieldNumber = 4;
+  ::google::protobuf::uint32 uintdata(int index) const;
+  void set_uintdata(int index, ::google::protobuf::uint32 value);
+  void add_uintdata(::google::protobuf::uint32 value);
+  const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      uintdata() const;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_uintdata();
+
+  // repeated float floatData = 5;
+  int floatdata_size() const;
+  void clear_floatdata();
+  static const int kFloatDataFieldNumber = 5;
+  float floatdata(int index) const;
+  void set_floatdata(int index, float value);
+  void add_floatdata(float value);
+  const ::google::protobuf::RepeatedField< float >&
+      floatdata() const;
+  ::google::protobuf::RepeatedField< float >*
+      mutable_floatdata();
+
+  // repeated double doubleData = 6;
+  int doubledata_size() const;
+  void clear_doubledata();
+  static const int kDoubleDataFieldNumber = 6;
+  double doubledata(int index) const;
+  void set_doubledata(int index, double value);
+  void add_doubledata(double value);
+  const ::google::protobuf::RepeatedField< double >&
+      doubledata() const;
+  ::google::protobuf::RepeatedField< double >*
+      mutable_doubledata();
+
+  // .ns3opengym.Dtype dtype = 1;
+  void clear_dtype();
+  static const int kDtypeFieldNumber = 1;
+  ::ns3opengym::Dtype dtype() const;
+  void set_dtype(::ns3opengym::Dtype value);
+
+  // @@protoc_insertion_point(class_scope:ns3opengym.BoxDataContainer)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > shape_;
+  mutable int _shape_cached_byte_size_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::int32 > intdata_;
+  mutable int _intdata_cached_byte_size_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > uintdata_;
+  mutable int _uintdata_cached_byte_size_;
+  ::google::protobuf::RepeatedField< float > floatdata_;
+  mutable int _floatdata_cached_byte_size_;
+  ::google::protobuf::RepeatedField< double > doubledata_;
+  mutable int _doubledata_cached_byte_size_;
+  int dtype_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_messages_2eproto::TableStruct;
+};
 // ===================================================================
 
 
@@ -2064,31 +2464,31 @@ inline void BoxSpace::set_dtype(::ns3opengym::Dtype value) {
   // @@protoc_insertion_point(field_set:ns3opengym.BoxSpace.dtype)
 }
 
-// repeated int32 shape = 4;
+// repeated uint32 shape = 4;
 inline int BoxSpace::shape_size() const {
   return shape_.size();
 }
 inline void BoxSpace::clear_shape() {
   shape_.Clear();
 }
-inline ::google::protobuf::int32 BoxSpace::shape(int index) const {
+inline ::google::protobuf::uint32 BoxSpace::shape(int index) const {
   // @@protoc_insertion_point(field_get:ns3opengym.BoxSpace.shape)
   return shape_.Get(index);
 }
-inline void BoxSpace::set_shape(int index, ::google::protobuf::int32 value) {
+inline void BoxSpace::set_shape(int index, ::google::protobuf::uint32 value) {
   shape_.Set(index, value);
   // @@protoc_insertion_point(field_set:ns3opengym.BoxSpace.shape)
 }
-inline void BoxSpace::add_shape(::google::protobuf::int32 value) {
+inline void BoxSpace::add_shape(::google::protobuf::uint32 value) {
   shape_.Add(value);
   // @@protoc_insertion_point(field_add:ns3opengym.BoxSpace.shape)
 }
-inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
 BoxSpace::shape() const {
   // @@protoc_insertion_point(field_list:ns3opengym.BoxSpace.shape)
   return shape_;
 }
-inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
 BoxSpace::mutable_shape() {
   // @@protoc_insertion_point(field_mutable_list:ns3opengym.BoxSpace.shape)
   return &shape_;
@@ -2366,57 +2766,58 @@ inline void GetIsGameOverReply::set_isgameover(bool value) {
 
 // GetObservationReply
 
-// string observation = 1;
-inline void GetObservationReply::clear_observation() {
-  observation_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// .ns3opengym.DataContainer container = 1;
+inline bool GetObservationReply::has_container() const {
+  return this != internal_default_instance() && container_ != NULL;
 }
-inline const ::std::string& GetObservationReply::observation() const {
-  // @@protoc_insertion_point(field_get:ns3opengym.GetObservationReply.observation)
-  return observation_.GetNoArena();
+inline void GetObservationReply::clear_container() {
+  if (GetArenaNoVirtual() == NULL && container_ != NULL) {
+    delete container_;
+  }
+  container_ = NULL;
 }
-inline void GetObservationReply::set_observation(const ::std::string& value) {
+inline const ::ns3opengym::DataContainer& GetObservationReply::_internal_container() const {
+  return *container_;
+}
+inline const ::ns3opengym::DataContainer& GetObservationReply::container() const {
+  const ::ns3opengym::DataContainer* p = container_;
+  // @@protoc_insertion_point(field_get:ns3opengym.GetObservationReply.container)
+  return p != NULL ? *p : *reinterpret_cast<const ::ns3opengym::DataContainer*>(
+      &::ns3opengym::_DataContainer_default_instance_);
+}
+inline ::ns3opengym::DataContainer* GetObservationReply::release_container() {
+  // @@protoc_insertion_point(field_release:ns3opengym.GetObservationReply.container)
   
-  observation_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:ns3opengym.GetObservationReply.observation)
+  ::ns3opengym::DataContainer* temp = container_;
+  container_ = NULL;
+  return temp;
 }
-#if LANG_CXX11
-inline void GetObservationReply::set_observation(::std::string&& value) {
+inline ::ns3opengym::DataContainer* GetObservationReply::mutable_container() {
   
-  observation_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ns3opengym.GetObservationReply.observation)
+  if (container_ == NULL) {
+    auto* p = CreateMaybeMessage<::ns3opengym::DataContainer>(GetArenaNoVirtual());
+    container_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:ns3opengym.GetObservationReply.container)
+  return container_;
 }
-#endif
-inline void GetObservationReply::set_observation(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  
-  observation_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ns3opengym.GetObservationReply.observation)
-}
-inline void GetObservationReply::set_observation(const char* value, size_t size) {
-  
-  observation_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ns3opengym.GetObservationReply.observation)
-}
-inline ::std::string* GetObservationReply::mutable_observation() {
-  
-  // @@protoc_insertion_point(field_mutable:ns3opengym.GetObservationReply.observation)
-  return observation_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* GetObservationReply::release_observation() {
-  // @@protoc_insertion_point(field_release:ns3opengym.GetObservationReply.observation)
-  
-  return observation_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void GetObservationReply::set_allocated_observation(::std::string* observation) {
-  if (observation != NULL) {
+inline void GetObservationReply::set_allocated_container(::ns3opengym::DataContainer* container) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete container_;
+  }
+  if (container) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      container = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, container, submessage_arena);
+    }
     
   } else {
     
   }
-  observation_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), observation);
-  // @@protoc_insertion_point(field_set_allocated:ns3opengym.GetObservationReply.observation)
+  container_ = container;
+  // @@protoc_insertion_point(field_set_allocated:ns3opengym.GetObservationReply.container)
 }
 
 // -------------------------------------------------------------------
@@ -2445,57 +2846,58 @@ inline void GetRewardReply::set_reward(float value) {
 
 // SetActionRequest
 
-// string action = 1;
-inline void SetActionRequest::clear_action() {
-  action_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+// .ns3opengym.DataContainer container = 1;
+inline bool SetActionRequest::has_container() const {
+  return this != internal_default_instance() && container_ != NULL;
 }
-inline const ::std::string& SetActionRequest::action() const {
-  // @@protoc_insertion_point(field_get:ns3opengym.SetActionRequest.action)
-  return action_.GetNoArena();
+inline void SetActionRequest::clear_container() {
+  if (GetArenaNoVirtual() == NULL && container_ != NULL) {
+    delete container_;
+  }
+  container_ = NULL;
 }
-inline void SetActionRequest::set_action(const ::std::string& value) {
+inline const ::ns3opengym::DataContainer& SetActionRequest::_internal_container() const {
+  return *container_;
+}
+inline const ::ns3opengym::DataContainer& SetActionRequest::container() const {
+  const ::ns3opengym::DataContainer* p = container_;
+  // @@protoc_insertion_point(field_get:ns3opengym.SetActionRequest.container)
+  return p != NULL ? *p : *reinterpret_cast<const ::ns3opengym::DataContainer*>(
+      &::ns3opengym::_DataContainer_default_instance_);
+}
+inline ::ns3opengym::DataContainer* SetActionRequest::release_container() {
+  // @@protoc_insertion_point(field_release:ns3opengym.SetActionRequest.container)
   
-  action_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:ns3opengym.SetActionRequest.action)
+  ::ns3opengym::DataContainer* temp = container_;
+  container_ = NULL;
+  return temp;
 }
-#if LANG_CXX11
-inline void SetActionRequest::set_action(::std::string&& value) {
+inline ::ns3opengym::DataContainer* SetActionRequest::mutable_container() {
   
-  action_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ns3opengym.SetActionRequest.action)
+  if (container_ == NULL) {
+    auto* p = CreateMaybeMessage<::ns3opengym::DataContainer>(GetArenaNoVirtual());
+    container_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:ns3opengym.SetActionRequest.container)
+  return container_;
 }
-#endif
-inline void SetActionRequest::set_action(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  
-  action_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ns3opengym.SetActionRequest.action)
-}
-inline void SetActionRequest::set_action(const char* value, size_t size) {
-  
-  action_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ns3opengym.SetActionRequest.action)
-}
-inline ::std::string* SetActionRequest::mutable_action() {
-  
-  // @@protoc_insertion_point(field_mutable:ns3opengym.SetActionRequest.action)
-  return action_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* SetActionRequest::release_action() {
-  // @@protoc_insertion_point(field_release:ns3opengym.SetActionRequest.action)
-  
-  return action_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void SetActionRequest::set_allocated_action(::std::string* action) {
-  if (action != NULL) {
+inline void SetActionRequest::set_allocated_container(::ns3opengym::DataContainer* container) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete container_;
+  }
+  if (container) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      container = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, container, submessage_arena);
+    }
     
   } else {
     
   }
-  action_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), action);
-  // @@protoc_insertion_point(field_set_allocated:ns3opengym.SetActionRequest.action)
+  container_ = container;
+  // @@protoc_insertion_point(field_set_allocated:ns3opengym.SetActionRequest.container)
 }
 
 // -------------------------------------------------------------------
@@ -2516,9 +2918,267 @@ inline void SetActionReply::set_done(bool value) {
   // @@protoc_insertion_point(field_set:ns3opengym.SetActionReply.done)
 }
 
+// -------------------------------------------------------------------
+
+// DataContainer
+
+// .ns3opengym.SpaceType type = 1;
+inline void DataContainer::clear_type() {
+  type_ = 0;
+}
+inline ::ns3opengym::SpaceType DataContainer::type() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.DataContainer.type)
+  return static_cast< ::ns3opengym::SpaceType >(type_);
+}
+inline void DataContainer::set_type(::ns3opengym::SpaceType value) {
+  
+  type_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.DataContainer.type)
+}
+
+// .google.protobuf.Any data = 2;
+inline bool DataContainer::has_data() const {
+  return this != internal_default_instance() && data_ != NULL;
+}
+inline const ::google::protobuf::Any& DataContainer::_internal_data() const {
+  return *data_;
+}
+inline const ::google::protobuf::Any& DataContainer::data() const {
+  const ::google::protobuf::Any* p = data_;
+  // @@protoc_insertion_point(field_get:ns3opengym.DataContainer.data)
+  return p != NULL ? *p : *reinterpret_cast<const ::google::protobuf::Any*>(
+      &::google::protobuf::_Any_default_instance_);
+}
+inline ::google::protobuf::Any* DataContainer::release_data() {
+  // @@protoc_insertion_point(field_release:ns3opengym.DataContainer.data)
+  
+  ::google::protobuf::Any* temp = data_;
+  data_ = NULL;
+  return temp;
+}
+inline ::google::protobuf::Any* DataContainer::mutable_data() {
+  
+  if (data_ == NULL) {
+    auto* p = CreateMaybeMessage<::google::protobuf::Any>(GetArenaNoVirtual());
+    data_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:ns3opengym.DataContainer.data)
+  return data_;
+}
+inline void DataContainer::set_allocated_data(::google::protobuf::Any* data) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete reinterpret_cast< ::google::protobuf::MessageLite*>(data_);
+  }
+  if (data) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      data = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, data, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  data_ = data;
+  // @@protoc_insertion_point(field_set_allocated:ns3opengym.DataContainer.data)
+}
+
+// -------------------------------------------------------------------
+
+// DiscreteDataContainer
+
+// int32 data = 1;
+inline void DiscreteDataContainer::clear_data() {
+  data_ = 0;
+}
+inline ::google::protobuf::int32 DiscreteDataContainer::data() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.DiscreteDataContainer.data)
+  return data_;
+}
+inline void DiscreteDataContainer::set_data(::google::protobuf::int32 value) {
+  
+  data_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.DiscreteDataContainer.data)
+}
+
+// -------------------------------------------------------------------
+
+// BoxDataContainer
+
+// .ns3opengym.Dtype dtype = 1;
+inline void BoxDataContainer::clear_dtype() {
+  dtype_ = 0;
+}
+inline ::ns3opengym::Dtype BoxDataContainer::dtype() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.BoxDataContainer.dtype)
+  return static_cast< ::ns3opengym::Dtype >(dtype_);
+}
+inline void BoxDataContainer::set_dtype(::ns3opengym::Dtype value) {
+  
+  dtype_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.BoxDataContainer.dtype)
+}
+
+// repeated uint32 shape = 2;
+inline int BoxDataContainer::shape_size() const {
+  return shape_.size();
+}
+inline void BoxDataContainer::clear_shape() {
+  shape_.Clear();
+}
+inline ::google::protobuf::uint32 BoxDataContainer::shape(int index) const {
+  // @@protoc_insertion_point(field_get:ns3opengym.BoxDataContainer.shape)
+  return shape_.Get(index);
+}
+inline void BoxDataContainer::set_shape(int index, ::google::protobuf::uint32 value) {
+  shape_.Set(index, value);
+  // @@protoc_insertion_point(field_set:ns3opengym.BoxDataContainer.shape)
+}
+inline void BoxDataContainer::add_shape(::google::protobuf::uint32 value) {
+  shape_.Add(value);
+  // @@protoc_insertion_point(field_add:ns3opengym.BoxDataContainer.shape)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+BoxDataContainer::shape() const {
+  // @@protoc_insertion_point(field_list:ns3opengym.BoxDataContainer.shape)
+  return shape_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+BoxDataContainer::mutable_shape() {
+  // @@protoc_insertion_point(field_mutable_list:ns3opengym.BoxDataContainer.shape)
+  return &shape_;
+}
+
+// repeated int32 intData = 3;
+inline int BoxDataContainer::intdata_size() const {
+  return intdata_.size();
+}
+inline void BoxDataContainer::clear_intdata() {
+  intdata_.Clear();
+}
+inline ::google::protobuf::int32 BoxDataContainer::intdata(int index) const {
+  // @@protoc_insertion_point(field_get:ns3opengym.BoxDataContainer.intData)
+  return intdata_.Get(index);
+}
+inline void BoxDataContainer::set_intdata(int index, ::google::protobuf::int32 value) {
+  intdata_.Set(index, value);
+  // @@protoc_insertion_point(field_set:ns3opengym.BoxDataContainer.intData)
+}
+inline void BoxDataContainer::add_intdata(::google::protobuf::int32 value) {
+  intdata_.Add(value);
+  // @@protoc_insertion_point(field_add:ns3opengym.BoxDataContainer.intData)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::int32 >&
+BoxDataContainer::intdata() const {
+  // @@protoc_insertion_point(field_list:ns3opengym.BoxDataContainer.intData)
+  return intdata_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::int32 >*
+BoxDataContainer::mutable_intdata() {
+  // @@protoc_insertion_point(field_mutable_list:ns3opengym.BoxDataContainer.intData)
+  return &intdata_;
+}
+
+// repeated uint32 uintData = 4;
+inline int BoxDataContainer::uintdata_size() const {
+  return uintdata_.size();
+}
+inline void BoxDataContainer::clear_uintdata() {
+  uintdata_.Clear();
+}
+inline ::google::protobuf::uint32 BoxDataContainer::uintdata(int index) const {
+  // @@protoc_insertion_point(field_get:ns3opengym.BoxDataContainer.uintData)
+  return uintdata_.Get(index);
+}
+inline void BoxDataContainer::set_uintdata(int index, ::google::protobuf::uint32 value) {
+  uintdata_.Set(index, value);
+  // @@protoc_insertion_point(field_set:ns3opengym.BoxDataContainer.uintData)
+}
+inline void BoxDataContainer::add_uintdata(::google::protobuf::uint32 value) {
+  uintdata_.Add(value);
+  // @@protoc_insertion_point(field_add:ns3opengym.BoxDataContainer.uintData)
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+BoxDataContainer::uintdata() const {
+  // @@protoc_insertion_point(field_list:ns3opengym.BoxDataContainer.uintData)
+  return uintdata_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+BoxDataContainer::mutable_uintdata() {
+  // @@protoc_insertion_point(field_mutable_list:ns3opengym.BoxDataContainer.uintData)
+  return &uintdata_;
+}
+
+// repeated float floatData = 5;
+inline int BoxDataContainer::floatdata_size() const {
+  return floatdata_.size();
+}
+inline void BoxDataContainer::clear_floatdata() {
+  floatdata_.Clear();
+}
+inline float BoxDataContainer::floatdata(int index) const {
+  // @@protoc_insertion_point(field_get:ns3opengym.BoxDataContainer.floatData)
+  return floatdata_.Get(index);
+}
+inline void BoxDataContainer::set_floatdata(int index, float value) {
+  floatdata_.Set(index, value);
+  // @@protoc_insertion_point(field_set:ns3opengym.BoxDataContainer.floatData)
+}
+inline void BoxDataContainer::add_floatdata(float value) {
+  floatdata_.Add(value);
+  // @@protoc_insertion_point(field_add:ns3opengym.BoxDataContainer.floatData)
+}
+inline const ::google::protobuf::RepeatedField< float >&
+BoxDataContainer::floatdata() const {
+  // @@protoc_insertion_point(field_list:ns3opengym.BoxDataContainer.floatData)
+  return floatdata_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+BoxDataContainer::mutable_floatdata() {
+  // @@protoc_insertion_point(field_mutable_list:ns3opengym.BoxDataContainer.floatData)
+  return &floatdata_;
+}
+
+// repeated double doubleData = 6;
+inline int BoxDataContainer::doubledata_size() const {
+  return doubledata_.size();
+}
+inline void BoxDataContainer::clear_doubledata() {
+  doubledata_.Clear();
+}
+inline double BoxDataContainer::doubledata(int index) const {
+  // @@protoc_insertion_point(field_get:ns3opengym.BoxDataContainer.doubleData)
+  return doubledata_.Get(index);
+}
+inline void BoxDataContainer::set_doubledata(int index, double value) {
+  doubledata_.Set(index, value);
+  // @@protoc_insertion_point(field_set:ns3opengym.BoxDataContainer.doubleData)
+}
+inline void BoxDataContainer::add_doubledata(double value) {
+  doubledata_.Add(value);
+  // @@protoc_insertion_point(field_add:ns3opengym.BoxDataContainer.doubleData)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+BoxDataContainer::doubledata() const {
+  // @@protoc_insertion_point(field_list:ns3opengym.BoxDataContainer.doubleData)
+  return doubledata_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+BoxDataContainer::mutable_doubledata() {
+  // @@protoc_insertion_point(field_mutable_list:ns3opengym.BoxDataContainer.doubleData)
+  return &doubledata_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

@@ -27,6 +27,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "messages.pb.h"
+#include "container.h"
 #include "observation.h"
 #include "action.h"
 
@@ -156,7 +157,7 @@ OpenGymEnv::FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply
     ns3opengym::BoxSpace boxSpacePb;
     boxSpacePb.set_low(box->GetLow());
     boxSpacePb.set_high(box->GetHigh());
-    std::vector<int> shape = box->GetShape();
+    std::vector<uint32_t> shape = box->GetShape();
     for (auto i = shape.begin(); i != shape.end(); ++i)
     {
       boxSpacePb.add_shape(*i);
@@ -298,13 +299,41 @@ OpenGymEnv::WaitForNextStep()
       m_rxGetState = true;
       NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
 
+      ns3opengym::DataContainer dataContainerPbMsg;
       ns3opengym::GetObservationReply obsReplyPbMsg;
       ns3opengym::ReplyMsg replyPbMsg;
 
       Ptr<OpenGymObservation> obs = GetState();
-      // TODO: encode obs properly
-      obsReplyPbMsg.set_observation(obs->m_obsString);
-     
+      std::vector<Ptr<OpenGymDataContainer> > dataContainers = obs->GetObsContainers();
+
+      for (auto container = dataContainers.begin(); container != dataContainers.end(); ++container)
+      {
+        // TODO: cast properly currently cast with one type
+        Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(*container);
+
+        ns3opengym::BoxDataContainer boxContainerPbMsg;
+
+        dataContainerPbMsg.set_type(ns3opengym::Box);
+        boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+
+        std::vector<uint32_t> shape = box->GetShape();
+        for (auto i = shape.begin(); i != shape.end(); ++i)
+        {
+          boxContainerPbMsg.add_shape(*i);
+        }
+
+        std::vector<uint32_t> data = box->GetData();
+        *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
+
+        //for (auto i = data.begin(); i != data.end(); ++i)
+        //{
+        //  boxContainerPbMsg.add_uintdata(*i);
+        //}
+
+        dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
+      }
+
+      obsReplyPbMsg.mutable_container()->CopyFrom(dataContainerPbMsg);    
       replyPbMsg.set_type(ns3opengym::Observation);
       replyPbMsg.mutable_msg()->PackFrom(obsReplyPbMsg);
         
@@ -335,15 +364,68 @@ OpenGymEnv::WaitForNextStep()
       ns3opengym::SetActionRequest actionRequestPbMsg;
       if (requestPbMsg.msg().UnpackTo(&actionRequestPbMsg)) {
 
-        Ptr<OpenGymAction> action = CreateObject<OpenGymAction> ();
-        // TODO: encode action properly
-        action->m_actionString = actionRequestPbMsg.action();
-        ExecuteActions(action);
+        Ptr<OpenGymDataContainer> dataContainer = CreateObject<OpenGymDataContainer>();
+        ns3opengym::DataContainer containerPbMsg = actionRequestPbMsg.container();
+
+        if (containerPbMsg.type() == ns3opengym::Discrete)
+        {
+          // TODO implement
+        }
+        else if (containerPbMsg.type() == ns3opengym::Box)
+        {
+          ns3opengym::BoxDataContainer boxContainerPbMsg;
+          containerPbMsg.data().UnpackTo(&boxContainerPbMsg);
+
+          if (boxContainerPbMsg.dtype() == ns3opengym::INT) {
+            Ptr<OpenGymBoxContainer<int32_t> > box = CreateObject<OpenGymBoxContainer<int32_t> >();
+            std::vector<int32_t> myData;
+            //myData.reserve(boxContainerPbMsg.uintdata().size());
+            myData.assign(boxContainerPbMsg.intdata().begin(), boxContainerPbMsg.intdata().end()); 
+            box->SetData(myData);
+            dataContainer = box;
+
+          } else if (boxContainerPbMsg.dtype() == ns3opengym::UINT) {
+            Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >();
+            std::vector<uint32_t> myData;
+            //myData.reserve(boxContainerPbMsg.uintdata().size());
+            myData.assign(boxContainerPbMsg.uintdata().begin(), boxContainerPbMsg.uintdata().end()); 
+            box->SetData(myData);
+            dataContainer = box;
+
+          } else if (boxContainerPbMsg.dtype() == ns3opengym::FLOAT) {
+            Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
+            std::vector<float> myData;
+            //myData.reserve(boxContainerPbMsg.uintdata().size());
+            myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
+            box->SetData(myData);
+            dataContainer = box;
+
+          } else if (boxContainerPbMsg.dtype() == ns3opengym::DOUBLE) {
+            Ptr<OpenGymBoxContainer<double> > box = CreateObject<OpenGymBoxContainer<double> >();
+            std::vector<double> myData;
+            //myData.reserve(boxContainerPbMsg.uintdata().size());
+            myData.assign(boxContainerPbMsg.doubledata().begin(), boxContainerPbMsg.doubledata().end()); 
+            box->SetData(myData);
+            dataContainer = box;
+
+          } else {
+            Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
+            std::vector<float> myData;
+            //myData.reserve(boxContainerPbMsg.uintdata().size());
+            myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
+            box->SetData(myData);
+            dataContainer = box;
+          }
+        }
+
+        Ptr<OpenGymAction> action = CreateObject<OpenGymAction> ();       
+        action->AddActionContainer(dataContainer);
+        bool done = ExecuteActions(action);
 
         ns3opengym::SetActionReply actionReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
 
-        actionReplyPbMsg.set_done(true);
+        actionReplyPbMsg.set_done(done);
        
         replyPbMsg.set_type(ns3opengym::Action);
         replyPbMsg.mutable_msg()->PackFrom(actionReplyPbMsg);

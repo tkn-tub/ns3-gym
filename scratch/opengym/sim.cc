@@ -28,9 +28,15 @@ NS_LOG_COMPONENT_DEFINE ("OpenGym");
 
 Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
-  float low = -10.0;
-  float high = 10.0;
-  std::vector<int> shape = {7,};
+  // OpenGymDiscreteSpace also works
+  //int n = 13;
+  //Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (n);
+
+  uint32_t nodeNum = 5;
+
+  float low = 0.0;
+  float high = 100.0;
+  std::vector<uint32_t> shape = {nodeNum,};
   Dtype dType = Dtype::INT;
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dType);
   NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
@@ -39,8 +45,13 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
 
 Ptr<OpenGymSpace> MyGetObservationSpace(void)
 {
-  int n = 13;
-  Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (n);
+  uint32_t nodeNum = 5;
+
+  float low = 0.0;
+  float high = 10.0;
+  std::vector<uint32_t> shape = {nodeNum,};
+  Dtype dType = Dtype::INT;
+  Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dType);
   NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
   return space;
 }
@@ -52,12 +63,26 @@ bool MyGetGameOver(void)
   return isGameOver;
 }
 
-Ptr<OpenGymObservation> MyGetState(void)
+Ptr<OpenGymObservation> MyGetObservation(void)
 {
+  uint32_t nodeNum = 5;
+
   Ptr<OpenGymObservation> obs = CreateObject<OpenGymObservation> ();
-  std::string state = "1,12,15,1";
-  obs->m_obsString = state;
-  //NS_LOG_UNCOND ("MyGetState: " << state);
+  std::vector<uint32_t> shape = {nodeNum,};
+  Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
+
+  // generate random data
+  std::string obsString = "[";
+  uint32_t low = 0.0;
+  uint32_t high = 10.0;
+  for (uint32_t i = 0; i<nodeNum; i++){
+    uint32_t value = rand() % high + low;
+    box->AddValue(value);
+    obsString += std::to_string(value) +",";
+  }
+  obsString += "]";
+  obs->AddObsContainer(box);
+  NS_LOG_UNCOND ("MyGetObservation: " << obsString);
   return obs;
 }
 
@@ -71,7 +96,18 @@ float MyGetReward(void)
 
 bool MyExecuteActions(Ptr<OpenGymAction> action)
 {
-  NS_LOG_UNCOND ("MyExecuteActions: " << action->m_actionString);
+  Ptr<OpenGymDataContainer> container = action->GetActionContainer(0);
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(container);
+  std::vector<uint32_t> actionVector = box->GetData();
+
+  std::string actionString  = "[";
+  for (auto i = actionVector.begin(); i != actionVector.end(); ++i)
+  {
+    actionString += std::to_string(*i) +",";
+  }
+  actionString += "]";
+  NS_LOG_UNCOND ("MyExecuteActions: " << actionString);
+
   return true;
 }
 
@@ -94,7 +130,7 @@ main (int argc, char *argv[])
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
   openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
-  openGymEnv->SetGetStateCb( MakeCallback (&MyGetState) );
+  openGymEnv->SetGetStateCb( MakeCallback (&MyGetObservation) );
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
 
