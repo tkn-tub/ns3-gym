@@ -26,6 +26,19 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("OpenGym");
 
+Ptr<OpenGymSpace> MyGetObservationSpace(void)
+{
+  uint32_t nodeNum = 5;
+
+  float low = 0.0;
+  float high = 10.0;
+  std::vector<uint32_t> shape = {nodeNum,};
+  std::string dtype = TypeNameGet<uint32_t> ();
+  Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
+  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
+  return space;
+}
+
 Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
   // OpenGymDiscreteSpace also works
@@ -40,19 +53,6 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
   NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
-  return space;
-}
-
-Ptr<OpenGymSpace> MyGetObservationSpace(void)
-{
-  uint32_t nodeNum = 5;
-
-  float low = 0.0;
-  float high = 10.0;
-  std::vector<uint32_t> shape = {nodeNum,};
-  std::string dtype = TypeNameGet<uint32_t> ();
-  Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
   return space;
 }
 
