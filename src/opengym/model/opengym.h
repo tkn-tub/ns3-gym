@@ -35,7 +35,7 @@ namespace ns3 {
 
 class OpenGymSpace;
 class OpenGymObservation;
-class OpenGymAction;
+class OpenGymDataContainer;
 
 class OpenGymEnv : public Object
 {
@@ -60,14 +60,14 @@ public:
   void FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply &spaceReplyPbMsg);
   Ptr<OpenGymObservation> GetState();
   float GetReward();
-  bool ExecuteActions(Ptr<OpenGymAction> action);
+  bool ExecuteActions(Ptr<OpenGymDataContainer> action);
 
   void SetGetActionSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
   void SetGetObservationSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
   void SetGetGameOverCb(Callback< bool > cb);
   void SetGetStateCb(Callback< Ptr<OpenGymObservation> > cb);
   void SetGetRewardCb(Callback<float> cb);
-  void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymAction> > cb);
+  void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb);
 
 protected:
   // Inherited
@@ -87,7 +87,7 @@ private:
   Callback< bool > m_gameOverCb;
   Callback< Ptr<OpenGymObservation> > m_stateCb;
   Callback<float> m_rewardCb;
-  Callback<bool, Ptr<OpenGymAction> > m_actionCb;
+  Callback<bool, Ptr<OpenGymDataContainer> > m_actionCb;
 
   bool m_rxGetGameOver;
   bool m_rxGetState;

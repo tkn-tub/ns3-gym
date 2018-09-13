@@ -66,7 +66,6 @@ bool MyGetGameOver(void)
 Ptr<OpenGymObservation> MyGetObservation(void)
 {
   uint32_t nodeNum = 5;
-
   Ptr<OpenGymObservation> obs = CreateObject<OpenGymObservation> ();
   std::vector<uint32_t> shape = {nodeNum,};
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
@@ -94,10 +93,9 @@ float MyGetReward(void)
   return reward;
 }
 
-bool MyExecuteActions(Ptr<OpenGymAction> action)
+bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
 {
-  Ptr<OpenGymDataContainer> container = action->GetActionContainer(0);
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(container);
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
   std::vector<uint32_t> actionVector = box->GetData();
 
   std::string actionString  = "[";
