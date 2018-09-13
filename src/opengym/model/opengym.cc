@@ -53,7 +53,7 @@ OpenGymEnv::OpenGymEnv() :
   NS_LOG_FUNCTION (this);
   m_stepCount = 0;
   m_rxGetGameOver = false;
-  m_rxGetState = false;
+  m_rxGetObservation = false;
   m_rxGetReward = false;
   m_rxSetActions = false;
 }
@@ -97,7 +97,7 @@ OpenGymEnv::SetGetGameOverCb(Callback< bool > cb)
 }
 
 void
-OpenGymEnv::SetGetStateCb(Callback< Ptr<OpenGymDataContainer> > cb)
+OpenGymEnv::SetGetObservationCb(Callback< Ptr<OpenGymDataContainer> > cb)
 {
   NS_LOG_FUNCTION (this);
   m_stateCb = cb;
@@ -293,14 +293,14 @@ OpenGymEnv::WaitForNextStep()
     }
     else if (requestPbMsg.type() == ns3opengym::Observation)
     {
-      m_rxGetState = true;
+      m_rxGetObservation = true;
       NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
 
       ns3opengym::DataContainer dataContainerPbMsg;
       ns3opengym::GetObservationReply obsReplyPbMsg;
       ns3opengym::ReplyMsg replyPbMsg;
 
-      Ptr<OpenGymDataContainer> container = GetState();
+      Ptr<OpenGymDataContainer> container = GetObservation();
 
       // add serialzation of Discrete Container
 
@@ -450,9 +450,9 @@ OpenGymEnv::WaitForNextStep()
     }
 
     // check if ready for next step
-    if (m_rxGetGameOver && m_rxGetState && m_rxGetReward && m_rxSetActions) {
+    if (m_rxGetGameOver && m_rxGetObservation && m_rxGetReward && m_rxSetActions) {
       m_rxGetGameOver = false;
-      m_rxGetState = false;
+      m_rxGetObservation = false;
       m_rxGetReward = false;
       m_rxSetActions = false;
       break;
@@ -467,7 +467,7 @@ OpenGymEnv::WaitForStop()
   NS_LOG_DEBUG("Wait for stop message");
 
   m_rxGetGameOver = false;
-  m_rxGetState = false;
+  m_rxGetObservation = false;
   m_rxGetReward = false;
   m_rxSetActions = true;
   WaitForNextStep();
@@ -518,7 +518,7 @@ OpenGymEnv::GetObservationSpace()
 }
 
 Ptr<OpenGymDataContainer>
-OpenGymEnv::GetState()
+OpenGymEnv::GetObservation()
 {
   NS_LOG_FUNCTION (this);
   Ptr<OpenGymDataContainer>  obs;

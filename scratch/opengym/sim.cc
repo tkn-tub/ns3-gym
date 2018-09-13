@@ -127,7 +127,7 @@ main (int argc, char *argv[])
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
   openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
-  openGymEnv->SetGetStateCb( MakeCallback (&MyGetObservation) );
+  openGymEnv->SetGetObservationCb( MakeCallback (&MyGetObservation) );
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
 
