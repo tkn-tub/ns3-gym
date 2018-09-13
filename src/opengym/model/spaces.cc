@@ -244,18 +244,7 @@ std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)
   {
     os << *i << ",";
   }
-  os << ") Dtype: ";
-
-  if (box.m_dtype == Dtype::INT)
-  {
-    os << "INT";
-  } else if (box.m_dtype == Dtype::UINT) {
-    os << "UINT";
-  } else if (box.m_dtype == Dtype::DOUBLE) {
-    os << "DOUBLE";
-  } else {
-    os << "FLOAT";
-  }
+  os << ") Dtype: " << box.m_dtypeName;
 
   return os;  
 }  
