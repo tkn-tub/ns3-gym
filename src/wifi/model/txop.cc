@@ -29,8 +29,6 @@
 #include "mac-low.h"
 #include "wifi-remote-station-manager.h"
 
-#include "wifi-bpr.h"
-
 
 #undef NS_LOG_APPEND_CONTEXT
 #define NS_LOG_APPEND_CONTEXT if (m_low != 0) { std::clog << "[mac=" << m_low->GetAddress () << "] "; }
@@ -89,8 +87,6 @@ Txop::Txop ()
   NS_LOG_FUNCTION (this);
   m_queue = CreateObject<WifiMacQueue> ();
   m_rng = CreateObject<UniformRandomVariable> ();
-  m_bpr = CreateObject<WifiBpr>();
-  m_bpr->SetWiFiQueue(m_queue);
 }
 
 Txop::~Txop ()
@@ -108,7 +104,6 @@ Txop::DoDispose (void)
   m_rng = 0;
   m_txMiddle = 0;
   m_channelAccessManager = 0;
-  m_bpr = 0;
 }
 
 void
@@ -304,14 +299,7 @@ Txop::Queue (Ptr<const Packet> packet, const WifiMacHeader &hdr)
   NS_LOG_FUNCTION (this << packet << &hdr);
 
   m_stationManager->PrepareForQueue (hdr.GetAddr1 (), &hdr, packet);
-  bool pktAdded = false;
-  pktAdded = m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
-
-  if (pktAdded)
-  {
-    // count in virtual queues
-    //m_bpr->VirtualEnqueue(packet);
-  }
+  m_queue->Enqueue (Create<WifiMacQueueItem> (packet, hdr));
   StartAccessIfNeeded ();
 }
 
@@ -542,7 +530,6 @@ Txop::NotifyChannelSwitching (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue->Flush ();
-  m_bpr->Flush();
   m_currentPacket = 0;
 }
 
@@ -552,14 +539,7 @@ Txop::NotifySleep (void)
   NS_LOG_FUNCTION (this);
   if (m_currentPacket != 0)
     {
-      bool pktAdded = false;
-      pktAdded = m_queue->PushFront (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr));
-      if (pktAdded)
-      {
-        // count in virtual queues
-        //m_bpr->VirtualEnqueue(m_currentPacket);
-      }
-
+      m_queue->PushFront (Create<WifiMacQueueItem> (m_currentPacket, m_currentHdr));
       m_currentPacket = 0;
     }
 }
@@ -569,7 +549,6 @@ Txop::NotifyOff (void)
 {
   NS_LOG_FUNCTION (this);
   m_queue->Flush ();
-  m_bpr->Flush();
   m_currentPacket = 0;
 }
 
