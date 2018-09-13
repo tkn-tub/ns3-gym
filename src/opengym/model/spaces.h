@@ -79,8 +79,8 @@ class OpenGymBoxSpace : public OpenGymSpace
 {
 public:
   OpenGymBoxSpace ();
-  OpenGymBoxSpace (float low, float high, std::vector<uint32_t> shape, Dtype dtype=FLOAT);
-  OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<uint32_t> shape, Dtype dtype=FLOAT);
+  OpenGymBoxSpace (float low, float high, std::vector<uint32_t> shape, std::string dtype);
+  OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<uint32_t> shape, std::string dtype);
   virtual ~OpenGymBoxSpace ();
 
   static TypeId GetTypeId ();
@@ -98,13 +98,16 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  void SetDtype ();
+
 	float m_low;
 	float m_high;
 	std::vector<uint32_t> m_shape;
-  Dtype m_dtype;
-	std::vector<float> m_lowVec;
-	std::vector<float> m_highVec;
+  std::string m_dtypeName;
+  std::vector<float> m_lowVec;
+  std::vector<float> m_highVec;
 
+  Dtype m_dtype;
 
 	friend std::ostream& operator<< ( std::ostream& os, const OpenGymBoxSpace& a);
 };

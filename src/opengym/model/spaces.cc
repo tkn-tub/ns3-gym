@@ -145,17 +145,19 @@ OpenGymBoxSpace::OpenGymBoxSpace ()
   NS_LOG_FUNCTION (this);
 }
 
-OpenGymBoxSpace::OpenGymBoxSpace (float low, float high, std::vector<uint32_t> shape, Dtype dtype):
-  m_low(low), m_high(high), m_shape(shape), m_dtype(dtype)
+OpenGymBoxSpace::OpenGymBoxSpace (float low, float high, std::vector<uint32_t> shape, std::string dtype):
+  m_low(low), m_high(high), m_shape(shape), m_dtypeName(dtype)
 {
   NS_LOG_FUNCTION (this);
+  SetDtype ();
 }
 
-OpenGymBoxSpace::OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<uint32_t> shape, Dtype dtype):
-  m_low(0), m_high(0), m_shape(shape), m_dtype(dtype), m_lowVec(low), m_highVec(high)
+OpenGymBoxSpace::OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<uint32_t> shape, std::string dtype):
+  m_low(0), m_high(0), m_shape(shape), m_dtypeName(dtype), m_lowVec(low), m_highVec(high)
 
 {
   NS_LOG_FUNCTION (this);
+  SetDtype ();
 } 
 
 OpenGymBoxSpace::~OpenGymBoxSpace ()
@@ -173,6 +175,20 @@ void
 OpenGymBoxSpace::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymBoxSpace::SetDtype ()
+{
+  std::string name = m_dtypeName;
+  if (name == "int8_t" || name == "int16_t" || name == "int32_t" || name == "int64_t")
+    m_dtype = Dtype::INT;
+  else if (name == "uint8_t" || name == "uint16_t" || name == "uint32_t" || name == "uint64_t")
+    m_dtype = Dtype::UINT;
+  else if (name == "float" || name == "double")
+    m_dtype = Dtype::FLOAT;
+  else
+    m_dtype = Dtype::FLOAT;
 }
 
 float
