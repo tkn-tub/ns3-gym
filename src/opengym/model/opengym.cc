@@ -28,8 +28,6 @@
 
 #include "messages.pb.h"
 #include "container.h"
-#include "observation.h"
-
 
 namespace ns3 {
 
@@ -99,7 +97,7 @@ OpenGymEnv::SetGetGameOverCb(Callback< bool > cb)
 }
 
 void
-OpenGymEnv::SetGetStateCb(Callback< Ptr<OpenGymObservation> > cb)
+OpenGymEnv::SetGetStateCb(Callback< Ptr<OpenGymDataContainer> > cb)
 {
   NS_LOG_FUNCTION (this);
   m_stateCb = cb;
@@ -302,46 +300,42 @@ OpenGymEnv::WaitForNextStep()
       ns3opengym::GetObservationReply obsReplyPbMsg;
       ns3opengym::ReplyMsg replyPbMsg;
 
-      Ptr<OpenGymObservation> obs = GetState();
-      std::vector<Ptr<OpenGymDataContainer> > dataContainers = obs->GetObsContainers();
+      Ptr<OpenGymDataContainer> container = GetState();
 
-      for (auto container = dataContainers.begin(); container != dataContainers.end(); ++container)
-      {
-        // add serialzation of Discrete Container
+      // add serialzation of Discrete Container
 
-        ns3opengym::BoxDataContainer boxContainerPbMsg;
-        std::vector<uint32_t> shape;
-        Dtype dtype = (*container)->GetDataType();
+      ns3opengym::BoxDataContainer boxContainerPbMsg;
+      std::vector<uint32_t> shape;
+      Dtype dtype = container->GetDataType();
 
-        if (dtype == Dtype::INT) {
-          Ptr<OpenGymBoxContainer<int32_t> > box = DynamicCast<OpenGymBoxContainer<int32_t> >(*container);
-          shape = box->GetShape();
-          boxContainerPbMsg.set_dtype(ns3opengym::INT);
-          std::vector<int32_t> data = box->GetData();
-          *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
+      if (dtype == Dtype::INT) {
+        Ptr<OpenGymBoxContainer<int32_t> > box = DynamicCast<OpenGymBoxContainer<int32_t> >(container);
+        shape = box->GetShape();
+        boxContainerPbMsg.set_dtype(ns3opengym::INT);
+        std::vector<int32_t> data = box->GetData();
+        *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
 
-        } else if (dtype == Dtype::UINT) {
-          Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(*container);
-          shape = box->GetShape();
-          boxContainerPbMsg.set_dtype(ns3opengym::UINT);
-          std::vector<uint32_t> data = box->GetData();
-          *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
+      } else if (dtype == Dtype::UINT) {
+        Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(container);
+        shape = box->GetShape();
+        boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+        std::vector<uint32_t> data = box->GetData();
+        *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
 
-        } else if (dtype == Dtype::FLOAT) {
-          Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(*container);
-          shape = box->GetShape();
-          boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
-          std::vector<float> data = box->GetData();
-          *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+      } else if (dtype == Dtype::FLOAT) {
+        Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(container);
+        shape = box->GetShape();
+        boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+        std::vector<float> data = box->GetData();
+        *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
 
-        } else {
-          Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(*container);
-          shape = box->GetShape();
-          boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
-          std::vector<float> data = box->GetData();
-          *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+      } else {
+        Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(container);
+        shape = box->GetShape();
+        boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+        std::vector<float> data = box->GetData();
+        *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
 
-        }
 
         dataContainerPbMsg.set_type(ns3opengym::Box);
         *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
@@ -523,11 +517,11 @@ OpenGymEnv::GetObservationSpace()
   return obsSpace;
 }
 
-Ptr<OpenGymObservation>
+Ptr<OpenGymDataContainer>
 OpenGymEnv::GetState()
 {
   NS_LOG_FUNCTION (this);
-  Ptr<OpenGymObservation>  obs;
+  Ptr<OpenGymDataContainer>  obs;
   if (!m_stateCb.IsNull())
   {
     obs = m_stateCb();

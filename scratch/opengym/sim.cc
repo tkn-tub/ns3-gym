@@ -63,10 +63,9 @@ bool MyGetGameOver(void)
   return isGameOver;
 }
 
-Ptr<OpenGymObservation> MyGetObservation(void)
+Ptr<OpenGymDataContainer> MyGetObservation(void)
 {
   uint32_t nodeNum = 5;
-  Ptr<OpenGymObservation> obs = CreateObject<OpenGymObservation> ();
   std::vector<uint32_t> shape = {nodeNum,};
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
 
@@ -80,9 +79,9 @@ Ptr<OpenGymObservation> MyGetObservation(void)
     obsString += std::to_string(value) +",";
   }
   obsString += "]";
-  obs->AddObsContainer(box);
+
   NS_LOG_UNCOND ("MyGetObservation: " << obsString);
-  return obs;
+  return box;
 }
 
 float MyGetReward(void)
