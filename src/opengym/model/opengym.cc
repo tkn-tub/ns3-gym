@@ -180,6 +180,8 @@ OpenGymEnv::Init()
   NS_LOG_FUNCTION (this);
   zmq_bind (m_zmq_socket, "tcp://*:5555");
 
+  NS_LOG_UNCOND("Waiting for Python process to connect");
+
   bool rxInitReq = false;
   bool rxGetActionSpaceReq = false;
   bool rxGetObsSpaceReq = false;
