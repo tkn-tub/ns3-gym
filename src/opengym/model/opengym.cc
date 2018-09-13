@@ -308,28 +308,44 @@ OpenGymEnv::WaitForNextStep()
 
       for (auto container = dataContainers.begin(); container != dataContainers.end(); ++container)
       {
-        // TODO: cast properly currently cast with one type
-        Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(*container);
+        // add serialzation of Discrete Container
 
         ns3opengym::BoxDataContainer boxContainerPbMsg;
+        std::vector<uint32_t> shape;
+        Dtype dtype = (*container)->GetDataType();
 
-        dataContainerPbMsg.set_type(ns3opengym::Box);
-        boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+        if (dtype == Dtype::INT) {
+          Ptr<OpenGymBoxContainer<int32_t> > box = DynamicCast<OpenGymBoxContainer<int32_t> >(*container);
+          shape = box->GetShape();
+          boxContainerPbMsg.set_dtype(ns3opengym::INT);
+          std::vector<int32_t> data = box->GetData();
+          *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
 
-        std::vector<uint32_t> shape = box->GetShape();
-        for (auto i = shape.begin(); i != shape.end(); ++i)
-        {
-          boxContainerPbMsg.add_shape(*i);
+        } else if (dtype == Dtype::UINT) {
+          Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(*container);
+          shape = box->GetShape();
+          boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+          std::vector<uint32_t> data = box->GetData();
+          *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
+
+        } else if (dtype == Dtype::FLOAT) {
+          Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(*container);
+          shape = box->GetShape();
+          boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+          std::vector<float> data = box->GetData();
+          *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+
+        } else {
+          Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(*container);
+          shape = box->GetShape();
+          boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+          std::vector<float> data = box->GetData();
+          *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+
         }
 
-        std::vector<uint32_t> data = box->GetData();
-        *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
-
-        //for (auto i = data.begin(); i != data.end(); ++i)
-        //{
-        //  boxContainerPbMsg.add_uintdata(*i);
-        //}
-
+        dataContainerPbMsg.set_type(ns3opengym::Box);
+        *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
         dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
       }
 
@@ -395,6 +411,7 @@ OpenGymEnv::WaitForNextStep()
           } else if (boxContainerPbMsg.dtype() == ns3opengym::FLOAT) {
             Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
             std::vector<float> myData;
+            std::cout << "DECOFDING FLOAT" << std::endl;
             //myData.reserve(boxContainerPbMsg.uintdata().size());
             myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
             box->SetData(myData);

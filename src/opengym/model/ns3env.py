@@ -27,6 +27,9 @@ class Ns3ZmqBridge(object):
         self.socket = context.socket(zmq.REQ)
         self.socket.connect ("tcp://localhost:%s" % port)
 
+        self._action_space = None
+        self._observation_space = None
+
     def send_init_request(self, stepInterval):
         # print ("Sending INIT request ")
         msg = pb.InitializeRequest()
@@ -96,6 +99,7 @@ class Ns3ZmqBridge(object):
     def get_action_space(self):
         spaceReplyPb = self.send_get_action_space_request()
         actionSpace = self._create_space(spaceReplyPb)
+        self._action_space = actionSpace
         return actionSpace
 
     def send_get_obs_space_request(self):
@@ -115,7 +119,8 @@ class Ns3ZmqBridge(object):
 
     def get_observation_space(self):
         spaceReplyPb = self.send_get_obs_space_request()
-        obsSpace = self._create_space(spaceReplyPb)        
+        obsSpace = self._create_space(spaceReplyPb)
+        self._observation_space = obsSpace
         return obsSpace
 
     def send_is_game_over_request(self):
@@ -199,11 +204,29 @@ class Ns3ZmqBridge(object):
         dataContainer.type = pb.Box
         
         boxContainerPb = pb.BoxDataContainer()
-        boxContainerPb.dtype = pb.UINT
-        #TODO: shape correctly using numpy
         shape = [len(actions)]
         boxContainerPb.shape.extend(shape)
-        boxContainerPb.uintData.extend(actions)
+
+        if (self._action_space.dtype in ['int', 'int8', 'int16', 'int32', 'int64']):
+            boxContainerPb.dtype = pb.INT
+            boxContainerPb.intData.extend(actions)
+
+        elif (self._action_space.dtype in ['uint', 'uint8', 'uint16', 'uint32', 'uint64']):
+            boxContainerPb.dtype = pb.UINT
+            boxContainerPb.uintData.extend(actions)
+
+        elif (self._action_space.dtype in ['float', 'float32', 'float64']):
+            boxContainerPb.dtype = pb.FLOAT
+            boxContainerPb.floatData.extend(actions)
+
+        elif (self._action_space.dtype in ['double']):
+            boxContainerPb.dtype = pb.DOUBLE
+            boxContainerPb.doubleData.extend(actions)
+
+        else:
+            boxContainerPb.dtype = pb.FLOAT
+            boxContainerPb.floatData.extend(actions)
+
         dataContainer.data.Pack(boxContainerPb)
 
         msg = pb.SetActionRequest()

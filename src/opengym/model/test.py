@@ -18,8 +18,8 @@ env.reset()
 
 ob_space = env.observation_space
 ac_space = env.action_space
-print("Observation space: ", ob_space)
-print("Action space: ", ac_space)
+print("Observation space: ", ob_space,  ob_space.dtype)
+print("Action space: ", ac_space, ac_space.dtype)
 
 stepIdx = 0
 
