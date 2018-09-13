@@ -93,7 +93,6 @@ private:
   bool m_rxGetState;
   bool m_rxGetReward;
   bool m_rxSetActions;
-
 };
 
 } // end of namespace ns3

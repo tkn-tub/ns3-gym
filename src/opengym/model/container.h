@@ -41,11 +41,14 @@ public:
   virtual ~OpenGymDataContainer ();
 
   static TypeId GetTypeId ();
+  virtual Dtype GetDataType();
 
 protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
+
+  Dtype m_dtype;
 };
 
 
@@ -56,11 +59,14 @@ public:
   virtual ~OpenGymDiscreteContainer ();
 
   static TypeId GetTypeId ();
+  virtual Dtype GetDataType();
 
 protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
+
+  Dtype m_dtype;
 };
 
 template <typename T = float>
@@ -73,6 +79,7 @@ public:
 
   static TypeId GetTypeId ();
 
+  virtual Dtype GetDataType();
   bool AddValue(T value);
   bool SetData(std::vector<T> data);
   std::vector<uint32_t> GetShape();
@@ -84,6 +91,7 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  void SetDtype();
 	std::vector<uint32_t> m_shape;
 	Dtype m_dtype;
 	std::vector<T> m_data;
@@ -105,22 +113,26 @@ OpenGymBoxContainer<T>::GetTypeId (void)
 template <typename T>
 OpenGymBoxContainer<T>::OpenGymBoxContainer()
 {
-  std::string name = TypeNameGet<int> ();
-  if (name == "int8_t" || name == "int16_t" || name == "int32_t" || name == "int64_t") 
-    m_dtype = Dtype::INT;
-  else if (name == "uint8_t" || name == "uint16_t" || name == "uint32_t" || name == "uint64_t") 
-    m_dtype = Dtype::UINT;
-  else if (name == "float" || name == "double") 
-    m_dtype = Dtype::FLOAT;
-  else
-    m_dtype = Dtype::FLOAT;
+ SetDtype();
 }
 
 template <typename T>
 OpenGymBoxContainer<T>::OpenGymBoxContainer(std::vector<uint32_t> shape):
 	m_shape(shape)
 {
-  std::string name = TypeNameGet<int> ();
+  SetDtype();
+}
+
+template <typename T>
+OpenGymBoxContainer<T>::~OpenGymBoxContainer ()
+{
+}
+
+template <typename T>
+void
+OpenGymBoxContainer<T>::SetDtype ()
+{
+  std::string name = TypeNameGet<T> ();
   if (name == "int8_t" || name == "int16_t" || name == "int32_t" || name == "int64_t") 
     m_dtype = Dtype::INT;
   else if (name == "uint8_t" || name == "uint16_t" || name == "uint32_t" || name == "uint64_t") 
@@ -129,11 +141,6 @@ OpenGymBoxContainer<T>::OpenGymBoxContainer(std::vector<uint32_t> shape):
     m_dtype = Dtype::FLOAT;
   else
     m_dtype = Dtype::FLOAT;
-}
- 
-template <typename T>
-OpenGymBoxContainer<T>::~OpenGymBoxContainer ()
-{
 }
 
 template <typename T>
@@ -146,6 +153,13 @@ template <typename T>
 void
 OpenGymBoxContainer<T>::DoInitialize (void)
 {
+}
+
+template <typename T>
+Dtype
+OpenGymBoxContainer<T>::GetDataType()
+{
+  return m_dtype;
 }
 
 template <typename T>

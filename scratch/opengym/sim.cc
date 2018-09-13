@@ -37,7 +37,7 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
   float low = 0.0;
   float high = 100.0;
   std::vector<uint32_t> shape = {nodeNum,};
-  Dtype dType = Dtype::INT;
+  Dtype dType = Dtype::UINT;
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dType);
   NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
   return space;
@@ -50,7 +50,7 @@ Ptr<OpenGymSpace> MyGetObservationSpace(void)
   float low = 0.0;
   float high = 10.0;
   std::vector<uint32_t> shape = {nodeNum,};
-  Dtype dType = Dtype::INT;
+  Dtype dType = Dtype::UINT;
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dType);
   NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
   return space;
