@@ -22,6 +22,7 @@
 #include <algorithm>
 #include "ns3/log.h"
 #include "observation.h"
+#include "container.h"
 
 
 namespace ns3 {
@@ -61,6 +62,22 @@ void
 OpenGymObservation::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+
+bool
+OpenGymObservation::AddObsContainer(Ptr<OpenGymDataContainer> container)
+{
+  NS_LOG_FUNCTION (this);
+  m_containers.push_back(container);
+  return true;
+}
+
+std::vector<Ptr<OpenGymDataContainer> >
+OpenGymObservation::GetObsContainers()
+{
+  NS_LOG_FUNCTION (this);
+  return m_containers;
 }
 
 }

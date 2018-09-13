@@ -79,8 +79,8 @@ class OpenGymBoxSpace : public OpenGymSpace
 {
 public:
   OpenGymBoxSpace ();
-  OpenGymBoxSpace (float low, float high, std::vector<int> shape, Dtype dtype=FLOAT);
-  OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<int> shape, Dtype dtype=FLOAT);
+  OpenGymBoxSpace (float low, float high, std::vector<uint32_t> shape, Dtype dtype=FLOAT);
+  OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<uint32_t> shape, Dtype dtype=FLOAT);
   virtual ~OpenGymBoxSpace ();
 
   static TypeId GetTypeId ();
@@ -89,7 +89,7 @@ public:
 
   float GetLow();
   float GetHigh();
-  std::vector<int> GetShape();
+  std::vector<uint32_t> GetShape();
   Dtype GetDtype();
 
 protected:
@@ -100,7 +100,7 @@ protected:
 private:
 	float m_low;
 	float m_high;
-	std::vector<int> m_shape;
+	std::vector<uint32_t> m_shape;
   Dtype m_dtype;
 	std::vector<float> m_lowVec;
 	std::vector<float> m_highVec;

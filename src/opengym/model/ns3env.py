@@ -1,6 +1,8 @@
 import zmq
 import sys
 
+import numpy as np
+
 import gym
 from gym import spaces
 from gym.utils import seeding
@@ -65,13 +67,13 @@ class Ns3ZmqBridge(object):
             mtype = boxSpacePb.dtype
 
             if mtype == pb.INT:
-                mtype = int
+                mtype = np.int
             elif mtype == pb.UINT:
-                mtype = uint
+                mtype = np.uint
             elif mtype == pb.DOUBLE:
-                mtype = float
+                mtype = np.float
             else:
-                mtype = float
+                mtype = np.float
 
             space = spaces.Box(low=low, high=high, shape=shape, dtype=mtype)
         return space
@@ -152,7 +154,26 @@ class Ns3ZmqBridge(object):
 
     def get_obs(self):
         obsMsg = self.send_get_state_request()
-        return obsMsg.observation
+        dataContainer = obsMsg.container
+
+        data = None
+        if (dataContainer.type == pb.Box):
+            boxContainerPb = pb.BoxDataContainer()
+            dataContainer.data.Unpack(boxContainerPb)
+            # print(boxContainerPb.shape, boxContainerPb.dtype, boxContainerPb.uintData)
+
+            if boxContainerPb.dtype == pb.INT:
+                data = boxContainerPb.intData
+            elif boxContainerPb.dtype == pb.UINT:
+                data = boxContainerPb.uintData
+            elif boxContainerPb.dtype == pb.DOUBLE:
+                data = boxContainerPb.doubleData
+            else:
+                data = boxContainerPb.floatData
+
+            # TODO: reshape using shape info
+
+        return data
 
     def send_get_reward_request(self):
         msg = pb.GetRewardRequest()
@@ -174,8 +195,20 @@ class Ns3ZmqBridge(object):
         return rewardMsg.reward
 
     def send_execute_action_request(self, actions):
+        dataContainer = pb.DataContainer()
+        dataContainer.type = pb.Box
+        
+        boxContainerPb = pb.BoxDataContainer()
+        boxContainerPb.dtype = pb.UINT
+        #TODO: shape correctly using numpy
+        shape = [len(actions)]
+        boxContainerPb.shape.extend(shape)
+        boxContainerPb.uintData.extend(actions)
+        dataContainer.data.Pack(boxContainerPb)
+
         msg = pb.SetActionRequest()
-        msg.action = str(actions)
+        msg.container.CopyFrom(dataContainer) 
+
         requestMsg = pb.RequestMsg()
         requestMsg.type = pb.Action
         requestMsg.msg.Pack(msg)

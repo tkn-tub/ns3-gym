@@ -27,6 +27,7 @@
 #include <map>
 
 namespace ns3 {
+class OpenGymDataContainer;
 
 class OpenGymObservation : public Object
 {
@@ -36,10 +37,17 @@ public:
 
   static TypeId GetTypeId ();
   std::string m_obsString;
+
+  bool AddObsContainer(Ptr<OpenGymDataContainer> container);
+  std::vector<Ptr<OpenGymDataContainer> > GetObsContainers();
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
+
+private:
+  std::vector<Ptr<OpenGymDataContainer> > m_containers;
 };
 
 } // end of namespace ns3

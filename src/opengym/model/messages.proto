@@ -34,7 +34,7 @@ message BoxSpace {
 	float low = 1;
 	float high = 2;
 	Dtype dtype = 3;
-	repeated int32 shape = 4;
+	repeated uint32 shape = 4;
 }
 
 message RequestMsg {
@@ -77,7 +77,7 @@ message GetObservationRequest {
 }
 
 message GetObservationReply {
-	string observation = 1;
+	DataContainer container = 1;
 }
 
 message GetRewardRequest {
@@ -88,9 +88,29 @@ message GetRewardReply {
 }
 
 message SetActionRequest {
-	string action = 1;
+	DataContainer container = 1;
 }
 
 message SetActionReply {
 	bool done = 1;
 }
+
+message DataContainer {
+	SpaceType type = 1;
+	google.protobuf.Any data = 2;
+}
+
+message DiscreteDataContainer {
+	int32 data = 1;
+}
+
+message BoxDataContainer {
+	Dtype dtype = 1;
+	repeated uint32 shape = 2;
+
+	repeated int32 intData = 3;
+	repeated uint32 uintData = 4;
+	repeated float floatData = 5;
+	repeated double doubleData = 6;
+}
+

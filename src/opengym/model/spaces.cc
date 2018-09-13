@@ -71,7 +71,7 @@ TypeId
 OpenGymDiscreteSpace::GetTypeId (void)
 {
   static TypeId tid = TypeId ("OpenGymDiscreteSpace")
-    .SetParent<Object> ()
+    .SetParent<OpenGymSpace> ()
     .SetGroupName ("OpenGym")
     .AddConstructor<OpenGymDiscreteSpace> ()
     ;
@@ -133,7 +133,7 @@ TypeId
 OpenGymBoxSpace::GetTypeId (void)
 {
   static TypeId tid = TypeId ("OpenGymBoxSpace")
-    .SetParent<Object> ()
+    .SetParent<OpenGymSpace> ()
     .SetGroupName ("OpenGym")
     .AddConstructor<OpenGymBoxSpace> ()
     ;
@@ -145,13 +145,13 @@ OpenGymBoxSpace::OpenGymBoxSpace ()
   NS_LOG_FUNCTION (this);
 }
 
-OpenGymBoxSpace::OpenGymBoxSpace (float low, float high, std::vector<int> shape, Dtype dtype):
+OpenGymBoxSpace::OpenGymBoxSpace (float low, float high, std::vector<uint32_t> shape, Dtype dtype):
   m_low(low), m_high(high), m_shape(shape), m_dtype(dtype)
 {
   NS_LOG_FUNCTION (this);
 }
 
-OpenGymBoxSpace::OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<int> shape, Dtype dtype):
+OpenGymBoxSpace::OpenGymBoxSpace (std::vector<float> low, std::vector<float> high, std::vector<uint32_t> shape, Dtype dtype):
   m_low(0), m_high(0), m_shape(shape), m_dtype(dtype), m_lowVec(low), m_highVec(high)
 
 {
@@ -189,7 +189,7 @@ OpenGymBoxSpace::GetHigh()
   return m_high;
 }
 
-std::vector<int>
+std::vector<uint32_t>
 OpenGymBoxSpace::GetShape()
 {
   NS_LOG_FUNCTION (this);
