@@ -251,9 +251,9 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime):
+    def __init__(self, stepTime, port=5555):
         self.stepTime = stepTime
-        self.port = "5555"
+        self.port = str(port)
 
         # TODO: start ns3 script from here
         self.ns3ZmqBridge = Ns3ZmqBridge(self.port)

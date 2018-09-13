@@ -89,6 +89,9 @@ float MyGetReward(void)
   static float reward = 0.0;
   reward += 1;
   //NS_LOG_UNCOND ("MyGetReward: " << reward);
+  //if (reward == 10) {
+  //    Simulator::Stop();
+  //}
   return reward;
 }
 
