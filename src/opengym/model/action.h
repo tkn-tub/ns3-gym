@@ -40,7 +40,7 @@ public:
   std::string m_actionString;
 
   bool AddActionContainer(Ptr<OpenGymDataContainer> container);
-  Ptr<OpenGymDataContainer> GetActionContainer(uint32_t idx);
+  Ptr<OpenGymDataContainer> GetActionContainer(uint32_t idx=0);
   std::vector<Ptr<OpenGymDataContainer> > GetActionContainers();
 
 protected:

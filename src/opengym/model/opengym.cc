@@ -114,7 +114,7 @@ OpenGymEnv::SetGetRewardCb(Callback<float> cb)
 }
 
 void
-OpenGymEnv::SetExecuteActionsCb(Callback<bool, Ptr<OpenGymAction> > cb)
+OpenGymEnv::SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb)
 {
   NS_LOG_FUNCTION (this);
   m_actionCb = cb;
@@ -435,9 +435,7 @@ OpenGymEnv::WaitForNextStep()
           }
         }
 
-        Ptr<OpenGymAction> action = CreateObject<OpenGymAction> ();       
-        action->AddActionContainer(dataContainer);
-        bool done = ExecuteActions(action);
+        bool done = ExecuteActions(dataContainer);
 
         ns3opengym::SetActionReply actionReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
@@ -551,7 +549,7 @@ OpenGymEnv::GetReward()
 }
 
 bool
-OpenGymEnv::ExecuteActions(Ptr<OpenGymAction> action)
+OpenGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   NS_LOG_FUNCTION (this);
   bool reply = false;
