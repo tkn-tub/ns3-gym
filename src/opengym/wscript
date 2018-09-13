@@ -23,7 +23,6 @@ def build(bld):
         'model/messages.pb.cc',
         'model/container.cc',
         'model/spaces.cc',
-        'model/action.cc',
         'model/observation.cc',
         'helper/opengym-helper.cc',
         ]
@@ -40,7 +39,6 @@ def build(bld):
         'model/messages.pb.h',
         'model/container.h',
         'model/spaces.h',
-        'model/action.h',
         'model/observation.h',
         'helper/opengym-helper.h',
         ]
