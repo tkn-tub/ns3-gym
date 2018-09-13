@@ -57,14 +57,14 @@ public:
   Ptr<OpenGymSpace> GetActionSpace();
   Ptr<OpenGymSpace> GetObservationSpace();
   void FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply &spaceReplyPbMsg);
-  Ptr<OpenGymDataContainer> GetState();
+  Ptr<OpenGymDataContainer> GetObservation();
   float GetReward();
   bool ExecuteActions(Ptr<OpenGymDataContainer> action);
 
   void SetGetActionSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
   void SetGetObservationSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
   void SetGetGameOverCb(Callback< bool > cb);
-  void SetGetStateCb(Callback< Ptr<OpenGymDataContainer> > cb);
+  void SetGetObservationCb(Callback< Ptr<OpenGymDataContainer> > cb);
   void SetGetRewardCb(Callback<float> cb);
   void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb);
 
@@ -89,7 +89,7 @@ private:
   Callback<bool, Ptr<OpenGymDataContainer> > m_actionCb;
 
   bool m_rxGetGameOver;
-  bool m_rxGetState;
+  bool m_rxGetObservation;
   bool m_rxGetReward;
   bool m_rxSetActions;
 };
