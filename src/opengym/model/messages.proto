@@ -12,6 +12,7 @@ enum MsgType {
 	Observation = 5;
 	Reward = 6;
 	Action = 7;
+	StopEnv = 8;
 }
 
 enum SpaceType {
@@ -71,6 +72,12 @@ message GetIsGameOverRequest {
 
 message GetIsGameOverReply {
 	bool isGameOver = 1;
+
+	enum Reason {
+		SimulationEnd = 0;
+		GameOver = 1;
+	}
+	Reason reason = 2;
 }
 
 message GetObservationRequest {
@@ -92,6 +99,13 @@ message SetActionRequest {
 }
 
 message SetActionReply {
+	bool done = 1;
+}
+
+message StopEnvRequest {
+}
+
+message StopEnvReply {
 	bool done = 1;
 }
 
