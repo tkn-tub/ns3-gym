@@ -486,7 +486,7 @@ private:
 
   /**
    * RRC CCM SAP USER Method
-   * \param res
+   * \param noOfComponentCarriers the number of component carriers
    */
   void DoSetNumberOfComponentCarriers (uint16_t noOfComponentCarriers);
 

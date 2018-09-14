@@ -159,6 +159,8 @@ public:
    * This function splits the power over the active RBs instead of
    * the entire bandwidth
    * \param earfcn the carrier frequency (EARFCN) of the transmission
+   * \param bandwidth the Transmission Bandwidth Configuration in
+   * number of resource blocks
    * \param powerTx the total power in dBm over the whole bandwidth
    * \param activeRbs the list of Active Resource Blocks (PRBs)
    *
