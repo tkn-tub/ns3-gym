@@ -10,15 +10,15 @@ Installation
 
 2. Install ZMQ and Protocol Buffers libs:
 
-	apt-get install libzmq5
-	apt-get install libprotobuf-dev
+		apt-get install libzmq5
+		apt-get install libprotobuf-dev
 
 
 3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3
 
-	pip install ./src/opengym/model/PyOpenGymNs3
+		pip install ./src/opengym/model/PyOpenGymNs3
 
 4. Configure and build ns-3 project:
 
-	./waf --configure
-	./waf
+		./waf --configure
+		./waf
