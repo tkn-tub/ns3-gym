@@ -40,7 +40,7 @@ namespace protobuf_messages_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[20];
+  static const ::google::protobuf::internal::ParseTable schema[22];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -108,6 +108,12 @@ extern SetActionReplyDefaultTypeInternal _SetActionReply_default_instance_;
 class SetActionRequest;
 class SetActionRequestDefaultTypeInternal;
 extern SetActionRequestDefaultTypeInternal _SetActionRequest_default_instance_;
+class StopEnvReply;
+class StopEnvReplyDefaultTypeInternal;
+extern StopEnvReplyDefaultTypeInternal _StopEnvReply_default_instance_;
+class StopEnvRequest;
+class StopEnvRequestDefaultTypeInternal;
+extern StopEnvRequestDefaultTypeInternal _StopEnvRequest_default_instance_;
 }  // namespace ns3opengym
 namespace google {
 namespace protobuf {
@@ -131,10 +137,33 @@ template<> ::ns3opengym::ReplyMsg* Arena::CreateMaybeMessage<::ns3opengym::Reply
 template<> ::ns3opengym::RequestMsg* Arena::CreateMaybeMessage<::ns3opengym::RequestMsg>(Arena*);
 template<> ::ns3opengym::SetActionReply* Arena::CreateMaybeMessage<::ns3opengym::SetActionReply>(Arena*);
 template<> ::ns3opengym::SetActionRequest* Arena::CreateMaybeMessage<::ns3opengym::SetActionRequest>(Arena*);
+template<> ::ns3opengym::StopEnvReply* Arena::CreateMaybeMessage<::ns3opengym::StopEnvReply>(Arena*);
+template<> ::ns3opengym::StopEnvRequest* Arena::CreateMaybeMessage<::ns3opengym::StopEnvRequest>(Arena*);
 }  // namespace protobuf
 }  // namespace google
 namespace ns3opengym {
 
+enum GetIsGameOverReply_Reason {
+  GetIsGameOverReply_Reason_SimulationEnd = 0,
+  GetIsGameOverReply_Reason_GameOver = 1,
+  GetIsGameOverReply_Reason_GetIsGameOverReply_Reason_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  GetIsGameOverReply_Reason_GetIsGameOverReply_Reason_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool GetIsGameOverReply_Reason_IsValid(int value);
+const GetIsGameOverReply_Reason GetIsGameOverReply_Reason_Reason_MIN = GetIsGameOverReply_Reason_SimulationEnd;
+const GetIsGameOverReply_Reason GetIsGameOverReply_Reason_Reason_MAX = GetIsGameOverReply_Reason_GameOver;
+const int GetIsGameOverReply_Reason_Reason_ARRAYSIZE = GetIsGameOverReply_Reason_Reason_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* GetIsGameOverReply_Reason_descriptor();
+inline const ::std::string& GetIsGameOverReply_Reason_Name(GetIsGameOverReply_Reason value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    GetIsGameOverReply_Reason_descriptor(), value);
+}
+inline bool GetIsGameOverReply_Reason_Parse(
+    const ::std::string& name, GetIsGameOverReply_Reason* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<GetIsGameOverReply_Reason>(
+    GetIsGameOverReply_Reason_descriptor(), name, value);
+}
 enum MsgType {
   Unknown = 0,
   Init = 1,
@@ -144,12 +173,13 @@ enum MsgType {
   Observation = 5,
   Reward = 6,
   Action = 7,
+  StopEnv = 8,
   MsgType_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
   MsgType_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
 };
 bool MsgType_IsValid(int value);
 const MsgType MsgType_MIN = Unknown;
-const MsgType MsgType_MAX = Action;
+const MsgType MsgType_MAX = StopEnv;
 const int MsgType_ARRAYSIZE = MsgType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* MsgType_descriptor();
@@ -1369,6 +1399,32 @@ class GetIsGameOverReply : public ::google::protobuf::Message /* @@protoc_insert
 
   // nested types ----------------------------------------------------
 
+  typedef GetIsGameOverReply_Reason Reason;
+  static const Reason SimulationEnd =
+    GetIsGameOverReply_Reason_SimulationEnd;
+  static const Reason GameOver =
+    GetIsGameOverReply_Reason_GameOver;
+  static inline bool Reason_IsValid(int value) {
+    return GetIsGameOverReply_Reason_IsValid(value);
+  }
+  static const Reason Reason_MIN =
+    GetIsGameOverReply_Reason_Reason_MIN;
+  static const Reason Reason_MAX =
+    GetIsGameOverReply_Reason_Reason_MAX;
+  static const int Reason_ARRAYSIZE =
+    GetIsGameOverReply_Reason_Reason_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  Reason_descriptor() {
+    return GetIsGameOverReply_Reason_descriptor();
+  }
+  static inline const ::std::string& Reason_Name(Reason value) {
+    return GetIsGameOverReply_Reason_Name(value);
+  }
+  static inline bool Reason_Parse(const ::std::string& name,
+      Reason* value) {
+    return GetIsGameOverReply_Reason_Parse(name, value);
+  }
+
   // accessors -------------------------------------------------------
 
   // bool isGameOver = 1;
@@ -1377,11 +1433,18 @@ class GetIsGameOverReply : public ::google::protobuf::Message /* @@protoc_insert
   bool isgameover() const;
   void set_isgameover(bool value);
 
+  // .ns3opengym.GetIsGameOverReply.Reason reason = 2;
+  void clear_reason();
+  static const int kReasonFieldNumber = 2;
+  ::ns3opengym::GetIsGameOverReply_Reason reason() const;
+  void set_reason(::ns3opengym::GetIsGameOverReply_Reason value);
+
   // @@protoc_insertion_point(class_scope:ns3opengym.GetIsGameOverReply)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   bool isgameover_;
+  int reason_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2eproto::TableStruct;
 };
@@ -2003,6 +2066,205 @@ class SetActionReply : public ::google::protobuf::Message /* @@protoc_insertion_
 };
 // -------------------------------------------------------------------
 
+class StopEnvRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ns3opengym.StopEnvRequest) */ {
+ public:
+  StopEnvRequest();
+  virtual ~StopEnvRequest();
+
+  StopEnvRequest(const StopEnvRequest& from);
+
+  inline StopEnvRequest& operator=(const StopEnvRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  StopEnvRequest(StopEnvRequest&& from) noexcept
+    : StopEnvRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline StopEnvRequest& operator=(StopEnvRequest&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const StopEnvRequest& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const StopEnvRequest* internal_default_instance() {
+    return reinterpret_cast<const StopEnvRequest*>(
+               &_StopEnvRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    17;
+
+  void Swap(StopEnvRequest* other);
+  friend void swap(StopEnvRequest& a, StopEnvRequest& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline StopEnvRequest* New() const final {
+    return CreateMaybeMessage<StopEnvRequest>(NULL);
+  }
+
+  StopEnvRequest* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<StopEnvRequest>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const StopEnvRequest& from);
+  void MergeFrom(const StopEnvRequest& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(StopEnvRequest* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:ns3opengym.StopEnvRequest)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_messages_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class StopEnvReply : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ns3opengym.StopEnvReply) */ {
+ public:
+  StopEnvReply();
+  virtual ~StopEnvReply();
+
+  StopEnvReply(const StopEnvReply& from);
+
+  inline StopEnvReply& operator=(const StopEnvReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  StopEnvReply(StopEnvReply&& from) noexcept
+    : StopEnvReply() {
+    *this = ::std::move(from);
+  }
+
+  inline StopEnvReply& operator=(StopEnvReply&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const StopEnvReply& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const StopEnvReply* internal_default_instance() {
+    return reinterpret_cast<const StopEnvReply*>(
+               &_StopEnvReply_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    18;
+
+  void Swap(StopEnvReply* other);
+  friend void swap(StopEnvReply& a, StopEnvReply& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline StopEnvReply* New() const final {
+    return CreateMaybeMessage<StopEnvReply>(NULL);
+  }
+
+  StopEnvReply* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<StopEnvReply>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const StopEnvReply& from);
+  void MergeFrom(const StopEnvReply& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(StopEnvReply* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // bool done = 1;
+  void clear_done();
+  static const int kDoneFieldNumber = 1;
+  bool done() const;
+  void set_done(bool value);
+
+  // @@protoc_insertion_point(class_scope:ns3opengym.StopEnvReply)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  bool done_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_messages_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class DataContainer : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ns3opengym.DataContainer) */ {
  public:
   DataContainer();
@@ -2038,7 +2300,7 @@ class DataContainer : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_DataContainer_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    17;
+    19;
 
   void Swap(DataContainer* other);
   friend void swap(DataContainer& a, DataContainer& b) {
@@ -2154,7 +2416,7 @@ class DiscreteDataContainer : public ::google::protobuf::Message /* @@protoc_ins
                &_DiscreteDataContainer_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    18;
+    20;
 
   void Swap(DiscreteDataContainer* other);
   friend void swap(DiscreteDataContainer& a, DiscreteDataContainer& b) {
@@ -2257,7 +2519,7 @@ class BoxDataContainer : public ::google::protobuf::Message /* @@protoc_insertio
                &_BoxDataContainer_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    19;
+    21;
 
   void Swap(BoxDataContainer* other);
   friend void swap(BoxDataContainer& a, BoxDataContainer& b) {
@@ -2758,6 +3020,20 @@ inline void GetIsGameOverReply::set_isgameover(bool value) {
   // @@protoc_insertion_point(field_set:ns3opengym.GetIsGameOverReply.isGameOver)
 }
 
+// .ns3opengym.GetIsGameOverReply.Reason reason = 2;
+inline void GetIsGameOverReply::clear_reason() {
+  reason_ = 0;
+}
+inline ::ns3opengym::GetIsGameOverReply_Reason GetIsGameOverReply::reason() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.GetIsGameOverReply.reason)
+  return static_cast< ::ns3opengym::GetIsGameOverReply_Reason >(reason_);
+}
+inline void GetIsGameOverReply::set_reason(::ns3opengym::GetIsGameOverReply_Reason value) {
+  
+  reason_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.GetIsGameOverReply.reason)
+}
+
 // -------------------------------------------------------------------
 
 // GetObservationRequest
@@ -2916,6 +3192,28 @@ inline void SetActionReply::set_done(bool value) {
   
   done_ = value;
   // @@protoc_insertion_point(field_set:ns3opengym.SetActionReply.done)
+}
+
+// -------------------------------------------------------------------
+
+// StopEnvRequest
+
+// -------------------------------------------------------------------
+
+// StopEnvReply
+
+// bool done = 1;
+inline void StopEnvReply::clear_done() {
+  done_ = false;
+}
+inline bool StopEnvReply::done() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.StopEnvReply.done)
+  return done_;
+}
+inline void StopEnvReply::set_done(bool value) {
+  
+  done_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.StopEnvReply.done)
 }
 
 // -------------------------------------------------------------------
@@ -3211,6 +3509,10 @@ BoxDataContainer::mutable_doubledata() {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
@@ -3219,6 +3521,11 @@ BoxDataContainer::mutable_doubledata() {
 namespace google {
 namespace protobuf {
 
+template <> struct is_proto_enum< ::ns3opengym::GetIsGameOverReply_Reason> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::ns3opengym::GetIsGameOverReply_Reason>() {
+  return ::ns3opengym::GetIsGameOverReply_Reason_descriptor();
+}
 template <> struct is_proto_enum< ::ns3opengym::MsgType> : ::std::true_type {};
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::ns3opengym::MsgType>() {
