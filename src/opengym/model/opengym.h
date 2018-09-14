@@ -39,7 +39,7 @@ class OpenGymDataContainer;
 class OpenGymEnv : public Object
 {
 public:
-  OpenGymEnv ();
+  OpenGymEnv (uint32_t port=5555);
   virtual ~OpenGymEnv ();
 
   static TypeId GetTypeId ();
@@ -74,6 +74,7 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  uint32_t m_port;
   zmq::context_t m_zmq_context;
   zmq::socket_t m_zmq_socket;
   bool m_gameOver;
