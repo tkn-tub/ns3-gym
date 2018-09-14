@@ -17,3 +17,8 @@ Installation
 3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3
 
 	pip install ./src/opengym/model/PyOpenGymNs3
+
+4. Configure and build ns-3 project:
+
+	./waf --configure
+	./waf
