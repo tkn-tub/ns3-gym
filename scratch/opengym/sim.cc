@@ -115,18 +115,26 @@ int
 main (int argc, char *argv[])
 {
   // Parameters of the scenario
-  uint32_t trial = 222;
-  double simulationTime = 10.1; //seconds
+  uint32_t simSeed = 1;
+  double simulationTime = 10; //seconds
+  uint32_t openGymPort = 5555;
 
   CommandLine cmd;
-  cmd.AddValue ("simulationTime", "Simulation time in seconds", simulationTime);
+  cmd.AddValue ("simTime", "Simulation time in seconds. Default: 10s", simulationTime);
+  cmd.AddValue ("openGymPort", "Port number for OpenGym env. Default: 5555", openGymPort);
+  cmd.AddValue ("simSeed", "Seed for random generator. Default: 1", simSeed);
   cmd.Parse (argc, argv);
 
+  NS_LOG_UNCOND("Ns3Env parameters:");
+  NS_LOG_UNCOND("--simulationTime: " << simulationTime);
+  NS_LOG_UNCOND("--openGymPort: " << openGymPort);
+  NS_LOG_UNCOND("--seed: " << simSeed);
+
   RngSeedManager::SetSeed (1);
-  RngSeedManager::SetRun (trial);
+  RngSeedManager::SetRun (simSeed);
 
   // OpenGym Env
-  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> ();
+  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort);
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
   openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );

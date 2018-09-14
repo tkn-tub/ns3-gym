@@ -22,8 +22,14 @@ parser.add_argument('--start',
 args = parser.parse_args()
 startSim = bool(args.start)
 
+port = 5552
+simTime = 15 # seconds
 stepTime = 0.5  # seconds
-env = ns3env.Ns3Env(stepTime=stepTime, startSim=startSim)
+seed = 234
+
+env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simTime=simTime, simSeed=seed)
+#env = ns3env.Ns3Env(stepTime=stepTime, startSim=startSim)
+
 env.reset()
 
 ob_space = env.observation_space

@@ -47,8 +47,8 @@ OpenGymEnv::GetTypeId (void)
   return tid;
 }
 
-OpenGymEnv::OpenGymEnv() :
-  m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP), m_gameOver(false)
+OpenGymEnv::OpenGymEnv(uint32_t port) :
+  m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP), m_gameOver(false)
 {
   NS_LOG_FUNCTION (this);
   m_stepCount = 0;
@@ -178,7 +178,8 @@ void
 OpenGymEnv::Init()
 {
   NS_LOG_FUNCTION (this);
-  zmq_bind (m_zmq_socket, "tcp://*:5555");
+  std::string bindAddr = "tcp://*:" + std::to_string(m_port);
+  zmq_bind (m_zmq_socket, bindAddr.c_str());
 
   NS_LOG_UNCOND("Waiting for Python process to connect");
 

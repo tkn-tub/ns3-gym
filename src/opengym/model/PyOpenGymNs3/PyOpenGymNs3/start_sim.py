@@ -21,12 +21,23 @@ def find_waf_path(cwd):
 	return wafPath
 
 
-def start_sim_script():
+def start_sim_script(port=5555, simTime=0, simSeed=0):
 	cwd = os.getcwd()
 	simScriptName = os.path.basename(cwd)
 	wafPath = find_waf_path(cwd)
 
-	wafString = wafPath + ' --run ' + simScriptName
+	wafString = wafPath + ' --run "' + simScriptName
+
+	if port:
+		wafString += ' --openGymPort=' + str(port)
+
+	if simTime:
+		wafString += ' --simTime=' + str(simTime)
+
+	if simSeed:
+		wafString += ' --simSeed=' + str(simSeed)
+
+	wafString += '"'
 
 	ns3Proc = subprocess.Popen(wafString, shell=True)
 

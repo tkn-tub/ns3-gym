@@ -23,19 +23,23 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 class Ns3ZmqBridge(object):
     """docstring for Ns3ZmqBridge"""
-    def __init__(self, port="5555", startSim=True):
+    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=0):
         super(Ns3ZmqBridge, self).__init__()
         self.port = port
+        self.startSim = startSim
+        self.simTime = simTime
+        self.simSeed = simSeed
 
         if startSim:
-            self.ns3Process = start_sim_script()
-            time.sleep(1)
+            self.ns3Process = start_sim_script(port, simTime, simSeed)
         else:
             print("Waiting for simulation script to connect")
 
+        time.sleep(1)
+
         context = zmq.Context()
         self.socket = context.socket(zmq.REQ)
-        self.socket.connect ("tcp://localhost:%s" % port)
+        self.socket.connect ("tcp://localhost:%s" % str(port))
 
         self._action_space = None
         self._observation_space = None
@@ -261,12 +265,15 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime, port=5555, startSim=True):
+    def __init__(self, stepTime, port=5555, startSim=True, simTime=0, simSeed=0):
         self.stepTime = stepTime
-        self.port = str(port)
+        self.port = port
+        self.startSim = startSim
+        self.simTime = simTime
+        self.simSeed = simSeed
 
         # TODO: start ns3 script from here
-        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, startSim)
+        self.ns3ZmqBridge = Ns3ZmqBridge(port, startSim, simTime, simSeed)
         self.ns3ZmqBridge.initialize_env(stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
