@@ -39,7 +39,7 @@ class OpenGymDataContainer;
 class OpenGymEnv : public Object
 {
 public:
-  OpenGymEnv (uint32_t port=5555);
+  OpenGymEnv (uint32_t port=5555, Time stepTime=Seconds(0.1));
   virtual ~OpenGymEnv ();
 
   static TypeId GetTypeId ();

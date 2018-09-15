@@ -47,11 +47,12 @@ OpenGymEnv::GetTypeId (void)
   return tid;
 }
 
-OpenGymEnv::OpenGymEnv(uint32_t port) :
+OpenGymEnv::OpenGymEnv(uint32_t port, Time stepTime):
   m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP), m_gameOver(false)
 {
   NS_LOG_FUNCTION (this);
   m_stepCount = 0;
+  m_interval = stepTime;
   m_rxGetGameOver = false;
   m_rxGetObservation = false;
   m_rxGetReward = false;
@@ -200,8 +201,11 @@ OpenGymEnv::Init()
         NS_LOG_UNCOND("Decoded Init request: step interval: " << initRequestPbMsg.timestep());
         rxInitReq = true;
 
-        m_interval = Seconds(initRequestPbMsg.timestep());
-        Simulator::Schedule (m_interval, &OpenGymEnv::WaitForNextStep, this);
+        double timeStep = initRequestPbMsg.timestep();
+        if (timeStep > 0) {
+          m_interval = Seconds(timeStep);
+        }
+        Simulator::Schedule (Seconds(0.0), &OpenGymEnv::WaitForNextStep, this);
 
         ns3opengym::InitializeReply initReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
