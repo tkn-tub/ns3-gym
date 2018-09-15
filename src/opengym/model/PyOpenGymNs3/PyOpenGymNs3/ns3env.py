@@ -137,6 +137,21 @@ class Ns3ZmqBridge(object):
         self._observation_space = obsSpace
         return obsSpace
 
+    def send_stop_env_request(self):
+        msg = pb.StopEnvRequest()
+        requestMsg = pb.RequestMsg()
+        requestMsg.type = pb.StopEnv
+        requestMsg.msg.Pack(msg)
+        requestMsg = requestMsg.SerializeToString()
+        self.socket.send(requestMsg)
+
+        reply = self.socket.recv()
+        replyPbMsg = pb.ReplyMsg()
+        innerReplyPbMsg = pb.StopEnvReply()
+        replyPbMsg.ParseFromString(reply)
+        replyPbMsg.msg.Unpack(innerReplyPbMsg)
+        return innerReplyPbMsg.done
+
     def send_is_game_over_request(self):
         msg = pb.GetIsGameOverRequest()
         requestMsg = pb.RequestMsg()
@@ -154,6 +169,9 @@ class Ns3ZmqBridge(object):
 
     def is_game_over(self):
         msg = self.send_is_game_over_request()
+        if (msg.reason == pb.GetIsGameOverReply.GameOver):
+            done = self.send_stop_env_request()
+
         return msg.isGameOver
 
     def send_get_state_request(self):
@@ -288,9 +306,9 @@ class Ns3Env(gym.Env):
         return [seed]
 
     def _get_obs(self):
-        done = self.ns3ZmqBridge.is_game_over()
         obs = self.ns3ZmqBridge.get_obs()
         reward = self.ns3ZmqBridge.get_reward()
+        done = self.ns3ZmqBridge.is_game_over()
         return (obs, reward, done, {})
 
     def step(self, action):

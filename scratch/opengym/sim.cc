@@ -59,7 +59,13 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
 bool MyGetGameOver(void)
 {
   bool isGameOver = false;
-  //NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
+  bool test = false;
+  static float stepCounter = 0.0;
+  stepCounter += 1;
+  if (stepCounter == 10 && test) {
+      isGameOver = true;
+  }
+  NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
   return isGameOver;
 }
 

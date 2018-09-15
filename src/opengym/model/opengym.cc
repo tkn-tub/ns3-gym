@@ -48,7 +48,8 @@ OpenGymEnv::GetTypeId (void)
 }
 
 OpenGymEnv::OpenGymEnv(uint32_t port, Time stepTime):
-  m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP), m_gameOver(false)
+  m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP),
+  m_gameOver(false), m_simEnd(false), m_stopEnvRequested(false)
 {
   NS_LOG_FUNCTION (this);
   m_stepCount = 0;
@@ -267,6 +268,11 @@ void
 OpenGymEnv::WaitForNextStep()
 {
   NS_LOG_FUNCTION (this);
+
+  if (m_stopEnvRequested) {
+    return;
+  }
+
   NS_LOG_DEBUG("Wait for messages");
   Simulator::Schedule (m_interval, &OpenGymEnv::WaitForNextStep, this);
 
@@ -287,6 +293,12 @@ OpenGymEnv::WaitForNextStep()
       if (IsGameOver())
       {
         gameOverReplyPbMsg.set_isgameover(true);
+        if (m_simEnd) {
+          gameOverReplyPbMsg.set_reason(ns3opengym::GetIsGameOverReply::SimulationEnd);
+        } else {
+          gameOverReplyPbMsg.set_reason(ns3opengym::GetIsGameOverReply::GameOver);
+        }
+
       } 
       else
       {
@@ -448,6 +460,19 @@ OpenGymEnv::WaitForNextStep()
         SendMsg(replyPbMsg);
       }
     }
+    else if (requestPbMsg.type() == ns3opengym::StopEnv)
+    {
+      Simulator::Stop();
+      m_stopEnvRequested = true;
+
+      ns3opengym::StopEnvReply StopEnvReplyPbMsg;
+      ns3opengym::ReplyMsg replyPbMsg;
+      StopEnvReplyPbMsg.set_done(true);
+      replyPbMsg.set_type(ns3opengym::StopEnv);
+      replyPbMsg.mutable_msg()->PackFrom(StopEnvReplyPbMsg);
+      SendMsg(replyPbMsg);
+      return;
+    }
     else
     {
       NS_LOG_DEBUG("Received unknown request type");
@@ -486,6 +511,7 @@ OpenGymEnv::SetGameOver()
 {
   NS_LOG_FUNCTION (this);
   m_gameOver = true;
+  m_simEnd = true;
 }
 
 bool
