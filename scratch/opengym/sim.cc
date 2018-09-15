@@ -26,6 +26,9 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("OpenGym");
 
+/*
+Define observation space
+*/
 Ptr<OpenGymSpace> MyGetObservationSpace(void)
 {
   uint32_t nodeNum = 5;
@@ -39,6 +42,9 @@ Ptr<OpenGymSpace> MyGetObservationSpace(void)
   return space;
 }
 
+/*
+Define action space
+*/
 Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
   // OpenGymDiscreteSpace also works
@@ -56,8 +62,12 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
   return space;
 }
 
+/*
+Define game over condition
+*/
 bool MyGetGameOver(void)
 {
+
   bool isGameOver = false;
   bool test = false;
   static float stepCounter = 0.0;
@@ -69,6 +79,9 @@ bool MyGetGameOver(void)
   return isGameOver;
 }
 
+/*
+Collect observations
+*/
 Ptr<OpenGymDataContainer> MyGetObservation(void)
 {
   uint32_t nodeNum = 5;
@@ -90,17 +103,19 @@ Ptr<OpenGymDataContainer> MyGetObservation(void)
   return box;
 }
 
+/*
+Define reward function
+*/
 float MyGetReward(void)
 {
   static float reward = 0.0;
   reward += 1;
-  //NS_LOG_UNCOND ("MyGetReward: " << reward);
-  //if (reward == 10) {
-  //    Simulator::Stop();
-  //}
   return reward;
 }
 
+/*
+Execute received actions
+*/
 bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
