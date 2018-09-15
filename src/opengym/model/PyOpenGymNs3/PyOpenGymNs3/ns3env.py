@@ -1,5 +1,6 @@
-import zmq
+import os
 import sys
+import zmq
 import time
 
 import numpy as np
@@ -23,14 +24,21 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 class Ns3ZmqBridge(object):
     """docstring for Ns3ZmqBridge"""
-    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}):
+    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=-1, simArgs={}):
         super(Ns3ZmqBridge, self).__init__()
         self.port = port
         self.startSim = startSim
         self.simTime = simTime
         self.simSeed = simSeed
+        self.simArgs = simArgs
+        self.envStopped = False
 
-        if startSim:
+        if (startSim == True and simSeed == -1):
+            maxSeed = np.iinfo(np.uint32).max
+            simSeed = np.random.randint(0, maxSeed)
+            self.simSeed = simSeed
+
+        if self.startSim:
             self.ns3Process = start_sim_script(port, simTime, simSeed, simArgs)
         else:
             print("Waiting for simulation script to connect")
@@ -43,6 +51,15 @@ class Ns3ZmqBridge(object):
 
         self._action_space = None
         self._observation_space = None
+
+    def close(self):
+        try:
+            if not self.envStopped:
+                self.envStopped = True
+                self.send_stop_env_request()
+                self.ns3Process.kill()
+        except Exception as e:
+            pass
 
     def send_init_request(self, stepInterval):
         # print ("Sending INIT request ")
@@ -137,7 +154,7 @@ class Ns3ZmqBridge(object):
         self._observation_space = obsSpace
         return obsSpace
 
-    def send_stop_env_request(self):
+    def send_stop_env_request(self, timeout=-1):
         msg = pb.StopEnvRequest()
         requestMsg = pb.RequestMsg()
         requestMsg.type = pb.StopEnv
@@ -169,8 +186,11 @@ class Ns3ZmqBridge(object):
 
     def is_game_over(self):
         msg = self.send_is_game_over_request()
-        if (msg.reason == pb.GetIsGameOverReply.GameOver):
-            done = self.send_stop_env_request()
+
+        if msg.isGameOver:
+            self.envStopped = True
+            if (msg.reason == pb.GetIsGameOverReply.GameOver):
+                done = self.send_stop_env_request()
 
         return msg.isGameOver
 
@@ -283,18 +303,18 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}):
+    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=-1, simArgs={}):
         self.stepTime = stepTime
         self.port = port
         self.startSim = startSim
         self.simTime = simTime
         self.simSeed = simSeed
+        self.simArgs = simArgs
 
-        # TODO: start ns3 script from here
-        self.ns3ZmqBridge = Ns3ZmqBridge(port, startSim, simTime, simSeed, simArgs)
-        self.ns3ZmqBridge.initialize_env(stepTime)
-        self.action_space = self.ns3ZmqBridge.get_action_space()
-        self.observation_space = self.ns3ZmqBridge.get_observation_space()
+        # Filled in reset function
+        self.ns3ZmqBridge = None
+        self.action_space = None
+        self.observation_space = None
 
         self._seed()
         self.viewer = None
@@ -316,7 +336,10 @@ class Ns3Env(gym.Env):
         return self._get_obs()
 
     def reset(self):
-        # TODO: add reset function
+        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simTime, self.simSeed, self.simArgs)
+        self.ns3ZmqBridge.initialize_env(self.stepTime)
+        self.action_space = self.ns3ZmqBridge.get_action_space()
+        self.observation_space = self.ns3ZmqBridge.get_observation_space()
         return self._get_obs()
 
     def render(self, mode='human'):
@@ -327,5 +350,9 @@ class Ns3Env(gym.Env):
         return act
 
     def close(self):
+        if self.ns3ZmqBridge:
+            self.ns3ZmqBridge.close()
+            self.ns3ZmqBridge = None
+
         if self.viewer:
             self.viewer.close()

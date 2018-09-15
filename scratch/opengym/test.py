@@ -11,8 +11,6 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 # import gym
 # env = gym.make('ns3-linear-wireless-mesh')
 # env.reset()
-# env.render()
-
 
 parser = argparse.ArgumentParser(description='Start simulation script on/off')
 parser.add_argument('--start',
@@ -22,15 +20,15 @@ parser.add_argument('--start',
 args = parser.parse_args()
 startSim = bool(args.start)
 
-port = 5552
-simTime = 15 # seconds
+port = 5555
+simTime = 2 # seconds
 stepTime = 0.5  # seconds
 seed = 234
 simArgs = {"--testArg": 123}
 
 env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simTime=simTime, simSeed=seed, simArgs=simArgs)
+# simpler:
 #env = ns3env.Ns3Env()
-
 env.reset()
 
 ob_space = env.observation_space
@@ -39,23 +37,33 @@ print("Observation space: ", ob_space,  ob_space.dtype)
 print("Action space: ", ac_space, ac_space.dtype)
 
 stepIdx = 0
+iterationNum = 2
+currIt = 0
 
 try:
     while True:
-        stepIdx += 1
-        print("Step: ", stepIdx)
+        print("Start iteration: ", currIt)
 
-        action = env.action_space.sample()
-        print("---action: ", action)
-        obs, reward, done, info = env.step(action)
-        print("---obs, reward, done, info: ", obs, reward, done, info)
+        while True:
+            stepIdx += 1
+            print("Step: ", stepIdx)
 
-        if done:
+            action = env.action_space.sample()
+            print("---action: ", action)
+            obs, reward, done, info = env.step(action)
+            print("---obs, reward, done, info: ", obs, reward, done, info)
+
+            if done:
+                stepIdx = 0
+                env.reset()
+                break
+
+        currIt += 1
+        if currIt == iterationNum:
             break
 
 except KeyboardInterrupt:
     print("Ctrl-C -> Exit")
 finally:
-    pass
-
-print("Done")
+    env.close()
+    print("Done")
