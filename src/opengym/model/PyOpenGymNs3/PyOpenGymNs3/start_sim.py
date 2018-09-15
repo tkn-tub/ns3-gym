@@ -21,7 +21,7 @@ def find_waf_path(cwd):
 	return wafPath
 
 
-def start_sim_script(port=5555, simTime=0, simSeed=0):
+def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}):
 	cwd = os.getcwd()
 	simScriptName = os.path.basename(cwd)
 	wafPath = find_waf_path(cwd)
@@ -36,6 +36,12 @@ def start_sim_script(port=5555, simTime=0, simSeed=0):
 
 	if simSeed:
 		wafString += ' --simSeed=' + str(simSeed)
+
+	for k,v in simArgs.items():
+		wafString += " "
+		wafString += str(k)
+		wafString += "="
+		wafString += str(v)
 
 	wafString += '"'
 

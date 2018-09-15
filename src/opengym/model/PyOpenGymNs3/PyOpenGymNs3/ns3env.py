@@ -23,7 +23,7 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 class Ns3ZmqBridge(object):
     """docstring for Ns3ZmqBridge"""
-    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=0):
+    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}):
         super(Ns3ZmqBridge, self).__init__()
         self.port = port
         self.startSim = startSim
@@ -31,7 +31,7 @@ class Ns3ZmqBridge(object):
         self.simSeed = simSeed
 
         if startSim:
-            self.ns3Process = start_sim_script(port, simTime, simSeed)
+            self.ns3Process = start_sim_script(port, simTime, simSeed, simArgs)
         else:
             print("Waiting for simulation script to connect")
 
@@ -265,7 +265,7 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime, port=5555, startSim=True, simTime=0, simSeed=0):
+    def __init__(self, stepTime, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}):
         self.stepTime = stepTime
         self.port = port
         self.startSim = startSim
@@ -273,7 +273,7 @@ class Ns3Env(gym.Env):
         self.simSeed = simSeed
 
         # TODO: start ns3 script from here
-        self.ns3ZmqBridge = Ns3ZmqBridge(port, startSim, simTime, simSeed)
+        self.ns3ZmqBridge = Ns3ZmqBridge(port, startSim, simTime, simSeed, simArgs)
         self.ns3ZmqBridge.initialize_env(stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()

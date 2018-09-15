@@ -118,17 +118,20 @@ main (int argc, char *argv[])
   uint32_t simSeed = 1;
   double simulationTime = 10; //seconds
   uint32_t openGymPort = 5555;
+  uint32_t testArg = 0;
 
   CommandLine cmd;
   cmd.AddValue ("simTime", "Simulation time in seconds. Default: 10s", simulationTime);
   cmd.AddValue ("openGymPort", "Port number for OpenGym env. Default: 5555", openGymPort);
   cmd.AddValue ("simSeed", "Seed for random generator. Default: 1", simSeed);
+  cmd.AddValue ("testArg", "Extra simulation argument. Default: 0", testArg);
   cmd.Parse (argc, argv);
 
   NS_LOG_UNCOND("Ns3Env parameters:");
   NS_LOG_UNCOND("--simulationTime: " << simulationTime);
   NS_LOG_UNCOND("--openGymPort: " << openGymPort);
   NS_LOG_UNCOND("--seed: " << simSeed);
+  NS_LOG_UNCOND("--testArg: " << testArg);
 
   RngSeedManager::SetSeed (1);
   RngSeedManager::SetRun (simSeed);

@@ -27,7 +27,9 @@ simTime = 15 # seconds
 stepTime = 0.5  # seconds
 seed = 234
 
-env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simTime=simTime, simSeed=seed)
+simArgs = {"--testArg": 123}
+
+env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simTime=simTime, simSeed=seed, simArgs=simArgs)
 #env = ns3env.Ns3Env(stepTime=stepTime, startSim=startSim)
 
 env.reset()
