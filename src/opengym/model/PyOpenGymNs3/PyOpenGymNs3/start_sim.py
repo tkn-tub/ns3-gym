@@ -47,6 +47,6 @@ def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}):
 
 	ns3Proc = subprocess.Popen(wafString, shell=True)
 
-	print(wafString)
+	print("Start command: ",wafString)
 	print("Started ns3 simulation script, Process Id: ", ns3Proc.pid)
 	return ns3Proc

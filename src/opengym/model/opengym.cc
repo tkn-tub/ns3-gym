@@ -249,6 +249,18 @@ OpenGymEnv::Init()
         replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);
         
         SendMsg(replyPbMsg);
+    }
+    else if (requestPbMsg.type() == ns3opengym::StopEnv) {
+      Simulator::Stop();
+      m_stopEnvRequested = true;
+
+      ns3opengym::StopEnvReply StopEnvReplyPbMsg;
+      ns3opengym::ReplyMsg replyPbMsg;
+      StopEnvReplyPbMsg.set_done(true);
+      replyPbMsg.set_type(ns3opengym::StopEnv);
+      replyPbMsg.mutable_msg()->PackFrom(StopEnvReplyPbMsg);
+      SendMsg(replyPbMsg);
+      return;
 
     } else {
         NS_LOG_DEBUG("Received unknown request type");
