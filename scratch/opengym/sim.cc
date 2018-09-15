@@ -117,6 +117,7 @@ main (int argc, char *argv[])
   // Parameters of the scenario
   uint32_t simSeed = 1;
   double simulationTime = 10; //seconds
+  double envStepTime = 0.1; //seconds, ns3gym env step time interval
   uint32_t openGymPort = 5555;
   uint32_t testArg = 0;
 
@@ -130,6 +131,7 @@ main (int argc, char *argv[])
   NS_LOG_UNCOND("Ns3Env parameters:");
   NS_LOG_UNCOND("--simulationTime: " << simulationTime);
   NS_LOG_UNCOND("--openGymPort: " << openGymPort);
+  NS_LOG_UNCOND("--envStepTime: " << envStepTime);
   NS_LOG_UNCOND("--seed: " << simSeed);
   NS_LOG_UNCOND("--testArg: " << testArg);
 
@@ -137,7 +139,7 @@ main (int argc, char *argv[])
   RngSeedManager::SetRun (simSeed);
 
   // OpenGym Env
-  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort);
+  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort, Seconds(envStepTime));
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
   openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
