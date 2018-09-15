@@ -7,11 +7,6 @@ __version__ = "0.1.0"
 __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 
-# TODO: integrate with openGym lib, like:
-# import gym
-# env = gym.make('ns3-linear-wireless-mesh')
-# env.reset()
-
 parser = argparse.ArgumentParser(description='Start simulation script on/off')
 parser.add_argument('--start',
                     type=int,
