@@ -78,6 +78,8 @@ private:
   zmq::context_t m_zmq_context;
   zmq::socket_t m_zmq_socket;
   bool m_gameOver;
+  bool m_simEnd;
+  bool m_stopEnvRequested;
   uint64_t m_stepCount;
 
   Time m_interval;
