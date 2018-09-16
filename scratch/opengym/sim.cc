@@ -81,15 +81,17 @@ Collect observations
 Ptr<OpenGymDataContainer> MyGetObservation(void)
 {
   uint32_t nodeNum = 5;
+  uint32_t low = 0.0;
+  uint32_t high = 10.0;
+  Ptr<UniformRandomVariable> rngInt = CreateObject<UniformRandomVariable> ();
+
   std::vector<uint32_t> shape = {nodeNum,};
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
 
   // generate random data
   std::string obsString = "[";
-  uint32_t low = 0.0;
-  uint32_t high = 10.0;
   for (uint32_t i = 0; i<nodeNum; i++){
-    uint32_t value = rand() % high + low;
+    uint32_t value = rngInt->GetInteger(low, high);
     box->AddValue(value);
     obsString += std::to_string(value) +",";
   }
