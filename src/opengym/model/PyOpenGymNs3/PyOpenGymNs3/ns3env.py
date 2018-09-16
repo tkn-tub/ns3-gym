@@ -32,6 +32,9 @@ class Ns3ZmqBridge(object):
         self.simSeed = simSeed
         self.simArgs = simArgs
         self.envStopped = False
+        self.simPid = None
+        self.wafPid = None
+        self.ns3Process = None
 
         if (startSim == True and simSeed == -1):
             maxSeed = np.iinfo(np.uint32).max
@@ -58,6 +61,12 @@ class Ns3ZmqBridge(object):
                 self.envStopped = True
                 self.send_stop_env_request()
                 self.ns3Process.kill()
+                if self.simPid:
+                    os.kill(self.simPid, signal.SIGTERM)
+                    self.simPid = None
+                if self.wafPid:
+                    os.kill(self.wafPid, signal.SIGTERM)
+                    self.wafPid = None
         except Exception as e:
             pass
 
@@ -79,6 +88,8 @@ class Ns3ZmqBridge(object):
         replyPbMsg.msg.Unpack(initReplyPbMsg)
         errCode = 0
         value = int(initReplyPbMsg.done)
+        self.simPid = int(initReplyPbMsg.simProcessId)
+        self.wafPid = int(initReplyPbMsg.wafShellProcessId)
         return [errCode, value]
 
     def initialize_env(self, stepInterval):
