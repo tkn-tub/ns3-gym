@@ -21,7 +21,7 @@ def find_waf_path(cwd):
 	return wafPath
 
 
-def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}):
+def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}, debug=False):
 	cwd = os.getcwd()
 	simScriptName = os.path.basename(cwd)
 	wafPath = find_waf_path(cwd)
@@ -45,8 +45,14 @@ def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}):
 
 	wafString += '"'
 
-	ns3Proc = subprocess.Popen(wafString, shell=True)
+	output = subprocess.DEVNULL
+	if debug:
+		output = None
 
-	print("Start command: ",wafString)
-	print("Started ns3 simulation script, Process Id: ", ns3Proc.pid)
+	ns3Proc = subprocess.Popen(wafString, shell=True, stdout=output, stderr=output)
+
+	if debug:
+		print("Start command: ",wafString)
+		print("Started ns3 simulation script, Process Id: ", ns3Proc.pid)
+
 	return ns3Proc
