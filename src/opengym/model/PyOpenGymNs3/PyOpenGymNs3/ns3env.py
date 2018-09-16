@@ -24,7 +24,7 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 class Ns3ZmqBridge(object):
     """docstring for Ns3ZmqBridge"""
-    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=-1, simArgs={}, debug=False):
+    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}, debug=False):
         super(Ns3ZmqBridge, self).__init__()
         self.port = port
         self.startSim = startSim
@@ -36,7 +36,7 @@ class Ns3ZmqBridge(object):
         self.wafPid = None
         self.ns3Process = None
 
-        if (startSim == True and simSeed == -1):
+        if (startSim == True and simSeed == 0):
             maxSeed = np.iinfo(np.uint32).max
             simSeed = np.random.randint(0, maxSeed)
             self.simSeed = simSeed
@@ -339,7 +339,7 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=-1, simArgs={}, debug=False):
+    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}, debug=False):
         self.stepTime = stepTime
         self.port = port
         self.startSim = startSim
@@ -353,7 +353,6 @@ class Ns3Env(gym.Env):
         self.action_space = None
         self.observation_space = None
 
-        self.seed()
         self.viewer = None
         self.state = None
         self.steps_beyond_done = None
@@ -363,6 +362,7 @@ class Ns3Env(gym.Env):
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
         self.envDirty = False
+        self.seed()
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
