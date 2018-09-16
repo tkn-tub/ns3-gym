@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='ns3opengym',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0emessages.proto\x12\nns3opengym\x1a\x19google/protobuf/any.proto\"\x1a\n\rDiscreteSpace\x12\t\n\x01n\x18\x01 \x01(\x05\"V\n\x08\x42oxSpace\x12\x0b\n\x03low\x18\x01 \x01(\x02\x12\x0c\n\x04high\x18\x02 \x01(\x02\x12 \n\x05\x64type\x18\x03 \x01(\x0e\x32\x11.ns3opengym.Dtype\x12\r\n\x05shape\x18\x04 \x03(\r\"R\n\nRequestMsg\x12!\n\x04type\x18\x01 \x01(\x0e\x32\x13.ns3opengym.MsgType\x12!\n\x03msg\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"P\n\x08ReplyMsg\x12!\n\x04type\x18\x01 \x01(\x0e\x32\x13.ns3opengym.MsgType\x12!\n\x03msg\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"%\n\x11InitializeRequest\x12\x10\n\x08timeStep\x18\x01 \x01(\x01\"\x1f\n\x0fInitializeReply\x12\x0c\n\x04\x64one\x18\x01 \x01(\x08\"\x17\n\x15GetActionSpaceRequest\"\x1c\n\x1aGetObservationSpaceRequest\"Y\n\rGetSpaceReply\x12#\n\x04type\x18\x01 \x01(\x0e\x32\x15.ns3opengym.SpaceType\x12#\n\x05space\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"\x16\n\x14GetIsGameOverRequest\"\x8a\x01\n\x12GetIsGameOverReply\x12\x12\n\nisGameOver\x18\x01 \x01(\x08\x12\x35\n\x06reason\x18\x02 \x01(\x0e\x32%.ns3opengym.GetIsGameOverReply.Reason\")\n\x06Reason\x12\x11\n\rSimulationEnd\x10\x00\x12\x0c\n\x08GameOver\x10\x01\"\x17\n\x15GetObservationRequest\"C\n\x13GetObservationReply\x12,\n\tcontainer\x18\x01 \x01(\x0b\x32\x19.ns3opengym.DataContainer\"\x12\n\x10GetRewardRequest\" \n\x0eGetRewardReply\x12\x0e\n\x06reward\x18\x01 \x01(\x02\"@\n\x10SetActionRequest\x12,\n\tcontainer\x18\x01 \x01(\x0b\x32\x19.ns3opengym.DataContainer\"\x1e\n\x0eSetActionReply\x12\x0c\n\x04\x64one\x18\x01 \x01(\x08\"\x10\n\x0eStopEnvRequest\"\x1c\n\x0cStopEnvReply\x12\x0c\n\x04\x64one\x18\x01 \x01(\x08\"X\n\rDataContainer\x12#\n\x04type\x18\x01 \x01(\x0e\x32\x15.ns3opengym.SpaceType\x12\"\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"%\n\x15\x44iscreteDataContainer\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x05\"\x8d\x01\n\x10\x42oxDataContainer\x12 \n\x05\x64type\x18\x01 \x01(\x0e\x32\x11.ns3opengym.Dtype\x12\r\n\x05shape\x18\x02 \x03(\r\x12\x0f\n\x07intData\x18\x03 \x03(\x05\x12\x10\n\x08uintData\x18\x04 \x03(\r\x12\x11\n\tfloatData\x18\x05 \x03(\x02\x12\x12\n\ndoubleData\x18\x06 \x03(\x01*\x8d\x01\n\x07MsgType\x12\x0b\n\x07Unknown\x10\x00\x12\x08\n\x04Init\x10\x01\x12\x0f\n\x0b\x41\x63tionSpace\x10\x02\x12\x14\n\x10ObservationSpace\x10\x03\x12\x0e\n\nIsGameOver\x10\x04\x12\x0f\n\x0bObservation\x10\x05\x12\n\n\x06Reward\x10\x06\x12\n\n\x06\x41\x63tion\x10\x07\x12\x0b\n\x07StopEnv\x10\x08*\"\n\tSpaceType\x12\x0c\n\x08\x44iscrete\x10\x00\x12\x07\n\x03\x42ox\x10\x01*1\n\x05\x44type\x12\x07\n\x03INT\x10\x00\x12\x08\n\x04UINT\x10\x01\x12\t\n\x05\x46LOAT\x10\x02\x12\n\n\x06\x44OUBLE\x10\x03\x62\x06proto3')
+  serialized_pb=_b('\n\x0emessages.proto\x12\nns3opengym\x1a\x19google/protobuf/any.proto\"\x1a\n\rDiscreteSpace\x12\t\n\x01n\x18\x01 \x01(\x05\"V\n\x08\x42oxSpace\x12\x0b\n\x03low\x18\x01 \x01(\x02\x12\x0c\n\x04high\x18\x02 \x01(\x02\x12 \n\x05\x64type\x18\x03 \x01(\x0e\x32\x11.ns3opengym.Dtype\x12\r\n\x05shape\x18\x04 \x03(\r\"R\n\nRequestMsg\x12!\n\x04type\x18\x01 \x01(\x0e\x32\x13.ns3opengym.MsgType\x12!\n\x03msg\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"P\n\x08ReplyMsg\x12!\n\x04type\x18\x01 \x01(\x0e\x32\x13.ns3opengym.MsgType\x12!\n\x03msg\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"%\n\x11InitializeRequest\x12\x10\n\x08timeStep\x18\x01 \x01(\x01\"P\n\x0fInitializeReply\x12\x0c\n\x04\x64one\x18\x01 \x01(\x08\x12\x14\n\x0csimProcessId\x18\x02 \x01(\x04\x12\x19\n\x11wafShellProcessId\x18\x03 \x01(\x04\"\x17\n\x15GetActionSpaceRequest\"\x1c\n\x1aGetObservationSpaceRequest\"Y\n\rGetSpaceReply\x12#\n\x04type\x18\x01 \x01(\x0e\x32\x15.ns3opengym.SpaceType\x12#\n\x05space\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"\x16\n\x14GetIsGameOverRequest\"\x8a\x01\n\x12GetIsGameOverReply\x12\x12\n\nisGameOver\x18\x01 \x01(\x08\x12\x35\n\x06reason\x18\x02 \x01(\x0e\x32%.ns3opengym.GetIsGameOverReply.Reason\")\n\x06Reason\x12\x11\n\rSimulationEnd\x10\x00\x12\x0c\n\x08GameOver\x10\x01\"\x17\n\x15GetObservationRequest\"C\n\x13GetObservationReply\x12,\n\tcontainer\x18\x01 \x01(\x0b\x32\x19.ns3opengym.DataContainer\"\x12\n\x10GetRewardRequest\" \n\x0eGetRewardReply\x12\x0e\n\x06reward\x18\x01 \x01(\x02\"@\n\x10SetActionRequest\x12,\n\tcontainer\x18\x01 \x01(\x0b\x32\x19.ns3opengym.DataContainer\"\x1e\n\x0eSetActionReply\x12\x0c\n\x04\x64one\x18\x01 \x01(\x08\"\x10\n\x0eStopEnvRequest\"\x1c\n\x0cStopEnvReply\x12\x0c\n\x04\x64one\x18\x01 \x01(\x08\"X\n\rDataContainer\x12#\n\x04type\x18\x01 \x01(\x0e\x32\x15.ns3opengym.SpaceType\x12\"\n\x04\x64\x61ta\x18\x02 \x01(\x0b\x32\x14.google.protobuf.Any\"%\n\x15\x44iscreteDataContainer\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x05\"\x8d\x01\n\x10\x42oxDataContainer\x12 \n\x05\x64type\x18\x01 \x01(\x0e\x32\x11.ns3opengym.Dtype\x12\r\n\x05shape\x18\x02 \x03(\r\x12\x0f\n\x07intData\x18\x03 \x03(\x05\x12\x10\n\x08uintData\x18\x04 \x03(\r\x12\x11\n\tfloatData\x18\x05 \x03(\x02\x12\x12\n\ndoubleData\x18\x06 \x03(\x01*\x8d\x01\n\x07MsgType\x12\x0b\n\x07Unknown\x10\x00\x12\x08\n\x04Init\x10\x01\x12\x0f\n\x0b\x41\x63tionSpace\x10\x02\x12\x14\n\x10ObservationSpace\x10\x03\x12\x0e\n\nIsGameOver\x10\x04\x12\x0f\n\x0bObservation\x10\x05\x12\n\n\x06Reward\x10\x06\x12\n\n\x06\x41\x63tion\x10\x07\x12\x0b\n\x07StopEnv\x10\x08*\"\n\tSpaceType\x12\x0c\n\x08\x44iscrete\x10\x00\x12\x07\n\x03\x42ox\x10\x01*1\n\x05\x44type\x12\x07\n\x03INT\x10\x00\x12\x08\n\x04UINT\x10\x01\x12\t\n\x05\x46LOAT\x10\x02\x12\n\n\x06\x44OUBLE\x10\x03\x62\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_any__pb2.DESCRIPTOR,])
 
@@ -70,8 +70,8 @@ _MSGTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1290,
-  serialized_end=1431,
+  serialized_start=1339,
+  serialized_end=1480,
 )
 _sym_db.RegisterEnumDescriptor(_MSGTYPE)
 
@@ -93,8 +93,8 @@ _SPACETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1433,
-  serialized_end=1467,
+  serialized_start=1482,
+  serialized_end=1516,
 )
 _sym_db.RegisterEnumDescriptor(_SPACETYPE)
 
@@ -124,8 +124,8 @@ _DTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1469,
-  serialized_end=1518,
+  serialized_start=1518,
+  serialized_end=1567,
 )
 _sym_db.RegisterEnumDescriptor(_DTYPE)
 
@@ -164,8 +164,8 @@ _GETISGAMEOVERREPLY_REASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=679,
-  serialized_end=720,
+  serialized_start=728,
+  serialized_end=769,
 )
 _sym_db.RegisterEnumDescriptor(_GETISGAMEOVERREPLY_REASON)
 
@@ -374,6 +374,20 @@ _INITIALIZEREPLY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='simProcessId', full_name='ns3opengym.InitializeReply.simProcessId', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='wafShellProcessId', full_name='ns3opengym.InitializeReply.wafShellProcessId', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -387,7 +401,7 @@ _INITIALIZEREPLY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=378,
-  serialized_end=409,
+  serialized_end=458,
 )
 
 
@@ -410,8 +424,8 @@ _GETACTIONSPACEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=411,
-  serialized_end=434,
+  serialized_start=460,
+  serialized_end=483,
 )
 
 
@@ -434,8 +448,8 @@ _GETOBSERVATIONSPACEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=436,
-  serialized_end=464,
+  serialized_start=485,
+  serialized_end=513,
 )
 
 
@@ -472,8 +486,8 @@ _GETSPACEREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=466,
-  serialized_end=555,
+  serialized_start=515,
+  serialized_end=604,
 )
 
 
@@ -496,8 +510,8 @@ _GETISGAMEOVERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=557,
-  serialized_end=579,
+  serialized_start=606,
+  serialized_end=628,
 )
 
 
@@ -535,8 +549,8 @@ _GETISGAMEOVERREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=582,
-  serialized_end=720,
+  serialized_start=631,
+  serialized_end=769,
 )
 
 
@@ -559,8 +573,8 @@ _GETOBSERVATIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=722,
-  serialized_end=745,
+  serialized_start=771,
+  serialized_end=794,
 )
 
 
@@ -590,8 +604,8 @@ _GETOBSERVATIONREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=747,
-  serialized_end=814,
+  serialized_start=796,
+  serialized_end=863,
 )
 
 
@@ -614,8 +628,8 @@ _GETREWARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=816,
-  serialized_end=834,
+  serialized_start=865,
+  serialized_end=883,
 )
 
 
@@ -645,8 +659,8 @@ _GETREWARDREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=836,
-  serialized_end=868,
+  serialized_start=885,
+  serialized_end=917,
 )
 
 
@@ -676,8 +690,8 @@ _SETACTIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=870,
-  serialized_end=934,
+  serialized_start=919,
+  serialized_end=983,
 )
 
 
@@ -707,8 +721,8 @@ _SETACTIONREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=936,
-  serialized_end=966,
+  serialized_start=985,
+  serialized_end=1015,
 )
 
 
@@ -731,8 +745,8 @@ _STOPENVREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=968,
-  serialized_end=984,
+  serialized_start=1017,
+  serialized_end=1033,
 )
 
 
@@ -762,8 +776,8 @@ _STOPENVREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=986,
-  serialized_end=1014,
+  serialized_start=1035,
+  serialized_end=1063,
 )
 
 
@@ -800,8 +814,8 @@ _DATACONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1016,
-  serialized_end=1104,
+  serialized_start=1065,
+  serialized_end=1153,
 )
 
 
@@ -831,8 +845,8 @@ _DISCRETEDATACONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1106,
-  serialized_end=1143,
+  serialized_start=1155,
+  serialized_end=1192,
 )
 
 
@@ -897,8 +911,8 @@ _BOXDATACONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1146,
-  serialized_end=1287,
+  serialized_start=1195,
+  serialized_end=1336,
 )
 
 _BOXSPACE.fields_by_name['dtype'].enum_type = _DTYPE

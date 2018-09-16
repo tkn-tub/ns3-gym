@@ -184,6 +184,7 @@ OpenGymEnv::Init()
   zmq_bind (m_zmq_socket, bindAddr.c_str());
 
   NS_LOG_UNCOND("Waiting for Python process to connect");
+  NS_LOG_UNCOND("Simulation process id: " << ::getpid() << " (parent (waf shell) id: " << ::getppid() << ")");
 
   bool rxInitReq = false;
   bool rxGetActionSpaceReq = false;
@@ -212,6 +213,8 @@ OpenGymEnv::Init()
         ns3opengym::ReplyMsg replyPbMsg;
 
         initReplyPbMsg.set_done(true);
+        initReplyPbMsg.set_simprocessid(::getpid());
+        initReplyPbMsg.set_wafshellprocessid(::getppid());
         replyPbMsg.set_type(ns3opengym::Init);
         replyPbMsg.mutable_msg()->PackFrom(initReplyPbMsg);
         

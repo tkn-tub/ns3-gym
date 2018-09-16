@@ -894,6 +894,18 @@ class InitializeReply : public ::google::protobuf::Message /* @@protoc_insertion
 
   // accessors -------------------------------------------------------
 
+  // uint64 simProcessId = 2;
+  void clear_simprocessid();
+  static const int kSimProcessIdFieldNumber = 2;
+  ::google::protobuf::uint64 simprocessid() const;
+  void set_simprocessid(::google::protobuf::uint64 value);
+
+  // uint64 wafShellProcessId = 3;
+  void clear_wafshellprocessid();
+  static const int kWafShellProcessIdFieldNumber = 3;
+  ::google::protobuf::uint64 wafshellprocessid() const;
+  void set_wafshellprocessid(::google::protobuf::uint64 value);
+
   // bool done = 1;
   void clear_done();
   static const int kDoneFieldNumber = 1;
@@ -904,6 +916,8 @@ class InitializeReply : public ::google::protobuf::Message /* @@protoc_insertion
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::uint64 simprocessid_;
+  ::google::protobuf::uint64 wafshellprocessid_;
   bool done_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_messages_2eproto::TableStruct;
@@ -2922,6 +2936,34 @@ inline void InitializeReply::set_done(bool value) {
   
   done_ = value;
   // @@protoc_insertion_point(field_set:ns3opengym.InitializeReply.done)
+}
+
+// uint64 simProcessId = 2;
+inline void InitializeReply::clear_simprocessid() {
+  simprocessid_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 InitializeReply::simprocessid() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.InitializeReply.simProcessId)
+  return simprocessid_;
+}
+inline void InitializeReply::set_simprocessid(::google::protobuf::uint64 value) {
+  
+  simprocessid_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.InitializeReply.simProcessId)
+}
+
+// uint64 wafShellProcessId = 3;
+inline void InitializeReply::clear_wafshellprocessid() {
+  wafshellprocessid_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 InitializeReply::wafshellprocessid() const {
+  // @@protoc_insertion_point(field_get:ns3opengym.InitializeReply.wafShellProcessId)
+  return wafshellprocessid_;
+}
+inline void InitializeReply::set_wafshellprocessid(::google::protobuf::uint64 value) {
+  
+  wafshellprocessid_ = value;
+  // @@protoc_insertion_point(field_set:ns3opengym.InitializeReply.wafShellProcessId)
 }
 
 // -------------------------------------------------------------------

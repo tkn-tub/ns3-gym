@@ -54,6 +54,8 @@ message InitializeRequest {
 
 message InitializeReply {
 	bool done = 1;
+	uint64 simProcessId = 2;
+	uint64 wafShellProcessId = 3;
 }
 
 message GetActionSpaceRequest {
