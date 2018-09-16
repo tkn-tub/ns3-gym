@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "ns3/type-name.h"
 #include "entity.h"
+#include "opengym.h"
 
 namespace ns3 {
 
@@ -60,6 +61,23 @@ void
 OpenGymEntity::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymEntity::SetOpenGymEnv(Ptr<OpenGymEnv> openGymEnv)
+{
+  NS_LOG_FUNCTION (this);
+  m_openGymEnv = openGymEnv;
+}
+
+void
+OpenGymEntity::Notify()
+{
+  NS_LOG_FUNCTION (this);
+  if (m_openGymEnv)
+  {
+    m_openGymEnv->Notify(this);
+  }
 }
 
 }

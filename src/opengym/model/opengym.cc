@@ -28,6 +28,7 @@
 
 #include "messages.pb.h"
 #include "container.h"
+#include "entity.h"
 
 namespace ns3 {
 
@@ -600,6 +601,16 @@ OpenGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
     reply = m_actionCb(action);
   }
   return reply;
+}
+
+void
+OpenGymEnv::Notify(Ptr<OpenGymEntity> entity)
+{
+  NS_LOG_FUNCTION (this);
+
+  //TODO: collect current state to be sent to Python
+  // call next step to initiate communication with python
+  // execute actions on entitiy
 }
 
 }
