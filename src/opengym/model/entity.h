@@ -29,6 +29,7 @@ namespace ns3 {
 
 class OpenGymSpace;
 class OpenGymDataContainer;
+class OpenGymEnv;
 
 class OpenGymEntity : public Object
 {
@@ -46,10 +47,16 @@ public:
   virtual std::string GetExtraInfo() = 0;
   virtual bool ExecuteActions(Ptr<OpenGymDataContainer> action) = 0;
 
+  void SetOpenGymEnv(Ptr<OpenGymEnv> openGymEnv);
+  void Notify();
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
+
+private:
+  Ptr<OpenGymEnv> m_openGymEnv;
 };
 
 } // end of namespace ns3

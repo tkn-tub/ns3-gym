@@ -35,6 +35,7 @@ namespace ns3 {
 
 class OpenGymSpace;
 class OpenGymDataContainer;
+class OpenGymEntity;
 
 class OpenGymEnv : public Object
 {
@@ -67,6 +68,8 @@ public:
   void SetGetObservationCb(Callback< Ptr<OpenGymDataContainer> > cb);
   void SetGetRewardCb(Callback<float> cb);
   void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb);
+
+  void Notify(Ptr<OpenGymEntity> entity);
 
 protected:
   // Inherited
