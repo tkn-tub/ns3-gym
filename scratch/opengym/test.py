@@ -23,7 +23,7 @@ iterationNum = int(args.iterations)
 port = 5555
 simTime = 20 # seconds
 stepTime = 0.5  # seconds
-seed = 234
+seed = 0
 simArgs = {"--testArg": 123}
 debug = False
 
