@@ -20,13 +20,18 @@ print("Action space: ", ac_space, ac_space.dtype)
 stepIdx = 0
 
 try:
+    obs, reward, done, info = env.reset()
+    print("Step: ", stepIdx)
+    print("---obs, reward, done, info: ", obs, reward, done, info)
+
     while True:
         stepIdx += 1
-        print("Step: ", stepIdx)
 
         action = env.action_space.sample()
         print("---action: ", action)
         obs, reward, done, info = env.step(action)
+
+        print("Step: ", stepIdx)
         print("---obs, reward, done, info: ", obs, reward, done, info)
 
         if done:

@@ -43,13 +43,16 @@ currIt = 0
 try:
     while True:
         print("Start iteration: ", currIt)
+        obs, reward, done, info = env.reset()
+        print("Step: ", stepIdx)
+        print("---obs, reward, done, info: ", obs, reward, done, info)
 
         while True:
             stepIdx += 1
-            print("Step: ", stepIdx)
-
             action = env.action_space.sample()
             print("---action: ", action)
+
+            print("Step: ", stepIdx)
             obs, reward, done, info = env.step(action)
             print("---obs, reward, done, info: ", obs, reward, done, info)
 
