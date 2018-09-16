@@ -25,9 +25,6 @@
 #include "ns3/object.h"
 #include "ns3/simulator.h"
 #include "ns3/type-name.h"
-
-#include "ns3/stats-module.h"
-
 #include <map>
 
 #include "spaces.h"
