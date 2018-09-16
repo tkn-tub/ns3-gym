@@ -12,11 +12,16 @@ parser.add_argument('--start',
                     type=int,
                     default=1,
                     help='Start simulation script 0/1, Default: 1')
+parser.add_argument('--iterations',
+                    type=int,
+                    default=2,
+                    help='Number of iterations, Default: 2')
 args = parser.parse_args()
 startSim = bool(args.start)
+iterationNum = int(args.iterations)
 
 port = 5555
-simTime = 2 # seconds
+simTime = 20 # seconds
 stepTime = 0.5  # seconds
 seed = 234
 simArgs = {"--testArg": 123}
@@ -33,7 +38,6 @@ print("Observation space: ", ob_space,  ob_space.dtype)
 print("Action space: ", ac_space, ac_space.dtype)
 
 stepIdx = 0
-iterationNum = 2
 currIt = 0
 
 try:
@@ -51,7 +55,8 @@ try:
 
             if done:
                 stepIdx = 0
-                env.reset()
+                if currIt + 1 < iterationNum:
+                    env.reset()
                 break
 
         currIt += 1
