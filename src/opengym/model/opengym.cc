@@ -293,6 +293,11 @@ OpenGymEnv::WaitForNextStep()
 
   ns3opengym::RequestMsg requestPbMsg;
 
+  // collect current env state, TODO: provide possibility to set single callback getState(obs, reward, done)
+  Ptr<OpenGymDataContainer> obsDataContainer = GetObservation();
+  float reward = GetReward();
+  bool isGameOver = IsGameOver();
+
   while (true) {
     requestPbMsg = ReceiveMsg();
     NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
@@ -305,7 +310,7 @@ OpenGymEnv::WaitForNextStep()
       ns3opengym::GetIsGameOverReply gameOverReplyPbMsg;
       ns3opengym::ReplyMsg replyPbMsg;
 
-      if (IsGameOver())
+      if (isGameOver)
       {
         gameOverReplyPbMsg.set_isgameover(true);
         if (m_simEnd) {
@@ -334,37 +339,35 @@ OpenGymEnv::WaitForNextStep()
       ns3opengym::GetObservationReply obsReplyPbMsg;
       ns3opengym::ReplyMsg replyPbMsg;
 
-      Ptr<OpenGymDataContainer> container = GetObservation();
-
-      // add serialzation of Discrete Container
+      // TODO: add serialzation of Discrete Container
 
       ns3opengym::BoxDataContainer boxContainerPbMsg;
       std::vector<uint32_t> shape;
-      Dtype dtype = container->GetDataType();
+      Dtype dtype = obsDataContainer->GetDataType();
 
       if (dtype == Dtype::INT) {
-        Ptr<OpenGymBoxContainer<int32_t> > box = DynamicCast<OpenGymBoxContainer<int32_t> >(container);
+        Ptr<OpenGymBoxContainer<int32_t> > box = DynamicCast<OpenGymBoxContainer<int32_t> >(obsDataContainer);
         shape = box->GetShape();
         boxContainerPbMsg.set_dtype(ns3opengym::INT);
         std::vector<int32_t> data = box->GetData();
         *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
 
       } else if (dtype == Dtype::UINT) {
-        Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(container);
+        Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(obsDataContainer);
         shape = box->GetShape();
         boxContainerPbMsg.set_dtype(ns3opengym::UINT);
         std::vector<uint32_t> data = box->GetData();
         *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
 
       } else if (dtype == Dtype::FLOAT) {
-        Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(container);
+        Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(obsDataContainer);
         shape = box->GetShape();
         boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
         std::vector<float> data = box->GetData();
         *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
 
       } else {
-        Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(container);
+        Ptr<OpenGymBoxContainer<float> > box = DynamicCast<OpenGymBoxContainer<float> >(obsDataContainer);
         shape = box->GetShape();
         boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
         std::vector<float> data = box->GetData();
@@ -389,8 +392,6 @@ OpenGymEnv::WaitForNextStep()
 
       ns3opengym::GetRewardReply rewardReplyPbMsg;
       ns3opengym::ReplyMsg replyPbMsg;
-
-      float reward = GetReward();
       rewardReplyPbMsg.set_reward(reward);
      
       replyPbMsg.set_type(ns3opengym::Reward);
@@ -407,7 +408,7 @@ OpenGymEnv::WaitForNextStep()
       ns3opengym::SetActionRequest actionRequestPbMsg;
       if (requestPbMsg.msg().UnpackTo(&actionRequestPbMsg)) {
 
-        Ptr<OpenGymDataContainer> dataContainer = CreateObject<OpenGymDataContainer>();
+        Ptr<OpenGymDataContainer> actDataContainer = CreateObject<OpenGymDataContainer>();
         ns3opengym::DataContainer containerPbMsg = actionRequestPbMsg.container();
 
         if (containerPbMsg.type() == ns3opengym::Discrete)
@@ -425,7 +426,7 @@ OpenGymEnv::WaitForNextStep()
             //myData.reserve(boxContainerPbMsg.uintdata().size());
             myData.assign(boxContainerPbMsg.intdata().begin(), boxContainerPbMsg.intdata().end()); 
             box->SetData(myData);
-            dataContainer = box;
+            actDataContainer = box;
 
           } else if (boxContainerPbMsg.dtype() == ns3opengym::UINT) {
             Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >();
@@ -433,7 +434,7 @@ OpenGymEnv::WaitForNextStep()
             //myData.reserve(boxContainerPbMsg.uintdata().size());
             myData.assign(boxContainerPbMsg.uintdata().begin(), boxContainerPbMsg.uintdata().end()); 
             box->SetData(myData);
-            dataContainer = box;
+            actDataContainer = box;
 
           } else if (boxContainerPbMsg.dtype() == ns3opengym::FLOAT) {
             Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
@@ -442,7 +443,7 @@ OpenGymEnv::WaitForNextStep()
             //myData.reserve(boxContainerPbMsg.uintdata().size());
             myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
             box->SetData(myData);
-            dataContainer = box;
+            actDataContainer = box;
 
           } else if (boxContainerPbMsg.dtype() == ns3opengym::DOUBLE) {
             Ptr<OpenGymBoxContainer<double> > box = CreateObject<OpenGymBoxContainer<double> >();
@@ -450,7 +451,7 @@ OpenGymEnv::WaitForNextStep()
             //myData.reserve(boxContainerPbMsg.uintdata().size());
             myData.assign(boxContainerPbMsg.doubledata().begin(), boxContainerPbMsg.doubledata().end()); 
             box->SetData(myData);
-            dataContainer = box;
+            actDataContainer = box;
 
           } else {
             Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
@@ -458,11 +459,11 @@ OpenGymEnv::WaitForNextStep()
             //myData.reserve(boxContainerPbMsg.uintdata().size());
             myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
             box->SetData(myData);
-            dataContainer = box;
+            actDataContainer = box;
           }
         }
 
-        bool done = ExecuteActions(dataContainer);
+        bool done = ExecuteActions(actDataContainer);
 
         ns3opengym::SetActionReply actionReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
