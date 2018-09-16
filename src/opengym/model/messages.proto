@@ -11,8 +11,9 @@ enum MsgType {
 	IsGameOver = 4;
 	Observation = 5;
 	Reward = 6;
-	Action = 7;
-	StopEnv = 8;
+	ExtraInfo = 7;
+	Action = 8;
+	StopEnv = 9;
 }
 
 enum SpaceType {
@@ -50,6 +51,7 @@ message ReplyMsg {
 
 message InitializeRequest {
 	double timeStep = 1;
+	uint32 simSeed = 2;
 }
 
 message InitializeReply {
@@ -94,6 +96,13 @@ message GetRewardRequest {
 
 message GetRewardReply {
 	float reward = 1;
+}
+
+message GetExtraInfoRequest {
+}
+
+message GetExtraInfoReply {
+	string info = 1;
 }
 
 message SetActionRequest {

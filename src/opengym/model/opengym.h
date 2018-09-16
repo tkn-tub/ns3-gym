@@ -60,6 +60,7 @@ public:
   void FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply &spaceReplyPbMsg);
   Ptr<OpenGymDataContainer> GetObservation();
   float GetReward();
+  std::string GetExtraInfo();
   bool ExecuteActions(Ptr<OpenGymDataContainer> action);
 
   void SetGetActionSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
@@ -67,6 +68,7 @@ public:
   void SetGetGameOverCb(Callback< bool > cb);
   void SetGetObservationCb(Callback< Ptr<OpenGymDataContainer> > cb);
   void SetGetRewardCb(Callback<float> cb);
+  void SetGetExtraInfoCb(Callback<std::string> cb);
   void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb);
 
   void Notify(Ptr<OpenGymEntity> entity);
@@ -92,11 +94,13 @@ private:
   Callback< bool > m_gameOverCb;
   Callback< Ptr<OpenGymDataContainer> > m_stateCb;
   Callback<float> m_rewardCb;
+  Callback<std::string> m_extraInfoCb;
   Callback<bool, Ptr<OpenGymDataContainer> > m_actionCb;
 
   bool m_rxGetGameOver;
   bool m_rxGetObservation;
   bool m_rxGetReward;
+  bool m_rxGetExtraInfo;
   bool m_rxSetActions;
 };
 

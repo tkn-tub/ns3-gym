@@ -74,6 +74,7 @@ class Ns3ZmqBridge(object):
         # print ("Sending INIT request ")
         msg = pb.InitializeRequest()
         msg.timeStep = stepInterval
+        msg.simSeed = self.simSeed
 
         requestMsg = pb.RequestMsg()
         requestMsg.type = pb.Init
@@ -262,6 +263,28 @@ class Ns3ZmqBridge(object):
         rewardMsg = self.send_get_reward_request()
         return rewardMsg.reward
 
+    def send_get_extra_info(self):
+        msg = pb.GetExtraInfoRequest()
+        requestMsg = pb.RequestMsg()
+        requestMsg.type = pb.ExtraInfo
+        requestMsg.msg.Pack(msg)
+        requestMsg = requestMsg.SerializeToString()
+        self.socket.send(requestMsg)
+
+        reply = self.socket.recv()
+        replyPbMsg = pb.ReplyMsg()
+        innerReplyPbMsg = pb.GetExtraInfoReply()
+        replyPbMsg.ParseFromString(reply)
+        replyPbMsg.msg.Unpack(innerReplyPbMsg)
+        return innerReplyPbMsg
+
+    def get_extra_info(self):
+        msg = self.send_get_extra_info()
+        info = msg.info
+        if not info:
+            info = {}
+        return info
+
     def send_execute_action_request(self, actions):
         dataContainer = pb.DataContainer()
         dataContainer.type = pb.Box
@@ -338,10 +361,12 @@ class Ns3Env(gym.Env):
         return [seed]
 
     def _get_obs(self):
+        # get_extra info is optional, so execute first, otherwise env will move to next step
+        extraInfo = self.ns3ZmqBridge.get_extra_info()
         obs = self.ns3ZmqBridge.get_obs()
         reward = self.ns3ZmqBridge.get_reward()
         done = self.ns3ZmqBridge.is_game_over()
-        return (obs, reward, done, {})
+        return (obs, reward, done, extraInfo)
 
     def step(self, action):
         response = self.ns3ZmqBridge.execute_action(action)

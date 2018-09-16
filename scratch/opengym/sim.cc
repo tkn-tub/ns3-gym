@@ -110,6 +110,18 @@ float MyGetReward(void)
 }
 
 /*
+Define extra info. Optional
+*/
+std::string MyGetExtraInfo(void)
+{
+  std::string myInfo = "testInfo";
+  myInfo += "|123";
+  NS_LOG_UNCOND("MyGetExtraInfo: " << myInfo);
+  return myInfo;
+}
+
+
+/*
 Execute received actions
 */
 bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
@@ -162,6 +174,7 @@ main (int argc, char *argv[])
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
   openGymEnv->SetGetObservationCb( MakeCallback (&MyGetObservation) );
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
+  openGymEnv->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
 
   NS_LOG_UNCOND ("Simulation start");

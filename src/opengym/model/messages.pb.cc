@@ -101,6 +101,16 @@ class GetRewardReplyDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<GetRewardReply>
       _instance;
 } _GetRewardReply_default_instance_;
+class GetExtraInfoRequestDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<GetExtraInfoRequest>
+      _instance;
+} _GetExtraInfoRequest_default_instance_;
+class GetExtraInfoReplyDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<GetExtraInfoReply>
+      _instance;
+} _GetExtraInfoReply_default_instance_;
 class SetActionRequestDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<SetActionRequest>
@@ -352,6 +362,34 @@ static void InitDefaultsGetRewardReply() {
 ::google::protobuf::internal::SCCInfo<0> scc_info_GetRewardReply =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsGetRewardReply}, {}};
 
+static void InitDefaultsGetExtraInfoRequest() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::ns3opengym::_GetExtraInfoRequest_default_instance_;
+    new (ptr) ::ns3opengym::GetExtraInfoRequest();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::ns3opengym::GetExtraInfoRequest::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_GetExtraInfoRequest =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsGetExtraInfoRequest}, {}};
+
+static void InitDefaultsGetExtraInfoReply() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::ns3opengym::_GetExtraInfoReply_default_instance_;
+    new (ptr) ::ns3opengym::GetExtraInfoReply();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::ns3opengym::GetExtraInfoReply::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_GetExtraInfoReply =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsGetExtraInfoReply}, {}};
+
 static void InitDefaultsSetActionRequest() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -468,6 +506,8 @@ void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_GetObservationReply.base);
   ::google::protobuf::internal::InitSCC(&scc_info_GetRewardRequest.base);
   ::google::protobuf::internal::InitSCC(&scc_info_GetRewardReply.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_GetExtraInfoRequest.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_GetExtraInfoReply.base);
   ::google::protobuf::internal::InitSCC(&scc_info_SetActionRequest.base);
   ::google::protobuf::internal::InitSCC(&scc_info_SetActionReply.base);
   ::google::protobuf::internal::InitSCC(&scc_info_StopEnvRequest.base);
@@ -477,7 +517,7 @@ void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_BoxDataContainer.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[22];
+::google::protobuf::Metadata file_level_metadata[24];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[4];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
@@ -516,6 +556,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::InitializeRequest, timestep_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::InitializeRequest, simseed_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::InitializeReply, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -576,6 +617,17 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::GetRewardReply, reward_),
   ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::GetExtraInfoRequest, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::GetExtraInfoReply, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::GetExtraInfoReply, info_),
+  ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::ns3opengym::SetActionRequest, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
@@ -629,23 +681,25 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROT
   { 15, -1, sizeof(::ns3opengym::RequestMsg)},
   { 22, -1, sizeof(::ns3opengym::ReplyMsg)},
   { 29, -1, sizeof(::ns3opengym::InitializeRequest)},
-  { 35, -1, sizeof(::ns3opengym::InitializeReply)},
-  { 43, -1, sizeof(::ns3opengym::GetActionSpaceRequest)},
-  { 48, -1, sizeof(::ns3opengym::GetObservationSpaceRequest)},
-  { 53, -1, sizeof(::ns3opengym::GetSpaceReply)},
-  { 60, -1, sizeof(::ns3opengym::GetIsGameOverRequest)},
-  { 65, -1, sizeof(::ns3opengym::GetIsGameOverReply)},
-  { 72, -1, sizeof(::ns3opengym::GetObservationRequest)},
-  { 77, -1, sizeof(::ns3opengym::GetObservationReply)},
-  { 83, -1, sizeof(::ns3opengym::GetRewardRequest)},
-  { 88, -1, sizeof(::ns3opengym::GetRewardReply)},
-  { 94, -1, sizeof(::ns3opengym::SetActionRequest)},
-  { 100, -1, sizeof(::ns3opengym::SetActionReply)},
-  { 106, -1, sizeof(::ns3opengym::StopEnvRequest)},
-  { 111, -1, sizeof(::ns3opengym::StopEnvReply)},
-  { 117, -1, sizeof(::ns3opengym::DataContainer)},
-  { 124, -1, sizeof(::ns3opengym::DiscreteDataContainer)},
-  { 130, -1, sizeof(::ns3opengym::BoxDataContainer)},
+  { 36, -1, sizeof(::ns3opengym::InitializeReply)},
+  { 44, -1, sizeof(::ns3opengym::GetActionSpaceRequest)},
+  { 49, -1, sizeof(::ns3opengym::GetObservationSpaceRequest)},
+  { 54, -1, sizeof(::ns3opengym::GetSpaceReply)},
+  { 61, -1, sizeof(::ns3opengym::GetIsGameOverRequest)},
+  { 66, -1, sizeof(::ns3opengym::GetIsGameOverReply)},
+  { 73, -1, sizeof(::ns3opengym::GetObservationRequest)},
+  { 78, -1, sizeof(::ns3opengym::GetObservationReply)},
+  { 84, -1, sizeof(::ns3opengym::GetRewardRequest)},
+  { 89, -1, sizeof(::ns3opengym::GetRewardReply)},
+  { 95, -1, sizeof(::ns3opengym::GetExtraInfoRequest)},
+  { 100, -1, sizeof(::ns3opengym::GetExtraInfoReply)},
+  { 106, -1, sizeof(::ns3opengym::SetActionRequest)},
+  { 112, -1, sizeof(::ns3opengym::SetActionReply)},
+  { 118, -1, sizeof(::ns3opengym::StopEnvRequest)},
+  { 123, -1, sizeof(::ns3opengym::StopEnvReply)},
+  { 129, -1, sizeof(::ns3opengym::DataContainer)},
+  { 136, -1, sizeof(::ns3opengym::DiscreteDataContainer)},
+  { 142, -1, sizeof(::ns3opengym::BoxDataContainer)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -664,6 +718,8 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_GetObservationReply_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_GetRewardRequest_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_GetRewardReply_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_GetExtraInfoRequest_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_GetExtraInfoReply_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_SetActionRequest_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_SetActionReply_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::ns3opengym::_StopEnvRequest_default_instance_),
@@ -688,7 +744,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 22);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 24);
 }
 
 void AddDescriptorsImpl() {
@@ -702,41 +758,43 @@ void AddDescriptorsImpl() {
       "\023.ns3opengym.MsgType\022!\n\003msg\030\002 \001(\0132\024.goog"
       "le.protobuf.Any\"P\n\010ReplyMsg\022!\n\004type\030\001 \001("
       "\0162\023.ns3opengym.MsgType\022!\n\003msg\030\002 \001(\0132\024.go"
-      "ogle.protobuf.Any\"%\n\021InitializeRequest\022\020"
-      "\n\010timeStep\030\001 \001(\001\"P\n\017InitializeReply\022\014\n\004d"
-      "one\030\001 \001(\010\022\024\n\014simProcessId\030\002 \001(\004\022\031\n\021wafSh"
-      "ellProcessId\030\003 \001(\004\"\027\n\025GetActionSpaceRequ"
-      "est\"\034\n\032GetObservationSpaceRequest\"Y\n\rGet"
-      "SpaceReply\022#\n\004type\030\001 \001(\0162\025.ns3opengym.Sp"
-      "aceType\022#\n\005space\030\002 \001(\0132\024.google.protobuf"
-      ".Any\"\026\n\024GetIsGameOverRequest\"\212\001\n\022GetIsGa"
-      "meOverReply\022\022\n\nisGameOver\030\001 \001(\010\0225\n\006reaso"
-      "n\030\002 \001(\0162%.ns3opengym.GetIsGameOverReply."
-      "Reason\")\n\006Reason\022\021\n\rSimulationEnd\020\000\022\014\n\010G"
-      "ameOver\020\001\"\027\n\025GetObservationRequest\"C\n\023Ge"
-      "tObservationReply\022,\n\tcontainer\030\001 \001(\0132\031.n"
-      "s3opengym.DataContainer\"\022\n\020GetRewardRequ"
-      "est\" \n\016GetRewardReply\022\016\n\006reward\030\001 \001(\002\"@\n"
-      "\020SetActionRequest\022,\n\tcontainer\030\001 \001(\0132\031.n"
-      "s3opengym.DataContainer\"\036\n\016SetActionRepl"
-      "y\022\014\n\004done\030\001 \001(\010\"\020\n\016StopEnvRequest\"\034\n\014Sto"
-      "pEnvReply\022\014\n\004done\030\001 \001(\010\"X\n\rDataContainer"
-      "\022#\n\004type\030\001 \001(\0162\025.ns3opengym.SpaceType\022\"\n"
-      "\004data\030\002 \001(\0132\024.google.protobuf.Any\"%\n\025Dis"
-      "creteDataContainer\022\014\n\004data\030\001 \001(\005\"\215\001\n\020Box"
-      "DataContainer\022 \n\005dtype\030\001 \001(\0162\021.ns3opengy"
-      "m.Dtype\022\r\n\005shape\030\002 \003(\r\022\017\n\007intData\030\003 \003(\005\022"
-      "\020\n\010uintData\030\004 \003(\r\022\021\n\tfloatData\030\005 \003(\002\022\022\n\n"
-      "doubleData\030\006 \003(\001*\215\001\n\007MsgType\022\013\n\007Unknown\020"
-      "\000\022\010\n\004Init\020\001\022\017\n\013ActionSpace\020\002\022\024\n\020Observat"
-      "ionSpace\020\003\022\016\n\nIsGameOver\020\004\022\017\n\013Observatio"
-      "n\020\005\022\n\n\006Reward\020\006\022\n\n\006Action\020\007\022\013\n\007StopEnv\020\010"
-      "*\"\n\tSpaceType\022\014\n\010Discrete\020\000\022\007\n\003Box\020\001*1\n\005"
-      "Dtype\022\007\n\003INT\020\000\022\010\n\004UINT\020\001\022\t\n\005FLOAT\020\002\022\n\n\006D"
-      "OUBLE\020\003b\006proto3"
+      "ogle.protobuf.Any\"6\n\021InitializeRequest\022\020"
+      "\n\010timeStep\030\001 \001(\001\022\017\n\007simSeed\030\002 \001(\r\"P\n\017Ini"
+      "tializeReply\022\014\n\004done\030\001 \001(\010\022\024\n\014simProcess"
+      "Id\030\002 \001(\004\022\031\n\021wafShellProcessId\030\003 \001(\004\"\027\n\025G"
+      "etActionSpaceRequest\"\034\n\032GetObservationSp"
+      "aceRequest\"Y\n\rGetSpaceReply\022#\n\004type\030\001 \001("
+      "\0162\025.ns3opengym.SpaceType\022#\n\005space\030\002 \001(\0132"
+      "\024.google.protobuf.Any\"\026\n\024GetIsGameOverRe"
+      "quest\"\212\001\n\022GetIsGameOverReply\022\022\n\nisGameOv"
+      "er\030\001 \001(\010\0225\n\006reason\030\002 \001(\0162%.ns3opengym.Ge"
+      "tIsGameOverReply.Reason\")\n\006Reason\022\021\n\rSim"
+      "ulationEnd\020\000\022\014\n\010GameOver\020\001\"\027\n\025GetObserva"
+      "tionRequest\"C\n\023GetObservationReply\022,\n\tco"
+      "ntainer\030\001 \001(\0132\031.ns3opengym.DataContainer"
+      "\"\022\n\020GetRewardRequest\" \n\016GetRewardReply\022\016"
+      "\n\006reward\030\001 \001(\002\"\025\n\023GetExtraInfoRequest\"!\n"
+      "\021GetExtraInfoReply\022\014\n\004info\030\001 \001(\t\"@\n\020SetA"
+      "ctionRequest\022,\n\tcontainer\030\001 \001(\0132\031.ns3ope"
+      "ngym.DataContainer\"\036\n\016SetActionReply\022\014\n\004"
+      "done\030\001 \001(\010\"\020\n\016StopEnvRequest\"\034\n\014StopEnvR"
+      "eply\022\014\n\004done\030\001 \001(\010\"X\n\rDataContainer\022#\n\004t"
+      "ype\030\001 \001(\0162\025.ns3opengym.SpaceType\022\"\n\004data"
+      "\030\002 \001(\0132\024.google.protobuf.Any\"%\n\025Discrete"
+      "DataContainer\022\014\n\004data\030\001 \001(\005\"\215\001\n\020BoxDataC"
+      "ontainer\022 \n\005dtype\030\001 \001(\0162\021.ns3opengym.Dty"
+      "pe\022\r\n\005shape\030\002 \003(\r\022\017\n\007intData\030\003 \003(\005\022\020\n\010ui"
+      "ntData\030\004 \003(\r\022\021\n\tfloatData\030\005 \003(\002\022\022\n\ndoubl"
+      "eData\030\006 \003(\001*\234\001\n\007MsgType\022\013\n\007Unknown\020\000\022\010\n\004"
+      "Init\020\001\022\017\n\013ActionSpace\020\002\022\024\n\020ObservationSp"
+      "ace\020\003\022\016\n\nIsGameOver\020\004\022\017\n\013Observation\020\005\022\n"
+      "\n\006Reward\020\006\022\r\n\tExtraInfo\020\007\022\n\n\006Action\020\010\022\013\n"
+      "\007StopEnv\020\t*\"\n\tSpaceType\022\014\n\010Discrete\020\000\022\007\n"
+      "\003Box\020\001*1\n\005Dtype\022\007\n\003INT\020\000\022\010\n\004UINT\020\001\022\t\n\005FL"
+      "OAT\020\002\022\n\n\006DOUBLE\020\003b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1575);
+      descriptor, 1665);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "messages.proto", &protobuf_RegisterTypes);
   ::protobuf_google_2fprotobuf_2fany_2eproto::AddDescriptors();
@@ -790,6 +848,7 @@ bool MsgType_IsValid(int value) {
     case 6:
     case 7:
     case 8:
+    case 9:
       return true;
     default:
       return false;
@@ -1983,6 +2042,7 @@ void InitializeRequest::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int InitializeRequest::kTimeStepFieldNumber;
+const int InitializeRequest::kSimSeedFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 InitializeRequest::InitializeRequest()
@@ -1996,12 +2056,16 @@ InitializeRequest::InitializeRequest(const InitializeRequest& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  timestep_ = from.timestep_;
+  ::memcpy(&timestep_, &from.timestep_,
+    static_cast<size_t>(reinterpret_cast<char*>(&simseed_) -
+    reinterpret_cast<char*>(&timestep_)) + sizeof(simseed_));
   // @@protoc_insertion_point(copy_constructor:ns3opengym.InitializeRequest)
 }
 
 void InitializeRequest::SharedCtor() {
-  timestep_ = 0;
+  ::memset(&timestep_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&simseed_) -
+      reinterpret_cast<char*>(&timestep_)) + sizeof(simseed_));
 }
 
 InitializeRequest::~InitializeRequest() {
@@ -2032,7 +2096,9 @@ void InitializeRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  timestep_ = 0;
+  ::memset(&timestep_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&simseed_) -
+      reinterpret_cast<char*>(&timestep_)) + sizeof(simseed_));
   _internal_metadata_.Clear();
 }
 
@@ -2054,6 +2120,20 @@ bool InitializeRequest::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
                  input, &timestep_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // uint32 simSeed = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, &simseed_)));
         } else {
           goto handle_unusual;
         }
@@ -2091,6 +2171,11 @@ void InitializeRequest::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteDouble(1, this->timestep(), output);
   }
 
+  // uint32 simSeed = 2;
+  if (this->simseed() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->simseed(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -2108,6 +2193,11 @@ void InitializeRequest::SerializeWithCachedSizes(
   // double timeStep = 1;
   if (this->timestep() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(1, this->timestep(), target);
+  }
+
+  // uint32 simSeed = 2;
+  if (this->simseed() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->simseed(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -2130,6 +2220,13 @@ size_t InitializeRequest::ByteSizeLong() const {
   // double timeStep = 1;
   if (this->timestep() != 0) {
     total_size += 1 + 8;
+  }
+
+  // uint32 simSeed = 2;
+  if (this->simseed() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+        this->simseed());
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -2162,6 +2259,9 @@ void InitializeRequest::MergeFrom(const InitializeRequest& from) {
   if (from.timestep() != 0) {
     set_timestep(from.timestep());
   }
+  if (from.simseed() != 0) {
+    set_simseed(from.simseed());
+  }
 }
 
 void InitializeRequest::CopyFrom(const ::google::protobuf::Message& from) {
@@ -2189,6 +2289,7 @@ void InitializeRequest::Swap(InitializeRequest* other) {
 void InitializeRequest::InternalSwap(InitializeRequest* other) {
   using std::swap;
   swap(timestep_, other->timestep_);
+  swap(simseed_, other->simseed_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
@@ -4396,6 +4497,427 @@ void GetRewardReply::InternalSwap(GetRewardReply* other) {
 
 // ===================================================================
 
+void GetExtraInfoRequest::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+GetExtraInfoRequest::GetExtraInfoRequest()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_messages_2eproto::scc_info_GetExtraInfoRequest.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:ns3opengym.GetExtraInfoRequest)
+}
+GetExtraInfoRequest::GetExtraInfoRequest(const GetExtraInfoRequest& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  // @@protoc_insertion_point(copy_constructor:ns3opengym.GetExtraInfoRequest)
+}
+
+void GetExtraInfoRequest::SharedCtor() {
+}
+
+GetExtraInfoRequest::~GetExtraInfoRequest() {
+  // @@protoc_insertion_point(destructor:ns3opengym.GetExtraInfoRequest)
+  SharedDtor();
+}
+
+void GetExtraInfoRequest::SharedDtor() {
+}
+
+void GetExtraInfoRequest::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* GetExtraInfoRequest::descriptor() {
+  ::protobuf_messages_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_messages_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const GetExtraInfoRequest& GetExtraInfoRequest::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_messages_2eproto::scc_info_GetExtraInfoRequest.base);
+  return *internal_default_instance();
+}
+
+
+void GetExtraInfoRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:ns3opengym.GetExtraInfoRequest)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _internal_metadata_.Clear();
+}
+
+bool GetExtraInfoRequest::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:ns3opengym.GetExtraInfoRequest)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+  handle_unusual:
+    if (tag == 0) {
+      goto success;
+    }
+    DO_(::google::protobuf::internal::WireFormat::SkipField(
+          input, tag, _internal_metadata_.mutable_unknown_fields()));
+  }
+success:
+  // @@protoc_insertion_point(parse_success:ns3opengym.GetExtraInfoRequest)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:ns3opengym.GetExtraInfoRequest)
+  return false;
+#undef DO_
+}
+
+void GetExtraInfoRequest::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:ns3opengym.GetExtraInfoRequest)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:ns3opengym.GetExtraInfoRequest)
+}
+
+::google::protobuf::uint8* GetExtraInfoRequest::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:ns3opengym.GetExtraInfoRequest)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ns3opengym.GetExtraInfoRequest)
+  return target;
+}
+
+size_t GetExtraInfoRequest::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ns3opengym.GetExtraInfoRequest)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void GetExtraInfoRequest::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ns3opengym.GetExtraInfoRequest)
+  GOOGLE_DCHECK_NE(&from, this);
+  const GetExtraInfoRequest* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const GetExtraInfoRequest>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ns3opengym.GetExtraInfoRequest)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ns3opengym.GetExtraInfoRequest)
+    MergeFrom(*source);
+  }
+}
+
+void GetExtraInfoRequest::MergeFrom(const GetExtraInfoRequest& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:ns3opengym.GetExtraInfoRequest)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+}
+
+void GetExtraInfoRequest::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ns3opengym.GetExtraInfoRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void GetExtraInfoRequest::CopyFrom(const GetExtraInfoRequest& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ns3opengym.GetExtraInfoRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GetExtraInfoRequest::IsInitialized() const {
+  return true;
+}
+
+void GetExtraInfoRequest::Swap(GetExtraInfoRequest* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void GetExtraInfoRequest::InternalSwap(GetExtraInfoRequest* other) {
+  using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata GetExtraInfoRequest::GetMetadata() const {
+  protobuf_messages_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_messages_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void GetExtraInfoReply::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int GetExtraInfoReply::kInfoFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+GetExtraInfoReply::GetExtraInfoReply()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_messages_2eproto::scc_info_GetExtraInfoReply.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:ns3opengym.GetExtraInfoReply)
+}
+GetExtraInfoReply::GetExtraInfoReply(const GetExtraInfoReply& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  info_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.info().size() > 0) {
+    info_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.info_);
+  }
+  // @@protoc_insertion_point(copy_constructor:ns3opengym.GetExtraInfoReply)
+}
+
+void GetExtraInfoReply::SharedCtor() {
+  info_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+GetExtraInfoReply::~GetExtraInfoReply() {
+  // @@protoc_insertion_point(destructor:ns3opengym.GetExtraInfoReply)
+  SharedDtor();
+}
+
+void GetExtraInfoReply::SharedDtor() {
+  info_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void GetExtraInfoReply::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* GetExtraInfoReply::descriptor() {
+  ::protobuf_messages_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_messages_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const GetExtraInfoReply& GetExtraInfoReply::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_messages_2eproto::scc_info_GetExtraInfoReply.base);
+  return *internal_default_instance();
+}
+
+
+void GetExtraInfoReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:ns3opengym.GetExtraInfoReply)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  info_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  _internal_metadata_.Clear();
+}
+
+bool GetExtraInfoReply::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:ns3opengym.GetExtraInfoReply)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // string info = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_info()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->info().data(), static_cast<int>(this->info().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "ns3opengym.GetExtraInfoReply.info"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:ns3opengym.GetExtraInfoReply)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:ns3opengym.GetExtraInfoReply)
+  return false;
+#undef DO_
+}
+
+void GetExtraInfoReply::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:ns3opengym.GetExtraInfoReply)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string info = 1;
+  if (this->info().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->info().data(), static_cast<int>(this->info().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "ns3opengym.GetExtraInfoReply.info");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->info(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:ns3opengym.GetExtraInfoReply)
+}
+
+::google::protobuf::uint8* GetExtraInfoReply::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:ns3opengym.GetExtraInfoReply)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string info = 1;
+  if (this->info().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->info().data(), static_cast<int>(this->info().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "ns3opengym.GetExtraInfoReply.info");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->info(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:ns3opengym.GetExtraInfoReply)
+  return target;
+}
+
+size_t GetExtraInfoReply::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:ns3opengym.GetExtraInfoReply)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // string info = 1;
+  if (this->info().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->info());
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void GetExtraInfoReply::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:ns3opengym.GetExtraInfoReply)
+  GOOGLE_DCHECK_NE(&from, this);
+  const GetExtraInfoReply* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const GetExtraInfoReply>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:ns3opengym.GetExtraInfoReply)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:ns3opengym.GetExtraInfoReply)
+    MergeFrom(*source);
+  }
+}
+
+void GetExtraInfoReply::MergeFrom(const GetExtraInfoReply& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:ns3opengym.GetExtraInfoReply)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.info().size() > 0) {
+
+    info_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.info_);
+  }
+}
+
+void GetExtraInfoReply::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:ns3opengym.GetExtraInfoReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void GetExtraInfoReply::CopyFrom(const GetExtraInfoReply& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:ns3opengym.GetExtraInfoReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool GetExtraInfoReply::IsInitialized() const {
+  return true;
+}
+
+void GetExtraInfoReply::Swap(GetExtraInfoReply* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void GetExtraInfoReply::InternalSwap(GetExtraInfoReply* other) {
+  using std::swap;
+  info_.Swap(&other->info_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata GetExtraInfoReply::GetMetadata() const {
+  protobuf_messages_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_messages_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
 void SetActionRequest::InitAsDefaultInstance() {
   ::ns3opengym::_SetActionRequest_default_instance_._instance.get_mutable()->container_ = const_cast< ::ns3opengym::DataContainer*>(
       ::ns3opengym::DataContainer::internal_default_instance());
@@ -6343,6 +6865,12 @@ template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ns3opengym::GetRewardRequest* Ar
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ns3opengym::GetRewardReply* Arena::CreateMaybeMessage< ::ns3opengym::GetRewardReply >(Arena* arena) {
   return Arena::CreateInternal< ::ns3opengym::GetRewardReply >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ns3opengym::GetExtraInfoRequest* Arena::CreateMaybeMessage< ::ns3opengym::GetExtraInfoRequest >(Arena* arena) {
+  return Arena::CreateInternal< ::ns3opengym::GetExtraInfoRequest >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ns3opengym::GetExtraInfoReply* Arena::CreateMaybeMessage< ::ns3opengym::GetExtraInfoReply >(Arena* arena) {
+  return Arena::CreateInternal< ::ns3opengym::GetExtraInfoReply >(arena);
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::ns3opengym::SetActionRequest* Arena::CreateMaybeMessage< ::ns3opengym::SetActionRequest >(Arena* arena) {
   return Arena::CreateInternal< ::ns3opengym::SetActionRequest >(arena);
