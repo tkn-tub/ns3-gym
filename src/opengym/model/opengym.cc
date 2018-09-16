@@ -59,6 +59,7 @@ OpenGymEnv::OpenGymEnv(uint32_t port, Time stepTime):
   m_rxGetObservation = false;
   m_rxGetReward = false;
   m_rxSetActions = false;
+  Simulator::Schedule (Seconds(0.0), &OpenGymEnv::Init, this);
 }
 
 OpenGymEnv::~OpenGymEnv ()
@@ -184,8 +185,8 @@ OpenGymEnv::Init()
   std::string bindAddr = "tcp://*:" + std::to_string(m_port);
   zmq_bind (m_zmq_socket, bindAddr.c_str());
 
-  NS_LOG_UNCOND("Waiting for Python process to connect");
   NS_LOG_UNCOND("Simulation process id: " << ::getpid() << " (parent (waf shell) id: " << ::getppid() << ")");
+  NS_LOG_UNCOND("Waiting for Python process to connect");
 
   bool rxInitReq = false;
   bool rxGetActionSpaceReq = false;
@@ -524,11 +525,12 @@ OpenGymEnv::WaitForStop()
 
 
 void
-OpenGymEnv::SetGameOver()
+OpenGymEnv::NotifySimulationEnd()
 {
   NS_LOG_FUNCTION (this);
   m_gameOver = true;
   m_simEnd = true;
+  WaitForStop();
 }
 
 bool

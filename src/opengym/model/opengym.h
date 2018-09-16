@@ -52,7 +52,7 @@ public:
   void WaitForNextStep();
   void WaitForStop();
 
-  void SetGameOver();
+  void NotifySimulationEnd();
   bool IsGameOver();
 
   Ptr<OpenGymSpace> GetActionSpace();
