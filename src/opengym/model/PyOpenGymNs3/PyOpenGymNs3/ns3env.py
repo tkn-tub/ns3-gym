@@ -74,7 +74,9 @@ class Ns3ZmqBridge(object):
         # print ("Sending INIT request ")
         msg = pb.InitializeRequest()
         msg.timeStep = stepInterval
-        msg.simSeed = self.simSeed
+
+        if self.startSim:
+            msg.simSeed = self.simSeed
 
         requestMsg = pb.RequestMsg()
         requestMsg.type = pb.Init
@@ -356,6 +358,12 @@ class Ns3Env(gym.Env):
         self.state = None
         self.steps_beyond_done = None
 
+        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simTime, self.simSeed, self.simArgs, self.debug)
+        self.ns3ZmqBridge.initialize_env(self.stepTime)
+        self.action_space = self.ns3ZmqBridge.get_action_space()
+        self.observation_space = self.ns3ZmqBridge.get_observation_space()
+        self.envDirty = False
+
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
@@ -370,13 +378,18 @@ class Ns3Env(gym.Env):
 
     def step(self, action):
         response = self.ns3ZmqBridge.execute_action(action)
+        self.envDirty = True
         return self._get_obs()
 
     def reset(self):
+        if not self.envDirty:
+            return self._get_obs()
+
         self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simTime, self.simSeed, self.simArgs, self.debug)
         self.ns3ZmqBridge.initialize_env(self.stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
+        self.envDirty = False
         return self._get_obs()
 
     def render(self, mode='human'):
