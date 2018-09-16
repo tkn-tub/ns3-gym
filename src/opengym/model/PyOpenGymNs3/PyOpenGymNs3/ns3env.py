@@ -353,7 +353,7 @@ class Ns3Env(gym.Env):
         self.action_space = None
         self.observation_space = None
 
-        self._seed()
+        self.seed()
         self.viewer = None
         self.state = None
         self.steps_beyond_done = None
@@ -364,11 +364,11 @@ class Ns3Env(gym.Env):
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
         self.envDirty = False
 
-    def _seed(self, seed=None):
+    def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def _get_obs(self):
+    def get_obs(self):
         # get_extra info is optional, so execute first, otherwise env will move to next step
         extraInfo = self.ns3ZmqBridge.get_extra_info()
         obs = self.ns3ZmqBridge.get_obs()
@@ -379,18 +379,18 @@ class Ns3Env(gym.Env):
     def step(self, action):
         response = self.ns3ZmqBridge.execute_action(action)
         self.envDirty = True
-        return self._get_obs()
+        return self.get_obs()
 
     def reset(self):
         if not self.envDirty:
-            return self._get_obs()
+            return self.get_obs()
 
         self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simTime, self.simSeed, self.simArgs, self.debug)
         self.ns3ZmqBridge.initialize_env(self.stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
         self.envDirty = False
-        return self._get_obs()
+        return self.get_obs()
 
     def render(self, mode='human'):
         return
