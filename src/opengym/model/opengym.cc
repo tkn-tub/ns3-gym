@@ -58,6 +58,7 @@ OpenGymEnv::OpenGymEnv(uint32_t port, Time stepTime):
   m_rxGetGameOver = false;
   m_rxGetObservation = false;
   m_rxGetReward = false;
+  m_rxGetExtraInfo = false;
   m_rxSetActions = false;
   Simulator::Schedule (Seconds(0.0), &OpenGymEnv::Init, this);
 }
@@ -112,6 +113,13 @@ OpenGymEnv::SetGetRewardCb(Callback<float> cb)
 {
   NS_LOG_FUNCTION (this);
   m_rewardCb = cb;
+}
+
+void
+OpenGymEnv::SetGetExtraInfoCb(Callback<std::string> cb)
+{
+  NS_LOG_FUNCTION (this);
+  m_extraInfoCb = cb;
 }
 
 void
@@ -202,7 +210,7 @@ OpenGymEnv::Init()
       ns3opengym::InitializeRequest initRequestPbMsg;
       NS_LOG_DEBUG("Received Init request");
       if (requestPbMsg.msg().UnpackTo(&initRequestPbMsg)) {
-        NS_LOG_UNCOND("Decoded Init request: step interval: " << initRequestPbMsg.timestep());
+        NS_LOG_UNCOND("Decoded Init request: step interval: " << initRequestPbMsg.timestep() << " seed: " << initRequestPbMsg.simseed());
         rxInitReq = true;
 
         double timeStep = initRequestPbMsg.timestep();
@@ -299,6 +307,7 @@ OpenGymEnv::WaitForNextStep()
   Ptr<OpenGymDataContainer> obsDataContainer = GetObservation();
   float reward = GetReward();
   bool isGameOver = IsGameOver();
+  std::string extraInfo = GetExtraInfo();
 
   while (true) {
     requestPbMsg = ReceiveMsg();
@@ -399,6 +408,20 @@ OpenGymEnv::WaitForNextStep()
       replyPbMsg.set_type(ns3opengym::Reward);
       replyPbMsg.mutable_msg()->PackFrom(rewardReplyPbMsg);
         
+      SendMsg(replyPbMsg);
+    }
+    else if (requestPbMsg.type() == ns3opengym::ExtraInfo)
+    {
+      m_rxGetReward = true;
+      NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
+
+      ns3opengym::GetExtraInfoReply rewardReplyPbMsg;
+      ns3opengym::ReplyMsg replyPbMsg;
+      rewardReplyPbMsg.set_info(extraInfo);
+
+      replyPbMsg.set_type(ns3opengym::ExtraInfo);
+      replyPbMsg.mutable_msg()->PackFrom(rewardReplyPbMsg);
+
       SendMsg(replyPbMsg);
     }
     else if (requestPbMsg.type() == ns3opengym::Action)
@@ -591,6 +614,18 @@ OpenGymEnv::GetReward()
     reward = m_rewardCb();
   }
   return reward;
+}
+
+std::string
+OpenGymEnv::GetExtraInfo()
+{
+  NS_LOG_FUNCTION (this);
+  std::string info;
+  if (!m_extraInfoCb.IsNull())
+  {
+    info = m_extraInfoCb();
+  }
+  return info;
 }
 
 bool
