@@ -314,7 +314,7 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=-1, simArgs={}, debug=True):
+    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=-1, simArgs={}, debug=False):
         self.stepTime = stepTime
         self.port = port
         self.startSim = startSim
