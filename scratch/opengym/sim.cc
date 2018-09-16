@@ -47,10 +47,6 @@ Define action space
 */
 Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
-  // OpenGymDiscreteSpace also works
-  //int n = 13;
-  //Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (n);
-
   uint32_t nodeNum = 5;
 
   float low = 0.0;
@@ -168,14 +164,12 @@ main (int argc, char *argv[])
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
 
-  openGymEnv->Init();
   NS_LOG_UNCOND ("Simulation start");
   Simulator::Stop (Seconds (simulationTime));
   Simulator::Run ();
   NS_LOG_UNCOND ("Simulation stop");
 
-  openGymEnv->SetGameOver();
-  openGymEnv->WaitForStop();
+  openGymEnv->NotifySimulationEnd();
   Simulator::Destroy ();
 
 }
