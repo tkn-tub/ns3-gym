@@ -23,13 +23,14 @@ startSim = bool(args.start)
 iterationNum = int(args.iterations)
 
 port = 5555
-simTime = 20 # seconds
-stepTime = 0.01  # seconds
+simTime = 5 # seconds
+stepTime = 0.1  # seconds
 seed = 0
-simArgs = {"--testArg": 123}
-debug = False
+simArgs = {"--simTime": simTime,
+           "--testArg": 123}
+debug = True
 
-env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simTime=simTime, simSeed=seed, simArgs=simArgs, debug=debug)
+env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
 env.reset()
 
 ob_space = env.observation_space
@@ -52,8 +53,9 @@ def calculate_cw_window(obs):
 
 try:
     while True:
-        print("Start iteration: ", currIt)
         obs, reward, done, info = env.reset()
+
+        print("Start iteration: ", currIt)
         print("Step: ", stepIdx)
         print("---obs, reward, done, info: ", obs, reward, done, info)
 
@@ -70,6 +72,9 @@ try:
 
             if done:
                 stepIdx = 0
+                print("All rx pkts num: ", allRxPkts)
+                allRxPkts = 0
+
                 if currIt + 1 < iterationNum:
                     env.reset()
                 break
@@ -82,5 +87,4 @@ except KeyboardInterrupt:
     print("Ctrl-C -> Exit")
 finally:
     env.close()
-    print("All rx pkts num: ", allRxPkts)
     print("Done")

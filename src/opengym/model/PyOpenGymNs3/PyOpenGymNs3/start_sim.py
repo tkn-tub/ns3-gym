@@ -21,7 +21,7 @@ def find_waf_path(cwd):
 	return wafPath
 
 
-def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}, debug=False):
+def start_sim_script(port=5555, simSeed=0, simArgs={}, debug=False):
 	cwd = os.getcwd()
 	simScriptName = os.path.basename(cwd)
 	wafPath = find_waf_path(cwd)
@@ -30,9 +30,6 @@ def start_sim_script(port=5555, simTime=0, simSeed=0, simArgs={}, debug=False):
 
 	if port:
 		wafString += ' --openGymPort=' + str(port)
-
-	if simTime:
-		wafString += ' --simTime=' + str(simTime)
 
 	if simSeed:
 		wafString += ' --simSeed=' + str(simSeed)
