@@ -24,11 +24,10 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 class Ns3ZmqBridge(object):
     """docstring for Ns3ZmqBridge"""
-    def __init__(self, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}, debug=False):
+    def __init__(self, port=5555, startSim=True, simSeed=0, simArgs={}, debug=False):
         super(Ns3ZmqBridge, self).__init__()
         self.port = port
         self.startSim = startSim
-        self.simTime = simTime
         self.simSeed = simSeed
         self.simArgs = simArgs
         self.envStopped = False
@@ -42,7 +41,7 @@ class Ns3ZmqBridge(object):
             self.simSeed = simSeed
 
         if self.startSim:
-            self.ns3Process = start_sim_script(port, simTime, simSeed, simArgs, debug)
+            self.ns3Process = start_sim_script(port, simSeed, simArgs, debug)
         else:
             print("Waiting for simulation script to connect")
 
@@ -339,11 +338,10 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime=0, port=5555, startSim=True, simTime=0, simSeed=0, simArgs={}, debug=False):
+    def __init__(self, stepTime=0, port=5555, startSim=True, simSeed=0, simArgs={}, debug=False):
         self.stepTime = stepTime
         self.port = port
         self.startSim = startSim
-        self.simTime = simTime
         self.simSeed = simSeed
         self.simArgs = simArgs
         self.debug = debug
@@ -357,7 +355,7 @@ class Ns3Env(gym.Env):
         self.state = None
         self.steps_beyond_done = None
 
-        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simTime, self.simSeed, self.simArgs, self.debug)
+        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simSeed, self.simArgs, self.debug)
         self.ns3ZmqBridge.initialize_env(self.stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
@@ -385,7 +383,11 @@ class Ns3Env(gym.Env):
         if not self.envDirty:
             return self.get_obs()
 
-        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simTime, self.simSeed, self.simArgs, self.debug)
+        if self.ns3ZmqBridge:
+            self.ns3ZmqBridge.close()
+            self.ns3ZmqBridge = None
+
+        self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simSeed, self.simArgs, self.debug)
         self.ns3ZmqBridge.initialize_env(self.stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
