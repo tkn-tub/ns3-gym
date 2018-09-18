@@ -6,15 +6,34 @@ OpenAI Gym meets ns-3
 Installation
 ============
 
+0. Switch branch to gym:
+
+		git checkout gym
+
 1. Install all required dependencies required by ns-3.
+
+		# minimal requirements for C++:
+		apt-get install gcc g++ python
+
+		see https://www.nsnam.org/wiki/Installation
 
 2. Install ZMQ and Protocol Buffers libs:
 
+		# to install protobuf-3.6 on ubuntu 16.04:
+		sudo add-apt-repository ppa:maarten-fonville/protobuf
+		sudo apt-get update
+
 		apt-get install libzmq5
 		apt-get install libprotobuf-dev
+		apt-get install protobuf-compiler
 
+3. Generate Protobuff messages code (TODO: automate this step in waf):
 
-3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3
+		cd ./ns-3-dev-backpressure/src/opengym/model/
+		protoc -I=./ --cpp_out=./ ./messages.proto
+		protoc -I=./ --python_out=./PyOpenGymNs3/PyOpenGymNs3/ ./messages.proto
+
+3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3 (Python3 required)
 
 		pip install ./src/opengym/model/PyOpenGymNs3
 
