@@ -191,7 +191,7 @@ OpenGymEnv::Init()
 {
   NS_LOG_FUNCTION (this);
   std::string bindAddr = "tcp://*:" + std::to_string(m_port);
-  zmq_bind (m_zmq_socket, bindAddr.c_str());
+  zmq_bind ((void*)m_zmq_socket, bindAddr.c_str());
 
   NS_LOG_UNCOND("Simulation process id: " << ::getpid() << " (parent (waf shell) id: " << ::getppid() << ")");
   NS_LOG_UNCOND("Waiting for Python process to connect");
