@@ -148,21 +148,29 @@ NetDeviceQueue::GetQueueLimits ()
 
 NS_OBJECT_ENSURE_REGISTERED (NetDeviceQueueInterface);
 
-TypeId NetDeviceQueueInterface::GetTypeId (void)
+TypeId
+NetDeviceQueueInterface::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::NetDeviceQueueInterface")
     .SetParent<Object> ()
     .SetGroupName("Network")
     .AddConstructor<NetDeviceQueueInterface> ()
+    .AddAttribute ("NTxQueues", "The number of device transmission queues",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   UintegerValue (1),
+                   MakeUintegerAccessor (&NetDeviceQueueInterface::SetNTxQueues,
+                                         &NetDeviceQueueInterface::GetNTxQueues),
+                   MakeUintegerChecker<uint16_t> (1, 65535))
   ;
   return tid;
 }
 
 NetDeviceQueueInterface::NetDeviceQueueInterface ()
-  : m_numTxQueues (1),
-    m_lateTxQueuesCreation (false)
 {
   NS_LOG_FUNCTION (this);
+
+  // the default select queue callback returns 0
+  m_selectQueueCallback = [] (Ptr<QueueItem> item) { return 0; };
 }
 
 NetDeviceQueueInterface::~NetDeviceQueueInterface ()
@@ -171,13 +179,13 @@ NetDeviceQueueInterface::~NetDeviceQueueInterface ()
 }
 
 Ptr<NetDeviceQueue>
-NetDeviceQueueInterface::GetTxQueue (uint8_t i) const
+NetDeviceQueueInterface::GetTxQueue (std::size_t i) const
 {
   NS_ASSERT (i < m_txQueuesVector.size ());
   return m_txQueuesVector[i];
 }
 
-uint8_t
+std::size_t
 NetDeviceQueueInterface::GetNTxQueues (void) const
 {
   return m_txQueuesVector.size ();
@@ -206,43 +214,18 @@ NetDeviceQueueInterface::DoDispose (void)
 }
 
 void
-NetDeviceQueueInterface::SetTxQueuesN (uint8_t numTxQueues)
+NetDeviceQueueInterface::SetNTxQueues (std::size_t numTxQueues)
 {
   NS_LOG_FUNCTION (this << numTxQueues);
   NS_ASSERT (numTxQueues > 0);
 
-  NS_ABORT_MSG_IF (m_txQueuesVector.size (), "Cannot change the number of"
-                   " device transmission queues once they have been created.");
+  NS_ABORT_MSG_IF (!m_txQueuesVector.empty (), "Cannot call SetNTxQueues after creating device queues");
 
-  m_numTxQueues = numTxQueues;
-}
-
-void
-NetDeviceQueueInterface::CreateTxQueues (void)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_ABORT_MSG_IF (m_txQueuesVector.size (), "The device transmission queues"
-                   " have been already created.");
-
-  for (uint8_t i = 0; i < m_numTxQueues; i++)
+  // create the netdevice queues
+  for (std::size_t i = 0; i < numTxQueues; i++)
     {
-      Ptr<NetDeviceQueue> devQueue = Create<NetDeviceQueue> ();
-      m_txQueuesVector.push_back (devQueue);
+      m_txQueuesVector.push_back (Create<NetDeviceQueue> ());
     }
-}
-
-bool
-NetDeviceQueueInterface::GetLateTxQueuesCreation (void) const
-{
-  return m_lateTxQueuesCreation;
-}
-
-void
-NetDeviceQueueInterface::SetLateTxQueuesCreation (bool value)
-{
-  NS_LOG_FUNCTION (this << value);
-  m_lateTxQueuesCreation = value;
 }
 
 void

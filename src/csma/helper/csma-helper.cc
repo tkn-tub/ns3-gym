@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
+#include "ns3/net-device-queue-interface.h"
 #include "ns3/csma-net-device.h"
 #include "ns3/csma-channel.h"
 #include "ns3/config.h"
@@ -309,6 +310,10 @@ CsmaHelper::InstallPriv (Ptr<Node> node, Ptr<CsmaChannel> channel) const
   Ptr<Queue<Packet> > queue = m_queueFactory.Create<Queue<Packet> > ();
   device->SetQueue (queue);
   device->Attach (channel);
+  // Aggregate a NetDeviceQueueInterface object
+  Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
+  ndqi->ConnectQueueTraces (queue, 0);
+  device->AggregateObject (ndqi);
 
   return device;
 }

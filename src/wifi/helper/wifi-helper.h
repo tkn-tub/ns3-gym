@@ -26,12 +26,14 @@
 #include "ns3/trace-helper.h"
 #include "ns3/wifi-phy.h"
 #include "wifi-mac-helper.h"
+#include <functional>
 
 namespace ns3 {
 
 class WifiNetDevice;
 class Node;
 class RadiotapHeader;
+class QueueItem;
 
 /**
  * \brief create PHY objects
@@ -273,6 +275,17 @@ public:
                                 std::string n5 = "", const AttributeValue &v5 = EmptyAttributeValue (),
                                 std::string n6 = "", const AttributeValue &v6 = EmptyAttributeValue (),
                                 std::string n7 = "", const AttributeValue &v7 = EmptyAttributeValue ());
+
+  /// Callback invoked to determine the MAC queue selected for a given packet
+  typedef std::function<std::size_t (Ptr<QueueItem>)> SelectQueueCallback;
+
+  /**
+   * \param f the select queue callback
+   *
+   * Set the select queue callback to set on the netdevice queue interface aggregated
+   * to the WifiNetDevice, in case RegularWifiMac with QoS enabled is used
+   */
+  void SetSelectQueueCallback (SelectQueueCallback f);
   /**
    * \param phy the PHY helper to create PHY objects
    * \param mac the MAC helper to create MAC objects
@@ -360,6 +373,7 @@ public:
 protected:
   ObjectFactory m_stationManager; ///< station manager
   WifiPhyStandard m_standard; ///< wifi standard
+  SelectQueueCallback m_selectQueueCallback; ///< select queue callback
 };
 
 } //namespace ns3

@@ -31,6 +31,9 @@
 #include "ns3/radiotap-header.h"
 #include "ns3/config.h"
 #include "ns3/names.h"
+#include "ns3/net-device-queue-interface.h"
+#include "ns3/wifi-mac-queue.h"
+#include "ns3/qos-utils.h"
 #include "wifi-helper.h"
 
 namespace ns3 {
@@ -591,7 +594,8 @@ WifiHelper::~WifiHelper ()
 }
 
 WifiHelper::WifiHelper ()
-  : m_standard (WIFI_PHY_STANDARD_80211a)
+  : m_standard (WIFI_PHY_STANDARD_80211a),
+    m_selectQueueCallback (&SelectQueueByDSField)
 {
   SetRemoteStationManager ("ns3::ArfWifiManager");
 }
@@ -625,6 +629,12 @@ WifiHelper::SetStandard (WifiPhyStandard standard)
   m_standard = standard;
 }
 
+void
+WifiHelper::SetSelectQueueCallback (SelectQueueCallback f)
+{
+  m_selectQueueCallback = f;
+}
+
 NetDeviceContainer
 WifiHelper::Install (const WifiPhyHelper &phyHelper,
                      const WifiMacHelper &macHelper,
@@ -648,6 +658,48 @@ WifiHelper::Install (const WifiPhyHelper &phyHelper,
       node->AddDevice (device);
       devices.Add (device);
       NS_LOG_DEBUG ("node=" << node << ", mob=" << node->GetObject<MobilityModel> ());
+      // Aggregate a NetDeviceQueueInterface object if a RegularWifiMac is installed
+      Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (mac);
+      if (rmac)
+        {
+          Ptr<NetDeviceQueueInterface> ndqi;
+          BooleanValue qosSupported;
+          PointerValue ptr;
+          Ptr<WifiMacQueue> wmq;
+
+          rmac->GetAttributeFailSafe ("QosSupported", qosSupported);
+          if (qosSupported.Get ())
+            {
+              ndqi = CreateObjectWithAttributes<NetDeviceQueueInterface> ("NTxQueues",
+                                                                          UintegerValue (4));
+
+              rmac->GetAttributeFailSafe ("BE_Txop", ptr);
+              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
+              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
+
+              rmac->GetAttributeFailSafe ("BK_Txop", ptr);
+              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
+              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 1);
+
+              rmac->GetAttributeFailSafe ("VI_Txop", ptr);
+              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
+              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 2);
+
+              rmac->GetAttributeFailSafe ("VO_Txop", ptr);
+              wmq = ptr.Get<QosTxop> ()->GetWifiMacQueue ();
+              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 3);
+              ndqi->SetSelectQueueCallback (m_selectQueueCallback);
+            }
+          else
+            {
+              ndqi = CreateObject<NetDeviceQueueInterface> ();
+
+              rmac->GetAttributeFailSafe ("Txop", ptr);
+              wmq = ptr.Get<Txop> ()->GetWifiMacQueue ();
+              ndqi->ConnectQueueTraces<WifiMacQueueItem> (wmq, 0);
+            }
+          device->AggregateObject (ndqi);
+        }
     }
   return devices;
 }

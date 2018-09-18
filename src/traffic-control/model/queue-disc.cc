@@ -993,7 +993,7 @@ Ptr<QueueDiscItem>
 QueueDisc::DequeuePacket ()
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_devQueueIface);
+
   Ptr<QueueDiscItem> item;
 
   // First check if there is a requeued packet
@@ -1002,7 +1002,7 @@ QueueDisc::DequeuePacket ()
         // If the queue where the requeued packet is destined to is not stopped, return
         // the requeued packet; otherwise, return an empty packet.
         // If the device does not support flow control, the device queue is never stopped
-        if (!m_devQueueIface->GetTxQueue (m_requeued->GetTxQueueIndex ())->IsStopped ())
+        if (!m_devQueueIface || !m_devQueueIface->GetTxQueue (m_requeued->GetTxQueueIndex ())->IsStopped ())
           {
             item = m_requeued;
             m_requeued = 0;
@@ -1023,7 +1023,8 @@ QueueDisc::DequeuePacket ()
       // queue disc should try not to dequeue a packet destined to a stopped queue).
       // Otherwise, ask the queue disc to dequeue a packet only if the (unique) queue
       // is not stopped.
-      if (m_devQueueIface->GetNTxQueues ()>1 || !m_devQueueIface->GetTxQueue (0)->IsStopped ())
+      if (!m_devQueueIface ||
+          m_devQueueIface->GetNTxQueues ()>1 || !m_devQueueIface->GetTxQueue (0)->IsStopped ())
         {
           item = Dequeue ();
           // If the item is not null, add the header to the packet.
@@ -1055,19 +1056,19 @@ bool
 QueueDisc::Transmit (Ptr<QueueDiscItem> item)
 {
   NS_LOG_FUNCTION (this << item);
-  NS_ASSERT (m_devQueueIface);
 
   // if the device queue is stopped, requeue the packet and return false.
   // Note that if the underlying device is tc-unaware, packets are never
   // requeued because the queues of tc-unaware devices are never stopped
-  if (m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
+  if (m_devQueueIface && m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
     {
       Requeue (item);
       return false;
     }
 
   // a single queue device makes no use of the priority tag
-  if (m_devQueueIface->GetNTxQueues () == 1)
+  // a device that does not install a device queue interface likely makes no use of it as well
+  if (!m_devQueueIface || m_devQueueIface->GetNTxQueues () == 1)
     {
       SocketPriorityTag priorityTag;
       item->GetPacket ()->RemovePacketTag (priorityTag);
@@ -1090,7 +1091,8 @@ QueueDisc::Transmit (Ptr<QueueDiscItem> item)
 
   // if the queue disc is empty or the device queue is now stopped, return false so
   // that the Run method does not attempt to dequeue other packets and exits
-  if (GetNPackets () == 0 || m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ())
+  if (GetNPackets () == 0 ||
+      (m_devQueueIface && m_devQueueIface->GetTxQueue (item->GetTxQueueIndex ())->IsStopped ()))
     {
       return false;
     }

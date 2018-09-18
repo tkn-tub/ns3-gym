@@ -34,7 +34,6 @@
 namespace ns3 {
 
 template <typename Item> class Queue;
-class NetDeviceQueueInterface;
 class PointToPointChannel;
 class ErrorModel;
 
@@ -198,9 +197,6 @@ protected:
    * \param p Packet received
    */
   void DoMpiReceive (Ptr<Packet> p);
-
-  virtual void DoInitialize (void);
-  virtual void NotifyNewAggregate (void);
 
 private:
 
@@ -439,7 +435,6 @@ private:
   TracedCallback<Ptr<const Packet> > m_promiscSnifferTrace;
 
   Ptr<Node> m_node;         //!< Node owning this NetDevice
-  Ptr<NetDeviceQueueInterface> m_queueInterface;   //!< NetDevice queue interface
   Mac48Address m_address;   //!< Mac48Address of this NetDevice
   NetDevice::ReceiveCallback m_rxCallback;   //!< Receive callback
   NetDevice::PromiscReceiveCallback m_promiscCallback;  //!< Receive callback

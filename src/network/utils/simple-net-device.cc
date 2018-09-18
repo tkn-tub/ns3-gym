@@ -29,7 +29,7 @@
 #include "ns3/string.h"
 #include "ns3/tag.h"
 #include "ns3/simulator.h"
-#include "ns3/net-device-queue-interface.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
 
@@ -227,40 +227,6 @@ SimpleNetDevice::SimpleNetDevice ()
     m_linkUp (false)
 {
   NS_LOG_FUNCTION (this);
-}
-
-void
-SimpleNetDevice::DoInitialize (void)
-{
-  if (m_queueInterface)
-    {
-      NS_ASSERT_MSG (m_queue != 0, "A Queue object has not been attached to the device");
-
-      // connect the traced callbacks of m_queue to the static methods provided by
-      // the NetDeviceQueue class to support flow control and dynamic queue limits.
-      // This could not be done in NotifyNewAggregate because at that time we are
-      // not guaranteed that a queue has been attached to the netdevice
-      m_queueInterface->ConnectQueueTraces (m_queue, 0);
-    }
-
-  NetDevice::DoInitialize ();
-}
-
-void
-SimpleNetDevice::NotifyNewAggregate (void)
-{
-  NS_LOG_FUNCTION (this);
-  if (m_queueInterface == 0)
-    {
-      Ptr<NetDeviceQueueInterface> ndqi = this->GetObject<NetDeviceQueueInterface> ();
-      //verify that it's a valid netdevice queue interface and that
-      //the netdevice queue interface was not set before
-      if (ndqi != 0)
-        {
-          m_queueInterface = ndqi;
-        }
-    }
-  NetDevice::NotifyNewAggregate ();
 }
 
 void
@@ -572,7 +538,6 @@ SimpleNetDevice::DoDispose (void)
   m_node = 0;
   m_receiveErrorModel = 0;
   m_queue->Flush ();
-  m_queueInterface = 0;
   if (TransmitCompleteEvent.IsRunning ())
     {
       TransmitCompleteEvent.Cancel ();

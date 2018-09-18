@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/object-factory.h"
 #include "ns3/queue.h"
+#include "ns3/net-device-queue-interface.h"
 #include "ns3/simple-net-device.h"
 #include "ns3/simple-channel.h"
 #include "ns3/config.h"
@@ -140,6 +141,10 @@ SimpleNetDeviceHelper::InstallPriv (Ptr<Node> node, Ptr<SimpleChannel> channel) 
   Ptr<Queue<Packet> > queue = m_queueFactory.Create<Queue<Packet> > ();
   device->SetQueue (queue);
   NS_ASSERT_MSG (!m_pointToPointMode || (channel->GetNDevices () <= 2), "Device set to PointToPoint and more than 2 devices on the channel.");
+  // Aggregate a NetDeviceQueueInterface object
+  Ptr<NetDeviceQueueInterface> ndqi = CreateObject<NetDeviceQueueInterface> ();
+  ndqi->ConnectQueueTraces (queue, 0);
+  device->AggregateObject (ndqi);
   return device;
 }
 

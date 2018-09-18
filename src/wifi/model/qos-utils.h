@@ -27,6 +27,7 @@ namespace ns3 {
 
 class Packet;
 class WifiMacHeader;
+class QueueItem;
 
 /**
  * \ingroup wifi
@@ -133,6 +134,51 @@ bool QosUtilsIsOldPacket (uint16_t startingSeq, uint16_t seqNumber);
  * Returns Tid of different packet types
  */
 uint8_t GetTid (Ptr<const Packet> packet, const WifiMacHeader hdr);
+
+  /**
+   * \ingroup wifi
+   * \brief Determine the tx queue for a given packet
+   * \param item the packet
+   * \returns the access category
+   *
+   * Modelled after the Linux function ieee80211_select_queue (net/mac80211/wme.c).
+   * A SocketPriority tag is attached to the packet (or the existing one is
+   * replaced) to carry the user priority, which is set to the three most
+   * significant bits of the DS field (TOS field in case of IPv4 and Traffic
+   * Class field in case of IPv6). The Access Category corresponding to the
+   * user priority according to the QosUtilsMapTidToAc function is returned.
+   *
+   * The following table shows the mapping for the Diffserv Per Hop Behaviors.
+   *
+   * PHB  | TOS (binary) | UP  | Access Category
+   * -----|--------------|-----|-----------------
+   * EF   |   101110xx   |  5  |     AC_VI
+   * AF11 |   001010xx   |  1  |     AC_BK
+   * AF21 |   010010xx   |  2  |     AC_BK
+   * AF31 |   011010xx   |  3  |     AC_BE
+   * AF41 |   100010xx   |  4  |     AC_VI
+   * AF12 |   001100xx   |  1  |     AC_BK
+   * AF22 |   010100xx   |  2  |     AC_BK
+   * AF32 |   011100xx   |  3  |     AC_BE
+   * AF42 |   100100xx   |  4  |     AC_VI
+   * AF13 |   001110xx   |  1  |     AC_BK
+   * AF23 |   010110xx   |  2  |     AC_BK
+   * AF33 |   011110xx   |  3  |     AC_BE
+   * AF43 |   100110xx   |  4  |     AC_VI
+   * CS0  |   000000xx   |  0  |     AC_BE
+   * CS1  |   001000xx   |  1  |     AC_BK
+   * CS2  |   010000xx   |  2  |     AC_BK
+   * CS3  |   011000xx   |  3  |     AC_BE
+   * CS4  |   100000xx   |  4  |     AC_VI
+   * CS5  |   101000xx   |  5  |     AC_VI
+   * CS6  |   110000xx   |  6  |     AC_VO
+   * CS7  |   111000xx   |  7  |     AC_VO
+   *
+   * This method is called by the traffic control layer before enqueuing a
+   * packet in the queue disc, if a queue disc is installed on the outgoing
+   * device, or passing a packet to the device, otherwise.
+   */
+  uint8_t SelectQueueByDSField (Ptr<QueueItem> item);
 
 } //namespace ns3
 

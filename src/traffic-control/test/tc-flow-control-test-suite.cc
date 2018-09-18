@@ -29,9 +29,8 @@
 #include "ns3/node-container.h"
 #include "ns3/traffic-control-layer.h"
 #include "ns3/traffic-control-helper.h"
-#include "ns3/simple-net-device.h"
-#include "ns3/simple-channel.h"
-#include "ns3/drop-tail-queue.h"
+#include "ns3/simple-net-device-helper.h"
+#include "ns3/data-rate.h"
 #include "ns3/net-device-queue-interface.h"
 #include "ns3/config.h"
 
@@ -171,6 +170,7 @@ void
 TcFlowControlTestCase::CheckDeviceQueueStopped (Ptr<NetDevice> dev, bool value, const char* msg)
 {
   Ptr<NetDeviceQueueInterface> ndqi = dev->GetObject<NetDeviceQueueInterface> ();
+  NS_ASSERT_MSG (ndqi, "A device queue interface has not been aggregated to the device");
   NS_TEST_EXPECT_MSG_EQ (ndqi->GetTxQueue (0)->IsStopped (), value, msg);
 }
 
@@ -192,28 +192,16 @@ TcFlowControlTestCase::DoRun (void)
   n.Get (0)->AggregateObject (CreateObject<TrafficControlLayer> ());
   n.Get (1)->AggregateObject (CreateObject<TrafficControlLayer> ());
 
-  Ptr<Queue<Packet> > queue;
+  SimpleNetDeviceHelper simple;
 
-  if (m_type == QueueSizeUnit::PACKETS)
-    {
-      queue = CreateObjectWithAttributes<DropTailQueue<Packet> > ("MaxSize", StringValue ("5p"));
-    }
-  else
-    {
-      queue = CreateObjectWithAttributes<DropTailQueue<Packet> > ("MaxSize", StringValue ("5000B"));
-    }
+  NetDeviceContainer rxDevC = simple.Install (n.Get (1));
 
-  // link the two nodes
-  Ptr<SimpleNetDevice> txDev, rxDev;
-  txDev = CreateObjectWithAttributes<SimpleNetDevice> ("TxQueue", PointerValue (queue),
-                                                       "DataRate", DataRateValue (DataRate ("1Mb/s")));
-  rxDev = CreateObject<SimpleNetDevice> ();
-  n.Get (0)->AddDevice (txDev);
-  n.Get (1)->AddDevice (rxDev);
-  Ptr<SimpleChannel> channel1 = CreateObject<SimpleChannel> ();
-  txDev->SetChannel (channel1);
-  rxDev->SetChannel (channel1);
+  simple.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("1Mb/s")));
+  simple.SetQueue ("ns3::DropTailQueue", "MaxSize",
+                   StringValue (m_type == QueueSizeUnit::PACKETS ? "5p" : "5000B"));
 
+  Ptr<NetDevice> txDev;
+  txDev = simple.Install (n.Get (0), DynamicCast<SimpleChannel> (rxDevC.Get (0)->GetChannel ())).Get (0);
   txDev->SetMtu (2500);
 
   TrafficControlHelper tch = TrafficControlHelper::Default ();
