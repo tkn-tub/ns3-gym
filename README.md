@@ -33,7 +33,8 @@ Installation
 
 4. Configure and build ns-3 project:
 
-		./waf --configure
+		# Opengym Protobuf messages are build during configure
+		./waf configure
 		./waf
 
 5. Run example:
