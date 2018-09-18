@@ -71,12 +71,6 @@ Define game over condition
 bool MyGetGameOver(void)
 {
   bool isGameOver = false;
-  bool test = false;
-  static float stepCounter = 0.0;
-  stepCounter += 1;
-  if (stepCounter == 10 && test) {
-      isGameOver = true;
-  }
   NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
   return isGameOver;
 }
