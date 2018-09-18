@@ -14,8 +14,8 @@ parser.add_argument('--start',
                     help='Start simulation script 0/1, Default: 1')
 parser.add_argument('--iterations',
                     type=int,
-                    default=2,
-                    help='Number of iterations, Default: 2')
+                    default=1,
+                    help='Number of iterations, Default: 1')
 args = parser.parse_args()
 startSim = bool(args.start)
 iterationNum = int(args.iterations)
