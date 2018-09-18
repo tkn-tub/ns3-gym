@@ -11,12 +11,21 @@ from waflib.Errors import WafError
 #    pass
 
 def configure(conf):
-    conf.env['ENABLE_ZMQ'] = True
-    #conf.env.append_value('DEFINES_ZMQ', 'NS3_ZMQ')
-    conf.env.append_value("LINKFLAGS", ["-lzmq", "-lprotobuf"])
+    conf.env['ENABLE_ZMQ'] = conf.check(mandatory=False, lib='zmq', define_name='HAVE_ZMQ', uselib='ZMQ')
+    conf.env['ENABLE_PROTOBUF'] = conf.check(mandatory=False, lib='protobuf', define_name='HAVE_PROTOBUF', uselib='PROTOBUF')
 
+    if not conf.env['ENABLE_ZMQ'] or not conf.env['ENABLE_PROTOBUF']:
+        conf.env['MODULES_NOT_BUILT'].append('opengym')
+        return
+
+    conf.env.append_value("LINKFLAGS", ["-lzmq", "-lprotobuf"])
+    conf.env.append_value("LIB", ["zmq", "protobuf"])
 
 def build(bld):
+    # Don't do anything for this module if click should not be built.
+    if 'opengym' in bld.env['MODULES_NOT_BUILT']:
+        return
+
     module = bld.create_ns3_module('opengym', ['core'])
     module.source = [
         'model/opengym.cc',
