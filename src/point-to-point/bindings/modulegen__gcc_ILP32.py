@@ -6160,16 +6160,6 @@ def register_Ns3PointToPointNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
                    visibility='protected')
-    ## point-to-point-net-device.h (module 'point-to-point'): void ns3::PointToPointNetDevice::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## point-to-point-net-device.h (module 'point-to-point'): void ns3::PointToPointNetDevice::NotifyNewAggregate() [member function]
-    cls.add_method('NotifyNewAggregate', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
     ## point-to-point-net-device.h (module 'point-to-point'): void ns3::PointToPointNetDevice::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 

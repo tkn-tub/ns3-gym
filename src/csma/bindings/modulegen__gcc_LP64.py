@@ -6811,16 +6811,6 @@ def register_Ns3CsmaNetDevice_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Mac48Address', 'source'), param('ns3::Mac48Address', 'dest'), param('uint16_t', 'protocolNumber')], 
                    visibility='protected')
-    ## csma-net-device.h (module 'csma'): void ns3::CsmaNetDevice::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## csma-net-device.h (module 'csma'): void ns3::CsmaNetDevice::NotifyNewAggregate() [member function]
-    cls.add_method('NotifyNewAggregate', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3HashImplementation_methods(root_module, cls):

@@ -295,6 +295,9 @@ def register_types(module):
     module.add_class('WaveHelper', allow_subclassing=True)
     ## wifi-helper.h (module 'wifi'): ns3::WifiHelper [class]
     module.add_class('WifiHelper', allow_subclassing=True, import_from_module='ns.wifi')
+    typehandlers.add_type_alias(u'std::function< unsigned long ( ns3::Ptr< ns3::QueueItem > ) >', u'ns3::WifiHelper::SelectQueueCallback')
+    typehandlers.add_type_alias(u'std::function< unsigned long ( ns3::Ptr< ns3::QueueItem > ) >*', u'ns3::WifiHelper::SelectQueueCallback*')
+    typehandlers.add_type_alias(u'std::function< unsigned long ( ns3::Ptr< ns3::QueueItem > ) >&', u'ns3::WifiHelper::SelectQueueCallback&')
     ## wifi-mac-helper.h (module 'wifi'): ns3::WifiMacHelper [class]
     module.add_class('WifiMacHelper', allow_subclassing=True, import_from_module='ns.wifi')
     ## wifi-mode.h (module 'wifi'): ns3::WifiMode [class]
@@ -5117,6 +5120,10 @@ def register_Ns3WifiHelper_methods(root_module, cls):
     cls.add_method('SetRemoteStationManager', 
                    'void', 
                    [param('std::string', 'type'), param('std::string', 'n0', default_value='""'), param('ns3::AttributeValue const &', 'v0', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n1', default_value='""'), param('ns3::AttributeValue const &', 'v1', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n2', default_value='""'), param('ns3::AttributeValue const &', 'v2', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n3', default_value='""'), param('ns3::AttributeValue const &', 'v3', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n4', default_value='""'), param('ns3::AttributeValue const &', 'v4', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n5', default_value='""'), param('ns3::AttributeValue const &', 'v5', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n6', default_value='""'), param('ns3::AttributeValue const &', 'v6', default_value='ns3::EmptyAttributeValue()'), param('std::string', 'n7', default_value='""'), param('ns3::AttributeValue const &', 'v7', default_value='ns3::EmptyAttributeValue()')])
+    ## wifi-helper.h (module 'wifi'): void ns3::WifiHelper::SetSelectQueueCallback(ns3::WifiHelper::SelectQueueCallback f) [member function]
+    cls.add_method('SetSelectQueueCallback', 
+                   'void', 
+                   [param('std::function< unsigned long ( ns3::Ptr< ns3::QueueItem > ) >', 'f')])
     ## wifi-helper.h (module 'wifi'): void ns3::WifiHelper::SetStandard(ns3::WifiPhyStandard standard) [member function]
     cls.add_method('SetStandard', 
                    'void', 
@@ -8161,6 +8168,11 @@ def register_Ns3WifiInformationElement_methods(root_module, cls):
                    'ns3::WifiInformationElementId', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-information-element.h (module 'wifi'): ns3::WifiInformationElementId ns3::WifiInformationElement::ElementIdExt() const [member function]
+    cls.add_method('ElementIdExt', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## wifi-information-element.h (module 'wifi'): uint8_t ns3::WifiInformationElement::GetInformationFieldSize() const [member function]
     cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
@@ -10078,6 +10090,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetGreenfieldSupported(ns3::Mac48Address address) const [member function]
     cls.add_method('GetGreenfieldSupported', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address')], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetHeSupported(ns3::Mac48Address address) const [member function]
+    cls.add_method('GetHeSupported', 
                    'bool', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)

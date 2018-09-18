@@ -569,9 +569,9 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDeviceQueue::WakeCallback&')
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueueInterface [class]
     module.add_class('NetDeviceQueueInterface', import_from_module='ns.network', parent=root_module['ns3::Object'])
-    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDeviceQueueInterface::SelectQueueCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDeviceQueueInterface::SelectQueueCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDeviceQueueInterface::SelectQueueCallback&')
+    typehandlers.add_type_alias(u'std::function< unsigned long long ( ns3::Ptr< ns3::QueueItem > ) >', u'ns3::NetDeviceQueueInterface::SelectQueueCallback')
+    typehandlers.add_type_alias(u'std::function< unsigned long long ( ns3::Ptr< ns3::QueueItem > ) >*', u'ns3::NetDeviceQueueInterface::SelectQueueCallback*')
+    typehandlers.add_type_alias(u'std::function< unsigned long long ( ns3::Ptr< ns3::QueueItem > ) >&', u'ns3::NetDeviceQueueInterface::SelectQueueCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## node.h (module 'network'): ns3::Node [class]
@@ -764,8 +764,6 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['bool', 'ns3::Ptr<ns3::Socket>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
-    ## callback.h (module 'core'): ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
-    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['unsigned char', 'ns3::Ptr<ns3::QueueItem>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'const ns3::Time &', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1224,7 +1222,6 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< bool, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
-    register_Ns3CallbackImpl__Unsigned_char_Ns3Ptr__lt__ns3QueueItem__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Const_ns3Time___amp___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::Time &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Const_stdBasic_string__lt__char__gt_____amp___Const_stdBasic_string__lt__char__gt_____amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const std::basic_string<char> &, const std::basic_string<char> &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Const_ns3Address___amp___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, const ns3::Address &, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -7609,16 +7606,6 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, visibility='protected', template_parameters=[u'unsigned char'])
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::QueueItem> '])
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::Socket> '])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
@@ -9161,18 +9148,9 @@ def register_Ns3NetDeviceQueueInterface_methods(root_module, cls):
     cls.add_constructor([param('ns3::NetDeviceQueueInterface const &', 'arg0')])
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueueInterface::NetDeviceQueueInterface() [constructor]
     cls.add_constructor([])
-    ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::CreateTxQueues() [member function]
-    cls.add_method('CreateTxQueues', 
-                   'void', 
-                   [])
-    ## net-device-queue-interface.h (module 'network'): bool ns3::NetDeviceQueueInterface::GetLateTxQueuesCreation() const [member function]
-    cls.add_method('GetLateTxQueuesCreation', 
-                   'bool', 
-                   [], 
-                   is_const=True)
-    ## net-device-queue-interface.h (module 'network'): uint8_t ns3::NetDeviceQueueInterface::GetNTxQueues() const [member function]
+    ## net-device-queue-interface.h (module 'network'): std::size_t ns3::NetDeviceQueueInterface::GetNTxQueues() const [member function]
     cls.add_method('GetNTxQueues', 
-                   'uint8_t', 
+                   'std::size_t', 
                    [], 
                    is_const=True)
     ## net-device-queue-interface.h (module 'network'): ns3::NetDeviceQueueInterface::SelectQueueCallback ns3::NetDeviceQueueInterface::GetSelectQueueCallback() const [member function]
@@ -9180,28 +9158,24 @@ def register_Ns3NetDeviceQueueInterface_methods(root_module, cls):
                    'ns3::NetDeviceQueueInterface::SelectQueueCallback', 
                    [], 
                    is_const=True)
-    ## net-device-queue-interface.h (module 'network'): ns3::Ptr<ns3::NetDeviceQueue> ns3::NetDeviceQueueInterface::GetTxQueue(uint8_t i) const [member function]
+    ## net-device-queue-interface.h (module 'network'): ns3::Ptr<ns3::NetDeviceQueue> ns3::NetDeviceQueueInterface::GetTxQueue(std::size_t i) const [member function]
     cls.add_method('GetTxQueue', 
                    'ns3::Ptr< ns3::NetDeviceQueue >', 
-                   [param('uint8_t', 'i')], 
+                   [param('std::size_t', 'i')], 
                    is_const=True)
     ## net-device-queue-interface.h (module 'network'): static ns3::TypeId ns3::NetDeviceQueueInterface::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::SetLateTxQueuesCreation(bool value) [member function]
-    cls.add_method('SetLateTxQueuesCreation', 
+    ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::SetNTxQueues(std::size_t numTxQueues) [member function]
+    cls.add_method('SetNTxQueues', 
                    'void', 
-                   [param('bool', 'value')])
+                   [param('std::size_t', 'numTxQueues')])
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::SetSelectQueueCallback(ns3::NetDeviceQueueInterface::SelectQueueCallback cb) [member function]
     cls.add_method('SetSelectQueueCallback', 
                    'void', 
-                   [param('ns3::Callback< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')])
-    ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::SetTxQueuesN(uint8_t numTxQueues) [member function]
-    cls.add_method('SetTxQueuesN', 
-                   'void', 
-                   [param('uint8_t', 'numTxQueues')])
+                   [param('std::function< unsigned long long ( ns3::Ptr< ns3::QueueItem > ) >', 'cb')])
     ## net-device-queue-interface.h (module 'network'): void ns3::NetDeviceQueueInterface::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -11520,16 +11494,6 @@ def register_Ns3SimpleNetDevice_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## simple-net-device.h (module 'network'): void ns3::SimpleNetDevice::DoInitialize() [member function]
-    cls.add_method('DoInitialize', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
-    ## simple-net-device.h (module 'network'): void ns3::SimpleNetDevice::NotifyNewAggregate() [member function]
-    cls.add_method('NotifyNewAggregate', 
-                   'void', 
-                   [], 
-                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3ThreeGppHttpClient_methods(root_module, cls):
@@ -12174,28 +12138,6 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
     cls.add_method('operator()', 
                    'ns3::ObjectBase *', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
-    return
-
-def register_Ns3CallbackImpl__Unsigned_char_Ns3Ptr__lt__ns3QueueItem__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
-    ## callback.h (module 'core'): ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
-    cls.add_constructor([])
-    ## callback.h (module 'core'): ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
-    cls.add_constructor([param('ns3::CallbackImpl< unsigned char, ns3::Ptr< ns3::QueueItem >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
-    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
-    cls.add_method('DoGetTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True)
-    ## callback.h (module 'core'): std::string ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
-    cls.add_method('GetTypeid', 
-                   'std::string', 
-                   [], 
-                   is_const=True, is_virtual=True)
-    ## callback.h (module 'core'): unsigned char ns3::CallbackImpl<unsigned char, ns3::Ptr<ns3::QueueItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<ns3::QueueItem> arg0) [member operator]
-    cls.add_method('operator()', 
-                   'unsigned char', 
-                   [param('ns3::Ptr< ns3::QueueItem >', 'arg0')], 
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 

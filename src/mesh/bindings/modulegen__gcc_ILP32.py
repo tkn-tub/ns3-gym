@@ -5444,6 +5444,11 @@ def register_Ns3WifiInformationElement_methods(root_module, cls):
                    'ns3::WifiInformationElementId', 
                    [], 
                    is_pure_virtual=True, is_const=True, is_virtual=True)
+    ## wifi-information-element.h (module 'wifi'): ns3::WifiInformationElementId ns3::WifiInformationElement::ElementIdExt() const [member function]
+    cls.add_method('ElementIdExt', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## wifi-information-element.h (module 'wifi'): uint8_t ns3::WifiInformationElement::GetInformationFieldSize() const [member function]
     cls.add_method('GetInformationFieldSize', 
                    'uint8_t', 
@@ -6425,6 +6430,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetVhtSupported(ns3::Mac48Address address) const [member function]
     cls.add_method('GetVhtSupported', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address')], 
+                   is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetHeSupported(ns3::Mac48Address address) const [member function]
+    cls.add_method('GetHeSupported', 
                    'bool', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
@@ -8150,6 +8160,11 @@ def register_Ns3HeCapabilities_methods(root_module, cls):
                    'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## he-capabilities.h (module 'wifi'): ns3::WifiInformationElementId ns3::HeCapabilities::ElementIdExt() const [member function]
+    cls.add_method('ElementIdExt', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
     ## he-capabilities.h (module 'wifi'): uint8_t ns3::HeCapabilities::GetChannelWidthSet() const [member function]
     cls.add_method('GetChannelWidthSet', 
                    'uint8_t', 
@@ -8279,9 +8294,14 @@ def register_Ns3HeOperation_methods(root_module, cls):
                    'ns3::WifiInformationElementId', 
                    [], 
                    is_const=True, is_virtual=True)
-    ## he-operation.h (module 'wifi'): uint32_t ns3::HeOperation::GetBasicHeMcsAndNssSet() const [member function]
+    ## he-operation.h (module 'wifi'): ns3::WifiInformationElementId ns3::HeOperation::ElementIdExt() const [member function]
+    cls.add_method('ElementIdExt', 
+                   'ns3::WifiInformationElementId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## he-operation.h (module 'wifi'): uint16_t ns3::HeOperation::GetBasicHeMcsAndNssSet() const [member function]
     cls.add_method('GetBasicHeMcsAndNssSet', 
-                   'uint32_t', 
+                   'uint16_t', 
                    [], 
                    is_const=True)
     ## he-operation.h (module 'wifi'): uint32_t ns3::HeOperation::GetHeOperationParameters() const [member function]

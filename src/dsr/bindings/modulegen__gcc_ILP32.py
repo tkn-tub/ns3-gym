@@ -6106,6 +6106,11 @@ def register_Ns3WifiRemoteStationManager_methods(root_module, cls):
                    'bool', 
                    [param('ns3::Mac48Address', 'address')], 
                    is_const=True)
+    ## wifi-remote-station-manager.h (module 'wifi'): bool ns3::WifiRemoteStationManager::GetHeSupported(ns3::Mac48Address address) const [member function]
+    cls.add_method('GetHeSupported', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'address')], 
+                   is_const=True)
     ## wifi-remote-station-manager.h (module 'wifi'): ns3::WifiMode ns3::WifiRemoteStationManager::GetNonUnicastMode() const [member function]
     cls.add_method('GetNonUnicastMode', 
                    'ns3::WifiMode', 
@@ -11803,8 +11808,8 @@ def register_Ns3DsrDsrRouteCacheEntry_methods(root_module, cls):
     cls.add_binary_comparison_operator('==')
     ## dsr-rcache.h (module 'dsr'): ns3::dsr::DsrRouteCacheEntry::DsrRouteCacheEntry(ns3::dsr::DsrRouteCacheEntry const & arg0) [constructor]
     cls.add_constructor([param('ns3::dsr::DsrRouteCacheEntry const &', 'arg0')])
-    ## dsr-rcache.h (module 'dsr'): ns3::dsr::DsrRouteCacheEntry::DsrRouteCacheEntry(ns3::dsr::DsrRouteCacheEntry::IP_VECTOR const & ip=::ns3::dsr::DsrRouteCacheEntry::IP_VECTOR( ), ns3::Ipv4Address dst=ns3::Ipv4Address(), ns3::Time exp=ns3::Simulator::Now()) [constructor]
-    cls.add_constructor([param('ns3::dsr::DsrRouteCacheEntry::IP_VECTOR const &', 'ip', default_value='::ns3::dsr::DsrRouteCacheEntry::IP_VECTOR( )'), param('ns3::Ipv4Address', 'dst', default_value='ns3::Ipv4Address()'), param('ns3::Time', 'exp', default_value='ns3::Simulator::Now()')])
+    ## dsr-rcache.h (module 'dsr'): ns3::dsr::DsrRouteCacheEntry::DsrRouteCacheEntry(ns3::dsr::DsrRouteCacheEntry::IP_VECTOR const & ip=ns3::dsr::DsrRouteCacheEntry::IP_VECTOR(), ns3::Ipv4Address dst=ns3::Ipv4Address(), ns3::Time exp=ns3::Simulator::Now()) [constructor]
+    cls.add_constructor([param('ns3::dsr::DsrRouteCacheEntry::IP_VECTOR const &', 'ip', default_value='ns3::dsr::DsrRouteCacheEntry::IP_VECTOR()'), param('ns3::Ipv4Address', 'dst', default_value='ns3::Ipv4Address()'), param('ns3::Time', 'exp', default_value='ns3::Simulator::Now()')])
     ## dsr-rcache.h (module 'dsr'): ns3::Time ns3::dsr::DsrRouteCacheEntry::GetBlacklistTimeout() const [member function]
     cls.add_method('GetBlacklistTimeout', 
                    'ns3::Time', 
