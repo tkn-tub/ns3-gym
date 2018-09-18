@@ -27,12 +27,6 @@ Installation
 		apt-get install libprotobuf-dev
 		apt-get install protobuf-compiler
 
-3. Generate Protobuff messages code (TODO: automate this step in waf):
-
-		cd ./ns-3-dev-backpressure/src/opengym/model/
-		protoc -I=./ --cpp_out=./ ./messages.proto
-		protoc -I=./ --python_out=./PyOpenGymNs3/PyOpenGymNs3/ ./messages.proto
-
 3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3 (Python3 required)
 
 		pip install ./src/opengym/model/PyOpenGymNs3
@@ -41,3 +35,8 @@ Installation
 
 		./waf --configure
 		./waf
+
+5. Run example:
+
+		cd ./scratch/opengym
+		./simple_test.py

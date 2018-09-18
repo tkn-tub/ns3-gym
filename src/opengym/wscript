@@ -14,12 +14,30 @@ def configure(conf):
     conf.env['ENABLE_ZMQ'] = conf.check(mandatory=False, lib='zmq', define_name='HAVE_ZMQ', uselib='ZMQ')
     conf.env['ENABLE_PROTOBUF'] = conf.check(mandatory=False, lib='protobuf', define_name='HAVE_PROTOBUF', uselib='PROTOBUF')
 
-    if not conf.env['ENABLE_ZMQ'] or not conf.env['ENABLE_PROTOBUF']:
+    # check if protoc is installed
+    conf.env['ENABLE_PROTOC'] = False
+    try:
+        output = subprocess.check_output(['protoc', '--version']).decode("utf-8")
+        if "libprotoc" in output:
+            conf.env['ENABLE_PROTOC'] = True
+    except Exception as e:
+        pass
+
+    if not conf.env['ENABLE_ZMQ'] or not conf.env['ENABLE_PROTOBUF'] or not conf.env['ENABLE_PROTOC']:
         conf.env['MODULES_NOT_BUILT'].append('opengym')
         return
 
     conf.env.append_value("LINKFLAGS", ["-lzmq", "-lprotobuf"])
     conf.env.append_value("LIB", ["zmq", "protobuf"])
+
+    # build protobuff messages
+    try:
+        print("Build OpenGym Protobuf messages")
+        pbSrcDir = "./src/opengym/model/"
+        rc = subprocess.call("protoc -I="+pbSrcDir+" --cpp_out="+pbSrcDir+" "+pbSrcDir+"messages.proto", shell=True)
+        rc = subprocess.call("protoc -I="+pbSrcDir+" --python_out="+pbSrcDir+"PyOpenGymNs3/PyOpenGymNs3/ "+pbSrcDir+"messages.proto", shell=True)
+    except Exception as e:
+        conf.env['MODULES_NOT_BUILT'].append('opengym')
 
 def build(bld):
     # Don't do anything for this module if click should not be built.
