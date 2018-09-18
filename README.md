@@ -23,7 +23,7 @@ Installation
 		sudo add-apt-repository ppa:maarten-fonville/protobuf
 		sudo apt-get update
 
-		apt-get install libzmq5
+		apt-get install libzmq5 libzmq5-dev
 		apt-get install libprotobuf-dev
 		apt-get install protobuf-compiler
 
