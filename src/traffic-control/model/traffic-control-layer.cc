@@ -178,6 +178,15 @@ TrafficControlLayer::ScanDevices (void)
             {
               ndi->second.m_queueDiscsToWake.push_back (ndi->second.m_rootQueueDisc);
             }
+
+          // set the NetDeviceQueueInterface object and the SendCallback on the queue discs
+          // into which packets are enqueued and dequeued by calling Run
+          for (auto& q : ndi->second.m_queueDiscsToWake)
+            {
+              q->SetNetDeviceQueueInterface (ndqi);
+              q->SetSendCallback ([dev] (Ptr<QueueDiscItem> item)
+                                  { dev->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ()); });
+            }
         }
     }
 }
@@ -237,6 +246,11 @@ TrafficControlLayer::DeleteRootQueueDiscOnDevice (Ptr<NetDevice> device)
 
   // remove the root queue disc
   ndi->second.m_rootQueueDisc = 0;
+  for (auto& q : ndi->second.m_queueDiscsToWake)
+    {
+      q->SetNetDeviceQueueInterface (nullptr);
+      q->SetSendCallback (nullptr);
+    }
   ndi->second.m_queueDiscsToWake.clear ();
 
   Ptr<NetDeviceQueueInterface> ndqi = ndi->second.m_ndqi;

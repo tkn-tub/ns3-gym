@@ -62,7 +62,7 @@ TypeId TbfQueueDisc::GetTypeId (void)
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Mtu",
                    "Size of the second bucket in bytes. If null, it is initialized"
-                   " to the MTU of the attached NetDevice (if any)",
+                   " to the MTU of the receiving NetDevice (if any)",
                    UintegerValue (0),
                    MakeUintegerAccessor (&TbfQueueDisc::SetMtu),
                    MakeUintegerChecker<uint32_t> ())
@@ -310,9 +310,16 @@ TbfQueueDisc::CheckConfig (void)
       return false;
     }
 
-  if (m_mtu == 0 && GetNetDevice ())
+  if (m_mtu == 0)
     {
-      m_mtu = GetNetDevice ()->GetMtu ();
+      Ptr<NetDeviceQueueInterface> ndqi = GetNetDeviceQueueInterface ();
+      Ptr<NetDevice> dev;
+      // if the NetDeviceQueueInterface object is aggregated to a
+      // NetDevice, get the MTU of such NetDevice
+      if (ndqi && (dev = ndqi->GetObject<NetDevice> ()))
+        {
+          m_mtu = dev->GetMtu ();
+        }
     }
 
   if (m_mtu == 0 && m_peakRate > DataRate ("0bps"))

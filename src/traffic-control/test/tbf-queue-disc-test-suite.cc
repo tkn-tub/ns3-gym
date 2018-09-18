@@ -287,7 +287,6 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
 
   Ptr<TrafficControlLayer> tcA = CreateObject<TrafficControlLayer> ();
   nodesA.Get (0)->AggregateObject (tcA);
-  queue->SetNetDevice (txDevA);
   tcA->SetRootQueueDiscOnDevice (txDevA, queue);
   tcA->Initialize ();
 
@@ -361,7 +360,6 @@ TbfQueueDiscTestCase::RunTbfTest (QueueSizeUnit mode)
 
   Ptr<TrafficControlLayer> tcB = CreateObject<TrafficControlLayer> ();
   nodesB.Get (0)->AggregateObject (tcB);
-  queue->SetNetDevice (txDevB);
   tcB->SetRootQueueDiscOnDevice (txDevB, queue);
   tcB->Initialize ();
 

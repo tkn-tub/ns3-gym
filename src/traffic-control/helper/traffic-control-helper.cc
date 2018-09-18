@@ -369,9 +369,7 @@ TrafficControlHelper::Install (Ptr<NetDevice> d)
   // Create queue discs (from leaves to root)
   for (auto i = m_queueDiscFactory.size (); i-- > 0; )
     {
-      Ptr<QueueDisc> q = m_queueDiscFactory[i].CreateQueueDisc (m_queueDiscs);
-      q->SetNetDevice (d);
-      m_queueDiscs[i] = q;
+      m_queueDiscs[i] = m_queueDiscFactory[i].CreateQueueDisc (m_queueDiscs);
     }
 
   // Set the root queue disc (if any has been created) on the device

@@ -318,6 +318,27 @@ FqCoDelQueueDisc::CheckConfig (void)
       return false;
     }
 
+  // we are at initialization time. If the user has not set a quantum value,
+  // set the quantum to the MTU of the device (if any)
+  if (!m_quantum)
+    {
+      Ptr<NetDeviceQueueInterface> ndqi = GetNetDeviceQueueInterface ();
+      Ptr<NetDevice> dev;
+      // if the NetDeviceQueueInterface object is aggregated to a
+      // NetDevice, get the MTU of such NetDevice
+      if (ndqi && (dev = ndqi->GetObject<NetDevice> ()))
+        {
+          m_quantum = dev->GetMtu ();
+          NS_LOG_DEBUG ("Setting the quantum to the MTU of the device: " << m_quantum);
+        }
+
+      if (!m_quantum)
+        {
+          NS_LOG_ERROR ("The quantum parameter cannot be null");
+          return false;
+        }
+    }
+
   return true;
 }
 
@@ -325,16 +346,6 @@ void
 FqCoDelQueueDisc::InitializeParams (void)
 {
   NS_LOG_FUNCTION (this);
-
-  // we are at initialization time. If the user has not set a quantum value,
-  // set the quantum to the MTU of the device
-  if (!m_quantum)
-    {
-      Ptr<NetDevice> device = GetNetDevice ();
-      NS_ASSERT_MSG (device, "Device not set for the queue disc");
-      m_quantum = device->GetMtu ();
-      NS_LOG_DEBUG ("Setting the quantum to the MTU of the device: " << m_quantum);
-    }
 
   m_flowFactory.SetTypeId ("ns3::FqCoDelFlow");
 

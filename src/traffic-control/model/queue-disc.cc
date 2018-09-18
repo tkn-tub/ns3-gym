@@ -384,9 +384,13 @@ QueueDisc::DoDispose (void)
   m_queues.clear ();
   m_filters.clear ();
   m_classes.clear ();
-  m_device = 0;
   m_devQueueIface = 0;
+  m_send = nullptr;
   m_requeued = 0;
+  m_internalQueueDbeFunctor = nullptr;
+  m_internalQueueDadFunctor = nullptr;
+  m_childQueueDiscDbeFunctor = nullptr;
+  m_childQueueDiscDadFunctor = nullptr;
   Object::DoDispose ();
 }
 
@@ -394,12 +398,6 @@ void
 QueueDisc::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
-  // When adding a new interface, the traffic control aggregates
-  // a NetDeviceQueueInterface object to the netdevice
-  if (m_device)
-    {
-      m_devQueueIface = m_device->GetObject<NetDeviceQueueInterface> ();
-    }
 
   // Check the configuration and initialize the parameters of this queue disc
   bool ok = CheckConfig ();
@@ -536,17 +534,31 @@ QueueDisc::GetCurrentSize (void)
 }
 
 void
-QueueDisc::SetNetDevice (Ptr<NetDevice> device)
+QueueDisc::SetNetDeviceQueueInterface (Ptr<NetDeviceQueueInterface> ndqi)
 {
-  NS_LOG_FUNCTION (this << device);
-  m_device = device;
+  NS_LOG_FUNCTION (this << ndqi);
+  m_devQueueIface = ndqi;
 }
 
-Ptr<NetDevice>
-QueueDisc::GetNetDevice (void) const
+Ptr<NetDeviceQueueInterface>
+QueueDisc::GetNetDeviceQueueInterface (void) const
 {
   NS_LOG_FUNCTION (this);
-  return m_device;
+  return m_devQueueIface;
+}
+
+void
+QueueDisc::SetSendCallback (SendCallback func)
+{
+  NS_LOG_FUNCTION (this);
+  m_send = func;
+}
+
+QueueDisc::SendCallback
+QueueDisc::GetSendCallback (void) const
+{
+  NS_LOG_FUNCTION (this);
+  return m_send;
 }
 
 void
@@ -1073,7 +1085,8 @@ QueueDisc::Transmit (Ptr<QueueDiscItem> item)
       SocketPriorityTag priorityTag;
       item->GetPacket ()->RemovePacketTag (priorityTag);
     }
-  m_device->Send (item->GetPacket (), item->GetAddress (), item->GetProtocol ());
+  NS_ASSERT_MSG (m_send, "Send callback not set");
+  m_send (item);
 
   // the behavior here slightly diverges from Linux. In Linux, it is advised that
   // the function called when a packet needs to be transmitted (ndo_start_xmit)
