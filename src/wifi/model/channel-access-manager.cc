@@ -290,7 +290,7 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
     {
       state->NotifyAccessRequested ();
       Time delay = (MostRecent (GetAccessGrantStart (true), Simulator::Now ()) - Simulator::Now ());
-      m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::GrantPcfAccess, this, state);
+      m_accessTimeout = Simulator::Schedule (delay, &ChannelAccessManager::DoGrantPcfAccess, this, state);
       return;
     }
   UpdateBackoff ();
@@ -328,18 +328,18 @@ ChannelAccessManager::RequestAccess (Ptr<Txop> state, bool isCfPeriod)
           return;
         }
     }
-  DoGrantAccess ();
+  DoGrantDcfAccess ();
   DoRestartAccessTimeoutIfNeeded ();
 }
 
 void
-ChannelAccessManager::GrantPcfAccess (Ptr<Txop> state) //to be renamed
+ChannelAccessManager::DoGrantPcfAccess (Ptr<Txop> state)
 {
   state->NotifyAccessGranted ();
 }
 
 void
-ChannelAccessManager::DoGrantAccess (void)
+ChannelAccessManager::DoGrantDcfAccess (void)
 {
   NS_LOG_FUNCTION (this);
   uint32_t k = 0;
@@ -398,7 +398,7 @@ ChannelAccessManager::AccessTimeout (void)
 {
   NS_LOG_FUNCTION (this);
   UpdateBackoff ();
-  DoGrantAccess ();
+  DoGrantDcfAccess ();
   DoRestartAccessTimeoutIfNeeded ();
 }
 
@@ -792,7 +792,7 @@ ChannelAccessManager::NotifyAckTimeoutStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyAckTimeoutResetNow ()
+ChannelAccessManager::NotifyAckTimeoutResetNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_lastAckTimeoutEnd = Simulator::Now ();
@@ -807,7 +807,7 @@ ChannelAccessManager::NotifyCtsTimeoutStartNow (Time duration)
 }
 
 void
-ChannelAccessManager::NotifyCtsTimeoutResetNow ()
+ChannelAccessManager::NotifyCtsTimeoutResetNow (void)
 {
   NS_LOG_FUNCTION (this);
   m_lastCtsTimeoutEnd = Simulator::Now ();

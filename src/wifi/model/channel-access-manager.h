@@ -97,7 +97,7 @@ public:
   /**
    * \return value set previously using SetEifsNoDifs.
    */
-  Time GetEifsNoDifs () const;
+  Time GetEifsNoDifs (void) const;
 
   /**
    * \param dcf a new Txop.
@@ -198,7 +198,7 @@ public:
   /**
    * Notify that ACK timer has reset.
    */
-  void NotifyAckTimeoutResetNow ();
+  void NotifyAckTimeoutResetNow (void);
   /**
    * Notify that CTS timer has started for the given duration.
    *
@@ -208,7 +208,7 @@ public:
   /**
    * Notify that CTS timer has reset.
    */
-  void NotifyCtsTimeoutResetNow ();
+  void NotifyCtsTimeoutResetNow (void);
 
   /**
    * Check if the device is busy sending or receiving,
@@ -304,7 +304,7 @@ private:
   /**
    * Grant access to DCF
    */
-  void DoGrantAccess (void);
+  void DoGrantDcfAccess (void);
   /**
    * Check if the device is between frames (in DIFS or AIFS interval)
    *
@@ -316,7 +316,7 @@ private:
   /**
    * Grant access to PCF
    */
-  void GrantPcfAccess (Ptr<Txop> state);
+  void DoGrantPcfAccess (Ptr<Txop> state);
 
   /**
    * typedef for a vector of Txops
