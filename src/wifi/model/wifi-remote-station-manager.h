@@ -1365,12 +1365,11 @@ private:
   /**
    * Get control answer mode function.
    *
-   * \param address the address of the station
    * \param reqMode request mode
    *
    * \return control answer mode
    */
-  WifiMode GetControlAnswerMode (Mac48Address address, WifiMode reqMode);
+  WifiMode GetControlAnswerMode (WifiMode reqMode);
 
   /**
    * Actually sets the fragmentation threshold, it also checks the validity of

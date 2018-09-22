@@ -818,12 +818,8 @@ WifiRemoteStationManager::GetDataTxVector (Mac48Address address, const WifiMacHe
   if (!IsLowLatency ())
     {
       HighLatencyDataTxVectorTag datatag;
-      bool found;
-      found = ConstCast<Packet> (packet)->PeekPacketTag (datatag);
+      bool found = ConstCast<Packet> (packet)->PeekPacketTag (datatag);
       NS_ASSERT (found);
-      //cast found to void, to suppress 'found' set but not used
-      //compiler warning
-      (void) found;
       return datatag.GetDataTxVector ();
     }
   WifiTxVector txVector = DoGetDataTxVector (Lookup (address, header));
@@ -855,12 +851,8 @@ WifiRemoteStationManager::GetCtsToSelfTxVector (const WifiMacHeader *header,
   if (!IsLowLatency ())
     {
       HighLatencyCtsToSelfTxVectorTag ctstoselftag;
-      bool found;
-      found = ConstCast<Packet> (packet)->PeekPacketTag (ctstoselftag);
+      bool found = ConstCast<Packet> (packet)->PeekPacketTag (ctstoselftag);
       NS_ASSERT (found);
-      //cast found to void, to suppress 'found' set but not used
-      //compiler warning
-      (void) found;
       return ctstoselftag.GetCtsToSelfTxVector ();
     }
   return DoGetCtsToSelfTxVector ();
@@ -909,12 +901,8 @@ WifiRemoteStationManager::GetRtsTxVector (Mac48Address address, const WifiMacHea
   if (!IsLowLatency ())
     {
       HighLatencyRtsTxVectorTag rtstag;
-      bool found;
-      found = ConstCast<Packet> (packet)->PeekPacketTag (rtstag);
+      bool found = ConstCast<Packet> (packet)->PeekPacketTag (rtstag);
       NS_ASSERT (found);
-      //cast found to void, to suppress 'found' set but not used
-      //compiler warning
-      (void) found;
       return rtstag.GetRtsTxVector ();
     }
   return DoGetRtsTxVector (Lookup (address, header));
@@ -1343,7 +1331,7 @@ WifiRemoteStationManager::IsAllowedControlAnswerModulationClass (WifiModulationC
 }
 
 WifiMode
-WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode reqMode)
+WifiRemoteStationManager::GetControlAnswerMode (WifiMode reqMode)
 {
   /**
    * The standard has relatively unambiguous rules for selecting a
@@ -1359,7 +1347,7 @@ WifiRemoteStationManager::GetControlAnswerMode (Mac48Address address, WifiMode r
    * sequence (as defined in Annex G) and that is of the same
    * modulation class (see Section 9.7.8) as the received frame...
    */
-  NS_LOG_FUNCTION (this << address << reqMode);
+  NS_LOG_FUNCTION (this << reqMode);
   WifiMode mode = GetDefaultMode ();
   bool found = false;
   //First, search the BSS Basic Rate set
@@ -1487,7 +1475,7 @@ WifiTxVector
 WifiRemoteStationManager::GetCtsTxVector (Mac48Address address, WifiMode rtsMode)
 {
   NS_ASSERT (!address.IsGroup ());
-  WifiMode ctsMode = GetControlAnswerMode (address, rtsMode);
+  WifiMode ctsMode = GetControlAnswerMode (rtsMode);
   WifiTxVector v;
   v.SetMode (ctsMode);
   v.SetPreambleType (GetPreambleForTransmission (ctsMode, address));
@@ -1504,7 +1492,7 @@ WifiTxVector
 WifiRemoteStationManager::GetAckTxVector (Mac48Address address, WifiMode dataMode)
 {
   NS_ASSERT (!address.IsGroup ());
-  WifiMode ackMode = GetControlAnswerMode (address, dataMode);
+  WifiMode ackMode = GetControlAnswerMode (dataMode);
   WifiTxVector v;
   v.SetMode (ackMode);
   v.SetPreambleType (GetPreambleForTransmission (ackMode, address));
@@ -1521,7 +1509,7 @@ WifiTxVector
 WifiRemoteStationManager::GetBlockAckTxVector (Mac48Address address, WifiMode blockAckReqMode)
 {
   NS_ASSERT (!address.IsGroup ());
-  WifiMode blockAckMode = GetControlAnswerMode (address, blockAckReqMode);
+  WifiMode blockAckMode = GetControlAnswerMode (blockAckReqMode);
   WifiTxVector v;
   v.SetMode (blockAckMode);
   v.SetPreambleType (GetPreambleForTransmission (blockAckMode, address));
