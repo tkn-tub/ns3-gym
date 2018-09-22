@@ -179,7 +179,7 @@ public:
    *
    * \return true if CTS-to-self is supported, false otherwise
    */
-  bool GetCtsToSelfSupported () const;
+  bool GetCtsToSelfSupported (void) const;
   /**
    * Return the MAC address of this MacLow.
    *
@@ -197,13 +197,13 @@ public:
    *
    * \return Basic Block ACK timeout
    */
-  Time GetBasicBlockAckTimeout () const;
+  Time GetBasicBlockAckTimeout (void) const;
   /**
    * Return Compressed Block ACK timeout of this MacLow.
    *
    * \return Compressed Block ACK timeout
    */
-  Time GetCompressedBlockAckTimeout () const;
+  Time GetCompressedBlockAckTimeout (void) const;
   /**
    * Return CTS timeout of this MacLow.
    *
@@ -325,13 +325,10 @@ public:
    */
   void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiTxVector txVector, bool ampduSubframe);
   /**
-   * \param packet packet received.
-   * \param rxSnr snr of packet received.
-   *
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
    */
-  void ReceiveError (Ptr<Packet> packet, double rxSnr);
+  void ReceiveError (void);
   /**
    * \param duration switching delay duration.
    *
@@ -629,7 +626,7 @@ private:
   /**
    * Notify ChannelAccessManager that ACK timer should be reset.
    */
-  void NotifyAckTimeoutResetNow ();
+  void NotifyAckTimeoutResetNow (void);
   /**
    * Notify ChannelAccessManager that CTS timer should be started for the given duration.
    *
@@ -639,7 +636,7 @@ private:
   /**
    * Notify ChannelAccessManager that CTS timer should be reset.
    */
-  void NotifyCtsTimeoutResetNow ();
+  void NotifyCtsTimeoutResetNow (void);
   /**
    * Reset NAV after CTS was missed when the NAV was
    * set with RTS.

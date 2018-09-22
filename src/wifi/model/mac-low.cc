@@ -265,7 +265,7 @@ void
 MacLow::ResetPhy (void)
 {
   m_phy->SetReceiveOkCallback (MakeNullCallback<void, Ptr<Packet>, double, WifiTxVector> ());
-  m_phy->SetReceiveErrorCallback (MakeNullCallback<void, Ptr<Packet>, double> ());
+  m_phy->SetReceiveErrorCallback (MakeNullCallback<void> ());
   RemovePhyMacLowListener (m_phy);
   m_phy = 0;
 }
@@ -307,7 +307,7 @@ MacLow::SetCtsToSelfSupported (bool enable)
 }
 
 bool
-MacLow::GetCtsToSelfSupported () const
+MacLow::GetCtsToSelfSupported (void) const
 {
   return m_ctsToSelfSupported;
 }
@@ -379,13 +379,13 @@ MacLow::GetAckTimeout (void) const
 }
 
 Time
-MacLow::GetBasicBlockAckTimeout () const
+MacLow::GetBasicBlockAckTimeout (void) const
 {
   return m_basicBlockAckTimeout;
 }
 
 Time
-MacLow::GetCompressedBlockAckTimeout () const
+MacLow::GetCompressedBlockAckTimeout (void) const
 {
   return m_compressedBlockAckTimeout;
 }
@@ -399,14 +399,12 @@ MacLow::GetCtsTimeout (void) const
 Time
 MacLow::GetSifs (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_sifs;
 }
 
 Time
 MacLow::GetRifs (void) const
 {
-  NS_LOG_FUNCTION (this);
   return m_rifs;
 }
 
@@ -618,9 +616,9 @@ MacLow::NeedCtsToSelf (void) const
 }
 
 void
-MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
+MacLow::ReceiveError (void)
 {
-  NS_LOG_FUNCTION (this << packet << rxSnr);
+  NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("rx failed");
   if (IsCfPeriod () && m_currentHdr.IsCfPoll ())
     {
@@ -1319,7 +1317,7 @@ MacLow::NotifyAckTimeoutStartNow (Time duration)
 }
 
 void
-MacLow::NotifyAckTimeoutResetNow ()
+MacLow::NotifyAckTimeoutResetNow (void)
 {
   for (ChannelAccessManagersCI i = m_channelAccessManagers.begin (); i != m_channelAccessManagers.end (); i++)
     {
@@ -1337,7 +1335,7 @@ MacLow::NotifyCtsTimeoutStartNow (Time duration)
 }
 
 void
-MacLow::NotifyCtsTimeoutResetNow ()
+MacLow::NotifyCtsTimeoutResetNow (void)
 {
   for (ChannelAccessManagersCI i = m_channelAccessManagers.begin (); i != m_channelAccessManagers.end (); i++)
     {

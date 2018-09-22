@@ -109,7 +109,7 @@ public:
    *
    * \returns true if QoS TXOP.
    */
-  bool IsQosTxop () const;
+  bool IsQosTxop (void) const;
 
   /**
    * Set WifiRemoteStationsManager this QosTxop is associated to.
@@ -430,7 +430,7 @@ private:
    *
    * \return true if we tried to set up block ACK, false otherwise.
    */
-  bool SetupBlockAckIfNeeded ();
+  bool SetupBlockAckIfNeeded (void);
   /**
    * Sends an ADDBA Request to establish a block ack agreement with sta
    * addressed by <i>recipient</i> for tid <i>tid</i>.
@@ -506,19 +506,19 @@ private:
    * \return true if the current packet is fragmented because of an exceeded TXOP duration,
    *         false otherwise
    */
-  bool IsTxopFragmentation () const;
+  bool IsTxopFragmentation (void) const;
   /**
    * Calculate the size of the current TXOP fragment.
    *
    * \return the size of the current TXOP fragment
    */
-  uint32_t GetTxopFragmentSize () const;
+  uint32_t GetTxopFragmentSize (void) const;
   /**
    * Calculate the number of TXOP fragments needed for the transmission of the current packet.
    *
    * \return the number of TXOP fragments needed for the transmission of the current packet
    */
-  uint32_t GetNTxopFragment () const;
+  uint32_t GetNTxopFragment (void) const;
   /**
    * Calculate the size of the next TXOP fragment.
    *
