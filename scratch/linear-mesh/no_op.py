@@ -25,12 +25,14 @@ args = parser.parse_args()
 startSim = bool(args.start)
 iterationNum = int(args.iterations)
 
-port = 5555
-simTime = 20 # seconds
+port = 5551
+simTime = 10 # seconds
 stepTime = 0.1  # seconds
 seed = 0
 simArgs = {"--simTime": simTime,
-           "--testArg": 123}
+           "--testArg": 123,
+           "--nodeNum": 5,
+           "--distance": 500}
 debug = False
 
 env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
@@ -45,7 +47,7 @@ stepIdx = 0
 currIt = 0
 allRxPkts = 0
 
-def calculate_cw_window(obs):
+def get_no_op_action(obs):
     # cwValue 0 is not applied, so no_op
     action = np.zeros(shape=len(obs), dtype=np.uint32)
     return action
@@ -61,7 +63,7 @@ try:
             stepIdx += 1
 
             allRxPkts += reward
-            action = calculate_cw_window(obs)
+            action = get_no_op_action(obs)
             print("---action: ", action)
 
             obs, reward, done, info = env.step(action)

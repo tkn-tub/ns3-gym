@@ -151,12 +151,14 @@ bool SetCw(Ptr<Node> node, uint32_t cwMinValue=0, uint32_t cwMaxValue=0)
   Ptr<Txop> txop = ptr.Get<Txop> ();
 
   // if both set to the same value then we have uniform backoff?
-  if (cwMinValue) {
+  if (cwMinValue != 0) {
+    NS_LOG_UNCOND ("Set CW min: " << cwMinValue);
     txop->SetMinCw(cwMinValue);
   }
 
-  if (cwMaxValue) {
-   txop->SetMaxCw(cwMaxValue);
+  if (cwMaxValue != 0) {
+    NS_LOG_UNCOND ("Set CW max: " << cwMaxValue);
+    txop->SetMaxCw(cwMaxValue);
   }
   return true;
 }
@@ -200,7 +202,7 @@ main (int argc, char *argv[])
   double distance = 10.0;
   bool noErrors = false;
   std::string errorModelType = "ns3::NistErrorRateModel";
-  bool enableFading = false;
+  bool enableFading = true;
   uint32_t pktPerSec = 1000;
   uint32_t payloadSize = 1500;
   bool enabledMinstrel = false;
@@ -215,7 +217,7 @@ main (int argc, char *argv[])
   dataRates.push_back("OfdmRate9MbpsBW5MHz");
   dataRates.push_back("OfdmRate12MbpsBW5MHz");
   dataRates.push_back("OfdmRate13_5MbpsBW5MHz");
-  uint32_t dataRateId = 4;
+  uint32_t dataRateId = 1;
 
 
   CommandLine cmd;
@@ -224,6 +226,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("simSeed", "Seed for random generator. Default: 1", simSeed);
   // optional parameters
   cmd.AddValue ("simTime", "Simulation time in seconds. Default: 10s", simulationTime);
+  cmd.AddValue ("nodeNum", "Number of nodes. Default: 5", nodeNum);
   cmd.AddValue ("distance", "Inter node distance. Default: 10m", distance);
   cmd.AddValue ("testArg", "Extra simulation argument. Default: 0", testArg);
   cmd.Parse (argc, argv);
@@ -233,6 +236,7 @@ main (int argc, char *argv[])
   NS_LOG_UNCOND("--openGymPort: " << openGymPort);
   NS_LOG_UNCOND("--envStepTime: " << envStepTime);
   NS_LOG_UNCOND("--seed: " << simSeed);
+  NS_LOG_UNCOND("--distance: " << distance);
   NS_LOG_UNCOND("--testArg: " << testArg);
 
   if (noErrors){
@@ -355,7 +359,7 @@ main (int argc, char *argv[])
   source.SetAttribute ("Interval", TimeValue (interPacketInterval)); //packets/s
 
   ApplicationContainer sourceApps = source.Install (srcNode);
-  sourceApps.Start (Seconds (startTimeRng->GetValue ()));
+  sourceApps.Start (Seconds (0.0));
   sourceApps.Stop (Seconds (simulationTime));
 
   // Create a packet sink to receive these packets
