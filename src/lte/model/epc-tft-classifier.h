@@ -77,12 +77,13 @@ public:
   /** 
    * classify an IP packet
    * 
-   * \param p the IP packet. It is assumed that the outmost header is an IPv4 header.
+   * \param p the IP packet. The outmost header can only be an IPv4 or an IPv6 header.
    * \param direction the EPC TFT direction (can be downlink, uplink or bi-directional)
-   * 
+   * \param protocolNumber the protocol of the packet. Only IPv4 and IPv6 are supported.
+   *
    * \return the identifier (>0) of the first TFT that matches with the IP packet; 0 if no TFT matched.
    */
-  uint32_t Classify (Ptr<Packet> p, EpcTft::Direction direction);
+  uint32_t Classify (Ptr<Packet> p, EpcTft::Direction direction, uint16_t protocolNumber);
   
 protected:
   

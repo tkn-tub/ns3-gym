@@ -387,8 +387,10 @@ LteEnbNetDevice::DoInitialize (void)
 bool
 LteEnbNetDevice::Send (Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << packet   << dest << protocolNumber);
-  NS_ASSERT_MSG (protocolNumber == Ipv4L3Protocol::PROT_NUMBER || protocolNumber == Ipv6L3Protocol::PROT_NUMBER, "unsupported protocol " << protocolNumber << ", only IPv4/IPv6 is supported");
+  NS_LOG_FUNCTION (this << packet << dest << protocolNumber);
+  NS_ABORT_MSG_IF (protocolNumber != Ipv4L3Protocol::PROT_NUMBER
+                   && protocolNumber != Ipv6L3Protocol::PROT_NUMBER,
+                   "unsupported protocol " << protocolNumber << ", only IPv4 and IPv6 are supported");
   return m_rrc->SendData (packet);
 }
 

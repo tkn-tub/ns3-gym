@@ -24,8 +24,10 @@
 #include "ns3/log.h"
 #include "ns3/mac48-address.h"
 #include "ns3/ipv4.h"
+#include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv6.h"
 #include "ns3/ipv6-header.h"
+#include "ns3/ipv6-l3-protocol.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/epc-gtpu-header.h"
 #include "ns3/abort.h"
@@ -60,13 +62,13 @@ EpcSgwPgwApplication::UeInfo::RemoveBearer (uint8_t bearerId)
 }
 
 uint32_t
-EpcSgwPgwApplication::UeInfo::Classify (Ptr<Packet> p)
+EpcSgwPgwApplication::UeInfo::Classify (Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION (this << p);
   // we hardcode DOWNLINK direction since the PGW is espected to
   // classify only downlink packets (uplink packets will go to the
   // internet without any classification). 
-  return m_tftClassifier.Classify (p, EpcTft::DOWNLINK);
+  return m_tftClassifier.Classify (p, EpcTft::DOWNLINK, protocolNumber);
 }
 
 Ipv4Address 
@@ -160,16 +162,12 @@ EpcSgwPgwApplication::~EpcSgwPgwApplication ()
 bool
 EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& source, const Address& dest, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << source << dest << packet << packet->GetSize ());
+  NS_LOG_FUNCTION (this << source << dest << protocolNumber << packet << packet->GetSize ());
   m_rxTunPktTrace (packet->Copy ());
   Ptr<Packet> pCopy = packet->Copy ();
 
-  uint8_t ipType;
-  pCopy->CopyData (&ipType, 1);
-  ipType = (ipType>>4) & 0x0f;
-
   // get IP address of UE
-  if (ipType == 0x04)
+  if (protocolNumber == Ipv4L3Protocol::PROT_NUMBER)
     {
       Ipv4Header ipv4Header;
       pCopy->RemoveHeader (ipv4Header);
@@ -184,7 +182,7 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
       else
         {
           Ipv4Address enbAddr = it->second->GetEnbAddr ();      
-          uint32_t teid = it->second->Classify (packet);   
+          uint32_t teid = it->second->Classify (packet, protocolNumber);   
           if (teid == 0)
             {
               NS_LOG_WARN ("no matching bearer for this packet");                   
@@ -195,7 +193,7 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
             }
         }
     }
-  else if (ipType == 0x06)
+  else if (protocolNumber == Ipv6L3Protocol::PROT_NUMBER)
     {
       Ipv6Header ipv6Header;
       pCopy->RemoveHeader (ipv6Header);
@@ -210,7 +208,7 @@ EpcSgwPgwApplication::RecvFromTunDevice (Ptr<Packet> packet, const Address& sour
       else
         {
           Ipv4Address enbAddr = it->second->GetEnbAddr ();      
-          uint32_t teid = it->second->Classify (packet);   
+          uint32_t teid = it->second->Classify (packet, protocolNumber);   
           if (teid == 0)
             {
               NS_LOG_WARN ("no matching bearer for this packet");                   

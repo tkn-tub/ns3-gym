@@ -224,12 +224,13 @@ public:
      * 
      * 
      * \param p the IP packet from the internet to be classified
+     * \param protocolNumber the protocol number of the IP packet
      * 
      * \return the corresponding bearer ID > 0 identifying the bearer
      * among all the bearers of this UE;  returns 0 if no bearers
      * matches with the previously declared TFTs
      */
-    uint32_t Classify (Ptr<Packet> p);
+    uint32_t Classify (Ptr<Packet> p, uint16_t protocolNumber);
 
     /** 
      * \return the address of the eNB to which the UE is connected

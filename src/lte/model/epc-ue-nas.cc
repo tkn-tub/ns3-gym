@@ -203,15 +203,15 @@ EpcUeNas::ActivateEpsBearer (EpsBearer bearer, Ptr<EpcTft> tft)
 }
 
 bool
-EpcUeNas::Send (Ptr<Packet> packet)
+EpcUeNas::Send (Ptr<Packet> packet, uint16_t protocolNumber)
 {
-  NS_LOG_FUNCTION (this << packet);
+  NS_LOG_FUNCTION (this << packet << protocolNumber);
 
   switch (m_state)
     {
     case ACTIVE:
       {
-        uint32_t id = m_tftClassifier.Classify (packet, EpcTft::UPLINK);
+        uint32_t id = m_tftClassifier.Classify (packet, EpcTft::UPLINK, protocolNumber);
         NS_ASSERT ((id & 0xFFFFFF00) == 0);
         uint8_t bid = (uint8_t) (id & 0x000000FF);
         if (bid == 0)
