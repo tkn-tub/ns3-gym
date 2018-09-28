@@ -51,6 +51,8 @@ public:
 
   void SetOpenGymInterface(Ptr<OpenGymInterface> openGymInterface);
   void Notify();
+  void NotifySimulationEnd();
+
 
 protected:
   // Inherited

@@ -89,4 +89,14 @@ OpenGymEnv::Notify()
   }
 }
 
+void
+OpenGymEnv::NotifySimulationEnd()
+{
+  NS_LOG_FUNCTION (this);
+  if (m_openGymInterface)
+  {
+    m_openGymInterface->NotifySimulationEnd();
+  }
+}
+
 }
