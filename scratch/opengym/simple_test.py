@@ -3,7 +3,7 @@
 
 import gym
 import argparse
-from PyOpenGymNs3 import ns3env
+import PyOpenGymNs3
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2018, Technische Universität Berlin"
