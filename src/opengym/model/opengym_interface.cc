@@ -208,7 +208,7 @@ OpenGymInterface::Init()
       ns3opengym::InitializeRequest initRequestPbMsg;
       NS_LOG_DEBUG("Received Init request");
       if (requestPbMsg.msg().UnpackTo(&initRequestPbMsg)) {
-        NS_LOG_UNCOND("Decoded Init request: step interval: " << initRequestPbMsg.timestep() << " seed: " << initRequestPbMsg.simseed());
+        NS_LOG_DEBUG("Decoded Init request: step interval: " << initRequestPbMsg.timestep() << " seed: " << initRequestPbMsg.simseed());
         rxInitReq = true;
 
         ns3opengym::InitializeReply initReplyPbMsg;
@@ -294,7 +294,7 @@ OpenGymInterface::NotifyCurrentState()
     return;
   }
 
-  NS_LOG_UNCOND("Wait for messages");
+  NS_LOG_DEBUG("Wait for messages");
   ns3opengym::RequestMsg requestPbMsg;
 
   // collect current env state, TODO: provide possibility to set single callback getState(obs, reward, done)
