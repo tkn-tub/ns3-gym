@@ -187,10 +187,10 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   return true;
 }
 
-void ScheduleNextStateRead(double envStepTime, Ptr<OpenGymEnv> openGymEnv)
+void ScheduleNextStateRead(double envStepTime, Ptr<OpenGymInterface> openGymInterface)
 {
-  Simulator::Schedule (Seconds(envStepTime), &ScheduleNextStateRead, envStepTime, openGymEnv);
-  openGymEnv->NotifyCurrentState();
+  Simulator::Schedule (Seconds(envStepTime), &ScheduleNextStateRead, envStepTime, openGymInterface);
+  openGymInterface->NotifyCurrentState();
 }
 
 int
@@ -387,23 +387,23 @@ main (int argc, char *argv[])
   }
 
   // OpenGym Env
-  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort);
-  openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
-  openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
-  openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
-  openGymEnv->SetGetObservationCb( MakeCallback (&MyGetObservation) );
-  openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
-  openGymEnv->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
-  openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
+  Ptr<OpenGymInterface> openGymInterface = CreateObject<OpenGymInterface> (openGymPort);
+  openGymInterface->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
+  openGymInterface->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
+  openGymInterface->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
+  openGymInterface->SetGetObservationCb( MakeCallback (&MyGetObservation) );
+  openGymInterface->SetGetRewardCb( MakeCallback (&MyGetReward) );
+  openGymInterface->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
+  openGymInterface->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
 
-  Simulator::Schedule (Seconds(0.0), &ScheduleNextStateRead, envStepTime, openGymEnv);
+  Simulator::Schedule (Seconds(0.0), &ScheduleNextStateRead, envStepTime, openGymInterface);
 
   NS_LOG_UNCOND ("Simulation start");
   Simulator::Stop (Seconds (simulationTime));
   Simulator::Run ();
   NS_LOG_UNCOND ("Simulation stop");
 
-  openGymEnv->NotifySimulationEnd();
+  openGymInterface->NotifySimulationEnd();
   Simulator::Destroy ();
 
 }

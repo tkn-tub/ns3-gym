@@ -2,8 +2,6 @@
 #ifndef OPENGYM_HELPER_H
 #define OPENGYM_HELPER_H
 
-#include "ns3/opengym.h"
-
 namespace ns3 {
 
 /* ... */

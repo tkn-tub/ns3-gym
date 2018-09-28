@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef OPENGYM_H
-#define OPENGYM_H
+#ifndef OPENGYM_INTERFACE_H
+#define OPENGYM_INTERFACE_H
 
 #include "ns3/object.h"
 #include "ns3/simulator.h"
@@ -35,13 +35,13 @@ namespace ns3 {
 
 class OpenGymSpace;
 class OpenGymDataContainer;
-class OpenGymEntity;
+class OpenGymEnv;
 
-class OpenGymEnv : public Object
+class OpenGymInterface : public Object
 {
 public:
-  OpenGymEnv (uint32_t port=5555);
-  virtual ~OpenGymEnv ();
+  OpenGymInterface (uint32_t port=5555);
+  virtual ~OpenGymInterface ();
 
   static TypeId GetTypeId ();
 
@@ -71,7 +71,7 @@ public:
   void SetGetExtraInfoCb(Callback<std::string> cb);
   void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb);
 
-  void Notify(Ptr<OpenGymEntity> entity);
+  void Notify(Ptr<OpenGymEnv> entity);
 
 protected:
   // Inherited
@@ -103,5 +103,5 @@ private:
 
 } // end of namespace ns3
 
-#endif /* OPENGYM_H */
+#endif /* OPENGYM_INTERFACE_H */
 
