@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef OPENGYM_ENTITY_H
-#define OPENGYM_ENTITY_H
+#ifndef OPENGYM_ENV_H
+#define OPENGYM_ENV_H
 
 #include "ns3/object.h"
 #include "ns3/simulator.h"
@@ -29,13 +29,13 @@ namespace ns3 {
 
 class OpenGymSpace;
 class OpenGymDataContainer;
-class OpenGymEnv;
+class OpenGymInterface;
 
-class OpenGymEntity : public Object
+class OpenGymEnv : public Object
 {
 public:
-  OpenGymEntity ();
-  virtual ~OpenGymEntity ();
+  OpenGymEnv ();
+  virtual ~OpenGymEnv ();
 
   static TypeId GetTypeId ();
 
@@ -49,7 +49,7 @@ public:
   virtual std::string GetExtraInfo() = 0;
   virtual bool ExecuteActions(Ptr<OpenGymDataContainer> action) = 0;
 
-  void SetOpenGymEnv(Ptr<OpenGymEnv> openGymEnv);
+  void SetOpenGymInterface(Ptr<OpenGymInterface> openGymInterface);
   void Notify();
 
 protected:
@@ -57,11 +57,11 @@ protected:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
-  Ptr<OpenGymEnv> m_openGymEnv;
+  Ptr<OpenGymInterface> m_openGymInterface;
 private:
 
 };
 
 } // end of namespace ns3
 
-#endif /* OPENGYM_ENTITY_H */
+#endif /* OPENGYM_ENV_H */
