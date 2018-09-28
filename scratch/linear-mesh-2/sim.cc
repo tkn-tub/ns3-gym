@@ -245,9 +245,9 @@ main (int argc, char *argv[])
   Ptr<UdpServer> udpServer = DynamicCast<UdpServer>(sinkApps.Get(0));
   if (eventBasedEnv)
   {
-    udpServer->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&MyGymEnv::NotifyEvent, myGymEnv, dstNode));
+    udpServer->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&MyGymEnv::NotifyPktRxEvent, myGymEnv, dstNode));
   } else {
-    udpServer->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&MyGymEnv::CollectRxPkts, myGymEnv, dstNode));
+    udpServer->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&MyGymEnv::CountRxPkts, myGymEnv, dstNode));
   }
 
   NS_LOG_UNCOND ("Simulation start");

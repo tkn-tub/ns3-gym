@@ -50,12 +50,11 @@ public:
 
   // the function has to be static to work with MakeBoundCallback
   // that is why we pass pointer to MyGymEnv instance to be able to store the context (node, etc)
-  static void NotifyEvent(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet);
-  static void CollectRxPkts(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet);
+  static void NotifyPktRxEvent(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet);
+  static void CountRxPkts(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet);
 
 private:
   void ScheduleNextStateRead();
-  void NotifyEvent();
   Ptr<WifiMacQueue> GetQueue(Ptr<Node> node);
   bool SetCw(Ptr<Node> node, uint32_t cwMinValue=0, uint32_t cwMaxValue=0);
 
