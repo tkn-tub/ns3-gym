@@ -152,12 +152,12 @@ bool SetCw(Ptr<Node> node, uint32_t cwMinValue=0, uint32_t cwMaxValue=0)
 
   // if both set to the same value then we have uniform backoff?
   if (cwMinValue != 0) {
-    NS_LOG_UNCOND ("Set CW min: " << cwMinValue);
+    NS_LOG_DEBUG ("Set CW min: " << cwMinValue);
     txop->SetMinCw(cwMinValue);
   }
 
   if (cwMaxValue != 0) {
-    NS_LOG_UNCOND ("Set CW max: " << cwMaxValue);
+    NS_LOG_DEBUG ("Set CW max: " << cwMaxValue);
     txop->SetMaxCw(cwMaxValue);
   }
   return true;
@@ -185,6 +185,12 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   NS_LOG_UNCOND ("MyExecuteActions: " << actionString);
 
   return true;
+}
+
+void ScheduleNextStateRead(double envStepTime, Ptr<OpenGymEnv> openGymEnv)
+{
+  Simulator::Schedule (Seconds(envStepTime), &ScheduleNextStateRead, envStepTime, openGymEnv);
+  openGymEnv->NotifyCurrentState();
 }
 
 int
@@ -381,7 +387,7 @@ main (int argc, char *argv[])
   }
 
   // OpenGym Env
-  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort, Seconds(envStepTime));
+  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort);
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
   openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
@@ -389,6 +395,8 @@ main (int argc, char *argv[])
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
   openGymEnv->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
+
+  Simulator::Schedule (Seconds(0.0), &ScheduleNextStateRead, envStepTime, openGymEnv);
 
   NS_LOG_UNCOND ("Simulation start");
   Simulator::Stop (Seconds (simulationTime));

@@ -142,6 +142,12 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   return true;
 }
 
+void ScheduleNextStateRead(double envStepTime, Ptr<OpenGymEnv> openGymEnv)
+{
+  Simulator::Schedule (Seconds(envStepTime), &ScheduleNextStateRead, envStepTime, openGymEnv);
+  openGymEnv->NotifyCurrentState();
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -172,7 +178,7 @@ main (int argc, char *argv[])
   RngSeedManager::SetRun (simSeed);
 
   // OpenGym Env
-  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort, Seconds(envStepTime));
+  Ptr<OpenGymEnv> openGymEnv = CreateObject<OpenGymEnv> (openGymPort);
   openGymEnv->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
   openGymEnv->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
   openGymEnv->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
@@ -180,6 +186,7 @@ main (int argc, char *argv[])
   openGymEnv->SetGetRewardCb( MakeCallback (&MyGetReward) );
   openGymEnv->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
   openGymEnv->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
+  Simulator::Schedule (Seconds(0.0), &ScheduleNextStateRead, envStepTime, openGymEnv);
 
   NS_LOG_UNCOND ("Simulation start");
   Simulator::Stop (Seconds (simulationTime));
