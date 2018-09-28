@@ -639,9 +639,13 @@ OpenGymEnv::Notify(Ptr<OpenGymEntity> entity)
 {
   NS_LOG_FUNCTION (this);
 
-  //TODO: collect current state to be sent to Python
-  // call next step to initiate communication with python
-  // execute actions on entitiy
+  SetGetGameOverCb( MakeCallback (&OpenGymEntity::GetGameOver, entity) );
+  SetGetObservationCb( MakeCallback (&OpenGymEntity::GetObservation, entity) );
+  SetGetRewardCb( MakeCallback (&OpenGymEntity::GetReward, entity) );
+  SetGetExtraInfoCb( MakeCallback (&OpenGymEntity::GetExtraInfo, entity) );
+  SetExecuteActionsCb( MakeCallback (&OpenGymEntity::ExecuteActions, entity) );
+
+  NotifyCurrentState();
 }
 
 }
