@@ -41,7 +41,9 @@ public:
 
   virtual Ptr<OpenGymSpace> GetActionSpace() = 0;
   virtual Ptr<OpenGymSpace> GetObservationSpace() = 0;
-  virtual void GetEnvState(Ptr<OpenGymDataContainer>  &obs, float &reward, bool &done, std::string &info) = 0;
+  // TODO:  get all in one function like below, do we need it?
+  //virtual void GetEnvState(Ptr<OpenGymDataContainer>  &obs, float &reward, bool &done, std::string &info) = 0;
+  virtual bool GetGameOver() = 0;
   virtual Ptr<OpenGymDataContainer> GetObservation() = 0;
   virtual float GetReward() = 0;
   virtual std::string GetExtraInfo() = 0;
@@ -55,8 +57,9 @@ protected:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
-private:
   Ptr<OpenGymEnv> m_openGymEnv;
+private:
+
 };
 
 } // end of namespace ns3

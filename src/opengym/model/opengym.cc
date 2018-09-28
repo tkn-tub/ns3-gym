@@ -48,13 +48,11 @@ OpenGymEnv::GetTypeId (void)
   return tid;
 }
 
-OpenGymEnv::OpenGymEnv(uint32_t port, Time stepTime):
+OpenGymEnv::OpenGymEnv(uint32_t port):
   m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP),
   m_gameOver(false), m_simEnd(false), m_stopEnvRequested(false)
 {
   NS_LOG_FUNCTION (this);
-  m_stepCount = 0;
-  m_interval = stepTime;
   m_rxGetGameOver = false;
   m_rxGetObservation = false;
   m_rxGetReward = false;
@@ -213,12 +211,6 @@ OpenGymEnv::Init()
         NS_LOG_UNCOND("Decoded Init request: step interval: " << initRequestPbMsg.timestep() << " seed: " << initRequestPbMsg.simseed());
         rxInitReq = true;
 
-        double timeStep = initRequestPbMsg.timestep();
-        if (timeStep > 0) {
-          m_interval = Seconds(timeStep);
-        }
-        Simulator::Schedule (Seconds(0.0), &OpenGymEnv::WaitForNextStep, this);
-
         ns3opengym::InitializeReply initReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
 
@@ -294,7 +286,7 @@ OpenGymEnv::Init()
 }
 
 void
-OpenGymEnv::WaitForNextStep()
+OpenGymEnv::NotifyCurrentState()
 {
   NS_LOG_FUNCTION (this);
 
@@ -303,8 +295,6 @@ OpenGymEnv::WaitForNextStep()
   }
 
   NS_LOG_UNCOND("Wait for messages");
-  Simulator::Schedule (m_interval, &OpenGymEnv::WaitForNextStep, this);
-
   ns3opengym::RequestMsg requestPbMsg;
 
   // collect current env state, TODO: provide possibility to set single callback getState(obs, reward, done)
@@ -431,7 +421,6 @@ OpenGymEnv::WaitForNextStep()
     }
     else if (requestPbMsg.type() == ns3opengym::Action)
     {
-      m_stepCount++;
       m_rxSetActions = true;
       NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type());
 
@@ -548,7 +537,7 @@ OpenGymEnv::WaitForStop()
   m_rxGetObservation = false;
   m_rxGetReward = false;
   m_rxSetActions = true;
-  WaitForNextStep();
+  NotifyCurrentState();
 }
 
 

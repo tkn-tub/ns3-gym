@@ -23,6 +23,8 @@
 #include "ns3/log.h"
 #include "ns3/type-name.h"
 #include "entity.h"
+#include "container.h"
+#include "spaces.h"
 #include "opengym.h"
 
 namespace ns3 {
@@ -68,6 +70,13 @@ OpenGymEntity::SetOpenGymEnv(Ptr<OpenGymEnv> openGymEnv)
 {
   NS_LOG_FUNCTION (this);
   m_openGymEnv = openGymEnv;
+  openGymEnv->SetGetActionSpaceCb( MakeCallback (&OpenGymEntity::GetActionSpace, this) );
+  openGymEnv->SetGetObservationSpaceCb( MakeCallback (&OpenGymEntity::GetObservationSpace, this) );
+  openGymEnv->SetGetGameOverCb( MakeCallback (&OpenGymEntity::GetGameOver, this) );
+  openGymEnv->SetGetObservationCb( MakeCallback (&OpenGymEntity::GetObservation, this) );
+  openGymEnv->SetGetRewardCb( MakeCallback (&OpenGymEntity::GetReward, this) );
+  openGymEnv->SetGetExtraInfoCb( MakeCallback (&OpenGymEntity::GetExtraInfo, this) );
+  openGymEnv->SetExecuteActionsCb( MakeCallback (&OpenGymEntity::ExecuteActions, this) );
 }
 
 void

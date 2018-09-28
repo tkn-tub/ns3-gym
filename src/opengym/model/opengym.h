@@ -40,7 +40,7 @@ class OpenGymEntity;
 class OpenGymEnv : public Object
 {
 public:
-  OpenGymEnv (uint32_t port=5555, Time stepTime=Seconds(0.1));
+  OpenGymEnv (uint32_t port=5555);
   virtual ~OpenGymEnv ();
 
   static TypeId GetTypeId ();
@@ -49,7 +49,7 @@ public:
   ns3opengym::RequestMsg ReceiveMsg();
   int SendMsg(ns3opengym::ReplyMsg replyPbMsg);
 
-  void WaitForNextStep();
+  void NotifyCurrentState();
   void WaitForStop();
 
   void NotifySimulationEnd();
@@ -85,9 +85,6 @@ private:
   bool m_gameOver;
   bool m_simEnd;
   bool m_stopEnvRequested;
-  uint64_t m_stepCount;
-
-  Time m_interval;
 
   Callback< Ptr<OpenGymSpace> > m_actionSpaceCb;
   Callback< Ptr<OpenGymSpace> > m_observationSpaceCb;
