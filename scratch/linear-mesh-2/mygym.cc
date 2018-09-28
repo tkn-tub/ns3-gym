@@ -223,25 +223,19 @@ MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 }
 
 void
-MyGymEnv::NotifyEvent()
-{
-  NS_LOG_FUNCTION (this);
-  NS_LOG_UNCOND ("Node with ID " << m_currentNode->GetId() << " received " << m_rxPktNum << " packets");
-
-  Notify();
-}
-
-void
-MyGymEnv::NotifyEvent(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet)
+MyGymEnv::NotifyPktRxEvent(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet)
 {
   NS_LOG_DEBUG ("Client received a packet of " << packet->GetSize () << " bytes");
   entity->m_currentNode = node;
   entity->m_rxPktNum++;
-  entity->NotifyEvent();
+
+  NS_LOG_UNCOND ("Node with ID " << entity->m_currentNode->GetId() << " received " << entity->m_rxPktNum << " packets");
+
+  entity->Notify();
 }
 
 void
-MyGymEnv::CollectRxPkts(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet)
+MyGymEnv::CountRxPkts(Ptr<MyGymEnv> entity, Ptr<Node> node, Ptr<const Packet> packet)
 {
   NS_LOG_DEBUG ("Client received a packet of " << packet->GetSize () << " bytes");
   entity->m_currentNode = node;
