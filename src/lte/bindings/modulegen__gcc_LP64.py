@@ -15557,10 +15557,10 @@ def register_Ns3EpcTftClassifier_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('uint32_t', 'id')])
-    ## epc-tft-classifier.h (module 'lte'): uint32_t ns3::EpcTftClassifier::Classify(ns3::Ptr<ns3::Packet> p, ns3::EpcTft::Direction direction) [member function]
+    ## epc-tft-classifier.h (module 'lte'): uint32_t ns3::EpcTftClassifier::Classify(ns3::Ptr<ns3::Packet> p, ns3::EpcTft::Direction direction, uint16_t protocolNumber) [member function]
     cls.add_method('Classify', 
                    'uint32_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::EpcTft::Direction', 'direction')])
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::EpcTft::Direction', 'direction'), param('uint16_t', 'protocolNumber')])
     ## epc-tft-classifier.h (module 'lte'): void ns3::EpcTftClassifier::Delete(uint32_t id) [member function]
     cls.add_method('Delete', 
                    'void', 
@@ -15612,10 +15612,10 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## epc-ue-nas.h (module 'lte'): bool ns3::EpcUeNas::Send(ns3::Ptr<ns3::Packet> p) [member function]
+    ## epc-ue-nas.h (module 'lte'): bool ns3::EpcUeNas::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocolNumber')])
     ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::SetAsSapProvider(ns3::LteAsSapProvider * s) [member function]
     cls.add_method('SetAsSapProvider', 
                    'void', 
