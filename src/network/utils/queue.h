@@ -232,7 +232,10 @@ private:
  * Queue is a template class. The type of the objects stored within the queue
  * is specified by the type parameter, which can be any class providing a
  * GetSize () method (e.g., Packet, QueueDiscItem, etc.). Subclasses need to
- * implement the DoEnqueue, DoDequeue, DoRemove and DoPeek methods.
+ * implement the Enqueue, Dequeue, Remove and Peek methods, and are
+ * encouraged to leverage the DoEnqueue, DoDequeue, DoRemove, and DoPeek
+ * methods in doing so, to ensure that appropriate trace sources are called
+ * and statistics are maintained.
  *
  * Users of the Queue template class usually hold a queue through a smart pointer,
  * hence forward declaration is recommended to avoid pulling the implementation
