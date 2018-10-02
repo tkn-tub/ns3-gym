@@ -14,7 +14,7 @@ from waflib.Errors import WafError
 # after = TaskGen.after
 
 # https://github.com/gjcarneiro/pybindgen
-REQUIRED_PYBINDGEN_VERSION = '0.17.0.post58+ngcf00cc0'
+REQUIRED_PYBINDGEN_VERSION = '0.19.0.post4+ng823d8b2'
 REQUIRED_PYGCCXML_VERSION = (1, 9, 0)
 REQUIRED_CASTXML_VERSION = '0.1'
 
