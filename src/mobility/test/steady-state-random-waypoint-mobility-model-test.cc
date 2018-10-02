@@ -82,7 +82,7 @@ SteadyStateRandomWaypointTest::DoRun (void)
     {
       // Create a new mobility model.
       Ptr<MobilityModel> model = mobilityFactory.Create ()->GetObject<MobilityModel> ();
-
+      model->AssignStreams (100 * (i + 1));
       // Add this mobility model to the stack.
       mobilityStack.push_back (model);
       Simulator::Schedule (Seconds (0.0), &Object::Initialize, model);
