@@ -462,6 +462,10 @@ def register_types(module):
     module.add_class('TransmitPduParameters', outer_class=root_module['ns3::LteMacSapProvider'])
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser [class]
     module.add_class('LteMacSapUser', allow_subclassing=True)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters [struct]
+    module.add_class('ReceivePduParameters', outer_class=root_module['ns3::LteMacSapUser'])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters [struct]
+    module.add_class('TxOpportunityParameters', outer_class=root_module['ns3::LteMacSapUser'])
     ## lte-mi-error-model.h (module 'lte'): ns3::LteMiErrorModel [class]
     module.add_class('LteMiErrorModel')
     ## lte-pdcp-sap.h (module 'lte'): ns3::LtePdcpSapProvider [class]
@@ -2258,6 +2262,8 @@ def register_methods(root_module):
     register_Ns3LteMacSapProviderReportBufferStatusParameters_methods(root_module, root_module['ns3::LteMacSapProvider::ReportBufferStatusParameters'])
     register_Ns3LteMacSapProviderTransmitPduParameters_methods(root_module, root_module['ns3::LteMacSapProvider::TransmitPduParameters'])
     register_Ns3LteMacSapUser_methods(root_module, root_module['ns3::LteMacSapUser'])
+    register_Ns3LteMacSapUserReceivePduParameters_methods(root_module, root_module['ns3::LteMacSapUser::ReceivePduParameters'])
+    register_Ns3LteMacSapUserTxOpportunityParameters_methods(root_module, root_module['ns3::LteMacSapUser::TxOpportunityParameters'])
     register_Ns3LteMiErrorModel_methods(root_module, root_module['ns3::LteMiErrorModel'])
     register_Ns3LtePdcpSapProvider_methods(root_module, root_module['ns3::LtePdcpSapProvider'])
     register_Ns3LtePdcpSapProviderTransmitPdcpSduParameters_methods(root_module, root_module['ns3::LtePdcpSapProvider::TransmitPdcpSduParameters'])
@@ -7143,16 +7149,48 @@ def register_Ns3LteMacSapUser_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters params) [member function]
     cls.add_method('NotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::ReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::ReceivePdu(ns3::LteMacSapUser::ReceivePduParameters params) [member function]
     cls.add_method('ReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteMacSapUserReceivePduParameters_methods(root_module, cls):
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::ReceivePduParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::ReceivePduParameters(ns3::LteMacSapUser::ReceivePduParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteMacSapUser::ReceivePduParameters const &', 'arg0')])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::lcid [variable]
+    cls.add_instance_attribute('lcid', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::p [variable]
+    cls.add_instance_attribute('p', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::rnti [variable]
+    cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteMacSapUserTxOpportunityParameters_methods(root_module, cls):
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::TxOpportunityParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::TxOpportunityParameters(ns3::LteMacSapUser::TxOpportunityParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteMacSapUser::TxOpportunityParameters const &', 'arg0')])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint32_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::componentCarrierId [variable]
+    cls.add_instance_attribute('componentCarrierId', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::harqId [variable]
+    cls.add_instance_attribute('harqId', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::layer [variable]
+    cls.add_instance_attribute('layer', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::lcid [variable]
+    cls.add_instance_attribute('lcid', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::rnti [variable]
+    cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteMiErrorModel_methods(root_module, cls):
@@ -19533,15 +19571,15 @@ def register_Ns3LteRlc_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters params) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'params')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters params) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'params')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19565,15 +19603,15 @@ def register_Ns3LteRlcAm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    is_virtual=True)
     ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19607,15 +19645,15 @@ def register_Ns3LteRlcSm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    is_virtual=True)
     ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19644,15 +19682,15 @@ def register_Ns3LteRlcTm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    is_virtual=True)
     ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19681,15 +19719,15 @@ def register_Ns3LteRlcUm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    is_virtual=True)
     ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -21235,15 +21273,15 @@ def register_Ns3NoOpComponentCarrierManager_methods(root_module, cls):
                    'void', 
                    [param('double', 'prbOccupancy'), param('uint8_t', 'componentCarrierId')], 
                    visibility='protected', is_virtual=True)
-    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    visibility='protected', is_virtual=True)
-    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    visibility='protected', is_virtual=True)
     ## no-op-component-carrier-manager.h (module 'lte'): std::vector<unsigned char, std::allocator<unsigned char> > ns3::NoOpComponentCarrierManager::DoReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
     cls.add_method('DoReleaseDataRadioBearer', 
@@ -22887,15 +22925,15 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected')
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    visibility='protected')
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    visibility='protected')
     ## simple-ue-component-carrier-manager.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::SimpleUeComponentCarrierManager::DoRemoveLc(uint8_t lcid) [member function]
     cls.add_method('DoRemoveLc', 
