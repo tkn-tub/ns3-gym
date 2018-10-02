@@ -93,21 +93,16 @@ protected:
   // forwarded from LteMacSapUser
   /**
    * \brief Notify TX opportunity function
-   * \param bytes the number of bytes
-   * \param layer the layer
-   * \param harqId the HARQ ID
-   * \param componentCarrierId the component carrier ID
-   * \param rnti the RNTI
-   * \param lcid the LCID
+   *
+   * \param txOpParams the LteMacSapUser::TxOpportunityParameters
    */
-  void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid);
+  void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
   /**
    * \brief Receive PDU function
-   * \param p the packet
-   * \param rnti the RNTI
-   * \param lcid the LCID
+   *
+   * \param rxPduParams the LteMacSapUser::ReceivePduParameters
    */
-  void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
+  void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams);
   //forwarded from LteUeCcmRrcSapProvider
   /**
    * \brief Add LC function

@@ -484,13 +484,21 @@ LteTestMac::SendTxOpportunity (Time time, uint32_t bytes)
           haveContext = true;
         }
     }
+  LteMacSapUser::TxOpportunityParameters txOpParmas;
+  txOpParmas.bytes = bytes;
+  txOpParmas.layer = 0;
+  txOpParmas.componentCarrierId = 0;
+  txOpParmas.harqId = 0;
+  txOpParmas.rnti = 0;
+  txOpParmas.lcid = 0;
+
   if (haveContext)
     {
-      Simulator::ScheduleWithContext (node->GetId (), time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0, 0, 0, 0);
+      Simulator::ScheduleWithContext (node->GetId (), time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, txOpParmas);
     }
   else
     {
-      Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, bytes, 0, 0, 0, 0, 0);
+      Simulator::Schedule (time, &LteMacSapUser::NotifyTxOpportunity, m_macSapUser, txOpParmas);
     }
     
   if (m_txOpportunityMode == RANDOM_MODE)
@@ -558,6 +566,11 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   m_txPdus++;
   m_txBytes += params.pdu->GetSize ();
 
+  LteMacSapUser::ReceivePduParameters rxPduParams;
+  rxPduParams.p = params.pdu;
+  rxPduParams.rnti = params.rnti;
+  rxPduParams.lcid = params.lcid;
+
   if (m_device)
     {
       m_device->Send (params.pdu, m_device->GetBroadcast (), 0);
@@ -565,7 +578,7 @@ LteTestMac::DoTransmitPdu (LteMacSapProvider::TransmitPduParameters params)
   else if (m_macLoopback)
     {
       Simulator::Schedule (Seconds (0.1), &LteMacSapUser::ReceivePdu,
-                           m_macLoopback->m_macSapUser, params.pdu, params.rnti, params.lcid);
+                           m_macLoopback->m_macSapUser, rxPduParams);
     }
   else
     {
@@ -622,11 +635,18 @@ LteTestMac::DoReportBufferStatus (LteMacSapProvider::ReportBufferStatusParameter
 
       int32_t size = params.statusPduSize + params.txQueueSize  + params.retxQueueSize;
       Time time = m_txOppTime;
+      LteMacSapUser::TxOpportunityParameters txOpParmas;
+      txOpParmas.bytes = m_txOppSize;
+      txOpParmas.layer = 0;
+      txOpParmas.componentCarrierId = 0;
+      txOpParmas.harqId = 0;
+      txOpParmas.rnti = params.rnti;
+      txOpParmas.lcid = params.lcid;
       while (size > 0)
         {
           EventId e = Simulator::Schedule (time, 
                                            &LteMacSapUser::NotifyTxOpportunity,
-                                           m_macSapUser, m_txOppSize, 0, 0, 0, params.rnti, params.lcid);
+                                           m_macSapUser, txOpParmas);
           m_nextTxOppList.push_back (e);
           size -= m_txOppSize;
           time += m_txOppTime;
@@ -644,7 +664,11 @@ LteTestMac::Receive (Ptr<NetDevice> nd, Ptr<const Packet> p, uint16_t protocol, 
   m_rxBytes += p->GetSize ();
 
   Ptr<Packet> packet = p->Copy ();
-  m_macSapUser->ReceivePdu (packet, 0, 0);
+  LteMacSapUser::ReceivePduParameters rxPduParams;
+  rxPduParams.p = packet;
+  rxPduParams.rnti = 0;
+  rxPduParams.lcid = 0;
+  m_macSapUser->ReceivePdu (rxPduParams);
   return true;
 }
 

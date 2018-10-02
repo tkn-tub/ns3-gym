@@ -765,10 +765,15 @@ LteEnbMac::DoReceivePhyPdu (Ptr<Packet> p)
   std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
   //NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << lcid);
 
+  LteMacSapUser::ReceivePduParameters rxPduParams;
+  rxPduParams.p = p;
+  rxPduParams.rnti = rnti;
+  rxPduParams.lcid = lcid;
+
   //Receive PDU only if LCID is found
   if (lcidIt != rntiIt->second.end ())
     {
-      (*lcidIt).second->ReceivePdu (p, rnti, lcid);
+      (*lcidIt).second->ReceivePdu (rxPduParams);
     }
 }
 
@@ -1023,6 +1028,7 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
   // Create DL PHY PDU
   Ptr<PacketBurst> pb = CreateObject<PacketBurst> ();
   std::map <LteFlowId_t, LteMacSapUser* >::iterator it;
+  LteMacSapUser::TxOpportunityParameters txOpParams;
 
   for (unsigned int i = 0; i < ind.m_buildDataList.size (); i++)
     {
@@ -1054,7 +1060,13 @@ LteEnbMac::DoSchedDlConfigInd (FfMacSchedSapUser::SchedDlConfigIndParameters ind
                   std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
                   NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID" << (uint32_t)lcid<<" carrier id:"<<(uint16_t)m_componentCarrierId);
                   NS_LOG_DEBUG (this << " rnti= " << rnti << " lcid= " << (uint32_t) lcid << " layer= " << k);
-                  (*lcidIt).second->NotifyTxOpportunity (ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size, k, ind.m_buildDataList.at (i).m_dci.m_harqProcess, m_componentCarrierId, rnti, lcid);
+                  txOpParams.bytes = ind.m_buildDataList.at (i).m_rlcPduList.at (j).at (k).m_size;
+                  txOpParams.layer = k;
+                  txOpParams.harqId = ind.m_buildDataList.at (i).m_dci.m_harqProcess;
+                  txOpParams.componentCarrierId = m_componentCarrierId;
+                  txOpParams.rnti = rnti;
+                  txOpParams.lcid = lcid;
+                  (*lcidIt).second->NotifyTxOpportunity (txOpParams);
                 }
               else
                 {
