@@ -707,7 +707,7 @@ def create_suid_program(bld, name):
     program.target = "%s%s-%s%s" % (wutils.APPNAME, wutils.VERSION, name, bld.env.BUILD_SUFFIX)
 
     if bld.env['ENABLE_SUDO']:
-        program.create_task("SuidBuild")
+        program.create_task("SuidBuild_task")
 
     bld.set_group(grp)
 
