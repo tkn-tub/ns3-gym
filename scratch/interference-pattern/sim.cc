@@ -52,13 +52,17 @@ int main (int argc, char *argv[])
 
   // Interference Pattern
   double interferenceSlotTime = 0.1;  // seconds;
-  uint32_t channNum = 4;
+
   //        time,    channel usage
   std::map<uint32_t, std::vector<uint32_t> > interferencePattern;
   interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (0, {1,0,0,0}));
   interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (1, {0,1,0,0}));
   interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (2, {0,0,1,0}));
   interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (3, {0,0,0,1}));
+
+  // set channel number correctly, do not modify
+  std::vector<uint32_t> tmp = interferencePattern.at(0);
+  uint32_t channNum = tmp.size();
 
   CommandLine cmd;
   // required parameters for OpenGym interface
