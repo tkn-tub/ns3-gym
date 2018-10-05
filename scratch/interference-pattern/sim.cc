@@ -51,13 +51,14 @@ int main (int argc, char *argv[])
   double interfererPower = 10;
 
   // Interference Pattern
-  uint32_t channNum = 2;
   double interferenceSlotTime = 0.1;  // seconds;
+  uint32_t channNum = 3;
   //        time,    channel usage
   std::map<uint32_t, std::vector<uint32_t> > interferencePattern;
-  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (0, {1,0,}));
-  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (1, {0,1,}));
-  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (2, {0,0,}));
+  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (0, {1,0,0}));
+  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (1, {0,1,0}));
+  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (2, {0,0,1}));
+  interferencePattern.insert(std::pair<uint32_t, std::vector<uint32_t> > (3, {0,0,0}));
 
   CommandLine cmd;
   // required parameters for OpenGym interface
@@ -111,34 +112,31 @@ int main (int argc, char *argv[])
   mobility.Install (nodes);
 
   // Define channel models
-  BandInfo bandInfoCh1;
-  bandInfoCh1.fc = 5200e6;
-  bandInfoCh1.fl = 5200e6 - 10e6;
-  bandInfoCh1.fh = 5200e6 + 10e6;
-  Bands bandsCh1;
-  bandsCh1.push_back (bandInfoCh1);
-  Ptr<SpectrumModel> smCh1 = Create<SpectrumModel> (bandsCh1);
-
-  BandInfo bandInfoCh2;
-  bandInfoCh2.fc = 5220e6;
-  bandInfoCh2.fl = 5220e6 - 10e6;
-  bandInfoCh2.fh = 5220e6 + 10e6;
-  Bands bandsCh2;
-  bandsCh2.push_back (bandInfoCh2);
-  Ptr<SpectrumModel> smCh2 = Create<SpectrumModel> (bandsCh2);
+  std::map<uint32_t, Ptr<SpectrumModel> > spectrumModels;
+  for (uint32_t chanId=0; chanId<channNum; chanId++) {
+    double fc = 5200e6 + 20e6 * chanId;
+    BandInfo bandInfo;
+    bandInfo.fc = fc;
+    bandInfo.fl = fc - 10e6;
+    bandInfo.fh = fc + 10e6;
+    Bands bands;
+    bands.push_back (bandInfo);
+    Ptr<SpectrumModel> sm = Create<SpectrumModel> (bands);
+    spectrumModels.insert(std::pair<uint32_t, Ptr<SpectrumModel>>(chanId, sm));
+  }
 
   // Spectrum Analyzer --- Channel Sensing
-  //Channel 1
   Ptr<Node> sensingNode = nodes.Get(0);
   SpectrumAnalyzerHelper spectrumAnalyzerHelper;
   spectrumAnalyzerHelper.SetChannel (spectrumChannel);
-  spectrumAnalyzerHelper.SetRxSpectrumModel (smCh1);
   spectrumAnalyzerHelper.SetPhyAttribute ("Resolution", TimeValue (MilliSeconds (100)));
   spectrumAnalyzerHelper.SetPhyAttribute ("NoisePowerSpectralDensity", DoubleValue (1e-15));     // -120 dBm/Hz
-  NetDeviceContainer spectrumAnalyzers = spectrumAnalyzerHelper.Install (sensingNode);
-  //Channel 2
-  spectrumAnalyzerHelper.SetRxSpectrumModel (smCh2);
-  spectrumAnalyzers.Add(spectrumAnalyzerHelper.Install (sensingNode));
+  NetDeviceContainer spectrumAnalyzers;
+  
+  for (uint32_t chanId=0; chanId<channNum; chanId++) {
+    spectrumAnalyzerHelper.SetRxSpectrumModel (spectrumModels.at(chanId));
+    spectrumAnalyzers.Add(spectrumAnalyzerHelper.Install (sensingNode));
+  }
 
   for (uint32_t i=0; i< spectrumAnalyzers.GetN(); i++)
   {
@@ -152,30 +150,25 @@ int main (int argc, char *argv[])
     oss.str ("");
     uint32_t devId = netDev->GetIfIndex();
     oss << "/NodeList/" << sensingNode->GetId () << "/DeviceList/" << devId << "/$ns3::NonCommunicatingNetDevice/Phy/AveragePowerSpectralDensityReport";
-    uint32_t channelId = 1 + i;
+    uint32_t channelId = i;
     Config::ConnectWithoutContext (oss.str (),MakeBoundCallback (&MyGymEnv::PerformCca, myGymEnv, channelId));
   }
 
   // Signal Generator --- Generate interference pattern
   Ptr<Node> interferingNode = nodes.Get(1);
-
-  Ptr<SpectrumValue> wgPsd = Create<SpectrumValue> (smCh1);
-  *wgPsd = interfererPower / (20e6);
-  NS_LOG_DEBUG ("wgPsd : " << *wgPsd << " integrated power: " << Integral (*(GetPointer (wgPsd))));
-
   WaveformGeneratorHelper waveformGeneratorHelper;
   waveformGeneratorHelper.SetChannel (spectrumChannel);
-  waveformGeneratorHelper.SetTxPowerSpectralDensity (wgPsd);
-
   waveformGeneratorHelper.SetPhyAttribute ("Period", TimeValue (Seconds (interferenceSlotTime)));
   waveformGeneratorHelper.SetPhyAttribute ("DutyCycle", DoubleValue (1.0));
-  NetDeviceContainer waveformGeneratorDevices = waveformGeneratorHelper.Install (interferingNode);
+  NetDeviceContainer waveformGeneratorDevices;
 
-  wgPsd = Create<SpectrumValue> (smCh2);
-  *wgPsd = interfererPower / (20e6);
-  NS_LOG_DEBUG ("wgPsd : " << *wgPsd << " integrated power: " << Integral (*(GetPointer (wgPsd))));
-  waveformGeneratorHelper.SetTxPowerSpectralDensity (wgPsd);
-  waveformGeneratorDevices.Add(waveformGeneratorHelper.Install (interferingNode));
+  for (uint32_t chanId=0; chanId<channNum; chanId++) {
+    Ptr<SpectrumValue> wgPsd = Create<SpectrumValue> (spectrumModels.at(chanId));
+    *wgPsd = interfererPower / (20e6);
+    NS_LOG_DEBUG ("wgPsd : " << *wgPsd << " integrated power: " << Integral (*(GetPointer (wgPsd))));
+    waveformGeneratorHelper.SetTxPowerSpectralDensity (wgPsd);
+    waveformGeneratorDevices.Add(waveformGeneratorHelper.Install (interferingNode));
+  }
 
   // Schedule interference pattern
   double scheduledTime = 0;
@@ -207,5 +200,5 @@ int main (int argc, char *argv[])
   myGymEnv->NotifySimulationEnd();
 
   Simulator::Destroy ();
-  return 0;
+  NS_LOG_UNCOND ("Simulation exit");
 }
