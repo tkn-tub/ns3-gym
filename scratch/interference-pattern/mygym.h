@@ -54,6 +54,7 @@ public:
   static void PerformCca(Ptr<MyGymEnv> entity, uint32_t channelId, Ptr<const SpectrumValue> avgPowerSpectralDensity);
   void CollectChannelOccupation(uint32_t chanId, uint32_t occupied);
   bool CheckIfReady();
+  void ClearObs();
 
 private:
   void ScheduleNextStateRead();
@@ -65,6 +66,10 @@ private:
   uint64_t m_rxPktNum;
   uint32_t m_channelNum;
   std::vector<uint32_t> m_channelOccupation;
+  uint32_t m_currentChannel;
+
+  uint32_t m_collisionTh;
+  std::vector<uint32_t> m_collisions = {0,0,0,0,0,0,0,0,0,0,};
 };
 
 }

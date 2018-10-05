@@ -37,6 +37,8 @@ MyGymEnv::MyGymEnv ()
 {
   NS_LOG_FUNCTION (this);
   m_currentNode = 0;
+  m_currentChannel = 0;
+  m_collisionTh = 3;
   m_channelNum = 1;
   m_channelOccupation.clear();
 }
@@ -45,6 +47,8 @@ MyGymEnv::MyGymEnv (uint32_t channelNum)
 {
   NS_LOG_FUNCTION (this);
   m_currentNode = 0;
+  m_currentChannel = 0;
+  m_collisionTh = 3;
   m_channelNum = channelNum;
   m_channelOccupation.clear();
 }
@@ -102,6 +106,14 @@ MyGymEnv::GetGameOver()
 {
   NS_LOG_FUNCTION (this);
   bool isGameOver = false;
+
+  uint32_t collisionNum = 0;
+  for (auto& v : m_collisions)
+    collisionNum += v;
+
+  if (collisionNum >= m_collisionTh){
+    isGameOver = true;
+  }
   NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
   return isGameOver;
 }
@@ -122,7 +134,6 @@ MyGymEnv::GetObservation()
   obsString += "]";
 
   NS_LOG_UNCOND ("MyGetObservation: " << obsString);
-  m_channelOccupation.clear();
   return box;
 }
 
@@ -131,6 +142,19 @@ MyGymEnv::GetReward()
 {
   NS_LOG_FUNCTION (this);
   float reward = 1.0;
+  if (m_channelOccupation.size() == 0){
+    return 0.0;
+  }
+  uint32_t occupied = m_channelOccupation.at(m_currentChannel);
+  if (occupied == 1) {
+    reward = -1.0;
+    m_collisions.erase(m_collisions.begin());
+    m_collisions.push_back(1);
+  } else {
+    m_collisions.erase(m_collisions.begin());
+    m_collisions.push_back(0);
+  }
+  NS_LOG_UNCOND ("MyGetReward: " << reward);
   return reward;
 }
 
@@ -147,6 +171,18 @@ bool
 MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   NS_LOG_FUNCTION (this);
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
+  std::vector<uint32_t> actionVector = box->GetData();
+
+  for (uint32_t i=0; i<actionVector.size(); i++) {
+    uint32_t value = actionVector.at(i);
+    if (value == 1)
+    {
+      m_currentChannel = i;
+      break;
+    }
+  }
+  NS_LOG_UNCOND ("Current Channel: " << m_currentChannel);
   return true;
 }
 
@@ -165,6 +201,13 @@ MyGymEnv::CheckIfReady()
 }
 
 void
+MyGymEnv::ClearObs()
+{
+  NS_LOG_FUNCTION (this);
+  m_channelOccupation.clear();
+}
+
+void
 MyGymEnv::PerformCca (Ptr<MyGymEnv> entity, uint32_t channelId, Ptr<const SpectrumValue> avgPowerSpectralDensity)
 {
   double power = Integral (*(avgPowerSpectralDensity));
@@ -177,6 +220,7 @@ MyGymEnv::PerformCca (Ptr<MyGymEnv> entity, uint32_t channelId, Ptr<const Spectr
 
   if (entity->CheckIfReady()){
     entity->Notify();
+    entity->ClearObs();
   }
 }
 
