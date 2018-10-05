@@ -6,11 +6,7 @@ import matplotlib.pyplot as plt
 from tensorflow import keras
 from PyOpenGymNs3 import ns3env
 
-#env = gym.make('ns3-v0')
-seed = 0
-debug = False
-env = ns3env.Ns3Env(simSeed=seed, debug=debug)
-
+env = gym.make('ns3-v0')
 ob_space = env.observation_space
 ac_space = env.action_space
 print("Observation space: ", ob_space,  ob_space.dtype)
