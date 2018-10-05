@@ -399,7 +399,7 @@ void
 WifiMac::ConfigureDcf (Ptr<Txop> dcf, uint32_t cwmin, uint32_t cwmax, bool isDsss, AcIndex ac)
 {
   NS_LOG_FUNCTION (this << dcf << cwmin << cwmax << isDsss << ac);
-  /* see IEE802.11 section 7.3.2.29 */
+  /* see IEEE 802.11 section 7.3.2.29 */
   switch (ac)
     {
     case AC_VO:
