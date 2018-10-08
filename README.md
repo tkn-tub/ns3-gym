@@ -37,7 +37,9 @@ Installation
 		./waf configure
 		./waf
 
-5. Run example:
+5. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
+
+6. Run example:
 
 		cd ./scratch/opengym
 		./simple_test.py
