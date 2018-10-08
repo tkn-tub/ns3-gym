@@ -29,7 +29,7 @@ Installation
 
 3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3 (Python3 required)
 
-		pip install ./src/opengym/model/PyOpenGymNs3
+		pip3 install ./src/opengym/model/PyOpenGymNs3
 
 4. Configure and build ns-3 project:
 
