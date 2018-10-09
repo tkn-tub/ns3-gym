@@ -37,3 +37,5 @@ build-dir/
 build/
 /.cproject
 /.project
+
+*.egg-info
