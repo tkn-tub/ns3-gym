@@ -1,7 +1,7 @@
 ns3-gym
 ============
 
-OpenAI Gym meets ns-3
+OpenAI Gym is a toolkit for reinforcement learning widely used in research. The ns–3 network simulator is the de–facto standard for academic and industry research into networking protocols and communications technology. Ns3-gym is a framework which integrates OpenAI Gym into ns-3.
 
 Installation
 ============
@@ -43,3 +43,18 @@ Installation
 
 		cd ./scratch/opengym
 		./simple_test.py
+
+Contact
+============
+* Piotr Gawlowicz, TU-Berlin, zehl@tkn
+* Anatolij Zubow, TU-Berlin, zubow@tkn
+* tkn = tkn.tu-berlin.de
+
+How to reference ns3-gym?
+============
+
+Please use the following bibtex :
+
+```
+
+```
