@@ -56,5 +56,12 @@ How to reference ns3-gym?
 Please use the following bibtex :
 
 ```
-
+@article{ns3gym,
+  author    = {Gawlowicz, Piotr and Zubow, Anatolij},
+  title     = {{ns3-gym: Extending OpenAI Gym for Networking Research}},
+  journal   = {CoRR},
+  year      = {2018},
+  url       = {https://arxiv.org/abs/1810.03943},
+  archivePrefix = {arXiv},
+}
 ```
