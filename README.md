@@ -75,6 +75,9 @@ bool ExecuteActions(Ptr<OpenGymDataContainer> action);
 ```
 Note, that the generic ns3-gym interface allows to observe any variable or parameter in a simulation.
 
+A more detailed description can be found in our [Technical Report](https://arxiv.org/pdf/1810.03943.pdf).
+
+
 Contact
 ============
 * Piotr Gawlowicz, TU-Berlin, gawlowicz@tkn
