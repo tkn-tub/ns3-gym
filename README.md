@@ -77,6 +77,33 @@ Note, that the generic ns3-gym interface allows to observe any variable or param
 
 A more detailed description can be found in our [Technical Report](https://arxiv.org/pdf/1810.03943.pdf).
 
+## Cognitive Radio
+We consider the problem of radio channel selection in a wireless multi-channel environment, e.g. 802.11 networks with external interference. The objective of the agent is to select for the next time slot a channel free of interference. We consider a simple illustrative example where the external interference follows a periodic pattern, i.e. sweeping over all channels one to four in the same order as shown in the table.
+
+<p align="center">
+<img src="src/opengym/doc/figures/interferer-pattern.png" alt="drawing" width="500"/>
+</p>
+
+We created such a scenario in ns-3 using existing functionality from ns-3, i.e. interference created using `WaveformGenerator` class and sensing performed using `SpectrumAnalyzer` class.
+
+Such a periodic interferer can be easily learned by an RL-agent so that based on the current observation of the occupation on each channel in a given time slot the correct channel can be determined for the next time slot avoiding any collision with the interferer.
+
+Our proposed RL mapping is:
+- observation - occupation on each channel in the current time slot, i.e. wideband-sensing,
+- actions - set the channel to be used for the next time slot,
+- reward - +1 in case of no collision with interferer; otherwise -1,
+- gameover - if more than three collisions happened during the last ten time-slots
+
+The figure below shows the learning performance when using a simple neural network with fully connected input and an output layer.
+We see that after around 80 episodes the agent is able to perfectly predict the next channel state from the current observation hence avoiding any collision with the interference.
+
+The full source code of the example can be found [here](./examples/opengym/interference-pattern/).
+
+<p align="center">
+<img src="src/opengym/doc/figures/cognitive-radio-learning.png" alt="drawing" width="600"/>
+</p>
+
+Note, that in a more realistic scenario the simple waveform generator in this example can be replaced by a real wireless technology like LTE unlicensed (LTE-U).
 
 Contact
 ============
