@@ -43,6 +43,8 @@ cd ./scratch/opengym
 Examples
 ========
 
+## Basic Interface
+
 1. Example Python script. Note, that `gym.make('ns3-v0')` starts ns-3 simulation script located in current working directory.
 ```
 import gym
@@ -61,6 +63,18 @@ while True:
     break
 env.close()
 ```
+2. Any ns-3 simulation script can be used as a Gym environment. This requires only to instantiate OpenGymInterface and implement the ns3-gym C++ interface consisting of the following functions:
+```
+Ptr<OpenGymSpace> GetObservationSpace();
+Ptr<OpenGymSpace> GetActionSpace();
+Ptr<OpenGymDataContainer> GetObservation();
+float GetReward();
+bool GetGameOver();
+std::string GetExtraInfo();
+bool ExecuteActions(Ptr<OpenGymDataContainer> action);
+```
+Note, that the generic ns3-gym interface allows to observe any variable or parameter in a simulation.
+
 Contact
 ============
 * Piotr Gawlowicz, TU-Berlin, gawlowicz@tkn
