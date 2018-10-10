@@ -6,44 +6,61 @@ OpenAI Gym is a toolkit for reinforcement learning widely used in research. The 
 Installation
 ============
 
-0. Switch branch to gym:
-
-		git checkout gym
-
 1. Install all required dependencies required by ns-3.
+```
+# minimal requirements for C++:
+apt-get install gcc g++ python
 
-		# minimal requirements for C++:
-		apt-get install gcc g++ python
-
-		see https://www.nsnam.org/wiki/Installation
-
+see https://www.nsnam.org/wiki/Installation
+```
 2. Install ZMQ and Protocol Buffers libs:
+```
+# to install protobuf-3.6 on ubuntu 16.04:
+sudo add-apt-repository ppa:maarten-fonville/protobuf
+sudo apt-get update
 
-		# to install protobuf-3.6 on ubuntu 16.04:
-		sudo add-apt-repository ppa:maarten-fonville/protobuf
-		sudo apt-get update
-
-		apt-get install libzmq5 libzmq5-dev
-		apt-get install libprotobuf-dev
-		apt-get install protobuf-compiler
-
+apt-get install libzmq5 libzmq5-dev
+apt-get install libprotobuf-dev
+apt-get install protobuf-compiler
+```
 3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3 (Python3 required)
-
-		pip3 install ./src/opengym/model/PyOpenGymNs3
-
+```
+pip3 install ./src/opengym/model/PyOpenGymNs3
+```
 4. Configure and build ns-3 project:
-
-		# Opengym Protobuf messages are build during configure
-		./waf configure
-		./waf
-
+```
+# Opengym Protobuf messages are build during configure
+./waf configure
+./waf
+```
 5. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
 
 6. Run example:
+```
+cd ./scratch/opengym
+./simple_test.py
+```
+Examples
+========
 
-		cd ./scratch/opengym
-		./simple_test.py
+1. Example Python script. Note, that `gym.make('ns3-v0')` starts ns-3 simulation script located in current working directory.
+```
+import gym
+import PyOpenGymNs3
+import MyAgent
 
+env = gym.make('ns3-v0')
+obs = env.reset()
+agent = MyAgent.Agent()
+
+while True:
+  action = agent.get_action(obs)
+  obs, reward, done, info = env.step(action)
+
+  if done:
+    break
+env.close()
+```
 Contact
 ============
 * Piotr Gawlowicz, TU-Berlin, gawlowicz@tkn
