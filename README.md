@@ -46,7 +46,7 @@ Installation
 
 Contact
 ============
-* Piotr Gawlowicz, TU-Berlin, zehl@tkn
+* Piotr Gawlowicz, TU-Berlin, gawlowicz@tkn
 * Anatolij Zubow, TU-Berlin, zubow@tkn
 * tkn = tkn.tu-berlin.de
 
