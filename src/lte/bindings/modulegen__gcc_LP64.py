@@ -15559,8 +15559,10 @@ def register_Ns3EpcTftPacketFilter_methods(root_module, cls):
     cls.add_instance_attribute('direction', 'ns3::EpcTft::Direction', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localAddress [variable]
     cls.add_instance_attribute('localAddress', 'ns3::Ipv4Address', is_const=False)
-    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localAddress6 [variable]
-    cls.add_instance_attribute('localAddress6', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localIpv6Address [variable]
+    cls.add_instance_attribute('localIpv6Address', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localIpv6Prefix [variable]
+    cls.add_instance_attribute('localIpv6Prefix', 'ns3::Ipv6Prefix', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localMask [variable]
     cls.add_instance_attribute('localMask', 'ns3::Ipv4Mask', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localPortEnd [variable]
@@ -15571,8 +15573,10 @@ def register_Ns3EpcTftPacketFilter_methods(root_module, cls):
     cls.add_instance_attribute('precedence', 'uint8_t', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteAddress [variable]
     cls.add_instance_attribute('remoteAddress', 'ns3::Ipv4Address', is_const=False)
-    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteAddress6 [variable]
-    cls.add_instance_attribute('remoteAddress6', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteIpv6Address [variable]
+    cls.add_instance_attribute('remoteIpv6Address', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteIpv6Prefix [variable]
+    cls.add_instance_attribute('remoteIpv6Prefix', 'ns3::Ipv6Prefix', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteMask [variable]
     cls.add_instance_attribute('remoteMask', 'ns3::Ipv4Mask', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remotePortEnd [variable]
