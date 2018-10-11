@@ -166,43 +166,53 @@ EpcTft::PacketFilter::Matches (Direction d,
   if (d & direction)
     {
       NS_LOG_LOGIC ("d matches");
-      if (rp >= remotePortStart)
+      if (remoteIpv6Prefix.IsMatch (remoteIpv6Address, ra))
         {
-          NS_LOG_LOGIC ("rps matches");
-          if (rp <= remotePortEnd)
+          NS_LOG_LOGIC ("ra matches");
+          if (localIpv6Prefix.IsMatch (localIpv6Address, la))
             {
-              NS_LOG_LOGIC ("rpe matches");
-              if (lp >= localPortStart)
+              NS_LOG_LOGIC ("la matches");
+              if (remotePortStart <= rp && rp <= remotePortEnd)
                 {
-                  NS_LOG_LOGIC ("lps matches");
-                  if (lp <= localPortEnd)
+                  NS_LOG_LOGIC ("rp matches");
+                  if (localPortStart <= lp && lp <= localPortEnd)
                     {
-                      NS_LOG_LOGIC ("lpe matches");
+                      NS_LOG_LOGIC ("lp matches");
                       if ((tos & typeOfServiceMask) == (typeOfService & typeOfServiceMask))
                         {
                           NS_LOG_LOGIC ("tos matches --> have match!");
                           return true;
                         }
+                      else
+                        {
+                          NS_LOG_LOGIC ("tos doesn't match: tos=" << tos << " f.tos=" << typeOfService << " f.tosmask=" << typeOfServiceMask);
+                        }
+                    }
+                  else
+                    {
+                      NS_LOG_LOGIC ("lp doesn't match: lp=" << lp << " f.lps=" << localPortStart << " f.lpe=" << localPortEnd);
                     }
                 }
+              else
+                {
+                  NS_LOG_LOGIC ("rp doesn't match: rp=" << rp << " f.rps=" << remotePortStart << " f.lpe=" << remotePortEnd);
+                }
             }
-
-
           else
             {
-              NS_LOG_LOGIC ("la doesn't match: la=" << la << " f.la=" << localAddress << " f.lmask=" << localMask);
+              NS_LOG_LOGIC ("la doesn't match: la=" << la << " f.la=" << localIpv6Address << " f.lprefix=" << localIpv6Prefix);
             }
         }
       else
         {
-          NS_LOG_LOGIC ("ra doesn't match: ra=" << ra << " f.ra=" << remoteAddress << " f.rmask=" << remoteMask);
+          NS_LOG_LOGIC ("ra doesn't match: ra=" << ra << " f.ra=" << remoteIpv6Address << " f.rprefix=" << remoteIpv6Prefix);
         }
     }
   else
     {
       NS_LOG_LOGIC ("d doesn't match: d=0x" << std::hex << d << " f.d=0x" << std::hex << direction << std::dec);
     }
-  return false;      
+  return false;
 }
 
 
