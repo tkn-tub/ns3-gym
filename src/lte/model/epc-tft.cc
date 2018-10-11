@@ -66,11 +66,13 @@ std::ostream& operator<< (std::ostream& os, EpcTft::PacketFilter& f)
 {
   os << " direction: " << f.direction
       << " remoteAddress: "  << f.remoteAddress
-      << " remoteAddress6: "  << f.remoteAddress6
       << " remoteMask: "  << f.remoteMask
+      << " remoteIpv6Address: "  << f.remoteIpv6Address
+      << " remoteIpv6Prefix: "  << f.remoteIpv6Prefix
       << " localAddress: "  << f.localAddress
-      << " localAddress6: "  << f.localAddress6
       << " localMask: "  << f.localMask
+      << " localIpv6Address: "  << f.localIpv6Address
+      << " localIpv6Prefix: "  << f.localIpv6Prefix
       << " remotePortStart: "   << f.remotePortStart
       << " remotePortEnd: "   << f.remotePortEnd
       << " localPortStart: "   << f.localPortStart

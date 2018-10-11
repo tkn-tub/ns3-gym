@@ -125,12 +125,15 @@ public:
 			    to uplink / downlink only, or in both cases*/
 
     Ipv4Address remoteAddress;     /**< IPv4 address of the remote host  */
-    Ipv6Address remoteAddress6;     /**< IPv6 address of the remote host  */
-    Ipv4Mask remoteMask;            /**< IPv4 address mask of the remote host */
-    Ipv4Address localAddress;       /**< IPv4 address of the UE */
-    Ipv6Address localAddress6;      /**< IPv6 address of the UE */
-    Ipv4Mask localMask;  /**< IPv4 address mask of the UE */
-  
+    Ipv4Mask remoteMask;           /**< IPv4 address mask of the remote host */
+    Ipv4Address localAddress;      /**< IPv4 address of the UE */
+    Ipv4Mask localMask;            /**< IPv4 address mask of the UE */
+
+    Ipv6Address remoteIpv6Address; /**< IPv6 address of the remote host  */
+    Ipv6Prefix remoteIpv6Prefix;   /**< IPv6 address prefix of the remote host  */
+    Ipv6Address localIpv6Address;  /**< IPv6 address of the UE */
+    Ipv6Prefix localIpv6Prefix;    /**< IPv6 address prefix of the UE */
+
     uint16_t remotePortStart;  /**< start of the port number range of the remote host */
     uint16_t remotePortEnd;    /**< end of the port number range of the remote host */
     uint16_t localPortStart;   /**< start of the port number range of the UE */
