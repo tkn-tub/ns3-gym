@@ -29,6 +29,7 @@ Bugs fixed
 
 - Bug 2992 - lte: Send method of the LteUeNetDevice doesn't use protocolNumber parameter
 - Bug 2997 - lte: EpcTft::PacketFilter::Matches does not use ipv6 address to match an IP packet
+- Bug 2860 - mobility: Set Z coordinate for position-allocation classes
 
 Known issues
 ------------
