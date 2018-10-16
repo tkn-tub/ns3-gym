@@ -169,7 +169,7 @@ public:
   Ipv4InterfaceAddress GetAddress (uint32_t index) const;
 
   /**
-   * \returns the number of Ipv4InterfaceAddresss stored on this interface
+   * \returns the number of Ipv4InterfaceAddress stored on this interface
    */
   uint32_t GetNAddresses (void) const;
 

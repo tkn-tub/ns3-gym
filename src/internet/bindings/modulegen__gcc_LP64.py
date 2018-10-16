@@ -12782,11 +12782,6 @@ def register_Ns3ArpCacheEntry_methods(root_module, cls):
     cls.add_method('SetMacAddress', 
                    'void', 
                    [param('ns3::Address', 'macAddress')])
-    ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::SetMacAddresss(ns3::Address macAddress) [member function]
-    cls.add_method('SetMacAddresss', 
-                   'void', 
-                   [param('ns3::Address', 'macAddress')], 
-                   deprecated=True)
     ## arp-cache.h (module 'internet'): void ns3::ArpCache::Entry::UpdateSeen() [member function]
     cls.add_method('UpdateSeen', 
                    'void', 
