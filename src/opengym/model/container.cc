@@ -42,6 +42,12 @@ OpenGymDataContainer::GetTypeId (void)
   return tid;
 }
 
+ContainerType
+OpenGymDataContainer::GetContainerType()
+{
+  return ContainerType::GymVoid;
+}
+
 OpenGymDataContainer::OpenGymDataContainer()
 {
   //NS_LOG_FUNCTION (this);
@@ -87,6 +93,14 @@ OpenGymDiscreteContainer::GetTypeId (void)
 OpenGymDiscreteContainer::OpenGymDiscreteContainer()
 {
   //NS_LOG_FUNCTION (this);
+  m_n = 0;
+  m_dtype = Dtype::UINT;
+}
+
+OpenGymDiscreteContainer::OpenGymDiscreteContainer(uint32_t n)
+{
+  //NS_LOG_FUNCTION (this);
+  m_n = n;
   m_dtype = Dtype::UINT;
 }
 
@@ -107,11 +121,30 @@ OpenGymDiscreteContainer::DoInitialize (void)
   //NS_LOG_FUNCTION (this);
 }
 
+ContainerType
+OpenGymDiscreteContainer::GetContainerType()
+{
+  return ContainerType::GymDiscrete;
+}
+
 Dtype
 OpenGymDiscreteContainer::GetDataType (void)
 {
   //NS_LOG_FUNCTION (this);
   return m_dtype;
+}
+
+bool
+OpenGymDiscreteContainer::SetValue(uint32_t value)
+{
+  m_value = value;
+  return true;
+}
+
+uint32_t
+OpenGymDiscreteContainer::GetValue()
+{
+  return m_value;
 }
 
 }
