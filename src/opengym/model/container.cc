@@ -83,6 +83,64 @@ OpenGymDataContainer::FillDataContainerPbMsg(ns3opengym::DataContainer &dataCont
 {
 }
 
+Ptr<OpenGymDataContainer>
+OpenGymDataContainer::CreateFromDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
+{
+  Ptr<OpenGymDataContainer> actDataContainer;
+
+  if (dataContainerPbMsg.type() == ns3opengym::Discrete)
+  {
+    ns3opengym::DiscreteDataContainer discreteContainerPbMsg;
+    dataContainerPbMsg.data().UnpackTo(&discreteContainerPbMsg);
+
+    Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>();
+    discrete->SetValue(discreteContainerPbMsg.data());
+    actDataContainer = discrete;
+  }
+  else if (dataContainerPbMsg.type() == ns3opengym::Box)
+  {
+    ns3opengym::BoxDataContainer boxContainerPbMsg;
+    dataContainerPbMsg.data().UnpackTo(&boxContainerPbMsg);
+
+    if (boxContainerPbMsg.dtype() == ns3opengym::INT) {
+      Ptr<OpenGymBoxContainer<int32_t> > box = CreateObject<OpenGymBoxContainer<int32_t> >();
+      std::vector<int32_t> myData;
+      myData.assign(boxContainerPbMsg.intdata().begin(), boxContainerPbMsg.intdata().end());
+      box->SetData(myData);
+      actDataContainer = box;
+
+    } else if (boxContainerPbMsg.dtype() == ns3opengym::UINT) {
+      Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >();
+      std::vector<uint32_t> myData;
+      myData.assign(boxContainerPbMsg.uintdata().begin(), boxContainerPbMsg.uintdata().end());
+      box->SetData(myData);
+      actDataContainer = box;
+
+    } else if (boxContainerPbMsg.dtype() == ns3opengym::FLOAT) {
+      Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
+      std::vector<float> myData;
+      myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end());
+      box->SetData(myData);
+      actDataContainer = box;
+
+    } else if (boxContainerPbMsg.dtype() == ns3opengym::DOUBLE) {
+      Ptr<OpenGymBoxContainer<double> > box = CreateObject<OpenGymBoxContainer<double> >();
+      std::vector<double> myData;
+      myData.assign(boxContainerPbMsg.doubledata().begin(), boxContainerPbMsg.doubledata().end());
+      box->SetData(myData);
+      actDataContainer = box;
+
+    } else {
+      Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
+      std::vector<float> myData;
+      myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end());
+      box->SetData(myData);
+      actDataContainer = box;
+    }
+  }
+  return actDataContainer;
+}
+
 
 TypeId
 OpenGymDiscreteContainer::GetTypeId (void)

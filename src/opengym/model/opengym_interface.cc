@@ -346,7 +346,6 @@ OpenGymInterface::NotifyCurrentState()
 
       if (obsDataContainer) {
         obsDataContainer->FillDataContainerPbMsg(dataContainerPbMsg);
-
         obsReplyPbMsg.mutable_container()->CopyFrom(dataContainerPbMsg);    
         replyPbMsg.set_type(ns3opengym::Observation);
         replyPbMsg.mutable_msg()->PackFrom(obsReplyPbMsg);
@@ -390,65 +389,8 @@ OpenGymInterface::NotifyCurrentState()
       ns3opengym::SetActionRequest actionRequestPbMsg;
       if (requestPbMsg.msg().UnpackTo(&actionRequestPbMsg)) {
 
-        Ptr<OpenGymDataContainer> actDataContainer = CreateObject<OpenGymDataContainer>();
-        ns3opengym::DataContainer containerPbMsg = actionRequestPbMsg.container();
-
-        if (containerPbMsg.type() == ns3opengym::Discrete)
-        {
-          ns3opengym::DiscreteDataContainer discreteContainerPbMsg;
-          containerPbMsg.data().UnpackTo(&discreteContainerPbMsg);
-
-          Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>();
-          discrete->SetValue(discreteContainerPbMsg.data());
-          actDataContainer = discrete;
-        }
-        else if (containerPbMsg.type() == ns3opengym::Box)
-        {
-          ns3opengym::BoxDataContainer boxContainerPbMsg;
-          containerPbMsg.data().UnpackTo(&boxContainerPbMsg);
-
-          if (boxContainerPbMsg.dtype() == ns3opengym::INT) {
-            Ptr<OpenGymBoxContainer<int32_t> > box = CreateObject<OpenGymBoxContainer<int32_t> >();
-            std::vector<int32_t> myData;
-            //myData.reserve(boxContainerPbMsg.uintdata().size());
-            myData.assign(boxContainerPbMsg.intdata().begin(), boxContainerPbMsg.intdata().end()); 
-            box->SetData(myData);
-            actDataContainer = box;
-
-          } else if (boxContainerPbMsg.dtype() == ns3opengym::UINT) {
-            Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >();
-            std::vector<uint32_t> myData;
-            //myData.reserve(boxContainerPbMsg.uintdata().size());
-            myData.assign(boxContainerPbMsg.uintdata().begin(), boxContainerPbMsg.uintdata().end()); 
-            box->SetData(myData);
-            actDataContainer = box;
-
-          } else if (boxContainerPbMsg.dtype() == ns3opengym::FLOAT) {
-            Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
-            std::vector<float> myData;
-            std::cout << "DECOFDING FLOAT" << std::endl;
-            //myData.reserve(boxContainerPbMsg.uintdata().size());
-            myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
-            box->SetData(myData);
-            actDataContainer = box;
-
-          } else if (boxContainerPbMsg.dtype() == ns3opengym::DOUBLE) {
-            Ptr<OpenGymBoxContainer<double> > box = CreateObject<OpenGymBoxContainer<double> >();
-            std::vector<double> myData;
-            //myData.reserve(boxContainerPbMsg.uintdata().size());
-            myData.assign(boxContainerPbMsg.doubledata().begin(), boxContainerPbMsg.doubledata().end()); 
-            box->SetData(myData);
-            actDataContainer = box;
-
-          } else {
-            Ptr<OpenGymBoxContainer<float> > box = CreateObject<OpenGymBoxContainer<float> >();
-            std::vector<float> myData;
-            //myData.reserve(boxContainerPbMsg.uintdata().size());
-            myData.assign(boxContainerPbMsg.floatdata().begin(), boxContainerPbMsg.floatdata().end()); 
-            box->SetData(myData);
-            actDataContainer = box;
-          }
-        }
+        ns3opengym::DataContainer dataContainerPbMsg = actionRequestPbMsg.container();
+        Ptr<OpenGymDataContainer> actDataContainer = OpenGymDataContainer::CreateFromDataContainerPbMsg(dataContainerPbMsg);
 
         bool done = ExecuteActions(actDataContainer);
 
