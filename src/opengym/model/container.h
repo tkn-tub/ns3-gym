@@ -45,6 +45,7 @@ public:
   virtual Dtype GetDataType();
 
   virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
+  static Ptr<OpenGymDataContainer> CreateFromDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
 protected:
   // Inherited
