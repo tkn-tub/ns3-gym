@@ -28,6 +28,7 @@
 #include <map>
 
 #include "spaces.h"
+#include "messages.pb.h"
 
 namespace ns3 {
 
@@ -42,6 +43,8 @@ public:
   static TypeId GetTypeId ();
   virtual ContainerType GetContainerType();
   virtual Dtype GetDataType();
+
+  virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
 protected:
   // Inherited
@@ -62,6 +65,8 @@ public:
   static TypeId GetTypeId ();
   virtual ContainerType GetContainerType();
   virtual Dtype GetDataType();
+
+  virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
   bool SetValue(uint32_t value);
   uint32_t GetValue();
@@ -87,6 +92,8 @@ public:
   static TypeId GetTypeId ();
   virtual ContainerType GetContainerType();
   virtual Dtype GetDataType();
+
+  virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
   bool AddValue(T value);
   bool SetData(std::vector<T> data);
@@ -175,6 +182,34 @@ Dtype
 OpenGymBoxContainer<T>::GetDataType()
 {
   return m_dtype;
+}
+
+template <typename T>
+void
+OpenGymBoxContainer<T>::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
+{
+  ns3opengym::BoxDataContainer boxContainerPbMsg;
+
+  Dtype dtype = GetDataType();
+
+  if (dtype == Dtype::INT) {
+    boxContainerPbMsg.set_dtype(ns3opengym::INT);
+  } else if (dtype == Dtype::UINT) {
+    boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+  } else if (dtype == Dtype::FLOAT) {
+    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+  } else {
+    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+  }
+
+  std::vector<uint32_t> shape = GetShape();
+  *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
+
+  std::vector<T> data = GetData();
+  *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
+
+  dataContainerPbMsg.set_type(ns3opengym::Box);
+  dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
 }
 
 template <typename T>
