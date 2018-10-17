@@ -78,6 +78,11 @@ OpenGymDataContainer::GetDataType (void)
   return m_dtype;
 }
 
+void
+OpenGymDataContainer::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
+{
+}
+
 
 TypeId
 OpenGymDiscreteContainer::GetTypeId (void)
@@ -132,6 +137,16 @@ OpenGymDiscreteContainer::GetDataType (void)
 {
   //NS_LOG_FUNCTION (this);
   return m_dtype;
+}
+
+void
+OpenGymDiscreteContainer::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
+{
+  ns3opengym::DiscreteDataContainer discreteContainerPbMsg;
+  discreteContainerPbMsg.set_data(GetValue());
+
+  dataContainerPbMsg.set_type(ns3opengym::Discrete);
+  dataContainerPbMsg.mutable_data()->PackFrom(discreteContainerPbMsg);
 }
 
 bool
