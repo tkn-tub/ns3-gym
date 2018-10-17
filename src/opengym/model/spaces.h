@@ -30,6 +30,8 @@
 #include <string>
 #include <iostream>
 
+#include "messages.pb.h"
+
 namespace ns3 {
 
 enum Dtype { INT, UINT, FLOAT, DOUBLE };
@@ -43,6 +45,7 @@ public:
   static TypeId GetTypeId ();
 
   virtual std::string Serialize() = 0;
+  virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg) = 0;
 
 protected:
   // Inherited
@@ -61,6 +64,7 @@ public:
   static TypeId GetTypeId ();
 
   virtual std::string Serialize();
+  virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg);
 
   int GetN(void);
 
@@ -86,6 +90,7 @@ public:
   static TypeId GetTypeId ();
 
   virtual std::string Serialize();
+  virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg);
 
   float GetLow();
   float GetHigh();
