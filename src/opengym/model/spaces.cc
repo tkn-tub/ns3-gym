@@ -112,14 +112,6 @@ OpenGymDiscreteSpace::GetN (void)
   return m_n;
 }
 
-std::string
-OpenGymDiscreteSpace::Serialize (void)
-{
-  NS_LOG_FUNCTION (this);
-  std::string serialized = "SpaceType=0;N=" + std::to_string(m_n);
-  return serialized;
-}
-
 void
 OpenGymDiscreteSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
 {
@@ -228,23 +220,6 @@ OpenGymBoxSpace::GetDtype()
   return m_dtype;
 }
 
-std::string
-OpenGymBoxSpace::Serialize (void)
-{
-  NS_LOG_FUNCTION (this);
-  std::string serialized = "SpaceType=1;Low=" + std::to_string(m_low)
-                         + ";High=" + std::to_string(m_high)
-                         + ";Shape=(";
-
-  for (auto i = m_shape.begin(); i != m_shape.end(); ++i)
-  {
-    serialized += std::to_string(*i) +",";
-  }
-  serialized += ") Dtype: " + std::to_string(m_dtype);
-
-  return serialized;
-}
-
 void
 OpenGymBoxSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
 {
@@ -285,6 +260,5 @@ std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)
   os << ") Dtype: " << box.m_dtypeName;
 
   return os;  
-}  
-
+}
 }
