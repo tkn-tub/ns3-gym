@@ -191,23 +191,25 @@ OpenGymBoxContainer<T>::FillDataContainerPbMsg(ns3opengym::DataContainer &dataCo
 {
   ns3opengym::BoxDataContainer boxContainerPbMsg;
 
-  Dtype dtype = GetDataType();
-
-  if (dtype == Dtype::INT) {
-    boxContainerPbMsg.set_dtype(ns3opengym::INT);
-  } else if (dtype == Dtype::UINT) {
-    boxContainerPbMsg.set_dtype(ns3opengym::UINT);
-  } else if (dtype == Dtype::FLOAT) {
-    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
-  } else {
-    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
-  }
-
   std::vector<uint32_t> shape = GetShape();
   *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
 
+  Dtype dtype = GetDataType();
   std::vector<T> data = GetData();
-  *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
+
+  if (dtype == Dtype::INT) {
+    boxContainerPbMsg.set_dtype(ns3opengym::INT);
+    *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
+  } else if (dtype == Dtype::UINT) {
+    boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+    *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
+  } else if (dtype == Dtype::FLOAT) {
+    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+    *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+  } else {
+    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+    *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+  }
 
   dataContainerPbMsg.set_type(ns3opengym::Box);
   dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
