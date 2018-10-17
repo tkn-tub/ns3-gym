@@ -44,7 +44,6 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual std::string Serialize() = 0;
   virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg) = 0;
 
 protected:
@@ -63,7 +62,6 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual std::string Serialize();
   virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg);
 
   int GetN(void);
@@ -89,7 +87,6 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual std::string Serialize();
   virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg);
 
   float GetLow();
