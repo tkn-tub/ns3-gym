@@ -66,7 +66,6 @@ OpenGymSpace::DoInitialize (void)
 }
 
 
-
 TypeId
 OpenGymDiscreteSpace::GetTypeId (void)
 {
@@ -119,6 +118,16 @@ OpenGymDiscreteSpace::Serialize (void)
   NS_LOG_FUNCTION (this);
   std::string serialized = "SpaceType=0;N=" + std::to_string(m_n);
   return serialized;
+}
+
+void
+OpenGymDiscreteSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
+{
+  NS_LOG_FUNCTION (this);
+  spaceReplyPbMsg.set_type(ns3opengym::Discrete);
+  ns3opengym::DiscreteSpace discreteSpace;
+  discreteSpace.set_n(GetN());
+  spaceReplyPbMsg.mutable_space()->PackFrom(discreteSpace);
 }
 
 std::ostream& operator<< (std::ostream& os, const OpenGymDiscreteSpace& space)  
@@ -234,6 +243,35 @@ OpenGymBoxSpace::Serialize (void)
   serialized += ") Dtype: " + std::to_string(m_dtype);
 
   return serialized;
+}
+
+void
+OpenGymBoxSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
+{
+  NS_LOG_FUNCTION (this);
+  spaceReplyPbMsg.set_type(ns3opengym::Box);
+
+  ns3opengym::BoxSpace boxSpacePb;
+  boxSpacePb.set_low(GetLow());
+  boxSpacePb.set_high(GetHigh());
+
+  std::vector<uint32_t> shape = GetShape();
+  for (auto i = shape.begin(); i != shape.end(); ++i)
+  {
+    boxSpacePb.add_shape(*i);
+  }
+
+  ns3opengym::Dtype dtype = ns3opengym::FLOAT;
+  Dtype boxDtype = GetDtype();
+  if (boxDtype == Dtype::INT) {
+    dtype = ns3opengym::INT;
+  } else if (boxDtype == Dtype::UINT) {
+    dtype = ns3opengym::UINT;
+  } else if (boxDtype == Dtype::DOUBLE) {
+    dtype = ns3opengym::DOUBLE;
+  }
+  boxSpacePb.set_dtype(dtype);
+  spaceReplyPbMsg.mutable_space()->PackFrom(boxSpacePb);
 }
 
 std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)  

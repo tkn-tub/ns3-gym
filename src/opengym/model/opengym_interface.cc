@@ -146,44 +146,6 @@ OpenGymInterface::SendMsg(ns3opengym::ReplyMsg replyPbMsg)
   return n;
 }
 
-void
-OpenGymInterface::FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply &spaceReplyPbMsg)
-{
-  NS_LOG_FUNCTION (this);
-  Ptr<OpenGymDiscreteSpace> discrete = DynamicCast<OpenGymDiscreteSpace> (space);
-  if (discrete) {
-    spaceReplyPbMsg.set_type(ns3opengym::Discrete);
-    ns3opengym::DiscreteSpace discreteSpace;
-    discreteSpace.set_n(discrete->GetN());
-    spaceReplyPbMsg.mutable_space()->PackFrom(discreteSpace);
-  }
-
-  Ptr<OpenGymBoxSpace> box = DynamicCast<OpenGymBoxSpace> (space);
-  if (box) {
-    spaceReplyPbMsg.set_type(ns3opengym::Box);
-    ns3opengym::BoxSpace boxSpacePb;
-    boxSpacePb.set_low(box->GetLow());
-    boxSpacePb.set_high(box->GetHigh());
-    std::vector<uint32_t> shape = box->GetShape();
-    for (auto i = shape.begin(); i != shape.end(); ++i)
-    {
-      boxSpacePb.add_shape(*i);
-    }
-    ns3opengym::Dtype dtype = ns3opengym::FLOAT;
-    Dtype boxDtype = box->GetDtype();
-    if (boxDtype == Dtype::INT)
-    {
-      dtype = ns3opengym::INT;
-    } else if (boxDtype == Dtype::UINT) {
-      dtype = ns3opengym::UINT;
-    } else if (boxDtype == Dtype::DOUBLE) {
-      dtype = ns3opengym::DOUBLE;
-    }
-    boxSpacePb.set_dtype(dtype);
-    spaceReplyPbMsg.mutable_space()->PackFrom(boxSpacePb);
-  }
-}
-
 void 
 OpenGymInterface::Init()
 {
@@ -233,7 +195,7 @@ OpenGymInterface::Init()
 
         Ptr<OpenGymSpace> actionSpace = GetActionSpace();
         if (actionSpace) {
-          FillGetSpaceReply(actionSpace, innerReplyPbMsg);
+          actionSpace->FillGetSpaceReply(innerReplyPbMsg);
 
           replyPbMsg.set_type(ns3opengym::ActionSpace);
           replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);
@@ -251,7 +213,7 @@ OpenGymInterface::Init()
 
         Ptr<OpenGymSpace> obsSpace = GetObservationSpace();
         if (obsSpace) {
-          FillGetSpaceReply(obsSpace, innerReplyPbMsg);
+          obsSpace->FillGetSpaceReply(innerReplyPbMsg);
 
           replyPbMsg.set_type(ns3opengym::ObservationSpace);
           replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);
