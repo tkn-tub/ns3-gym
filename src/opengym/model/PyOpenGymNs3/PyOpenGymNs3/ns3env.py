@@ -227,6 +227,12 @@ class Ns3ZmqBridge(object):
         dataContainer = obsMsg.container
 
         data = None
+        if (dataContainer.type == pb.Discrete):
+            discreteContainerPb = pb.DiscreteDataContainer()
+            dataContainer.data.Unpack(discreteContainerPb)
+            data = discreteContainerPb.data
+            return data
+
         if (dataContainer.type == pb.Box):
             boxContainerPb = pb.BoxDataContainer()
             dataContainer.data.Unpack(boxContainerPb)
@@ -243,7 +249,7 @@ class Ns3ZmqBridge(object):
 
             # TODO: reshape using shape info
 
-        return data
+            return data
 
     def send_get_reward_request(self):
         msg = pb.GetRewardRequest()
@@ -288,33 +294,40 @@ class Ns3ZmqBridge(object):
 
     def send_execute_action_request(self, actions):
         dataContainer = pb.DataContainer()
-        dataContainer.type = pb.Box
 
-        boxContainerPb = pb.BoxDataContainer()
-        shape = [len(actions)]
-        boxContainerPb.shape.extend(shape)
+        if self._action_space.__class__ == spaces.Discrete:
+            dataContainer.type = pb.Discrete
+            discreteContainerPb = pb.DiscreteDataContainer()
+            discreteContainerPb.data = actions
+            dataContainer.data.Pack(discreteContainerPb)
 
-        if (self._action_space.dtype in ['int', 'int8', 'int16', 'int32', 'int64']):
-            boxContainerPb.dtype = pb.INT
-            boxContainerPb.intData.extend(actions)
+        elif self._action_space.__class__ == spaces.Box:
+            dataContainer.type = pb.Box
+            boxContainerPb = pb.BoxDataContainer()
+            shape = [len(actions)]
+            boxContainerPb.shape.extend(shape)
 
-        elif (self._action_space.dtype in ['uint', 'uint8', 'uint16', 'uint32', 'uint64']):
-            boxContainerPb.dtype = pb.UINT
-            boxContainerPb.uintData.extend(actions)
+            if (self._action_space.dtype in ['int', 'int8', 'int16', 'int32', 'int64']):
+                boxContainerPb.dtype = pb.INT
+                boxContainerPb.intData.extend(actions)
 
-        elif (self._action_space.dtype in ['float', 'float32', 'float64']):
-            boxContainerPb.dtype = pb.FLOAT
-            boxContainerPb.floatData.extend(actions)
+            elif (self._action_space.dtype in ['uint', 'uint8', 'uint16', 'uint32', 'uint64']):
+                boxContainerPb.dtype = pb.UINT
+                boxContainerPb.uintData.extend(actions)
 
-        elif (self._action_space.dtype in ['double']):
-            boxContainerPb.dtype = pb.DOUBLE
-            boxContainerPb.doubleData.extend(actions)
+            elif (self._action_space.dtype in ['float', 'float32', 'float64']):
+                boxContainerPb.dtype = pb.FLOAT
+                boxContainerPb.floatData.extend(actions)
 
-        else:
-            boxContainerPb.dtype = pb.FLOAT
-            boxContainerPb.floatData.extend(actions)
+            elif (self._action_space.dtype in ['double']):
+                boxContainerPb.dtype = pb.DOUBLE
+                boxContainerPb.doubleData.extend(actions)
 
-        dataContainer.data.Pack(boxContainerPb)
+            else:
+                boxContainerPb.dtype = pb.FLOAT
+                boxContainerPb.floatData.extend(actions)
+
+            dataContainer.data.Pack(boxContainerPb)
 
         msg = pb.SetActionRequest()
         msg.container.CopyFrom(dataContainer)

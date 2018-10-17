@@ -31,6 +31,8 @@
 
 namespace ns3 {
 
+enum ContainerType { GymVoid, GymDiscrete, GymBox, GymTuple, GymDict };
+
 class OpenGymDataContainer : public Object
 {
 public:
@@ -38,6 +40,7 @@ public:
   virtual ~OpenGymDataContainer ();
 
   static TypeId GetTypeId ();
+  virtual ContainerType GetContainerType();
   virtual Dtype GetDataType();
 
 protected:
@@ -53,10 +56,15 @@ class OpenGymDiscreteContainer : public OpenGymDataContainer
 {
 public:
   OpenGymDiscreteContainer ();
+  OpenGymDiscreteContainer (uint32_t n);
   virtual ~OpenGymDiscreteContainer ();
 
   static TypeId GetTypeId ();
+  virtual ContainerType GetContainerType();
   virtual Dtype GetDataType();
+
+  bool SetValue(uint32_t value);
+  uint32_t GetValue();
 
 protected:
   // Inherited
@@ -64,6 +72,8 @@ protected:
   virtual void DoDispose (void);
 
   Dtype m_dtype;
+  uint32_t m_n;
+  uint32_t m_value;
 };
 
 template <typename T = float>
@@ -75,8 +85,9 @@ public:
   virtual ~OpenGymBoxContainer ();
 
   static TypeId GetTypeId ();
-
+  virtual ContainerType GetContainerType();
   virtual Dtype GetDataType();
+
   bool AddValue(T value);
   bool SetData(std::vector<T> data);
   std::vector<uint32_t> GetShape();
@@ -150,6 +161,13 @@ template <typename T>
 void
 OpenGymBoxContainer<T>::DoInitialize (void)
 {
+}
+
+template <typename T>
+ContainerType
+OpenGymBoxContainer<T>::GetContainerType()
+{
+  return ContainerType::GymBox;
 }
 
 template <typename T>
