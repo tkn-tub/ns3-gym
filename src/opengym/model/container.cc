@@ -37,7 +37,6 @@ OpenGymDataContainer::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::OpenGymDataContainer")
     .SetParent<Object> ()
     .SetGroupName ("OpenGym")
-    .AddConstructor<OpenGymDataContainer> ()
     ;
   return tid;
 }
@@ -62,11 +61,6 @@ void
 OpenGymDataContainer::DoInitialize (void)
 {
   //NS_LOG_FUNCTION (this);
-}
-
-void
-OpenGymDataContainer::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
-{
 }
 
 Ptr<OpenGymDataContainer>
@@ -168,14 +162,16 @@ OpenGymDiscreteContainer::DoInitialize (void)
   //NS_LOG_FUNCTION (this);
 }
 
-void
-OpenGymDiscreteContainer::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
+ns3opengym::DataContainer
+OpenGymDiscreteContainer::GetDataContainerPbMsg()
 {
+  ns3opengym::DataContainer dataContainerPbMsg;
   ns3opengym::DiscreteDataContainer discreteContainerPbMsg;
   discreteContainerPbMsg.set_data(GetValue());
 
   dataContainerPbMsg.set_type(ns3opengym::Discrete);
   dataContainerPbMsg.mutable_data()->PackFrom(discreteContainerPbMsg);
+  return dataContainerPbMsg;
 }
 
 bool
