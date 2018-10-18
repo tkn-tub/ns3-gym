@@ -340,16 +340,19 @@ class Ns3ZmqBridge(object):
             info = {}
         return info
 
-    def send_execute_action_request(self, actions):
+    def _pack_data(self, actions, spaceType=None):
         dataContainer = pb.DataContainer()
 
-        if self._action_space.__class__ == spaces.Discrete:
+        if spaceType == None:
+            spaceType = self._action_space.__class__
+
+        if spaceType == spaces.Discrete:
             dataContainer.type = pb.Discrete
             discreteContainerPb = pb.DiscreteDataContainer()
             discreteContainerPb.data = actions
             dataContainer.data.Pack(discreteContainerPb)
 
-        elif self._action_space.__class__ == spaces.Box:
+        elif spaceType == spaces.Box:
             dataContainer.type = pb.Box
             boxContainerPb = pb.BoxDataContainer()
             shape = [len(actions)]
@@ -377,6 +380,37 @@ class Ns3ZmqBridge(object):
 
             dataContainer.data.Pack(boxContainerPb)
 
+        elif spaceType == spaces.Tuple:
+            dataContainer.type = pb.Tuple
+            tupleDataPb = pb.TupleDataContainer()
+
+            spaceList = list(self._action_space.spaces)
+            subDataList = []
+            for subAction, subActSpaceType in zip(actions, spaceList):
+                subData = self._pack_data(subAction, subActSpaceType.__class__)
+                subDataList.append(subData)
+
+            tupleDataPb.element.extend(subDataList)
+            dataContainer.data.Pack(tupleDataPb)
+
+        elif spaceType == spaces.Dict:
+            dataContainer.type = pb.Dict
+            dictDataPb = pb.DictDataContainer()
+
+            subDataList = []
+            for sName, subAction in actions.items():
+                subActSpaceType = self._action_space.spaces[sName]
+                subData = self._pack_data(subAction, subActSpaceType.__class__)
+                subData.name = sName
+                subDataList.append(subData)
+
+            dictDataPb.element.extend(subDataList)
+            dataContainer.data.Pack(dictDataPb)
+
+        return dataContainer
+
+    def send_execute_action_request(self, actions):
+        dataContainer = self._pack_data(actions)
         msg = pb.SetActionRequest()
         msg.container.CopyFrom(dataContainer)
 

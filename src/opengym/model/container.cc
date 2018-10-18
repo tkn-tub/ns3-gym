@@ -118,6 +118,44 @@ OpenGymDataContainer::CreateFromDataContainerPbMsg(ns3opengym::DataContainer &da
       actDataContainer = box;
     }
   }
+  else if (dataContainerPbMsg.type() == ns3opengym::Tuple)
+  {
+    Ptr<OpenGymTupleContainer> tupleData = CreateObject<OpenGymTupleContainer> ();
+
+    ns3opengym::TupleDataContainer tupleContainerPbMsg;
+    dataContainerPbMsg.data().UnpackTo(&tupleContainerPbMsg);
+
+    std::vector< ns3opengym::DataContainer > elements;
+    elements.assign(tupleContainerPbMsg.element().begin(), tupleContainerPbMsg.element().end());
+
+    std::vector< ns3opengym::DataContainer >::iterator it;
+    for(it=elements.begin();it!=elements.end();++it)
+    {
+      Ptr<OpenGymDataContainer> subData = OpenGymDataContainer::CreateFromDataContainerPbMsg(*it);
+      tupleData->Add(subData);
+    }
+
+    actDataContainer = tupleData;
+  }
+  else if (dataContainerPbMsg.type() == ns3opengym::Dict)
+  {
+    Ptr<OpenGymDictContainer> dictData = CreateObject<OpenGymDictContainer> ();
+
+    ns3opengym::DictDataContainer dictContainerPbMsg;
+    dataContainerPbMsg.data().UnpackTo(&dictContainerPbMsg);
+
+    std::vector< ns3opengym::DataContainer > elements;
+    elements.assign(dictContainerPbMsg.element().begin(), dictContainerPbMsg.element().end());
+
+    std::vector< ns3opengym::DataContainer >::iterator it;
+    for(it=elements.begin();it!=elements.end();++it)
+    {
+      Ptr<OpenGymDataContainer> subSpace = OpenGymDataContainer::CreateFromDataContainerPbMsg(*it);
+      dictData->Add("elements.name()", subSpace);
+    }
+
+    actDataContainer = dictData;
+  }
   return actDataContainer;
 }
 

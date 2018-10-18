@@ -18,17 +18,19 @@ enum MsgType {
 }
 
 enum SpaceType {
-	Discrete = 0;
-	Box = 1;
-	Tuple = 2;
-	Dict = 3;
+	NoSpaceType = 0;
+	Discrete = 1;
+	Box = 2;
+	Tuple = 3;
+	Dict = 4;
 }
 
 enum Dtype {
-	INT = 0;
-	UINT = 1;
-	FLOAT = 2;
-	DOUBLE = 3;
+	NoDType = 0;
+	INT = 1;
+	UINT = 2;
+	FLOAT = 3;
+	DOUBLE = 4;
 }
 //------------------------//
 
