@@ -114,6 +114,60 @@ private:
 	friend std::ostream& operator<< ( std::ostream& os, const OpenGymBoxSpace& a);
 };
 
+
+class OpenGymTupleSpace : public OpenGymSpace
+{
+public:
+  OpenGymTupleSpace ();
+  virtual ~OpenGymTupleSpace ();
+
+  static TypeId GetTypeId ();
+
+  virtual ns3opengym::SpaceDescription GetSpaceDescription();
+
+  bool Add(Ptr<OpenGymSpace> space);
+  Ptr<OpenGymSpace> Get(uint32_t idx);
+
+  virtual void Print(std::ostream& where) const;
+
+protected:
+  // Inherited
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
+private:
+  std::vector< Ptr<OpenGymSpace> > m_tuple;
+
+  friend std::ostream& operator<< ( std::ostream& os, const OpenGymTupleSpace& a);
+};
+
+
+class OpenGymDictSpace : public OpenGymSpace
+{
+public:
+  OpenGymDictSpace ();
+  virtual ~OpenGymDictSpace ();
+
+  static TypeId GetTypeId ();
+
+  virtual ns3opengym::SpaceDescription GetSpaceDescription();
+
+  bool Add(std::string key, Ptr<OpenGymSpace> value);
+  Ptr<OpenGymSpace> Get(std::string key);
+
+  virtual void Print(std::ostream& where) const;
+
+protected:
+  // Inherited
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
+private:
+  std::map< std::string, Ptr<OpenGymSpace> > m_dict;
+
+  friend std::ostream& operator<< ( std::ostream& os, const OpenGymDictSpace& a);
+};
+
 } // end of namespace ns3
 
 #endif /* OPENGYM_SPACES_H */

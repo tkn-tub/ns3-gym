@@ -275,4 +275,195 @@ std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)
   box.Print(os);
   return os;
 }
+
+
+TypeId
+OpenGymTupleSpace::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("OpenGymTupleSpace")
+    .SetParent<OpenGymSpace> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<OpenGymTupleSpace> ()
+    ;
+  return tid;
+}
+
+OpenGymTupleSpace::OpenGymTupleSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+OpenGymTupleSpace::~OpenGymTupleSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymTupleSpace::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymTupleSpace::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+bool
+OpenGymTupleSpace::Add(Ptr<OpenGymSpace> space)
+{
+  NS_LOG_FUNCTION (this);
+  m_tuple.push_back(space);
+  return true;
+}
+
+Ptr<OpenGymSpace>
+OpenGymTupleSpace::Get(uint32_t idx)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<OpenGymSpace> ptr;
+  return ptr;
+}
+
+ns3opengym::SpaceDescription
+OpenGymTupleSpace::GetSpaceDescription()
+{
+  NS_LOG_FUNCTION (this);
+  ns3opengym::SpaceDescription desc;
+  desc.set_type(ns3opengym::Tuple);
+
+  ns3opengym::TupleSpace tupleSpacePb;
+
+  for (auto i = m_tuple.begin(); i != m_tuple.end(); ++i)
+  {
+    Ptr<OpenGymSpace> subSpace = *i;
+    ns3opengym::SpaceDescription subDesc = subSpace->GetSpaceDescription();
+    tupleSpacePb.add_element()->CopyFrom(subDesc);
+  }
+
+  desc.mutable_space()->PackFrom(tupleSpacePb);
+  return desc;
+}
+
+void
+OpenGymTupleSpace::Print(std::ostream& where) const
+{
+  where << " TupleSpace: " << std::endl;
+
+  for (auto i = m_tuple.begin(); i != m_tuple.end(); ++i)
+  {
+    where << "---";
+    (*i)->Print(where);
+    where << std::endl;
+  }
+}
+
+std::ostream& operator<< (std::ostream& os, const OpenGymTupleSpace& tuple)
+{
+  tuple.Print(os);
+  return os;
+}
+
+
+TypeId
+OpenGymDictSpace::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("OpenGymDictSpace")
+    .SetParent<OpenGymSpace> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<OpenGymDictSpace> ()
+    ;
+  return tid;
+}
+
+OpenGymDictSpace::OpenGymDictSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+OpenGymDictSpace::~OpenGymDictSpace ()
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymDictSpace::DoDispose (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymDictSpace::DoInitialize (void)
+{
+  NS_LOG_FUNCTION (this);
+}
+
+bool
+OpenGymDictSpace::Add(std::string key, Ptr<OpenGymSpace> space)
+{
+  NS_LOG_FUNCTION (this);
+  m_dict.insert(std::pair<std::string, Ptr<OpenGymSpace> > (key, space));
+  return true;
+}
+
+Ptr<OpenGymSpace>
+OpenGymDictSpace::Get(std::string key)
+{
+  NS_LOG_FUNCTION (this);
+  Ptr<OpenGymSpace> space;
+  std::map< std::string, Ptr<OpenGymSpace> >::iterator it = m_dict.find(key);
+  if ( it != m_dict.end() ) {
+    space = it->second;
+  }
+
+  return space;
+}
+
+ns3opengym::SpaceDescription
+OpenGymDictSpace::GetSpaceDescription()
+{
+  NS_LOG_FUNCTION (this);
+  ns3opengym::SpaceDescription desc;
+  desc.set_type(ns3opengym::Dict);
+
+  ns3opengym::DictSpace dictSpacePb;
+
+  std::map< std::string, Ptr<OpenGymSpace> >::iterator it;
+  for (it=m_dict.begin(); it!=m_dict.end(); ++it)
+  {
+    std::string name = it->first;
+    Ptr<OpenGymSpace> subSpace = it->second;
+
+    ns3opengym::SpaceDescription subDesc = subSpace->GetSpaceDescription();
+    subDesc.set_name(name);
+
+    dictSpacePb.add_element()->CopyFrom(subDesc);
+  }
+
+  desc.mutable_space()->PackFrom(dictSpacePb);
+  return desc;
+}
+
+void
+OpenGymDictSpace::Print(std::ostream& where) const
+{
+  where << " DictSpace: " << std::endl;
+
+  std::map< std::string, Ptr<OpenGymSpace> > myMap = m_dict;
+  std::map< std::string, Ptr<OpenGymSpace> >::iterator it;
+  for (it=myMap.begin(); it!=myMap.end(); ++it)
+  {
+    where << "---" << it->first << ":";
+    it->second->Print(where);
+    where << std::endl;
+  }
+}
+
+std::ostream& operator<< (std::ostream& os, const OpenGymDictSpace& dict)
+{
+  dict.Print(os);
+  return os;
+}
+
 }
