@@ -98,7 +98,7 @@ protected:
 private:
   void SetDtype();
 	std::vector<uint32_t> m_shape;
-	Dtype m_dtype;
+	ns3opengym::Dtype m_dtype;
 	std::vector<T> m_data;
 };
 
@@ -139,13 +139,15 @@ OpenGymBoxContainer<T>::SetDtype ()
 {
   std::string name = TypeNameGet<T> ();
   if (name == "int8_t" || name == "int16_t" || name == "int32_t" || name == "int64_t") 
-    m_dtype = Dtype::INT;
+    m_dtype = ns3opengym::INT;
   else if (name == "uint8_t" || name == "uint16_t" || name == "uint32_t" || name == "uint64_t") 
-    m_dtype = Dtype::UINT;
-  else if (name == "float" || name == "double") 
-    m_dtype = Dtype::FLOAT;
+    m_dtype = ns3opengym::UINT;
+  else if (name == "float")
+    m_dtype = ns3opengym::FLOAT;
+  else if (name == "double")
+    m_dtype = ns3opengym::DOUBLE;
   else
-    m_dtype = Dtype::FLOAT;
+    m_dtype = ns3opengym::FLOAT;
 }
 
 template <typename T>
@@ -170,20 +172,23 @@ OpenGymBoxContainer<T>::GetDataContainerPbMsg()
   std::vector<uint32_t> shape = GetShape();
   *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
 
-  Dtype dtype = m_dtype;
+
+  boxContainerPbMsg.set_dtype(m_dtype);
   std::vector<T> data = GetData();
 
-  if (dtype == Dtype::INT) {
-    boxContainerPbMsg.set_dtype(ns3opengym::INT);
+  if (m_dtype == ns3opengym::INT) {
     *boxContainerPbMsg.mutable_intdata() = {data.begin(), data.end()};
-  } else if (dtype == Dtype::UINT) {
-    boxContainerPbMsg.set_dtype(ns3opengym::UINT);
+
+  } else if (m_dtype == ns3opengym::UINT) {
     *boxContainerPbMsg.mutable_uintdata() = {data.begin(), data.end()};
-  } else if (dtype == Dtype::FLOAT) {
-    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
+
+  } else if (m_dtype == ns3opengym::FLOAT) {
     *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
+
+  } else if (m_dtype == ns3opengym::DOUBLE) {
+    *boxContainerPbMsg.mutable_doubledata() = {data.begin(), data.end()};
+
   } else {
-    boxContainerPbMsg.set_dtype(ns3opengym::FLOAT);
     *boxContainerPbMsg.mutable_floatdata() = {data.begin(), data.end()};
   }
 

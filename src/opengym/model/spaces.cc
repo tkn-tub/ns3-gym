@@ -190,13 +190,15 @@ OpenGymBoxSpace::SetDtype ()
 {
   std::string name = m_dtypeName;
   if (name == "int8_t" || name == "int16_t" || name == "int32_t" || name == "int64_t")
-    m_dtype = Dtype::INT;
+    m_dtype = ns3opengym::INT;
   else if (name == "uint8_t" || name == "uint16_t" || name == "uint32_t" || name == "uint64_t")
-    m_dtype = Dtype::UINT;
-  else if (name == "float" || name == "double")
-    m_dtype = Dtype::FLOAT;
+    m_dtype = ns3opengym::UINT;
+  else if (name == "float")
+    m_dtype = ns3opengym::FLOAT;
+  else if (name == "double")
+    m_dtype = ns3opengym::DOUBLE;
   else
-    m_dtype = Dtype::FLOAT;
+    m_dtype = ns3opengym::FLOAT;
 }
 
 float
@@ -220,13 +222,6 @@ OpenGymBoxSpace::GetShape()
   return m_shape;
 }
 
-Dtype
-OpenGymBoxSpace::GetDtype()
-{
-  NS_LOG_FUNCTION (this);
-  return m_dtype;
-}
-
 ns3opengym::SpaceDescription
 OpenGymBoxSpace::GetSpaceDescription()
 {
@@ -244,16 +239,7 @@ OpenGymBoxSpace::GetSpaceDescription()
     boxSpacePb.add_shape(*i);
   }
 
-  ns3opengym::Dtype dtype = ns3opengym::FLOAT;
-  Dtype boxDtype = GetDtype();
-  if (boxDtype == Dtype::INT) {
-    dtype = ns3opengym::INT;
-  } else if (boxDtype == Dtype::UINT) {
-    dtype = ns3opengym::UINT;
-  } else if (boxDtype == Dtype::DOUBLE) {
-    dtype = ns3opengym::DOUBLE;
-  }
-  boxSpacePb.set_dtype(dtype);
+  boxSpacePb.set_dtype(m_dtype);
   desc.mutable_space()->PackFrom(boxSpacePb);
   return desc;
 }
