@@ -311,7 +311,7 @@ OpenGymInterface::NotifyCurrentState()
       ns3opengym::ReplyMsg replyPbMsg;
 
       if (obsDataContainer) {
-        obsDataContainer->FillDataContainerPbMsg(dataContainerPbMsg);
+        dataContainerPbMsg = obsDataContainer->GetDataContainerPbMsg();
         obsReplyPbMsg.mutable_container()->CopyFrom(dataContainerPbMsg);    
         replyPbMsg.set_type(ns3opengym::Observation);
         replyPbMsg.mutable_msg()->PackFrom(obsReplyPbMsg);

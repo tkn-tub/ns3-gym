@@ -40,7 +40,7 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
+  virtual ns3opengym::DataContainer GetDataContainerPbMsg() = 0;
   static Ptr<OpenGymDataContainer> CreateFromDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
 protected:
@@ -59,7 +59,7 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
+  virtual ns3opengym::DataContainer GetDataContainerPbMsg();
 
   bool SetValue(uint32_t value);
   uint32_t GetValue();
@@ -83,7 +83,7 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
+  virtual ns3opengym::DataContainer GetDataContainerPbMsg();
 
   bool AddValue(T value);
   bool SetData(std::vector<T> data);
@@ -161,9 +161,10 @@ OpenGymBoxContainer<T>::DoInitialize (void)
 }
 
 template <typename T>
-void
-OpenGymBoxContainer<T>::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
+ns3opengym::DataContainer
+OpenGymBoxContainer<T>::GetDataContainerPbMsg()
 {
+  ns3opengym::DataContainer dataContainerPbMsg;
   ns3opengym::BoxDataContainer boxContainerPbMsg;
 
   std::vector<uint32_t> shape = GetShape();
@@ -188,6 +189,7 @@ OpenGymBoxContainer<T>::FillDataContainerPbMsg(ns3opengym::DataContainer &dataCo
 
   dataContainerPbMsg.set_type(ns3opengym::Box);
   dataContainerPbMsg.mutable_data()->PackFrom(boxContainerPbMsg);
+  return dataContainerPbMsg;
 }
 
 template <typename T>
