@@ -31,19 +31,17 @@ Define observation space
 */
 Ptr<OpenGymSpace> MyGetObservationSpace(void)
 {
-
-  Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-
   uint32_t nodeNum = 5;
-
   float low = 0.0;
   float high = 10.0;
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
-  Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  space->Add("box", box);
 
   Ptr<OpenGymDiscreteSpace> discrete = CreateObject<OpenGymDiscreteSpace> (nodeNum);
+  Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
+
+  Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
+  space->Add("box", box);
   space->Add("discrete", discrete);
 
   NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
@@ -56,20 +54,26 @@ Define action space
 Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
   uint32_t nodeNum = 5;
-  Ptr<OpenGymDiscreteSpace> discrete = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-
   float low = 0.0;
   float high = 10.0;
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
+
+  Ptr<OpenGymDiscreteSpace> discrete = CreateObject<OpenGymDiscreteSpace> (nodeNum);
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
 
+  /*
   Ptr<OpenGymTupleSpace> space = CreateObject<OpenGymTupleSpace> ();
   space->Add(discrete);
   space->Add(box);
+  */
+
+  Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
+  space->Add("box", box);
+  space->Add("discrete", discrete);
 
   NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
-  return box;
+  return space;
 }
 
 /*
@@ -157,6 +161,7 @@ Execute received actions
 */
 bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
 {
+  /*
   Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
   std::vector<uint32_t> actionVector = box->GetData();
 
@@ -167,7 +172,7 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   }
   actionString += "]";
   NS_LOG_UNCOND ("MyExecuteActions: " << actionString);
-
+  */
   return true;
 }
 
