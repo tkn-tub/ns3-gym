@@ -47,8 +47,6 @@ protected:
   // Inherited
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
-
-  Dtype m_dtype;
 };
 
 
@@ -71,7 +69,6 @@ protected:
   virtual void DoInitialize (void);
   virtual void DoDispose (void);
 
-  Dtype m_dtype;
   uint32_t m_n;
   uint32_t m_value;
 };
