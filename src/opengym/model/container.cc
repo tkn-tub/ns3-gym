@@ -42,12 +42,6 @@ OpenGymDataContainer::GetTypeId (void)
   return tid;
 }
 
-ContainerType
-OpenGymDataContainer::GetContainerType()
-{
-  return ContainerType::GymVoid;
-}
-
 OpenGymDataContainer::OpenGymDataContainer()
 {
   //NS_LOG_FUNCTION (this);
@@ -69,13 +63,6 @@ void
 OpenGymDataContainer::DoInitialize (void)
 {
   //NS_LOG_FUNCTION (this);
-}
-
-Dtype
-OpenGymDataContainer::GetDataType (void)
-{
-  //NS_LOG_FUNCTION (this);
-  return m_dtype;
 }
 
 void
@@ -182,19 +169,6 @@ void
 OpenGymDiscreteContainer::DoInitialize (void)
 {
   //NS_LOG_FUNCTION (this);
-}
-
-ContainerType
-OpenGymDiscreteContainer::GetContainerType()
-{
-  return ContainerType::GymDiscrete;
-}
-
-Dtype
-OpenGymDiscreteContainer::GetDataType (void)
-{
-  //NS_LOG_FUNCTION (this);
-  return m_dtype;
 }
 
 void

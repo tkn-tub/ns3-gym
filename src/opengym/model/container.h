@@ -32,8 +32,6 @@
 
 namespace ns3 {
 
-enum ContainerType { GymVoid, GymDiscrete, GymBox, GymTuple, GymDict };
-
 class OpenGymDataContainer : public Object
 {
 public:
@@ -41,8 +39,6 @@ public:
   virtual ~OpenGymDataContainer ();
 
   static TypeId GetTypeId ();
-  virtual ContainerType GetContainerType();
-  virtual Dtype GetDataType();
 
   virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
   static Ptr<OpenGymDataContainer> CreateFromDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
@@ -64,8 +60,6 @@ public:
   virtual ~OpenGymDiscreteContainer ();
 
   static TypeId GetTypeId ();
-  virtual ContainerType GetContainerType();
-  virtual Dtype GetDataType();
 
   virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
@@ -91,8 +85,6 @@ public:
   virtual ~OpenGymBoxContainer ();
 
   static TypeId GetTypeId ();
-  virtual ContainerType GetContainerType();
-  virtual Dtype GetDataType();
 
   virtual void FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
@@ -172,20 +164,6 @@ OpenGymBoxContainer<T>::DoInitialize (void)
 }
 
 template <typename T>
-ContainerType
-OpenGymBoxContainer<T>::GetContainerType()
-{
-  return ContainerType::GymBox;
-}
-
-template <typename T>
-Dtype
-OpenGymBoxContainer<T>::GetDataType()
-{
-  return m_dtype;
-}
-
-template <typename T>
 void
 OpenGymBoxContainer<T>::FillDataContainerPbMsg(ns3opengym::DataContainer &dataContainerPbMsg)
 {
@@ -194,7 +172,7 @@ OpenGymBoxContainer<T>::FillDataContainerPbMsg(ns3opengym::DataContainer &dataCo
   std::vector<uint32_t> shape = GetShape();
   *boxContainerPbMsg.mutable_shape() = {shape.begin(), shape.end()};
 
-  Dtype dtype = GetDataType();
+  Dtype dtype = m_dtype;
   std::vector<T> data = GetData();
 
   if (dtype == Dtype::INT) {
