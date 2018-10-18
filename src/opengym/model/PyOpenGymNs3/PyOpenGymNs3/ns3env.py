@@ -98,9 +98,8 @@ class Ns3ZmqBridge(object):
         [errCode, value] = self.send_init_request(stepInterval)
         return value
 
-    def _create_space(self, spaceReplyPb):
+    def _create_space(self, spaceDesc):
         space = None
-        spaceDesc = spaceReplyPb.space
         if (spaceDesc.type == pb.Discrete):
             discreteSpacePb = pb.DiscreteSpace()
             spaceDesc.space.Unpack(discreteSpacePb)
@@ -124,6 +123,30 @@ class Ns3ZmqBridge(object):
                 mtype = np.float
 
             space = spaces.Box(low=low, high=high, shape=shape, dtype=mtype)
+
+        elif (spaceDesc.type == pb.Tuple):
+            mySpaceList = []
+            tupleSpacePb = pb.TupleSpace()
+            spaceDesc.space.Unpack(tupleSpacePb)
+
+            for pbSubSpaceDesc in tupleSpacePb.element:
+                subSpace = self._create_space(pbSubSpaceDesc)
+                mySpaceList.append(subSpace)
+
+            mySpaceTuple = tuple(mySpaceList)
+            space = spaces.Tuple(mySpaceTuple)
+
+        elif (spaceDesc.type == pb.Dict):
+            mySpaceDict = {}
+            dictSpacePb = pb.DictSpace()
+            spaceDesc.space.Unpack(dictSpacePb)
+
+            for pbSubSpaceDesc in dictSpacePb.element:
+                subSpace = self._create_space(pbSubSpaceDesc)
+                mySpaceDict[pbSubSpaceDesc.name] = subSpace
+
+            space = spaces.Dict(mySpaceDict)
+
         return space
 
     def send_get_action_space_request(self):
@@ -143,7 +166,7 @@ class Ns3ZmqBridge(object):
 
     def get_action_space(self):
         spaceReplyPb = self.send_get_action_space_request()
-        actionSpace = self._create_space(spaceReplyPb)
+        actionSpace = self._create_space(spaceReplyPb.space)
         self._action_space = actionSpace
         return actionSpace
 
@@ -164,7 +187,7 @@ class Ns3ZmqBridge(object):
 
     def get_observation_space(self):
         spaceReplyPb = self.send_get_obs_space_request()
-        obsSpace = self._create_space(spaceReplyPb)
+        obsSpace = self._create_space(spaceReplyPb.space)
         self._observation_space = obsSpace
         return obsSpace
 
