@@ -3,6 +3,7 @@ import "google/protobuf/any.proto";
 
 package ns3opengym;
 
+//---------Types----------//
 enum MsgType {
 	Unknown = 0;
 	Init = 1;
@@ -19,6 +20,8 @@ enum MsgType {
 enum SpaceType {
 	Discrete = 0;
 	Box = 1;
+	Tuple = 2;
+	Dict = 3;
 }
 
 enum Dtype {
@@ -26,6 +29,14 @@ enum Dtype {
 	UINT = 1;
 	FLOAT = 2;
 	DOUBLE = 3;
+}
+//------------------------//
+
+//---Space Descriptions---//
+message SpaceDescription {
+	SpaceType type = 1;
+	google.protobuf.Any space = 2;
+	string name = 3;  //optional
 }
 
 message DiscreteSpace {
@@ -39,6 +50,46 @@ message BoxSpace {
 	repeated uint32 shape = 4;
 }
 
+message TupleSpace {
+	repeated SpaceDescription element = 1;
+}
+
+message DictSpace {
+	repeated SpaceDescription element = 1;
+}
+//------------------------//
+
+//----Data Containers-----//
+message DataContainer {
+	SpaceType type = 1;
+	google.protobuf.Any data = 2;
+	string name = 3; //optional
+}
+
+message DiscreteDataContainer {
+	int32 data = 1;
+}
+
+message BoxDataContainer {
+	Dtype dtype = 1;
+	repeated uint32 shape = 2;
+
+	repeated int32 intData = 3;
+	repeated uint32 uintData = 4;
+	repeated float floatData = 5;
+	repeated double doubleData = 6;
+}
+
+message TupleDataContainer {
+	repeated DataContainer element = 1;
+}
+
+message DictDataContainer {
+	repeated DataContainer element = 1;
+}
+//------------------------//
+
+//--------Messages--------//
 message RequestMsg {
 	MsgType type = 1;
 	google.protobuf.Any msg = 2;
@@ -67,8 +118,7 @@ message GetObservationSpaceRequest {
 }
 
 message GetSpaceReply {
-	SpaceType type = 1;
-	google.protobuf.Any space = 2;
+	SpaceDescription space = 1;
 }
 
 message GetIsGameOverRequest {
@@ -119,23 +169,4 @@ message StopEnvRequest {
 message StopEnvReply {
 	bool done = 1;
 }
-
-message DataContainer {
-	SpaceType type = 1;
-	google.protobuf.Any data = 2;
-}
-
-message DiscreteDataContainer {
-	int32 data = 1;
-}
-
-message BoxDataContainer {
-	Dtype dtype = 1;
-	repeated uint32 shape = 2;
-
-	repeated int32 intData = 3;
-	repeated uint32 uintData = 4;
-	repeated float floatData = 5;
-	repeated double doubleData = 6;
-}
-
+//------------------------//

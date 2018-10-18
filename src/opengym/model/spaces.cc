@@ -112,22 +112,29 @@ OpenGymDiscreteSpace::GetN (void)
   return m_n;
 }
 
-void
-OpenGymDiscreteSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
+ns3opengym::SpaceDescription
+OpenGymDiscreteSpace::GetSpaceDescription()
 {
   NS_LOG_FUNCTION (this);
-  spaceReplyPbMsg.set_type(ns3opengym::Discrete);
+  ns3opengym::SpaceDescription desc;
+  desc.set_type(ns3opengym::Discrete);
   ns3opengym::DiscreteSpace discreteSpace;
   discreteSpace.set_n(GetN());
-  spaceReplyPbMsg.mutable_space()->PackFrom(discreteSpace);
+  desc.mutable_space()->PackFrom(discreteSpace);
+  return desc;
 }
 
-std::ostream& operator<< (std::ostream& os, const OpenGymDiscreteSpace& space)  
-{  
-  os << " DiscreteSpace N: " << space.m_n;  
-  return os;  
-}  
+void
+OpenGymDiscreteSpace::Print(std::ostream& where) const
+{
+  where << " DiscreteSpace N: " << m_n;
+}
 
+std::ostream& operator<< (std::ostream& os, const OpenGymDiscreteSpace& space)
+{
+  space.Print(os);
+  return os;
+}
 
 
 TypeId
@@ -220,11 +227,12 @@ OpenGymBoxSpace::GetDtype()
   return m_dtype;
 }
 
-void
-OpenGymBoxSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
+ns3opengym::SpaceDescription
+OpenGymBoxSpace::GetSpaceDescription()
 {
   NS_LOG_FUNCTION (this);
-  spaceReplyPbMsg.set_type(ns3opengym::Box);
+  ns3opengym::SpaceDescription desc;
+  desc.set_type(ns3opengym::Box);
 
   ns3opengym::BoxSpace boxSpacePb;
   boxSpacePb.set_low(GetLow());
@@ -246,19 +254,25 @@ OpenGymBoxSpace::FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg)
     dtype = ns3opengym::DOUBLE;
   }
   boxSpacePb.set_dtype(dtype);
-  spaceReplyPbMsg.mutable_space()->PackFrom(boxSpacePb);
+  desc.mutable_space()->PackFrom(boxSpacePb);
+  return desc;
 }
 
-std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)  
-{  
-  os << " BoxSpace Low: " << box.m_low << " High: " << box.m_high << " Shape: (";
+void
+OpenGymBoxSpace::Print(std::ostream& where) const
+{
+  where << " BoxSpace Low: " << m_low << " High: " << m_high << " Shape: (";
 
-  for (auto i = box.m_shape.begin(); i != box.m_shape.end(); ++i)
+  for (auto i = m_shape.begin(); i != m_shape.end(); ++i)
   {
-    os << *i << ",";
+    where << *i << ",";
   }
-  os << ") Dtype: " << box.m_dtypeName;
+  where << ") Dtype: " << m_dtypeName;
+}
 
-  return os;  
+std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)
+{
+  box.Print(os);
+  return os;
 }
 }

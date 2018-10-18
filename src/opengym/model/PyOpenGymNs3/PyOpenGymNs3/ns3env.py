@@ -100,14 +100,15 @@ class Ns3ZmqBridge(object):
 
     def _create_space(self, spaceReplyPb):
         space = None
-        if (spaceReplyPb.type == pb.Discrete):
+        spaceDesc = spaceReplyPb.space
+        if (spaceDesc.type == pb.Discrete):
             discreteSpacePb = pb.DiscreteSpace()
-            spaceReplyPb.space.Unpack(discreteSpacePb)
+            spaceDesc.space.Unpack(discreteSpacePb)
             space = spaces.Discrete(discreteSpacePb.n)
 
-        elif (spaceReplyPb.type == pb.Box):
+        elif (spaceDesc.type == pb.Box):
             boxSpacePb = pb.BoxSpace()
-            spaceReplyPb.space.Unpack(boxSpacePb)
+            spaceDesc.space.Unpack(boxSpacePb)
             low = boxSpacePb.low
             high = boxSpacePb.high
             shape = tuple(boxSpacePb.shape)
