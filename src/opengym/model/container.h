@@ -222,6 +222,50 @@ OpenGymBoxContainer<T>::GetData()
   return m_data;
 }
 
+
+class OpenGymTupleContainer : public OpenGymDataContainer
+{
+public:
+  OpenGymTupleContainer ();
+  virtual ~OpenGymTupleContainer ();
+
+  static TypeId GetTypeId ();
+
+  virtual ns3opengym::DataContainer GetDataContainerPbMsg();
+
+  bool Add(Ptr<OpenGymDataContainer> space);
+  Ptr<OpenGymDataContainer> Get(uint32_t idx);
+
+protected:
+  // Inherited
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
+  std::vector< Ptr<OpenGymDataContainer> > m_tuple;
+};
+
+
+class OpenGymDictContainer : public OpenGymDataContainer
+{
+public:
+  OpenGymDictContainer ();
+  virtual ~OpenGymDictContainer ();
+
+  static TypeId GetTypeId ();
+
+  virtual ns3opengym::DataContainer GetDataContainerPbMsg();
+
+  bool Add(std::string key, Ptr<OpenGymDataContainer> value);
+  Ptr<OpenGymDataContainer> Get(std::string key);
+
+protected:
+  // Inherited
+  virtual void DoInitialize (void);
+  virtual void DoDispose (void);
+
+  std::map< std::string, Ptr<OpenGymDataContainer> > m_dict;
+};
+
 } // end of namespace ns3
 
 #endif /* OPENGYM_CONTAINER_H */

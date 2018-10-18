@@ -187,4 +187,146 @@ OpenGymDiscreteContainer::GetValue()
   return m_value;
 }
 
+
+TypeId
+OpenGymTupleContainer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::OpenGymTupleContainer")
+    .SetParent<OpenGymDataContainer> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<OpenGymTupleContainer> ()
+    ;
+  return tid;
+}
+
+OpenGymTupleContainer::OpenGymTupleContainer()
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+OpenGymTupleContainer::~OpenGymTupleContainer ()
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymTupleContainer::DoDispose (void)
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymTupleContainer::DoInitialize (void)
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+ns3opengym::DataContainer
+OpenGymTupleContainer::GetDataContainerPbMsg()
+{
+  ns3opengym::DataContainer dataContainerPbMsg;
+  dataContainerPbMsg.set_type(ns3opengym::Tuple);
+
+  ns3opengym::TupleDataContainer tupleContainerPbMsg;
+
+  std::vector< Ptr<OpenGymDataContainer> >::iterator it;
+  for (it=m_tuple.begin(); it!=m_tuple.end(); ++it)
+  {
+    Ptr<OpenGymDataContainer> subSpace = *it;
+    ns3opengym::DataContainer subDataContainer = subSpace->GetDataContainerPbMsg();
+
+    tupleContainerPbMsg.add_element()->CopyFrom(subDataContainer);
+  }
+
+  dataContainerPbMsg.mutable_data()->PackFrom(tupleContainerPbMsg);
+  return dataContainerPbMsg;
+}
+
+bool
+OpenGymTupleContainer::Add(Ptr<OpenGymDataContainer> space)
+{
+  NS_LOG_FUNCTION (this);
+  m_tuple.push_back(space);
+  return true;
+}
+
+Ptr<OpenGymDataContainer>
+OpenGymTupleContainer::Get(uint32_t idx)
+{
+  Ptr<OpenGymDataContainer> ptr;
+  return ptr;
+}
+
+
+TypeId
+OpenGymDictContainer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::OpenGymDictContainer")
+    .SetParent<OpenGymDataContainer> ()
+    .SetGroupName ("OpenGym")
+    .AddConstructor<OpenGymDictContainer> ()
+    ;
+  return tid;
+}
+
+OpenGymDictContainer::OpenGymDictContainer()
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+OpenGymDictContainer::~OpenGymDictContainer ()
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymDictContainer::DoDispose (void)
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+void
+OpenGymDictContainer::DoInitialize (void)
+{
+  //NS_LOG_FUNCTION (this);
+}
+
+ns3opengym::DataContainer
+OpenGymDictContainer::GetDataContainerPbMsg()
+{
+  ns3opengym::DataContainer dataContainerPbMsg;
+  dataContainerPbMsg.set_type(ns3opengym::Dict);
+
+  ns3opengym::DictDataContainer dictContainerPbMsg;
+
+  std::map< std::string, Ptr<OpenGymDataContainer> >::iterator it;
+  for (it=m_dict.begin(); it!=m_dict.end(); ++it)
+  {
+    std::string name = it->first;
+    Ptr<OpenGymDataContainer> subSpace = it->second;
+
+    ns3opengym::DataContainer subDataContainer = subSpace->GetDataContainerPbMsg();
+    subDataContainer.set_name(name);
+
+    dictContainerPbMsg.add_element()->CopyFrom(subDataContainer);
+  }
+
+  dataContainerPbMsg.mutable_data()->PackFrom(dictContainerPbMsg);
+  return dataContainerPbMsg;
+}
+
+bool
+OpenGymDictContainer::Add(std::string key, Ptr<OpenGymDataContainer> data)
+{
+  NS_LOG_FUNCTION (this);
+  m_dict.insert(std::pair<std::string, Ptr<OpenGymDataContainer> > (key, data));
+  return true;
+}
+
+Ptr<OpenGymDataContainer>
+OpenGymDictContainer::Get(std::string key)
+{
+  Ptr<OpenGymDataContainer> ptr;
+  return ptr;
+}
 }

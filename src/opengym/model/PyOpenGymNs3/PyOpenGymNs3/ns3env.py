@@ -246,20 +246,16 @@ class Ns3ZmqBridge(object):
         replyPbMsg.msg.Unpack(innerReplyPbMsg)
         return innerReplyPbMsg
 
-    def get_obs(self):
-        obsMsg = self.send_get_state_request()
-        dataContainer = obsMsg.container
-
-        data = None
-        if (dataContainer.type == pb.Discrete):
+    def _create_data(self, dataContainerPb):
+        if (dataContainerPb.type == pb.Discrete):
             discreteContainerPb = pb.DiscreteDataContainer()
-            dataContainer.data.Unpack(discreteContainerPb)
+            dataContainerPb.data.Unpack(discreteContainerPb)
             data = discreteContainerPb.data
             return data
 
-        if (dataContainer.type == pb.Box):
+        if (dataContainerPb.type == pb.Box):
             boxContainerPb = pb.BoxDataContainer()
-            dataContainer.data.Unpack(boxContainerPb)
+            dataContainerPb.data.Unpack(boxContainerPb)
             # print(boxContainerPb.shape, boxContainerPb.dtype, boxContainerPb.uintData)
 
             if boxContainerPb.dtype == pb.INT:
@@ -272,8 +268,36 @@ class Ns3ZmqBridge(object):
                 data = boxContainerPb.floatData
 
             # TODO: reshape using shape info
-
             return data
+
+        elif (dataContainerPb.type == pb.Tuple):
+            tupleDataPb = pb.TupleDataContainer()
+            dataContainerPb.data.Unpack(tupleDataPb)
+
+            myDataList = []
+            for pbSubData in tupleDataPb.element:
+                subData = self._create_data(pbSubData)
+                myDataList.append(subData)
+
+            data = tuple(myDataList)
+            return data
+
+        elif (dataContainerPb.type == pb.Dict):
+            dictDataPb = pb.DictDataContainer()
+            dataContainerPb.data.Unpack(dictDataPb)
+
+            myDataDict = {}
+            for pbSubData in dictDataPb.element:
+                subData = self._create_data(pbSubData)
+                myDataDict[pbSubData.name] = subData
+
+            data = myDataDict
+            return data
+
+    def get_obs(self):
+        obsMsg = self.send_get_state_request()
+        data = self._create_data(obsMsg.container)
+        return data
 
     def send_get_reward_request(self):
         msg = pb.GetRewardRequest()
