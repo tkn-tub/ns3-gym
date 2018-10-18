@@ -34,8 +34,6 @@
 
 namespace ns3 {
 
-enum Dtype { INT, UINT, FLOAT, DOUBLE };
-
 class OpenGymSpace : public Object
 {
 public:
@@ -92,7 +90,7 @@ public:
   float GetLow();
   float GetHigh();
   std::vector<uint32_t> GetShape();
-  Dtype GetDtype();
+
   virtual void Print(std::ostream& where) const;
 protected:
   // Inherited
@@ -109,7 +107,7 @@ private:
   std::vector<float> m_lowVec;
   std::vector<float> m_highVec;
 
-  Dtype m_dtype;
+  ns3opengym::Dtype m_dtype;
 
 	friend std::ostream& operator<< ( std::ostream& os, const OpenGymBoxSpace& a);
 };
