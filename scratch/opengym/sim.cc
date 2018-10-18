@@ -32,7 +32,10 @@ Define observation space
 Ptr<OpenGymSpace> MyGetObservationSpace(void)
 {
   uint32_t nodeNum = 5;
-
+  /*
+  Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (nodeNum);
+  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
+  */
   float low = 0.0;
   float high = 10.0;
   std::vector<uint32_t> shape = {nodeNum,};
@@ -49,12 +52,16 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
 {
   uint32_t nodeNum = 5;
 
+  Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (nodeNum);
+  NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
+  /*
   float low = 0.0;
   float high = 100.0;
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
   NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
+  */
   return space;
 }
 
@@ -99,6 +106,14 @@ Ptr<OpenGymDataContainer> MyGetObservation(void)
 
   NS_LOG_UNCOND ("MyGetObservation: " << obsString);
   return box;
+
+  /*
+  Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>(nodeNum);
+  uint32_t value = rngInt->GetInteger(low, high);
+  discrete->SetValue(value);
+  NS_LOG_UNCOND ("MyGetObservation: " << discrete->GetValue());
+  return discrete;
+  */
 }
 
 /*
@@ -128,7 +143,8 @@ Execute received actions
 */
 bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
 {
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
+  /*
+  Ptr<OpenGymContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
   std::vector<uint32_t> actionVector = box->GetData();
 
   std::string actionString  = "[";
@@ -138,7 +154,10 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   }
   actionString += "]";
   NS_LOG_UNCOND ("MyExecuteActions: " << actionString);
+  */
 
+  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(action);
+  NS_LOG_UNCOND ("MyExecuteActions: " << discrete->GetValue());
   return true;
 }
 
