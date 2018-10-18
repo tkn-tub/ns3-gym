@@ -190,12 +190,14 @@ OpenGymInterface::Init()
         NS_LOG_DEBUG("Received ActionSpace request");
         rxGetActionSpaceReq = true;
 
+        ns3opengym::SpaceDescription spaceDesc;
         ns3opengym::GetSpaceReply innerReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
 
         Ptr<OpenGymSpace> actionSpace = GetActionSpace();
         if (actionSpace) {
-          actionSpace->FillGetSpaceReply(innerReplyPbMsg);
+          spaceDesc = actionSpace->GetSpaceDescription();
+          innerReplyPbMsg.mutable_space()->CopyFrom(spaceDesc);
 
           replyPbMsg.set_type(ns3opengym::ActionSpace);
           replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);
@@ -208,12 +210,14 @@ OpenGymInterface::Init()
         NS_LOG_DEBUG("Received ObservationSpace request");
         rxGetObsSpaceReq = true;
 
+        ns3opengym::SpaceDescription spaceDesc;
         ns3opengym::GetSpaceReply innerReplyPbMsg;
         ns3opengym::ReplyMsg replyPbMsg;
 
         Ptr<OpenGymSpace> obsSpace = GetObservationSpace();
         if (obsSpace) {
-          obsSpace->FillGetSpaceReply(innerReplyPbMsg);
+          spaceDesc = obsSpace->GetSpaceDescription();
+          innerReplyPbMsg.mutable_space()->CopyFrom(spaceDesc);
 
           replyPbMsg.set_type(ns3opengym::ObservationSpace);
           replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);

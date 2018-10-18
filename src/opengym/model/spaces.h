@@ -44,8 +44,8 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg) = 0;
-
+  virtual ns3opengym::SpaceDescription GetSpaceDescription() = 0;
+  virtual void Print(std::ostream& where) const = 0;
 protected:
   // Inherited
   virtual void DoInitialize (void);
@@ -62,10 +62,10 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg);
+  virtual ns3opengym::SpaceDescription GetSpaceDescription();
 
   int GetN(void);
-
+  virtual void Print(std::ostream& where) const;
 protected:
   // Inherited
   virtual void DoInitialize (void);
@@ -87,13 +87,13 @@ public:
 
   static TypeId GetTypeId ();
 
-  virtual void FillGetSpaceReply(ns3opengym::GetSpaceReply &spaceReplyPbMsg);
+  virtual ns3opengym::SpaceDescription GetSpaceDescription();
 
   float GetLow();
   float GetHigh();
   std::vector<uint32_t> GetShape();
   Dtype GetDtype();
-
+  virtual void Print(std::ostream& where) const;
 protected:
   // Inherited
   virtual void DoInitialize (void);
