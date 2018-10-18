@@ -93,24 +93,24 @@ enum NormalExtended_e
 struct DlDciListElement_s
 {
   uint16_t  m_rnti; ///< RNTI
-  uint32_t  m_rbBitmap; ///< rb bitmap
-  uint8_t   m_rbShift; ///< rb shift
-  uint8_t   m_resAlloc; ///< res allocate
-  std::vector <uint16_t>  m_tbsSize; ///< tbs size
-  std::vector <uint8_t>   m_mcs; ///< mcs
-  std::vector <uint8_t>   m_ndi; ///< ndi
-  std::vector <uint8_t>   m_rv; ///< rv
-  uint8_t   m_cceIndex; ///< CCE index
-  uint8_t   m_aggrLevel; ///< aggr level
+  uint32_t  m_rbBitmap; ///< RB bitmap
+  uint8_t   m_rbShift; ///< RB shift
+  uint8_t   m_resAlloc; ///< The type of resource allocation
+  std::vector <uint16_t>  m_tbsSize; ///< The TBs size
+  std::vector <uint8_t>   m_mcs; ///< MCS
+  std::vector <uint8_t>   m_ndi; ///< New data indicator
+  std::vector <uint8_t>   m_rv; ///< Redundancy version
+  uint8_t   m_cceIndex; ///< Control Channel Element index
+  uint8_t   m_aggrLevel; ///< The aggregation level
   uint8_t   m_precodingInfo; ///< precoding info
   /// Format enumeration
   enum Format_e
   {
     ONE, ONE_A, ONE_B, ONE_C, ONE_D, TWO, TWO_A, TWO_B
   } m_format; ///< the format
-  uint8_t   m_tpc; ///< TPC
+  uint8_t   m_tpc; ///< Tx power control command
   uint8_t   m_harqProcess; ///< HARQ process
-  uint8_t   m_dai; ///< DAI
+  uint8_t   m_dai; ///< DL assignment index
   /// Vrb Format enum
   enum VrbFormat_e
   {
@@ -144,15 +144,15 @@ struct UlDciListElement_s
   uint16_t  m_tbSize; ///< size
   uint8_t   m_mcs; ///< MCS
   uint8_t   m_ndi; ///< NDI
-  uint8_t   m_cceIndex; ///< CCE index
-  uint8_t   m_aggrLevel; ///< aggr level
+  uint8_t   m_cceIndex; ///< Control Channel Element index
+  uint8_t   m_aggrLevel; ///< The aggregation level
   uint8_t   m_ueTxAntennaSelection; ///< UE antenna selection
   bool      m_hopping; ///< hopping?
   uint8_t   m_n2Dmrs; ///< n2 DMRS
-  int8_t    m_tpc; ///< TPC
+  int8_t    m_tpc; ///< Tx power control command
   bool      m_cqiRequest; ///< CQI request
   uint8_t   m_ulIndex; ///< UL index
-  uint8_t   m_dai; ///< DAI
+  uint8_t   m_dai; ///< DL assignment index
   uint8_t   m_freqHopping; ///< freq hopping
   int8_t    m_pdcchPowerOffset; ///< CCH power offset
 };
@@ -183,7 +183,7 @@ struct VendorSpecificListElement_s
  */
 struct LogicalChannelConfigListElement_s
 {
-  uint8_t   m_logicalChannelIdentity; ///< logical channel indentity
+  uint8_t   m_logicalChannelIdentity; ///< logical channel identity
   uint8_t   m_logicalChannelGroup; ///< logical channel group
 
   /// Direction enum
@@ -203,7 +203,7 @@ struct LogicalChannelConfigListElement_s
 
   uint8_t   m_qci; ///< QCI
   uint64_t  m_eRabMaximulBitrateUl; ///< ERAB maximum bit rate UL
-  uint64_t  m_eRabMaximulBitrateDl; ///< ERAB mqximum bit rate DL
+  uint64_t  m_eRabMaximulBitrateDl; ///< ERAB maximum bit rate DL
   uint64_t  m_eRabGuaranteedBitrateUl; ///< ERAB guaranteed bit rate UL
   uint64_t  m_eRabGuaranteedBitrateDl; ///< ERAB guaranteed bit rate DL
 };
@@ -237,7 +237,7 @@ struct PhichListElement_s
  */
 struct RlcPduListElement_s
 {
-  uint8_t   m_logicalChannelIdentity; ///< logical channel indentity
+  uint8_t   m_logicalChannelIdentity; ///< logical channel identity
   uint16_t  m_size; ///< size
 };
 
@@ -264,7 +264,7 @@ struct UlGrant_s
   uint16_t m_tbSize; ///< size
   uint8_t m_mcs; ///< MCS
   bool m_hopping; ///< hopping?
-  int8_t m_tpc; ///< TPC 
+  int8_t m_tpc; ///< Tx power control command
   bool m_cqiRequest; ///< CQI request?
   bool m_ulDelay; ///< UL delay?
 }; 
@@ -306,7 +306,7 @@ struct UlInfoListElement_s
   {
     Ok, NotOk, NotValid
   } m_receptionStatus; ///< the status
-  uint8_t   m_tpc; ///< TPC
+  uint8_t   m_tpc; ///< Tx power control command
 };
 
 /**

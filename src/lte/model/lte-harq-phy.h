@@ -39,8 +39,8 @@ namespace ns3 {
 /// HarqProcessInfoElement_t structure
 struct HarqProcessInfoElement_t
 {
-   double m_mi; ///< MI
-   uint8_t m_rv; ///< RV
+   double m_mi; ///< Mutual information
+   uint8_t m_rv; ///< Redundancy version
    uint16_t m_infoBits; ///< info bits
    uint16_t m_codeBits; ///< code bits
 };

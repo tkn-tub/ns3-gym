@@ -55,8 +55,8 @@ struct TbId_t
   /**
    * Constructor
    *
-   * \param a rnti
-   * \param b layer
+   * \param a RNTI
+   * \param b Layer
    */
   TbId_t (const uint16_t a, const uint8_t b);
   
@@ -68,13 +68,13 @@ struct TbId_t
 /// tbInfo_t structure
 struct tbInfo_t
 {
-  uint8_t ndi; ///< ndi
-  uint16_t size; ///< size
-  uint8_t mcs; ///< mcs
-  std::vector<int> rbBitmap; ///< rb bitmap
+  uint8_t ndi; ///< New data indicator
+  uint16_t size; ///< Transport block size
+  uint8_t mcs; ///< MCS
+  std::vector<int> rbBitmap; ///< Resource block bitmap
   uint8_t harqProcessId; ///< HARQ process id
-  uint8_t rv; ///< rv
-  double mi; ///< mi
+  uint8_t rv; ///< Redundancy version
+  double mi; ///< Mutual information
   bool downlink; ///< whether is downlink
   bool corrupt; ///< whether is corrupt
   bool harqFeedbackSent; ///< is HARQ feedback sent
@@ -389,14 +389,14 @@ public:
   /** 
   * 
   * 
-  * \param rnti the rnti of the source of the TB
+  * \param rnti the RNTI of the source of the TB
   * \param ndi new data indicator flag
   * \param size the size of the TB
   * \param mcs the MCS of the TB
   * \param map the map of RB(s) used
   * \param layer the layer (in case of MIMO tx)
   * \param harqId the id of the HARQ process (valid only for DL)
-  * \param rv the rv
+  * \param rv the redundancy version
   * \param downlink true when the TB is for DL
   */
   void AddExpectedTb (uint16_t  rnti, uint8_t ndi, uint16_t size, uint8_t mcs, std::vector<int> map, uint8_t layer, uint8_t harqId, uint8_t rv, bool downlink);

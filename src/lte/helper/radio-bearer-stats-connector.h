@@ -272,8 +272,8 @@ private:
    */
   struct CellIdRnti
   {
-    uint16_t cellId; //!< cellId
-    uint16_t rnti; //!< rnti
+    uint16_t cellId; //!< Cell Id
+    uint16_t rnti; //!< RNTI
   };
 
   /**

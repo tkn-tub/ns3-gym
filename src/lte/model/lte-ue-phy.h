@@ -577,7 +577,7 @@ private:
   Ptr<LteHarqPhy> m_harqPhyModule; ///< HARQ phy module
 
   uint32_t m_raPreambleId; ///< RA preamble ID
-  uint32_t m_raRnti; ///< RA rnti
+  uint32_t m_raRnti; ///< RA RNTI
 
   /**
    * The `ReportCurrentCellRsrpSinr` trace source. Trace information regarding

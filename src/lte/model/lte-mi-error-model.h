@@ -69,8 +69,8 @@ namespace ns3 {
 /// TbStats_t structure
 struct TbStats_t
 {
-  double tbler; ///< tbler
-  double mi; ///< mi
+  double tbler; ///< Transport block BLER
+  double mi; ///< Mutual information
 };
   
 
@@ -85,8 +85,8 @@ public:
 
   /** 
    * \brief find the mmib (mean mutual information per bit) for different modulations of the specified TB
-   * \param sinr the perceived sinrs in the whole bandwidth
-   * \param map the actives RBs for the TB
+   * \param sinr the perceived sinr values in the whole bandwidth in Watt
+   * \param map the active RBs for the TB
    * \param mcs the MCS of the TB
    * \return the mmib
    */
@@ -102,18 +102,18 @@ public:
 
   /**
    * \brief run the error-model algorithm for the specified TB
-   * \param sinr the perceived sinrs in the whole bandwidth
-   * \param map the actives RBs for the TB
+   * \param sinr the perceived sinr values in the whole bandwidth in Watt
+   * \param map the active RBs for the TB
    * \param size the size in bytes of the TB
    * \param mcs the MCS of the TB
-   * \param miHistory  MI of past transmissions (in case of retx)
+   * \param miHistory MI of past transmissions (in case of retx)
    * \return the TB error rate and MI
    */
   static TbStats_t GetTbDecodificationStats (const SpectrumValue& sinr, const std::vector<int>& map, uint16_t size, uint8_t mcs, HarqProcessInfoList_t miHistory);
   
   /** 
   * \brief run the error-model algorithm for the specified PCFICH+PDCCH channels
-  * \param sinr the perceived sinrs in the whole bandwidth
+  * \param sinr the perceived sinr values in the whole bandwidth in Watt
   * \return the decodification error of the PCFICH+PDCCH channels
   */  
   static double GetPcfichPdcchError (const SpectrumValue& sinr);

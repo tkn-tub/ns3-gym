@@ -363,7 +363,7 @@ private:
   */
   void DoDlInfoListElementHarqFeeback (DlInfoListElement_s params);
 
-  /// rnti, lcid, SAP of the RLC instance
+  /// RNTI, LC ID, SAP of the RLC instance
   std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> > m_rlcAttached;
 
   std::vector <CqiListElement_s> m_dlCqiReceived; ///< DL-CQI received

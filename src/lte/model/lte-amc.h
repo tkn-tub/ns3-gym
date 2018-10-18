@@ -71,13 +71,13 @@ public:
    * \brief Get the Modulation and Coding Scheme for
    * a CQI value
    * \param cqi the cqi value
-   * \return the MCS  value
+   * \return the MCS value
    */
   int GetMcsFromCqi (int cqi);
 
   /**
   * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 7.1.7.2.1-1 of 36.213)
-  * \param mcs the mcs index
+  * \param mcs the MCS index
   * \param nprb the no. of PRB
   * \return the Transport Block Size in bits
   */
@@ -85,7 +85,7 @@ public:
 
   /**
    * \brief Get the Transport Block Size for a selected MCS and number of PRB (table 8.6.1-1 of 36.213)
-   * \param mcs the mcs index
+   * \param mcs the MCS index
    * \param nprb the no. of PRB
    * \return the Transport Block Size in bits
    */
