@@ -64,6 +64,12 @@ public:
 
   int GetN(void);
   virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymDiscreteSpace> space)
+  {
+    space->Print(os);
+    return os;
+  }
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
@@ -71,8 +77,6 @@ protected:
 
 private:
 	int m_n;
-
-	friend std::ostream& operator<< ( std::ostream& os, const OpenGymDiscreteSpace& a);
 };
 
 class OpenGymBoxSpace : public OpenGymSpace
@@ -92,6 +96,12 @@ public:
   std::vector<uint32_t> GetShape();
 
   virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymBoxSpace> space)
+  {
+    space->Print(os);
+    return os;
+  }
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
@@ -108,8 +118,6 @@ private:
   std::vector<float> m_highVec;
 
   ns3opengym::Dtype m_dtype;
-
-	friend std::ostream& operator<< ( std::ostream& os, const OpenGymBoxSpace& a);
 };
 
 
@@ -127,6 +135,11 @@ public:
   Ptr<OpenGymSpace> Get(uint32_t idx);
 
   virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymTupleSpace> space)
+  {
+    space->Print(os);
+    return os;
+  }
 
 protected:
   // Inherited
@@ -135,8 +148,6 @@ protected:
 
 private:
   std::vector< Ptr<OpenGymSpace> > m_tuple;
-
-  friend std::ostream& operator<< ( std::ostream& os, const OpenGymTupleSpace& a);
 };
 
 
@@ -154,6 +165,11 @@ public:
   Ptr<OpenGymSpace> Get(std::string key);
 
   virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymDictSpace> space)
+  {
+    space->Print(os);
+    return os;
+  }
 
 protected:
   // Inherited
@@ -162,8 +178,6 @@ protected:
 
 private:
   std::map< std::string, Ptr<OpenGymSpace> > m_dict;
-
-  friend std::ostream& operator<< ( std::ostream& os, const OpenGymDictSpace& a);
 };
 
 } // end of namespace ns3
