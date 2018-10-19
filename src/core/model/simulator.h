@@ -197,7 +197,14 @@ public:
      */
     NO_CONTEXT = 0xffffffff
   };
+
+  /**
+   * Get the number of events executed.
+   * \returns The total number of events executed.
+   */
+  static uint64_t GetEventCount (void);
   
+
   /**
    * @name Schedule events (in the same context) to run at a future time.
    */
@@ -1347,7 +1354,8 @@ private:
    * @return The EventId.
    */
   static EventId DoScheduleDestroy (EventImpl *event);
-};
+  
+};  // class Simulator
 
 /**
  * @ingroup simulator

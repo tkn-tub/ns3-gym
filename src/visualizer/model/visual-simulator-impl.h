@@ -71,6 +71,7 @@ public:
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const; 
   virtual uint32_t GetContext (void) const;
+  virtual uint64_t GetEventCount (void) const;;
 
   /// calls Run() in the wrapped simulator
   void RunRealSimulator (void);

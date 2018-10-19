@@ -99,6 +99,9 @@ public:
   virtual uint32_t GetSystemId () const = 0; 
   /** \copydoc Simulator::GetContext */
   virtual uint32_t GetContext (void) const = 0;
+  /** \copydoc Simulator::GetEventCount */
+  virtual uint64_t GetEventCount (void) const = 0;
+
 };
 
 } // namespace ns3

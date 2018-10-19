@@ -107,6 +107,7 @@ public:
   virtual void SetScheduler (ObjectFactory schedulerFactory);
   virtual uint32_t GetSystemId (void) const; 
   virtual uint32_t GetContext (void) const;
+  virtual uint64_t GetEventCount (void) const;;
 
   /** \copydoc ScheduleWithContext(uint32_t,const Time&,EventImpl*) */
   void ScheduleRealtimeWithContext (uint32_t context, const Time &delay, EventImpl *event);
@@ -202,6 +203,8 @@ private:
   uint64_t m_currentTs;
   /**< Execution context. */
   uint32_t m_currentContext;  
+  /** The event count. */
+  uint64_t m_eventCount;
   /**@}*/
 
   /** Mutex to control access to key state. */  

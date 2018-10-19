@@ -323,6 +323,12 @@ Simulator::GetContext (void)
 {
   return GetImpl ()->GetContext ();
 }
+  
+uint64_t
+Simulator::GetEventCount (void)
+{
+  return GetImpl ()-> GetEventCount ();
+}
 
 uint32_t
 Simulator::GetSystemId (void)

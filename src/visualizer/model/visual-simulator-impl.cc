@@ -216,6 +216,12 @@ VisualSimulatorImpl::GetContext (void) const
   return m_simulator->GetContext ();
 }
 
+uint64_t
+VisualSimulatorImpl::GetEventCount (void) const
+{
+  return m_simulator->GetEventCount ();
+}
+
 void
 VisualSimulatorImpl::RunRealSimulator (void)
 {

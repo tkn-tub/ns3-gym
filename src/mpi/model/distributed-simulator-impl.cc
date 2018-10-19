@@ -105,6 +105,7 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
   NS_FATAL_ERROR ("Can't use distributed simulator without MPI compiled in");
 #endif
 
+  m_eventCount = 0;
   m_stop = false;
   m_globalFinished = false;
   // uids are allocated from 4.
@@ -117,6 +118,7 @@ DistributedSimulatorImpl::DistributedSimulatorImpl ()
   m_currentTs = 0;
   m_currentContext = Simulator::NO_CONTEXT;
   m_unscheduledEvents = 0;
+  m_eventCount = 0;
   m_events = 0;
 }
 
@@ -322,6 +324,7 @@ DistributedSimulatorImpl::ProcessOneEvent (void)
 
   NS_ASSERT (next.key.m_ts >= m_currentTs);
   m_unscheduledEvents--;
+  m_eventCount++;
 
   NS_LOG_LOGIC ("handle " << next.key.m_ts);
   m_currentTs = next.key.m_ts;
@@ -642,6 +645,12 @@ uint32_t
 DistributedSimulatorImpl::GetContext (void) const
 {
   return m_currentContext;
+}
+
+uint64_t
+DistributedSimulatorImpl::GetEventCount (void) const
+{
+  return m_eventCount;
 }
 
 } // namespace ns3
