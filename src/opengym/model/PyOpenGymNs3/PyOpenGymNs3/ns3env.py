@@ -340,11 +340,10 @@ class Ns3ZmqBridge(object):
             info = {}
         return info
 
-    def _pack_data(self, actions, spaceType=None):
+    def _pack_data(self, actions, spaceDesc):
         dataContainer = pb.DataContainer()
 
-        if spaceType == None:
-            spaceType = self._action_space.__class__
+        spaceType = spaceDesc.__class__
 
         if spaceType == spaces.Discrete:
             dataContainer.type = pb.Discrete
@@ -358,19 +357,19 @@ class Ns3ZmqBridge(object):
             shape = [len(actions)]
             boxContainerPb.shape.extend(shape)
 
-            if (self._action_space.dtype in ['int', 'int8', 'int16', 'int32', 'int64']):
+            if (spaceDesc.dtype in ['int', 'int8', 'int16', 'int32', 'int64']):
                 boxContainerPb.dtype = pb.INT
                 boxContainerPb.intData.extend(actions)
 
-            elif (self._action_space.dtype in ['uint', 'uint8', 'uint16', 'uint32', 'uint64']):
+            elif (spaceDesc.dtype in ['uint', 'uint8', 'uint16', 'uint32', 'uint64']):
                 boxContainerPb.dtype = pb.UINT
                 boxContainerPb.uintData.extend(actions)
 
-            elif (self._action_space.dtype in ['float', 'float32', 'float64']):
+            elif (spaceDesc.dtype in ['float', 'float32', 'float64']):
                 boxContainerPb.dtype = pb.FLOAT
                 boxContainerPb.floatData.extend(actions)
 
-            elif (self._action_space.dtype in ['double']):
+            elif (spaceDesc.dtype in ['double']):
                 boxContainerPb.dtype = pb.DOUBLE
                 boxContainerPb.doubleData.extend(actions)
 
@@ -387,7 +386,7 @@ class Ns3ZmqBridge(object):
             spaceList = list(self._action_space.spaces)
             subDataList = []
             for subAction, subActSpaceType in zip(actions, spaceList):
-                subData = self._pack_data(subAction, subActSpaceType.__class__)
+                subData = self._pack_data(subAction, subActSpaceType)
                 subDataList.append(subData)
 
             tupleDataPb.element.extend(subDataList)
@@ -400,7 +399,7 @@ class Ns3ZmqBridge(object):
             subDataList = []
             for sName, subAction in actions.items():
                 subActSpaceType = self._action_space.spaces[sName]
-                subData = self._pack_data(subAction, subActSpaceType.__class__)
+                subData = self._pack_data(subAction, subActSpaceType)
                 subData.name = sName
                 subDataList.append(subData)
 
@@ -410,7 +409,7 @@ class Ns3ZmqBridge(object):
         return dataContainer
 
     def send_execute_action_request(self, actions):
-        dataContainer = self._pack_data(actions)
+        dataContainer = self._pack_data(actions, self._action_space)
         msg = pb.SetActionRequest()
         msg.container.CopyFrom(dataContainer)
 

@@ -43,6 +43,13 @@ public:
   virtual ns3opengym::DataContainer GetDataContainerPbMsg() = 0;
   static Ptr<OpenGymDataContainer> CreateFromDataContainerPbMsg(ns3opengym::DataContainer &dataContainer);
 
+  virtual void Print(std::ostream& where) const = 0;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymDataContainer> container)
+  {
+    container->Print(os);
+    return os;
+  }
+
 protected:
   // Inherited
   virtual void DoInitialize (void);
@@ -60,6 +67,13 @@ public:
   static TypeId GetTypeId ();
 
   virtual ns3opengym::DataContainer GetDataContainerPbMsg();
+
+  virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymDiscreteContainer> container)
+  {
+    container->Print(os);
+    return os;
+  }
 
   bool SetValue(uint32_t value);
   uint32_t GetValue();
@@ -84,6 +98,13 @@ public:
   static TypeId GetTypeId ();
 
   virtual ns3opengym::DataContainer GetDataContainerPbMsg();
+
+  virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymBoxContainer> container)
+  {
+    container->Print(os);
+    return os;
+  }
 
   bool AddValue(T value);
   bool SetData(std::vector<T> data);
@@ -227,6 +248,22 @@ OpenGymBoxContainer<T>::GetData()
   return m_data;
 }
 
+template <typename T>
+void
+OpenGymBoxContainer<T>::Print(std::ostream& where) const
+{
+  where << "[";
+  for (auto i = m_data.begin(); i != m_data.end(); ++i)
+  {
+    where << std::to_string(*i);
+    auto i2 = i;
+    i2++;
+    if (i2 != m_data.end())
+      where << ", ";
+  }
+  where << "]";
+}
+
 
 class OpenGymTupleContainer : public OpenGymDataContainer
 {
@@ -237,6 +274,13 @@ public:
   static TypeId GetTypeId ();
 
   virtual ns3opengym::DataContainer GetDataContainerPbMsg();
+
+  virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< (std::ostream& os, const Ptr<OpenGymTupleContainer> container)
+  {
+    container->Print(os);
+    return os;
+  }
 
   bool Add(Ptr<OpenGymDataContainer> space);
   Ptr<OpenGymDataContainer> Get(uint32_t idx);
@@ -259,6 +303,13 @@ public:
   static TypeId GetTypeId ();
 
   virtual ns3opengym::DataContainer GetDataContainerPbMsg();
+
+  virtual void Print(std::ostream& where) const;
+  friend std::ostream& operator<< ( std::ostream& os, const Ptr<OpenGymDictContainer> container)
+  {
+    container->Print(os);
+    return os;
+  }
 
   bool Add(std::string key, Ptr<OpenGymDataContainer> value);
   Ptr<OpenGymDataContainer> Get(std::string key);

@@ -104,7 +104,7 @@ Ptr<OpenGymDataContainer> MyGetObservation(void)
   }
   obsString += "]";
 
-  NS_LOG_UNCOND ("MyGetObservation: " << obsString);
+  NS_LOG_UNCOND ("MyGetObservation: " << box);
   return box;
 
   /*
@@ -157,7 +157,7 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   */
 
   Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(action);
-  NS_LOG_UNCOND ("MyExecuteActions: " << discrete->GetValue());
+  NS_LOG_UNCOND ("MyExecuteActions: " << action);
   return true;
 }
 
