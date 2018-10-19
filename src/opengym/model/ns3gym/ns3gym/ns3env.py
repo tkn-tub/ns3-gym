@@ -475,7 +475,9 @@ class Ns3Env(gym.Env):
 
     def reset(self):
         if not self.envDirty:
-            return self.get_obs()
+            state = self.get_obs()
+            obs = state[0]
+            return obs
 
         if self.ns3ZmqBridge:
             self.ns3ZmqBridge.close()
@@ -486,7 +488,8 @@ class Ns3Env(gym.Env):
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
         self.envDirty = False
-        obs, reward, done, extraInfo = self.get_obs()
+        state = self.get_obs()
+        obs = state[0]
         return obs
 
     def render(self, mode='human'):
