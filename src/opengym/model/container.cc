@@ -151,7 +151,7 @@ OpenGymDataContainer::CreateFromDataContainerPbMsg(ns3opengym::DataContainer &da
     for(it=elements.begin();it!=elements.end();++it)
     {
       Ptr<OpenGymDataContainer> subSpace = OpenGymDataContainer::CreateFromDataContainerPbMsg(*it);
-      dictData->Add("elements.name()", subSpace);
+      dictData->Add((*it).name(), subSpace);
     }
 
     actDataContainer = dictData;
@@ -225,6 +225,11 @@ OpenGymDiscreteContainer::GetValue()
   return m_value;
 }
 
+void
+OpenGymDiscreteContainer::Print(std::ostream& where) const
+{
+  where << std::to_string(m_value);
+}
 
 TypeId
 OpenGymTupleContainer::GetTypeId (void)
@@ -293,6 +298,26 @@ OpenGymTupleContainer::Get(uint32_t idx)
 {
   Ptr<OpenGymDataContainer> ptr;
   return ptr;
+}
+
+void
+OpenGymTupleContainer::Print(std::ostream& where) const
+{
+  where << "Tuple(";
+
+  std::vector< Ptr<OpenGymDataContainer> >::const_iterator it;
+  std::vector< Ptr<OpenGymDataContainer> >::const_iterator it2;
+  for (it=m_tuple.cbegin(); it!=m_tuple.cend(); ++it)
+  {
+    Ptr<OpenGymDataContainer> subSpace = *it;
+    subSpace->Print(where);
+
+    it2 = it;
+    it2++;
+    if (it2 != m_tuple.end())
+      where << ", ";
+  }
+  where << ")";
 }
 
 
@@ -367,4 +392,28 @@ OpenGymDictContainer::Get(std::string key)
   Ptr<OpenGymDataContainer> ptr;
   return ptr;
 }
+
+void
+OpenGymDictContainer::Print(std::ostream& where) const
+{
+  where << "Dict(";
+
+  std::map< std::string, Ptr<OpenGymDataContainer> >::const_iterator it;
+  std::map< std::string, Ptr<OpenGymDataContainer> >::const_iterator it2;
+  for (it=m_dict.cbegin(); it!=m_dict.cend(); ++it)
+  {
+    std::string name = it->first;
+    Ptr<OpenGymDataContainer> subSpace = it->second;
+
+    where << name << "=";
+    subSpace->Print(where);
+
+    it2 = it;
+    it2++;
+    if (it2 != m_dict.end())
+      where << ", ";
+  }
+  where << ")";
+}
+
 }
