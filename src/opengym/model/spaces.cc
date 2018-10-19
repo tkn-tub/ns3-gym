@@ -295,8 +295,14 @@ Ptr<OpenGymSpace>
 OpenGymTupleSpace::Get(uint32_t idx)
 {
   NS_LOG_FUNCTION (this);
-  Ptr<OpenGymSpace> ptr;
-  return ptr;
+  Ptr<OpenGymSpace> space;
+
+  if (idx < m_tuple.size())
+  {
+    space = m_tuple.at(idx);
+  }
+
+  return space;
 }
 
 ns3opengym::SpaceDescription
