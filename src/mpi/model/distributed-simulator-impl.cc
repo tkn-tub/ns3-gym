@@ -284,7 +284,7 @@ DistributedSimulatorImpl::CalculateLookAhead (void)
 void
 DistributedSimulatorImpl::SetMaximumLookAhead (const Time lookAhead)
 {
-  if (lookAhead > 0)
+  if (lookAhead > Time (0))
     {
       NS_LOG_FUNCTION (this << lookAhead);
       m_lookAhead = lookAhead;

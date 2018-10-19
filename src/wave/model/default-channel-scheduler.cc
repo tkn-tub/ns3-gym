@@ -259,7 +259,7 @@ DefaultChannelScheduler::AssignExtendedAccess (uint32_t channelNumber, uint32_t 
         {
           // if current remain extends cannot fulfill the requirement for extends
           Time remainTime = Simulator::GetDelayLeft (m_extendEvent);
-          uint32_t remainExtends = remainTime / m_coordinator->GetSyncInterval ();
+          uint32_t remainExtends = (remainTime / m_coordinator->GetSyncInterval ()).GetHigh ();
           if (remainExtends > extends)
             {
               return true;

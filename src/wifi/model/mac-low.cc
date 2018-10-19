@@ -1462,7 +1462,7 @@ MacLow::ForwardDown (Ptr<const Packet> packet, const WifiMacHeader* hdr, WifiTxV
             }
           if (queueSize > 1)
             {
-              NS_ASSERT (remainingAmpduDuration > 0);
+              NS_ASSERT (remainingAmpduDuration > Time (0));
               delay = delay + mpduDuration;
             }
 

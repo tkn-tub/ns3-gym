@@ -111,7 +111,7 @@ TcpHyblaIncrementTest::DoRun ()
 
   NS_TEST_ASSERT_MSG_NE (m_rho, 0.0,
                          "Rho never updated by implementation");
-  NS_TEST_ASSERT_MSG_EQ_TOL (calcRho, m_rho, MilliSeconds (10),
+  NS_TEST_ASSERT_MSG_EQ_TOL (calcRho, m_rho, 0.01,
                          "Different rho values between implementation and test");
 
   cong->IncreaseWindow (m_state, 1);
