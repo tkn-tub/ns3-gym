@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import gym
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
@@ -10,10 +13,10 @@ env = gym.make('ns3-v0')
 ob_space = env.observation_space
 ac_space = env.action_space
 print("Observation space: ", ob_space,  ob_space.dtype)
-print("Action space: ", ac_space, ac_space.dtype)
+print("Action space: ", ac_space, ac_space.n)
 
 s_size = ob_space.shape[0]
-a_size = ac_space.shape[0]
+a_size = ac_space.n
 model = keras.Sequential()
 model.add(keras.layers.Dense(s_size, input_shape=(s_size,), activation='relu'))
 model.add(keras.layers.Dense(a_size, activation='softmax'))
@@ -46,9 +49,7 @@ for e in range(total_episodes):
             action = np.argmax(model.predict(state)[0])
 
         # Step
-        actionVec = a_size * [0]
-        actionVec[action] = 1
-        next_state, reward, done, _ = env.step(actionVec)
+        next_state, reward, done, _ = env.step(action)
 
         if done:
             print("episode: {}/{}, time: {}, rew: {}, eps: {:.2}"
@@ -59,9 +60,9 @@ for e in range(total_episodes):
 
         # Train
         target = reward
-        # if not done:
-        #     target = (reward + 0.95 *
-        #               np.amax(model.predict(next_state)[0]))
+        if not done:
+            target = (reward + 0.95 * np.amax(model.predict(next_state)[0]))
+
         target_f = model.predict(state)
         target_f[0][action] = target
         model.fit(state, target_f, epochs=1, verbose=0)

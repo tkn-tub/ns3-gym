@@ -79,12 +79,8 @@ Ptr<OpenGymSpace>
 MyGymEnv::GetActionSpace()
 {
   NS_LOG_FUNCTION (this);
-  float low = 0.0;
-  float high = 1.0;
-  std::vector<uint32_t> shape = {m_channelNum,};
-  std::string dtype = TypeNameGet<uint32_t> ();
-  Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("GetActionSpace: " << *space);
+  Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (m_channelNum);
+  NS_LOG_UNCOND ("GetActionSpace: " << space);
   return space;
 }
 
@@ -97,7 +93,7 @@ MyGymEnv::GetObservationSpace()
   std::vector<uint32_t> shape = {m_channelNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("GetObservationSpace: " << *space);
+  NS_LOG_UNCOND ("GetObservationSpace: " << space);
   return space;
 }
 
@@ -125,15 +121,12 @@ MyGymEnv::GetObservation()
   std::vector<uint32_t> shape = {m_channelNum,};
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
 
-  std::string obsString = "[";
   for (uint32_t i = 0; i < m_channelOccupation.size(); ++i) {
     uint32_t value = m_channelOccupation.at(i);
     box->AddValue(value);
-    obsString += std::to_string(value) +",";
   }
-  obsString += "]";
 
-  NS_LOG_UNCOND ("MyGetObservation: " << obsString);
+  NS_LOG_UNCOND ("MyGetObservation: " << box);
   return box;
 }
 
@@ -171,17 +164,10 @@ bool
 MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   NS_LOG_FUNCTION (this);
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
-  std::vector<uint32_t> actionVector = box->GetData();
+  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(action);
+  uint32_t nextChannel = discrete->GetValue();
+  m_currentChannel = nextChannel;
 
-  for (uint32_t i=0; i<actionVector.size(); i++) {
-    uint32_t value = actionVector.at(i);
-    if (value == 1)
-    {
-      m_currentChannel = i;
-      break;
-    }
-  }
   NS_LOG_UNCOND ("Current Channel: " << m_currentChannel);
   return true;
 }
