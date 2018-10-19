@@ -296,8 +296,14 @@ OpenGymTupleContainer::Add(Ptr<OpenGymDataContainer> space)
 Ptr<OpenGymDataContainer>
 OpenGymTupleContainer::Get(uint32_t idx)
 {
-  Ptr<OpenGymDataContainer> ptr;
-  return ptr;
+  Ptr<OpenGymDataContainer> data;
+
+  if (idx < m_tuple.size())
+  {
+    data = m_tuple.at(idx);
+  }
+
+  return data;
 }
 
 void
@@ -389,8 +395,12 @@ OpenGymDictContainer::Add(std::string key, Ptr<OpenGymDataContainer> data)
 Ptr<OpenGymDataContainer>
 OpenGymDictContainer::Get(std::string key)
 {
-  Ptr<OpenGymDataContainer> ptr;
-  return ptr;
+  Ptr<OpenGymDataContainer> data;
+  std::map< std::string, Ptr<OpenGymDataContainer> >::iterator it = m_dict.find(key);
+  if ( it != m_dict.end() ) {
+    data = it->second;
+  }
+  return data;
 }
 
 void
