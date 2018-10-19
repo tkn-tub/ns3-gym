@@ -44,7 +44,7 @@ Ptr<OpenGymSpace> MyGetObservationSpace(void)
   space->Add("box", box);
   space->Add("discrete", discrete);
 
-  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
+  NS_LOG_UNCOND ("MyGetObservationSpace: " << space);
   return space;
 }
 
@@ -72,7 +72,7 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
   space->Add("box", box);
   space->Add("discrete", discrete);
 
-  NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
+  NS_LOG_UNCOND ("MyGetActionSpace: " << space);
   return space;
 }
 

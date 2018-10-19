@@ -34,14 +34,13 @@ Ptr<OpenGymSpace> MyGetObservationSpace(void)
   uint32_t nodeNum = 5;
   /*
   Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
   */
   float low = 0.0;
   float high = 10.0;
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("MyGetObservationSpace: " << *space);
+  NS_LOG_UNCOND ("MyGetObservationSpace: " << space);
   return space;
 }
 
@@ -53,15 +52,14 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
   uint32_t nodeNum = 5;
 
   Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-  NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
   /*
   float low = 0.0;
   float high = 100.0;
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("MyGetActionSpace: " << *space);
   */
+  NS_LOG_UNCOND ("MyGetActionSpace: " << space);
   return space;
 }
 
@@ -96,13 +94,10 @@ Ptr<OpenGymDataContainer> MyGetObservation(void)
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
 
   // generate random data
-  std::string obsString = "[";
   for (uint32_t i = 0; i<nodeNum; i++){
     uint32_t value = rngInt->GetInteger(low, high);
     box->AddValue(value);
-    obsString += std::to_string(value) +",";
   }
-  obsString += "]";
 
   NS_LOG_UNCOND ("MyGetObservation: " << box);
   return box;
@@ -111,7 +106,6 @@ Ptr<OpenGymDataContainer> MyGetObservation(void)
   Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>(nodeNum);
   uint32_t value = rngInt->GetInteger(low, high);
   discrete->SetValue(value);
-  NS_LOG_UNCOND ("MyGetObservation: " << discrete->GetValue());
   return discrete;
   */
 }
@@ -146,14 +140,6 @@ bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
   /*
   Ptr<OpenGymContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
   std::vector<uint32_t> actionVector = box->GetData();
-
-  std::string actionString  = "[";
-  for (auto i = actionVector.begin(); i != actionVector.end(); ++i)
-  {
-    actionString += std::to_string(*i) +",";
-  }
-  actionString += "]";
-  NS_LOG_UNCOND ("MyExecuteActions: " << actionString);
   */
 
   Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(action);

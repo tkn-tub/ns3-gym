@@ -90,7 +90,7 @@ MyGymEnv::GetActionSpace()
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("GetActionSpace: " << *space);
+  NS_LOG_UNCOND ("GetActionSpace: " << space);
   return space;
 }
 
@@ -104,7 +104,7 @@ MyGymEnv::GetObservationSpace()
   std::vector<uint32_t> shape = {nodeNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("GetObservationSpace: " << *space);
+  NS_LOG_UNCOND ("GetObservationSpace: " << space);
   return space;
 }
 
@@ -139,17 +139,14 @@ MyGymEnv::GetObservation()
   std::vector<uint32_t> shape = {nodeNum,};
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
 
-  std::string obsString = "[";
   for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); ++i) {
     Ptr<Node> node = *i;
     Ptr<WifiMacQueue> queue = GetQueue (node);
     uint32_t value = queue->GetNPackets();
     box->AddValue(value);
-    obsString += std::to_string(value) +",";
   }
-  obsString += "]";
 
-  NS_LOG_UNCOND ("MyGetObservation: " << obsString);
+  NS_LOG_UNCOND ("MyGetObservation: " << box);
   return box;
 }
 
@@ -204,20 +201,17 @@ bool
 MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   NS_LOG_FUNCTION (this);
+  NS_LOG_UNCOND ("MyExecuteActions: " << action);
   Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
   std::vector<uint32_t> actionVector = box->GetData();
 
-  std::string actionString  = "[";
   uint32_t nodeNum = NodeList::GetNNodes ();
   for (uint32_t i=0; i<nodeNum; i++)
   {
     Ptr<Node> node = NodeList::GetNode(i);
     uint32_t cwSize = actionVector.at(i);
     SetCw(node, cwSize, cwSize);
-    actionString += std::to_string(cwSize) +",";
   }
-  actionString += "]";
-  NS_LOG_UNCOND ("MyExecuteActions: " << actionString);
 
   return true;
 }

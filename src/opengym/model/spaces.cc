@@ -130,13 +130,6 @@ OpenGymDiscreteSpace::Print(std::ostream& where) const
   where << " DiscreteSpace N: " << m_n;
 }
 
-std::ostream& operator<< (std::ostream& os, const OpenGymDiscreteSpace& space)
-{
-  space.Print(os);
-  return os;
-}
-
-
 TypeId
 OpenGymBoxSpace::GetTypeId (void)
 {
@@ -256,12 +249,6 @@ OpenGymBoxSpace::Print(std::ostream& where) const
   where << ") Dtype: " << m_dtypeName;
 }
 
-std::ostream& operator<< (std::ostream& os, const OpenGymBoxSpace& box)
-{
-  box.Print(os);
-  return os;
-}
-
 
 TypeId
 OpenGymTupleSpace::GetTypeId (void)
@@ -343,12 +330,6 @@ OpenGymTupleSpace::Print(std::ostream& where) const
     (*i)->Print(where);
     where << std::endl;
   }
-}
-
-std::ostream& operator<< (std::ostream& os, const OpenGymTupleSpace& tuple)
-{
-  tuple.Print(os);
-  return os;
 }
 
 
@@ -444,12 +425,6 @@ OpenGymDictSpace::Print(std::ostream& where) const
     it->second->Print(where);
     where << std::endl;
   }
-}
-
-std::ostream& operator<< (std::ostream& os, const OpenGymDictSpace& dict)
-{
-  dict.Print(os);
-  return os;
 }
 
 }

@@ -80,7 +80,7 @@ MyGymEnv::GetActionSpace()
 {
   NS_LOG_FUNCTION (this);
   Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (m_channelNum);
-  NS_LOG_UNCOND ("GetActionSpace: " << *space);
+  NS_LOG_UNCOND ("GetActionSpace: " << space);
   return space;
 }
 
@@ -93,7 +93,7 @@ MyGymEnv::GetObservationSpace()
   std::vector<uint32_t> shape = {m_channelNum,};
   std::string dtype = TypeNameGet<uint32_t> ();
   Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  NS_LOG_UNCOND ("GetObservationSpace: " << *space);
+  NS_LOG_UNCOND ("GetObservationSpace: " << space);
   return space;
 }
 
@@ -121,15 +121,12 @@ MyGymEnv::GetObservation()
   std::vector<uint32_t> shape = {m_channelNum,};
   Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
 
-  std::string obsString = "[";
   for (uint32_t i = 0; i < m_channelOccupation.size(); ++i) {
     uint32_t value = m_channelOccupation.at(i);
     box->AddValue(value);
-    obsString += std::to_string(value) +",";
   }
-  obsString += "]";
 
-  NS_LOG_UNCOND ("MyGetObservation: " << obsString);
+  NS_LOG_UNCOND ("MyGetObservation: " << box);
   return box;
 }
 
