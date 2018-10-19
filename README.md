@@ -23,9 +23,9 @@ apt-get install libzmq5 libzmq5-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
-3. Install PyOpenGymNs3 located in src/opengym/model/PyOpenGymNs3 (Python3 required)
+3. Install ns3gym located in src/opengym/model/ns3gym (Python3 required)
 ```
-pip3 install ./src/opengym/model/PyOpenGymNs3
+pip3 install ./src/opengym/model/ns3gym
 ```
 4. Configure and build ns-3 project:
 ```
@@ -50,7 +50,7 @@ All examples can be found [here](./examples/opengym/).
 1. Example Python script. Note, that `gym.make('ns3-v0')` starts ns-3 simulation script located in current working directory.
 ```
 import gym
-import PyOpenGymNs3
+import ns3gym
 import MyAgent
 
 env = gym.make('ns3-v0')

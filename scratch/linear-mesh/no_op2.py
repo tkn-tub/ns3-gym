@@ -5,7 +5,7 @@ import time
 import gym
 import os
 import numpy as np
-from PyOpenGymNs3 import ns3env
+from ns3gym import ns3env
 import matplotlib.pyplot as plt
 
 # Environment initialization

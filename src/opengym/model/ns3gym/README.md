@@ -1,4 +1,4 @@
-PyOpenGymNs3
-===========
+ns3gym
+======
 
 OpenAI Gym meets ns-3

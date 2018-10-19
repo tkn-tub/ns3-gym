@@ -1,17 +1,10 @@
 import argparse
-from PyOpenGymNs3 import ns3env
+from ns3gym import ns3env
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2018, Technische Universität Berlin"
 __version__ = "0.1.0"
 __email__ = "gawlowicz@tkn.tu-berlin.de"
-
-
-# TODO: integrate with openGym lib, like:
-# import gym
-# env = gym.make('ns3-linear-wireless-mesh')
-# env.reset()
-# env.render()
 
 
 parser = argparse.ArgumentParser(description='Start simulation script on/off')

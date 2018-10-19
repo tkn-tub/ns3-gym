@@ -7,7 +7,7 @@ def readme():
 
 
 setup(
-    name='PyOpenGymNs3',
+    name='ns3gym',
     version='0.1.0',
     packages=find_packages(),
     scripts=[],
