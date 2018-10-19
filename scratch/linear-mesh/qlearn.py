@@ -37,8 +37,8 @@ episodes = 10
 # Episodes
 for episode in range(episodes):
     # Refresh state
-    state, reward, done, info = env.reset()
-    #print('state:', state, reward, done)
+    state = env.reset()
+    #print('state:', state)
     state = np.uint(np.array(state, dtype=np.uint32) / 10)
     done = False
     t_reward = 0
