@@ -214,6 +214,7 @@ def build(bld):
         'model/des-metrics.cc',
         'model/node-printer.cc',
         'model/time-printer.cc',
+        'model/show-progress.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -329,6 +330,7 @@ def build(bld):
         'model/des-metrics.h',
         'model/node-printer.h',
         'model/time-printer.h',
+        'model/show-progress.h',
         ]
 
     if sys.platform == 'win32':
