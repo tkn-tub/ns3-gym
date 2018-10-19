@@ -117,12 +117,6 @@ MyGymEnv::GetActionSpace()
   Ptr<OpenGymDiscreteSpace> discrete = CreateObject<OpenGymDiscreteSpace> (nodeNum);
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
 
-  /*
-  Ptr<OpenGymTupleSpace> space = CreateObject<OpenGymTupleSpace> ();
-  space->Add(discrete);
-  space->Add(box);
-  */
-
   Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
   space->Add("box", box);
   space->Add("discrete", discrete);
@@ -172,17 +166,17 @@ MyGymEnv::GetObservation()
   uint32_t value = rngInt->GetInteger(low, high);
   discrete->SetValue(value);
 
-  /*
-  Ptr<OpenGymDictContainer> data = CreateObject<OpenGymDictContainer> ();
-  data->Add("box", box);
-  data->Add("discrete", discrete);
-  */
-
   Ptr<OpenGymTupleContainer> data = CreateObject<OpenGymTupleContainer> ();
   data->Add(box);
   data->Add(discrete);
 
+  // Print data from tuple
+  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get(0));
+  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get(1));
   NS_LOG_UNCOND ("MyGetObservation: " << data);
+  NS_LOG_UNCOND ("---" << mbox);
+  NS_LOG_UNCOND ("---" << mdiscrete);
+
   return data;
 }
 
@@ -215,11 +209,13 @@ Execute received actions
 bool
 MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
+  Ptr<OpenGymDictContainer> dict = DynamicCast<OpenGymDictContainer>(action);
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("box"));
+  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("discrete"));
+
   NS_LOG_UNCOND ("MyExecuteActions: " << action);
-  /*
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
-  std::vector<uint32_t> actionVector = box->GetData();
-  */
+  NS_LOG_UNCOND ("---" << box);
+  NS_LOG_UNCOND ("---" << discrete);
   return true;
 }
 

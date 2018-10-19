@@ -32,9 +32,6 @@ Define observation space
 Ptr<OpenGymSpace> MyGetObservationSpace(void)
 {
   uint32_t nodeNum = 5;
-  /*
-  Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-  */
   float low = 0.0;
   float high = 10.0;
   std::vector<uint32_t> shape = {nodeNum,};
@@ -52,13 +49,6 @@ Ptr<OpenGymSpace> MyGetActionSpace(void)
   uint32_t nodeNum = 5;
 
   Ptr<OpenGymDiscreteSpace> space = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-  /*
-  float low = 0.0;
-  float high = 100.0;
-  std::vector<uint32_t> shape = {nodeNum,};
-  std::string dtype = TypeNameGet<uint32_t> ();
-  Ptr<OpenGymBoxSpace> space = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-  */
   NS_LOG_UNCOND ("MyGetActionSpace: " << space);
   return space;
 }
@@ -101,13 +91,6 @@ Ptr<OpenGymDataContainer> MyGetObservation(void)
 
   NS_LOG_UNCOND ("MyGetObservation: " << box);
   return box;
-
-  /*
-  Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>(nodeNum);
-  uint32_t value = rngInt->GetInteger(low, high);
-  discrete->SetValue(value);
-  return discrete;
-  */
 }
 
 /*
@@ -137,11 +120,6 @@ Execute received actions
 */
 bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
 {
-  /*
-  Ptr<OpenGymContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
-  std::vector<uint32_t> actionVector = box->GetData();
-  */
-
   Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(action);
   NS_LOG_UNCOND ("MyExecuteActions: " << action);
   return true;
@@ -158,7 +136,7 @@ main (int argc, char *argv[])
 {
   // Parameters of the scenario
   uint32_t simSeed = 1;
-  double simulationTime = 10; //seconds
+  double simulationTime = 1; //seconds
   double envStepTime = 0.1; //seconds, ns3gym env step time interval
   uint32_t openGymPort = 5555;
   uint32_t testArg = 0;
