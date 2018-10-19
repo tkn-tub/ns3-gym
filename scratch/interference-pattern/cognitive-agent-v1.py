@@ -60,9 +60,9 @@ for e in range(total_episodes):
 
         # Train
         target = reward
-        # if not done:
-        #     target = (reward + 0.95 *
-        #               np.amax(model.predict(next_state)[0]))
+        if not done:
+            target = (reward + 0.95 * np.amax(model.predict(next_state)[0]))
+
         target_f = model.predict(state)
         target_f[0][action] = target
         model.fit(state, target_f, epochs=1, verbose=0)
