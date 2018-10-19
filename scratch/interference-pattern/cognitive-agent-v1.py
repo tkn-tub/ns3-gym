@@ -5,6 +5,7 @@ import gym
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from tensorflow import keras
 from ns3gym import ns3env
@@ -85,8 +86,18 @@ for e in range(total_episodes):
 #print(model.to_json())
 #print(model.get_weights())
 
-plt.plot(range(len(time_history)), time_history)
-plt.plot(range(len(rew_history)), rew_history)
+print("Plot Learning Performance")
+mpl.rcdefaults()
+mpl.rcParams.update({'font.size': 16})
+
+fig, ax = plt.subplots(figsize=(10,4))
+plt.grid(True, linestyle='--')
+plt.title('Learning Performance')
+plt.plot(range(len(time_history)), time_history, label='Steps', marker="^", linestyle=":")#, color='red')
+plt.plot(range(len(rew_history)), rew_history, label='Reward', marker="", linestyle="-")#, color='k')
 plt.xlabel('Episode')
 plt.ylabel('Time')
+plt.legend(prop={'size': 12})
+
+plt.savefig('learning.pdf', bbox_inches='tight')
 plt.show()
