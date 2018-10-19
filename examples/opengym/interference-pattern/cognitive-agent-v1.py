@@ -4,7 +4,7 @@ import tensorflow.contrib.slim as slim
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow import keras
-from PyOpenGymNs3 import ns3env
+from ns3gym import ns3env
 
 env = gym.make('ns3-v0')
 ob_space = env.observation_space

@@ -10,9 +10,9 @@ from gym import spaces
 from gym.utils import seeding
 from enum import IntEnum
 
-from PyOpenGymNs3.start_sim import start_sim_script
+from ns3gym.start_sim import start_sim_script
 
-import PyOpenGymNs3.messages_pb2 as pb
+import ns3gym.messages_pb2 as pb
 from google.protobuf.any_pb2 import Any
 
 

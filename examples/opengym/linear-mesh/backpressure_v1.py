@@ -4,7 +4,7 @@
 import argparse
 import time
 import numpy as np
-from PyOpenGymNs3 import ns3env
+from ns3gym import ns3env
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2018, Technische Universität Berlin"
