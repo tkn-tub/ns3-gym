@@ -39,7 +39,7 @@
 #define NS_LOG_APPEND_TIME_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_TIME))                   \
     {                                                           \
-      ns3::LogTimePrinter printer = ns3::LogGetTimePrinter ();  \
+      ns3::TimePrinter printer = ns3::LogGetTimePrinter ();     \
       if (printer != 0)                                         \
         {                                                       \
           (*printer)(std::clog);                                \
@@ -56,7 +56,7 @@
 #define NS_LOG_APPEND_NODE_PREFIX                               \
   if (g_log.IsEnabled (ns3::LOG_PREFIX_NODE))                   \
     {                                                           \
-      ns3::LogNodePrinter printer = ns3::LogGetNodePrinter ();  \
+      ns3::NodePrinter printer = ns3::LogGetNodePrinter ();     \
       if (printer != 0)                                         \
         {                                                       \
           (*printer)(std::clog);                                \

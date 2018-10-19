@@ -212,6 +212,8 @@ def build(bld):
         'model/hash-fnv.cc',
         'model/hash.cc',
         'model/des-metrics.cc',
+        'model/node-printer.cc',
+        'model/time-printer.cc',
         ]
 
     core_test = bld.create_ns3_module_test_library('core')
@@ -325,6 +327,8 @@ def build(bld):
         'model/non-copyable.h',
         'model/build-profile.h',
         'model/des-metrics.h',
+        'model/node-printer.h',
+        'model/time-printer.h',
         ]
 
     if sys.platform == 'win32':

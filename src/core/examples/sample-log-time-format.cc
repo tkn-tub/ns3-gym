@@ -95,7 +95,7 @@ using namespace ns3;
 namespace {
   
 /**
- * Pre-ns-3.26 LogTimePrinter equivalent.
+ * Pre-ns-3.26 TimePrinter equivalent (was called LogTimePrinter).
  * 
  * Prior to ns-3.26, the time printer used default C++ iostream precision
  * This function sets it back to the format used before ns-3.26
