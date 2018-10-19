@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 # Environment initialization
 port = 5551
-simTime = 20 # seconds
+simTime = 10 # seconds
 startSim = True
 stepTime = 0.1 # seconds
 seed = 0
@@ -66,12 +66,12 @@ size = episodes
 #chunks = list(chunk_list(rewards, size))
 rewards = np.array(rewards)
 print("mean value: ", np.mean(rewards), " std:", np.std(rewards),)
-chunks = np.array_split(rewards, size)
+#chunks = np.array_split(rewards, size)
 #chunks = chunks_func(rewards, size)
-averages = [sum(chunk) / len(chunk) for chunk in chunks]
+#averages = [sum(chunk) / len(chunk) for chunk in chunks]
 
 
-plt.plot(averages)
+plt.plot(rewards)
 plt.xlabel('Episode')
 plt.ylabel('Average Reward')
 plt.show()
