@@ -34,7 +34,7 @@ def get_no_op_action(obs):
 # Episodes
 for episode in range(episodes):
     # Refresh state
-    state, reward, done, info = env.reset()
+    state = env.reset()
     done = False
     t_reward = 0
 

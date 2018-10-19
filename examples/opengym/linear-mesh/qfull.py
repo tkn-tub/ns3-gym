@@ -61,7 +61,7 @@ for episode in range(episodes):
         env.simSeed = 0 # random seed
         learning = False
 
-    state, reward, done, info = env.reset()
+    state = env.reset()
     state = np.uint(np.array(state, dtype=np.uint32) / factor)
     state = state[1:-1]
     done = False

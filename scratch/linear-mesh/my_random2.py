@@ -29,7 +29,7 @@ episodes = 10
 # Episodes
 for episode in range(episodes):
     # Refresh state
-    state, reward, done, info = env.reset()
+    state = env.reset()
     done = False
     t_reward = 0
 

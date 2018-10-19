@@ -45,7 +45,7 @@ def calculate_q_diff(obs):
 # Episodes
 for episode in range(episodes):
     # Refresh state
-    state, reward, done, info = env.reset()
+    state = env.reset()
     state = np.uint(np.array(state, dtype=np.uint32) / 25)
     state = state[1:-1]
     done = False

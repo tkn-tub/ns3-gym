@@ -34,7 +34,7 @@ rew_history = []
 
 for e in range(total_episodes):
 
-    state, reward, done, info = env.reset()
+    state = env.reset()
     state = np.reshape(state, [1, s_size])
     rewardsum = 0
     for time in range(max_env_steps):

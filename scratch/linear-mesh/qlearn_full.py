@@ -44,7 +44,7 @@ def calculate_q_diff(obs):
 # Episodes
 for episode in range(episodes):
     # Refresh state
-    state, reward, done, info = env.reset()
+    state = env.reset()
 
     #state = calculate_q_diff(state)
     done = False

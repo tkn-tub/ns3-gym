@@ -47,9 +47,9 @@ currIt = 0
 try:
     while True:
         print("Start iteration: ", currIt)
-        obs, reward, done, info = env.reset()
+        obs = env.reset()
         print("Step: ", stepIdx)
-        print("---obs, reward, done, info: ", obs, reward, done, info)
+        print("---obs: ", obs)
 
         while True:
             stepIdx += 1

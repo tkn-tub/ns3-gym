@@ -57,11 +57,11 @@ def calculate_cw_window(obs):
 
 try:
     while True:
-        obs, reward, done, info = env.reset()
-
+        obs = env.reset()
+        reward = 0
         print("Start iteration: ", currIt)
         print("Step: ", stepIdx)
-        print("---obs, reward, done, info: ", obs, reward, done, info)
+        print("---obs: ", obs)
 
         while True:
             stepIdx += 1

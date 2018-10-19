@@ -22,9 +22,9 @@ print("Action space: ", ac_space, ac_space.dtype)
 stepIdx = 0
 
 try:
-    obs, reward, done, info = env.reset()
+    obs = env.reset()
     print("Step: ", stepIdx)
-    print("---obs, reward, done, info: ", obs, reward, done, info)
+    print("---obs: ", obs)
 
     while True:
         stepIdx += 1
