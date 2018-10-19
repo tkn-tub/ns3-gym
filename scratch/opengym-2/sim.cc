@@ -21,155 +21,11 @@
 
 #include "ns3/core-module.h"
 #include "ns3/opengym-module.h"
+#include "mygym.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("OpenGym");
-
-/*
-Define observation space
-*/
-Ptr<OpenGymSpace> MyGetObservationSpace(void)
-{
-  uint32_t nodeNum = 5;
-  float low = 0.0;
-  float high = 10.0;
-  std::vector<uint32_t> shape = {nodeNum,};
-  std::string dtype = TypeNameGet<uint32_t> ();
-
-  Ptr<OpenGymDiscreteSpace> discrete = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-  Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-
-  Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-  space->Add("box", box);
-  space->Add("discrete", discrete);
-
-  NS_LOG_UNCOND ("MyGetObservationSpace: " << space);
-  return space;
-}
-
-/*
-Define action space
-*/
-Ptr<OpenGymSpace> MyGetActionSpace(void)
-{
-  uint32_t nodeNum = 5;
-  float low = 0.0;
-  float high = 10.0;
-  std::vector<uint32_t> shape = {nodeNum,};
-  std::string dtype = TypeNameGet<uint32_t> ();
-
-  Ptr<OpenGymDiscreteSpace> discrete = CreateObject<OpenGymDiscreteSpace> (nodeNum);
-  Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
-
-  /*
-  Ptr<OpenGymTupleSpace> space = CreateObject<OpenGymTupleSpace> ();
-  space->Add(discrete);
-  space->Add(box);
-  */
-
-  Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-  space->Add("box", box);
-  space->Add("discrete", discrete);
-
-  NS_LOG_UNCOND ("MyGetActionSpace: " << space);
-  return space;
-}
-
-/*
-Define game over condition
-*/
-bool MyGetGameOver(void)
-{
-
-  bool isGameOver = false;
-  bool test = false;
-  static float stepCounter = 0.0;
-  stepCounter += 1;
-  if (stepCounter == 10 && test) {
-      isGameOver = true;
-  }
-  NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
-  return isGameOver;
-}
-
-/*
-Collect observations
-*/
-Ptr<OpenGymDataContainer> MyGetObservation(void)
-{
-  uint32_t nodeNum = 5;
-  uint32_t low = 0.0;
-  uint32_t high = 10.0;
-  Ptr<UniformRandomVariable> rngInt = CreateObject<UniformRandomVariable> ();
-
-  std::vector<uint32_t> shape = {nodeNum,};
-  Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
-
-  // generate random data
-  for (uint32_t i = 0; i<nodeNum; i++){
-    uint32_t value = rngInt->GetInteger(low, high);
-    box->AddValue(value);
-  }
-
-  Ptr<OpenGymDiscreteContainer> discrete = CreateObject<OpenGymDiscreteContainer>(nodeNum);
-  uint32_t value = rngInt->GetInteger(low, high);
-  discrete->SetValue(value);
-
-  /*
-  Ptr<OpenGymDictContainer> data = CreateObject<OpenGymDictContainer> ();
-  data->Add("box", box);
-  data->Add("discrete", discrete);
-  */
-  
-  Ptr<OpenGymTupleContainer> data = CreateObject<OpenGymTupleContainer> ();
-  data->Add(box);
-  data->Add(discrete);
-
-  NS_LOG_UNCOND ("MyGetObservation: " << data);
-  return data;
-}
-
-/*
-Define reward function
-*/
-float MyGetReward(void)
-{
-  static float reward = 0.0;
-  reward += 1;
-  return reward;
-}
-
-/*
-Define extra info. Optional
-*/
-std::string MyGetExtraInfo(void)
-{
-  std::string myInfo = "testInfo";
-  myInfo += "|123";
-  NS_LOG_UNCOND("MyGetExtraInfo: " << myInfo);
-  return myInfo;
-}
-
-
-/*
-Execute received actions
-*/
-bool MyExecuteActions(Ptr<OpenGymDataContainer> action)
-{
-  NS_LOG_UNCOND ("MyExecuteActions: " << action);
-  /*
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(action);
-  std::vector<uint32_t> actionVector = box->GetData();
-  */
-  return true;
-}
-
-void ScheduleNextStateRead(double envStepTime, Ptr<OpenGymInterface> openGym)
-{
-  Simulator::Schedule (Seconds(envStepTime), &ScheduleNextStateRead, envStepTime, openGym);
-  openGym->NotifyCurrentState();
-}
 
 int
 main (int argc, char *argv[])
@@ -201,22 +57,16 @@ main (int argc, char *argv[])
   RngSeedManager::SetRun (simSeed);
 
   // OpenGym Env
-  Ptr<OpenGymInterface> openGym = CreateObject<OpenGymInterface> (openGymPort);
-  openGym->SetGetActionSpaceCb( MakeCallback (&MyGetActionSpace) );
-  openGym->SetGetObservationSpaceCb( MakeCallback (&MyGetObservationSpace) );
-  openGym->SetGetGameOverCb( MakeCallback (&MyGetGameOver) );
-  openGym->SetGetObservationCb( MakeCallback (&MyGetObservation) );
-  openGym->SetGetRewardCb( MakeCallback (&MyGetReward) );
-  openGym->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
-  openGym->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
-  Simulator::Schedule (Seconds(0.0), &ScheduleNextStateRead, envStepTime, openGym);
+  Ptr<OpenGymInterface> openGymInterface = CreateObject<OpenGymInterface> (openGymPort);
+  Ptr<MyGymEnv> myGymEnv = CreateObject<MyGymEnv> (Seconds(envStepTime));
+  myGymEnv->SetOpenGymInterface(openGymInterface);
 
   NS_LOG_UNCOND ("Simulation start");
   Simulator::Stop (Seconds (simulationTime));
   Simulator::Run ();
   NS_LOG_UNCOND ("Simulation stop");
 
-  openGym->NotifySimulationEnd();
+  openGymInterface->NotifySimulationEnd();
   Simulator::Destroy ();
 
 }
