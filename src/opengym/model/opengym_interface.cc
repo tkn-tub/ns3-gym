@@ -22,6 +22,7 @@
 #include <algorithm>
 #include "ns3/log.h"
 #include "ns3/node.h"
+#include "ns3/config.h"
 #include <boost/algorithm/string.hpp>
 
 #include "opengym_interface.h"
@@ -48,6 +49,35 @@ OpenGymInterface::GetTypeId (void)
   return tid;
 }
 
+Ptr<OpenGymInterface>
+OpenGymInterface::Get (uint32_t port)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  return *DoGet (port);
+}
+
+Ptr<OpenGymInterface> *
+OpenGymInterface::DoGet (uint32_t port)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  static Ptr<OpenGymInterface> ptr = 0;
+  if (ptr == 0)
+    {
+      ptr = CreateObject<OpenGymInterface> (port);
+      Config::RegisterRootNamespaceObject (ptr);
+      Simulator::ScheduleDestroy (&OpenGymInterface::Delete);
+    }
+  return &ptr;
+}
+
+void
+OpenGymInterface::Delete (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+  Config::UnregisterRootNamespaceObject (Get ());
+  (*DoGet ()) = 0;
+}
+
 OpenGymInterface::OpenGymInterface(uint32_t port):
   m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP),
   m_gameOver(false), m_simEnd(false), m_stopEnvRequested(false)
@@ -58,7 +88,8 @@ OpenGymInterface::OpenGymInterface(uint32_t port):
   m_rxGetReward = false;
   m_rxGetExtraInfo = false;
   m_rxSetActions = false;
-  Simulator::Schedule (Seconds(0.0), &OpenGymInterface::Init, this);
+  //we cannot schedule at 0.0 as all objects has to be created, hence delay of 1ms
+  Simulator::Schedule (Seconds(0.001), &OpenGymInterface::Init, this);
 }
 
 OpenGymInterface::~OpenGymInterface ()
