@@ -820,7 +820,7 @@ RealtimeSimulatorImpl::GetContext (void) const
 }
 
 uint64_t
-RealTimeSimulatorImpl::GetEventCount (void) const
+RealtimeSimulatorImpl::GetEventCount (void) const
 {
   return m_eventCount;
 }

@@ -36,7 +36,7 @@
 /**
  * \file
  * \ingroup realtime
- * ns3::RealTimeSimulatorImpl declaration.
+ * ns3::RealtimeSimulatorImpl declaration.
  */
 
 namespace ns3 {
