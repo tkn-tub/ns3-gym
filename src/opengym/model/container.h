@@ -107,9 +107,12 @@ public:
   }
 
   bool AddValue(T value);
+  T GetValue(uint32_t idx);
+
   bool SetData(std::vector<T> data);
-  std::vector<uint32_t> GetShape();
   std::vector<T> GetData();
+
+  std::vector<uint32_t> GetShape();
 
 protected:
   // Inherited
@@ -224,6 +227,18 @@ OpenGymBoxContainer<T>::AddValue(T value)
 {
   m_data.push_back(value);
   return true;
+}
+
+template <typename T>
+T
+OpenGymBoxContainer<T>::GetValue(uint32_t idx)
+{
+  T data = 0;
+  if (idx < m_data.size())
+  {
+    data = m_data.at(idx);
+  }
+  return data;
 }
 
 template <typename T>
