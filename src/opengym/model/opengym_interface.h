@@ -40,6 +40,8 @@ class OpenGymEnv;
 class OpenGymInterface : public Object
 {
 public:
+  static Ptr<OpenGymInterface> Get (uint32_t port=5555);
+
   OpenGymInterface (uint32_t port=5555);
   virtual ~OpenGymInterface ();
 
@@ -79,6 +81,9 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  static Ptr<OpenGymInterface> *DoGet (uint32_t port=5555);
+  static void Delete (void);
+
   uint32_t m_port;
   zmq::context_t m_zmq_context;
   zmq::socket_t m_zmq_socket;
