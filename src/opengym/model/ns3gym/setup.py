@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-from termcolor import colored
 import sys
 import os.path
 
@@ -7,8 +6,8 @@ cwd = os.getcwd()
 protobufFile = cwd + '/ns3gym/messages_pb2.py'
 
 if not os.path.isfile(protobufFile):
-    print(colored('File: ', 'red'), "ns3-gym/src/opengym/model/ns3gym/ns3gym/messages_pb2.py", colored(' was not found.', 'red'))
-    sys.exit('Protocol Buffer messages are missing. Please run ' + colored('./waf configure', 'green') + ' to generate the file')
+    print("File: ", "ns3-gym/src/opengym/model/ns3gym/ns3gym/messages_pb2.py", " was not found.")
+    sys.exit('Protocol Buffer messages are missing. Please run ./waf configure to generate the file')
 
 
 def readme():
