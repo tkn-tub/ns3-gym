@@ -27,7 +27,7 @@ apt-get install protobuf-compiler
 ```
 # Opengym Protocol Buffer messages (C++ and Python) are build during configure
 ./waf configure
-./waf
+./waf build
 ```
 
 4. Install ns3gym located in src/opengym/model/ns3gym (Python3 required)
@@ -42,6 +42,19 @@ pip3 install ./src/opengym/model/ns3gym
 cd ./scratch/opengym
 ./simple_test.py
 ```
+
+7. (Optional) Start ns-3 simulation script and Gym agent separately:
+
+Terminal 1
+```
+./waf --run "opengym"
+```
+Terminal 2
+```
+cd ./scratch/opengym
+./test.py
+```
+
 Examples
 ========
 
