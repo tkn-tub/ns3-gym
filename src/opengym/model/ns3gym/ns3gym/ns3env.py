@@ -65,9 +65,6 @@ class Ns3ZmqBridge(object):
         else:
             print("Waiting for simulation script to connect on port: tcp://localhost:{}".format(port))
 
-        time.sleep(1)
-
-
         self._action_space = None
         self._observation_space = None
 
