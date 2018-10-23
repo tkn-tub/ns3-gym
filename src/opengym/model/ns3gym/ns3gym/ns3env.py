@@ -10,7 +10,7 @@ from gym import spaces
 from gym.utils import seeding
 from enum import IntEnum
 
-from ns3gym.start_sim import start_sim_script
+from ns3gym.start_sim import start_sim_script, build_ns3_project
 
 import ns3gym.messages_pb2 as pb
 from google.protobuf.any_pb2 import Any
@@ -61,6 +61,9 @@ class Ns3ZmqBridge(object):
             self.simSeed = simSeed
 
         if self.startSim:
+            # check if build is required and build if so
+            build_ns3_project()
+            # run simulation script
             self.ns3Process = start_sim_script(port, simSeed, simArgs, debug)
         else:
             print("Waiting for simulation script to connect on port: tcp://localhost:{}".format(port))
