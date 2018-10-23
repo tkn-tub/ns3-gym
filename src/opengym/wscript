@@ -47,8 +47,9 @@ def configure(conf):
     try:
         pbSrcDir = "./src/opengym/model/"
         rc = subprocess.call("protoc -I="+pbSrcDir+" --cpp_out="+pbSrcDir+" "+pbSrcDir+"messages.proto", shell=True)
+        conf.msg("Build ns3gym Protobuf C++ messages", "Done")
         rc = subprocess.call("protoc -I="+pbSrcDir+" --python_out="+pbSrcDir+"ns3gym/ns3gym/ "+pbSrcDir+"messages.proto", shell=True)
-        conf.msg("Build ns3gym Protobuf messages", "Done")
+        conf.msg("Build ns3gym Protobuf Python messages", "Done")
     except Exception as e:
         conf.env['MODULES_NOT_BUILT'].append('opengym')
 
