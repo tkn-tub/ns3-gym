@@ -35,6 +35,26 @@ class Ns3ZmqBridge(object):
         self.wafPid = None
         self.ns3Process = None
 
+        context = zmq.Context()
+        self.socket = context.socket(zmq.REQ)
+        try:
+            if port == 0 and self.startSim:
+                port = self.socket.bind_to_random_port('tcp://*', min_port=5001, max_port=10000, max_tries=100)
+                print("Got new port for ns3gm interface: ", port)
+
+            elif port == 0 and not self.startSim:
+                print("Cannot use port %s to bind" % str(port) )
+                print("Please specify correct port" )
+                sys.exit()
+
+            else:
+                self.socket.bind ("tcp://*:%s" % str(port))
+
+        except Exception as e:
+            print("Cannot bind to tcp://*:%s as port is already in use" % str(port) )
+            print("Please specify different port or use 0 to get free port" )
+            sys.exit()
+
         if (startSim == True and simSeed == 0):
             maxSeed = np.iinfo(np.uint32).max
             simSeed = np.random.randint(0, maxSeed)
@@ -43,13 +63,10 @@ class Ns3ZmqBridge(object):
         if self.startSim:
             self.ns3Process = start_sim_script(port, simSeed, simArgs, debug)
         else:
-            print("Waiting for simulation script to connect")
+            print("Waiting for simulation script to connect on port: tcp://localhost:{}".format(port))
 
         time.sleep(1)
 
-        context = zmq.Context()
-        self.socket = context.socket(zmq.REQ)
-        self.socket.connect ("tcp://localhost:%s" % str(port))
 
         self._action_space = None
         self._observation_space = None
