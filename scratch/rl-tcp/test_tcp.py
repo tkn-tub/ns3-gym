@@ -25,12 +25,11 @@ startSim = bool(args.start)
 iterationNum = int(args.iterations)
 
 port = 5555
-simTime = 20 # seconds
+simTime = 10 # seconds
 stepTime = 0.5  # seconds
-seed = 0
-simArgs = {"--simTime": simTime,
-           "--testArg": 123}
-debug = False
+seed = 12
+simArgs = {"--duration": simTime,}
+debug = True
 
 env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
 # simpler:
