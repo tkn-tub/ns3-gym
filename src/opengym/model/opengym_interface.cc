@@ -181,11 +181,11 @@ void
 OpenGymInterface::Init()
 {
   NS_LOG_FUNCTION (this);
-  std::string bindAddr = "tcp://*:" + std::to_string(m_port);
-  zmq_bind ((void*)m_zmq_socket, bindAddr.c_str());
+  std::string connectAddr = "tcp://localhost:" + std::to_string(m_port);
+  zmq_connect ((void*)m_zmq_socket, connectAddr.c_str());
 
   NS_LOG_UNCOND("Simulation process id: " << ::getpid() << " (parent (waf shell) id: " << ::getppid() << ")");
-  NS_LOG_UNCOND("Waiting for Python process to connect");
+  NS_LOG_UNCOND("Waiting for Python process to connect on port: "<< connectAddr);
 
   bool rxInitReq = false;
   bool rxGetActionSpaceReq = false;
