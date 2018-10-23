@@ -23,16 +23,18 @@ apt-get install libzmq5 libzmq5-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
-3. Install ns3gym located in src/opengym/model/ns3gym (Python3 required)
+3. Configure and build ns-3 project:
 ```
-pip3 install ./src/opengym/model/ns3gym
-```
-4. Configure and build ns-3 project:
-```
-# Opengym Protobuf messages are build during configure
+# Opengym Protocol Buffer messages (C++ and Python) are build during configure
 ./waf configure
 ./waf
 ```
+
+4. Install ns3gym located in src/opengym/model/ns3gym (Python3 required)
+```
+pip3 install ./src/opengym/model/ns3gym
+```
+
 5. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
 
 6. Run example:
