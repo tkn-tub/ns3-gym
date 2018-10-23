@@ -390,7 +390,7 @@ main (int argc, char *argv[])
   openGymInterface->SetGetExtraInfoCb( MakeCallback (&MyGetExtraInfo) );
   openGymInterface->SetExecuteActionsCb( MakeCallback (&MyExecuteActions) );
 
-  Simulator::Schedule (Seconds(0.0), &ScheduleNextStateRead, envStepTime, openGymInterface);
+  Simulator::Schedule (Seconds(0.01), &ScheduleNextStateRead, envStepTime, openGymInterface);
 
   NS_LOG_UNCOND ("Simulation start");
   Simulator::Stop (Seconds (simulationTime));
