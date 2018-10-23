@@ -23,7 +23,7 @@ apt-get install libzmq5 libzmq5-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
-3. Configure and build ns-3 project:
+3. Configure and build ns-3 project (if you are going to use Python virtual environment, please execute these commands inside it):
 ```
 # Opengym Protocol Buffer messages (C++ and Python) are build during configure
 ./waf configure
