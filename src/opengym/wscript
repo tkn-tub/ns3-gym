@@ -16,26 +16,39 @@ def configure(conf):
 
     # check if protoc is installed
     conf.env['ENABLE_PROTOC'] = False
+
+    protoc_min_version = (3,0,0)
+    protoc = conf.find_program('protoc', var='PROTOC')
+
     try:
-        output = subprocess.check_output(['protoc', '--version']).decode("utf-8")
-        if "libprotoc" in output:
-            conf.env['ENABLE_PROTOC'] = True
-    except Exception as e:
-        pass
+        cmd= [protoc[0], '--version']
+        output = subprocess.check_output(cmd).decode("utf-8")
+        output = output.split(" ")[1].rstrip()
+        protoc_version = tuple(output.split('.'))
+        protoc_version = tuple(map(int, protoc_version))
+        conf.msg('Checking for protoc version', output)
+        conf.env['ENABLE_PROTOC'] = True
+    except Exception:
+        conf.fatal('Could not determine the protoc version %r'%protoc)
 
     if not conf.env['ENABLE_ZMQ'] or not conf.env['ENABLE_PROTOBUF'] or not conf.env['ENABLE_PROTOC']:
         conf.env['MODULES_NOT_BUILT'].append('opengym')
         return
+
+    # if protoc was found, check if version >= 3.0.0
+    if protoc_version < protoc_min_version:
+        conf.fatal('protoc version %s older than minimum supported version %s' %
+                ('.'.join(map(str, protoc_version)), '.'.join(map(str, protoc_min_version)) ))
 
     conf.env.append_value("LINKFLAGS", ["-lzmq", "-lprotobuf"])
     conf.env.append_value("LIB", ["zmq", "protobuf"])
 
     # build protobuff messages
     try:
-        print("Build ns3gym Protobuf messages")
         pbSrcDir = "./src/opengym/model/"
         rc = subprocess.call("protoc -I="+pbSrcDir+" --cpp_out="+pbSrcDir+" "+pbSrcDir+"messages.proto", shell=True)
         rc = subprocess.call("protoc -I="+pbSrcDir+" --python_out="+pbSrcDir+"ns3gym/ns3gym/ "+pbSrcDir+"messages.proto", shell=True)
+        conf.msg("Build ns3gym Protobuf messages", "Done")
     except Exception as e:
         conf.env['MODULES_NOT_BUILT'].append('opengym')
 
