@@ -51,6 +51,7 @@ try:
     while True:
         print("Start iteration: ", currIt)
         obs = env.reset()
+        reward = 0
         done = False
         info = None
         print("Step: ", stepIdx)
@@ -58,7 +59,7 @@ try:
 
         while True:
             stepIdx += 1
-            action = tcp.get_action(obs, done, info)
+            action = tcp.get_action(obs, reward, done, info)
             print("---action: ", action)
 
             print("Step: ", stepIdx)
