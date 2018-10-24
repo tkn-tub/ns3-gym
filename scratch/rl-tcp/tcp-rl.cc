@@ -67,11 +67,12 @@ TcpGymEnv::GetObservationSpace()
   //segmentSize
   //segmentsAcked
   //bytesInFlight
-  uint32_t parameterNum = 5;
+  //sim time in ms
+  uint32_t parameterNum = 6;
   float low = 0.0;
   float high = 1000000000.0;
   std::vector<uint32_t> shape = {parameterNum,};
-  std::string dtype = TypeNameGet<uint32_t> ();
+  std::string dtype = TypeNameGet<uint64_t> ();
 
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
   NS_LOG_UNCOND ("MyGetObservationSpace: " << box);
@@ -125,16 +126,18 @@ TcpGymEnv::GetObservation()
   //segmentSize
   //segmentsAcked
   //bytesInFlight
-  uint32_t parameterNum = 5;
+  //sim time in ms
+  uint32_t parameterNum = 6;
   std::vector<uint32_t> shape = {parameterNum,};
 
-  Ptr<OpenGymBoxContainer<uint32_t> > box = CreateObject<OpenGymBoxContainer<uint32_t> >(shape);
+  Ptr<OpenGymBoxContainer<uint64_t> > box = CreateObject<OpenGymBoxContainer<uint64_t> >(shape);
 
   box->AddValue(m_tcb->m_ssThresh);
   box->AddValue(m_tcb->m_cWnd);
   box->AddValue(m_tcb->m_segmentSize);
   box->AddValue(m_segmentsAcked);
   box->AddValue(m_bytesInFlight);
+  box->AddValue(Simulator::Now ().GetMilliSeconds ());
 
   // Print data
   NS_LOG_UNCOND ("MyGetObservation: " << box);
