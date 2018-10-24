@@ -43,7 +43,7 @@ cd ./scratch/opengym
 ./simple_test.py
 ```
 
-7. (Optional) Start ns-3 simulation script and Gym agent separately:
+7. (Optional) Start ns-3 simulation script and Gym agent separately (useful for debugging):
 
 Terminal 1
 ```
@@ -52,7 +52,7 @@ Terminal 1
 Terminal 2
 ```
 cd ./scratch/opengym
-./test.py
+./test.py --start=0
 ```
 
 Examples
