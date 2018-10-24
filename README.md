@@ -58,7 +58,7 @@ cd ./scratch/opengym
 Examples
 ========
 
-All examples can be found [here](./examples/opengym/).
+All examples can be found [here](./scratch/).
 
 ## Basic Interface
 
@@ -114,13 +114,38 @@ Our proposed RL mapping is:
 The figure below shows the learning performance when using a simple neural network with fully connected input and an output layer.
 We see that after around 80 episodes the agent is able to perfectly predict the next channel state from the current observation hence avoiding any collision with the interference.
 
-The full source code of the example can be found [here](./examples/opengym/interference-pattern/).
+The full source code of the example can be found [here](./scratch/interference-pattern/).
 
 <p align="center">
 <img src="src/opengym/doc/figures/cognitive-radio-learning.png" alt="drawing" width="600"/>
 </p>
 
 Note, that in a more realistic scenario the simple waveform generator in this example can be replaced by a real wireless technology like LTE unlicensed (LTE-U).
+
+
+## RL-TCP
+The proper RL-TCP agent example is still under development. However, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym interface -- see [here](./scratch/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement a RL-based TCP congetsion control algorithms.
+
+In order to run it, please execute:
+```
+cd ./scratch/rl-tcp
+./test_tcp.py 
+```
+
+Or in two terminals:
+```
+# Terminal 1:
+./waf --run "rl-tcp --transport_prot=TcpRl"
+
+# Terminal 2:
+cd ./scratch/rl-tcp/
+./test_tcp.py --start=0
+```
+
+Note, that it our Python TCP NewReno implementation achieves the same number of transmitted packets as the one implemented in ns3 (see output of ns-3 simulation, i.e. `RxPkts: 5265` in both cases). Please exacute the following command to cross-check:
+```
+./waf --run "rl-tcp --transport_prot=TcpNewReno"
+```
 
 Contact
 ============
