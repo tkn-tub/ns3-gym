@@ -95,8 +95,8 @@ def start_sim_script(port=5555, simSeed=0, simArgs={}, debug=False):
 		here, I use simple trick, i.e. if output of build contains {"Compiling","Linking"}
 		then the build is required and, hence, i put the output to the stdout
 		'''
-
-		ns3Proc = subprocess.Popen(wafString, shell=True, stdout=subprocess.PIPE, stderr=None, universal_newlines=True)
+		errorOutput = subprocess.DEVNULL
+		ns3Proc = subprocess.Popen(wafString, shell=True, stdout=subprocess.PIPE, stderr=errorOutput, universal_newlines=True)
 
 		buildRequired = False
 		lineHistory = []
