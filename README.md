@@ -43,14 +43,12 @@ cd ./scratch/opengym
 ./simple_test.py
 ```
 
-7. (Optional) Start ns-3 simulation script and Gym agent separately (useful for debugging):
-
-Terminal 1
+7. (Optional) Start ns-3 simulation script and Gym agent separately in two terminals (useful for debugging):
 ```
+# Terminal 1
 ./waf --run "opengym"
-```
-Terminal 2
-```
+
+# Terminal 2
 cd ./scratch/opengym
 ./test.py --start=0
 ```
