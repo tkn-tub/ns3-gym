@@ -29,7 +29,7 @@ simTime = 10 # seconds
 stepTime = 0.5  # seconds
 seed = 12
 simArgs = {"--duration": simTime,}
-debug = True
+debug = False
 
 env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
 # simpler:

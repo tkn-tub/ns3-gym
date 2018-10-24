@@ -43,6 +43,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("simSeed", "Seed for random generator. Default: 1", simSeed);
   // optional parameters
   cmd.AddValue ("simTime", "Simulation time in seconds. Default: 10s", simulationTime);
+  cmd.AddValue ("stepTime", "Gym Env step time in seconds. Default: 0.1s", envStepTime);
   cmd.AddValue ("testArg", "Extra simulation argument. Default: 0", testArg);
   cmd.Parse (argc, argv);
 
