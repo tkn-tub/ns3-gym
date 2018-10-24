@@ -13,7 +13,7 @@ class Tcp(object):
         self.obsSpace = obs
         self.actSpace = act
 
-    def get_action(self, obs, done, info):
+    def get_action(self, obs, reward, done, info):
         pass
 
 
@@ -22,7 +22,7 @@ class TcpNewReno(Tcp):
     def __init__(self):
         super(TcpNewReno, self).__init__()
 
-    def get_action(self, obs, done, info):
+    def get_action(self, obs, reward, done, info):
         ssThresh = obs[0]
         cWnd = obs[1]
         segmentSize = obs[2]
