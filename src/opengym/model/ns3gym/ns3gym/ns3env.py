@@ -24,8 +24,9 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 class Ns3ZmqBridge(object):
     """docstring for Ns3ZmqBridge"""
-    def __init__(self, port=5555, startSim=True, simSeed=0, simArgs={}, debug=False):
+    def __init__(self, port=0, startSim=True, simSeed=0, simArgs={}, debug=False):
         super(Ns3ZmqBridge, self).__init__()
+        port = int(port)
         self.port = port
         self.startSim = startSim
         self.simSeed = simSeed
@@ -448,7 +449,7 @@ class Ns3ZmqBridge(object):
 
 
 class Ns3Env(gym.Env):
-    def __init__(self, stepTime=0, port=5555, startSim=True, simSeed=0, simArgs={}, debug=False):
+    def __init__(self, stepTime=0, port=0, startSim=True, simSeed=0, simArgs={}, debug=False):
         self.stepTime = stepTime
         self.port = port
         self.startSim = startSim
