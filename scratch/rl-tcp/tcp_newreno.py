@@ -28,6 +28,7 @@ class TcpNewReno(Tcp):
         segmentSize = obs[2]
         segmentsAcked = obs[3]
         bytesInFlight  = obs[4]
+        simTimeMs  = obs[4]
 
         new_cWnd = 1
         new_ssThresh = 1
