@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys
 import os
 import time
 import subprocess
@@ -29,17 +30,32 @@ def build_ns3_project(debug=True):
 
 	os.chdir(baseNs3Dir)
 
-	wafString = wafPath + ' build -p'
+	wafString = wafPath + ' build'
 
 	output = subprocess.DEVNULL
 	if debug:
 		output = None
 
-	print("Build ns-3 project if required")
-	ns3Proc = subprocess.Popen(wafString, shell=True, stdout=output, stderr=output)
-	(output, err) = ns3Proc.communicate()
+	buildRequired = False
+	ns3Proc = subprocess.Popen(wafString, shell=True, stdout=subprocess.PIPE, stderr=None, universal_newlines=True)
+
+	lineHistory = []
+	for line in ns3Proc.stdout:
+		if (True or "Compiling" in line or "Linking" in line) and not buildRequired:
+			buildRequired = True
+			print("Build ns-3 project if required")
+			for l in lineHistory:
+				sys.stdout.write(l)
+				lineHistory = []
+
+		if buildRequired:
+			sys.stdout.write(line)
+		else:
+			lineHistory.append(line)
+
 	p_status = ns3Proc.wait()
-	print("Build finished with status: ", p_status)
+	if buildRequired:
+		print("(Re-)Build of ns-3 finished with status: ", p_status)
 	os.chdir(cwd)
 
 
@@ -67,14 +83,43 @@ def start_sim_script(port=5555, simSeed=0, simArgs={}, debug=False):
 
 	wafString += '"'
 
-	output = subprocess.DEVNULL
+	ns3Proc = None
 	if debug:
-		output = None
+		ns3Proc = subprocess.Popen(wafString, shell=True, stdout=None, stderr=None)
+	else:
+		'''
+		users were complaining that when they start example they have to wait 10 min for initialization.
+		simply ns3 is being built during this time, so now the output of the build will be put to stdout
+		but sometimes build is not required and I would like to avoid unnecessary output on the screen
+		it is not easy to get tell before start ./waf whether the build is required or not
+		here, I use simple trick, i.e. if output of build contains {"Compiling","Linking"}
+		then the build is required and, hence, i put the output to the stdout
+		'''
 
-	ns3Proc = subprocess.Popen(wafString, shell=True, stdout=output, stderr=output)
+		ns3Proc = subprocess.Popen(wafString, shell=True, stdout=subprocess.PIPE, stderr=None, universal_newlines=True)
+
+		buildRequired = False
+		lineHistory = []
+		for line in ns3Proc.stdout:
+			if ("Compiling" in line or "Linking" in line) and not buildRequired:
+				buildRequired = True
+				print("Build ns-3 project if required")
+				for l in lineHistory:
+					sys.stdout.write(l)
+					lineHistory = []
+
+			if buildRequired:
+				sys.stdout.write(line)
+			else:
+				lineHistory.append(line)
+
+			if ("Waf: Leaving directory" in line):
+				break
 
 	if debug:
 		print("Start command: ",wafString)
 		print("Started ns3 simulation script, Process Id: ", ns3Proc.pid)
 
+	# go back to my dir
+	os.chdir(cwd)
 	return ns3Proc

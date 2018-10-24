@@ -61,8 +61,6 @@ class Ns3ZmqBridge(object):
             self.simSeed = simSeed
 
         if self.startSim:
-            # check if build is required and build if so
-            build_ns3_project()
             # run simulation script
             self.ns3Process = start_sim_script(port, simSeed, simArgs, debug)
         else:
