@@ -186,6 +186,7 @@ OpenGymInterface::Init()
 
   NS_LOG_UNCOND("Simulation process id: " << ::getpid() << " (parent (waf shell) id: " << ::getppid() << ")");
   NS_LOG_UNCOND("Waiting for Python process to connect on port: "<< connectAddr);
+  NS_LOG_UNCOND("Please start proper Python Gym Agent");
 
   bool rxInitReq = false;
   bool rxGetActionSpaceReq = false;
