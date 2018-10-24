@@ -14,8 +14,8 @@ __email__ = "gawlowicz@tkn.tu-berlin.de"
 parser = argparse.ArgumentParser(description='Start simulation script on/off')
 parser.add_argument('--start',
                     type=int,
-                    default=0,
-                    help='Start simulation script 0/1, Default: 0')
+                    default=1,
+                    help='Start ns-3 simulation script 0/1, Default: 1')
 parser.add_argument('--iterations',
                     type=int,
                     default=1,
