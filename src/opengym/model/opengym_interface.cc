@@ -79,15 +79,10 @@ OpenGymInterface::Delete (void)
 }
 
 OpenGymInterface::OpenGymInterface(uint32_t port):
-  m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REP),
-  m_gameOver(false), m_simEnd(false), m_stopEnvRequested(false)
+  m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REQ),
+  m_simEnd(false), m_stopEnvRequested(false)
 {
   NS_LOG_FUNCTION (this);
-  m_rxGetGameOver = false;
-  m_rxGetObservation = false;
-  m_rxGetReward = false;
-  m_rxGetExtraInfo = false;
-  m_rxSetActions = false;
   //we cannot schedule at 0.0 as all objects has to be created, hence delay of 1ms
   Simulator::Schedule (Seconds(0.001), &OpenGymInterface::Init, this);
 }
@@ -134,7 +129,7 @@ void
 OpenGymInterface::SetGetObservationCb(Callback< Ptr<OpenGymDataContainer> > cb)
 {
   NS_LOG_FUNCTION (this);
-  m_stateCb = cb;
+  m_obsCb = cb;
 }
 
 void
@@ -158,25 +153,6 @@ OpenGymInterface::SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> >
   m_actionCb = cb;
 }
 
-ns3opengym::RequestMsg
-OpenGymInterface::ReceiveMsg (void)
-{
-  zmq::message_t request;
-  ns3opengym::RequestMsg requestPbMsg;
-  m_zmq_socket.recv (&request);
-  requestPbMsg.ParseFromArray(request.data(), request.size());
-  return requestPbMsg;
-}
-
-int
-OpenGymInterface::SendMsg(ns3opengym::ReplyMsg replyPbMsg)
-{
-  zmq::message_t reply(replyPbMsg.ByteSize());;
-  replyPbMsg.SerializeToArray(reply.data(), replyPbMsg.ByteSize());
-  int n = m_zmq_socket.send (reply);
-  return n;
-}
-
 void 
 OpenGymInterface::Init()
 {
@@ -184,102 +160,50 @@ OpenGymInterface::Init()
   std::string connectAddr = "tcp://localhost:" + std::to_string(m_port);
   zmq_connect ((void*)m_zmq_socket, connectAddr.c_str());
 
+  Ptr<OpenGymSpace> obsSpace = GetObservationSpace();
+  Ptr<OpenGymSpace> actionSpace = GetActionSpace();
+
   NS_LOG_UNCOND("Simulation process id: " << ::getpid() << " (parent (waf shell) id: " << ::getppid() << ")");
   NS_LOG_UNCOND("Waiting for Python process to connect on port: "<< connectAddr);
   NS_LOG_UNCOND("Please start proper Python Gym Agent");
 
-  bool rxInitReq = false;
-  bool rxGetActionSpaceReq = false;
-  bool rxGetObsSpaceReq = false;
+  ns3opengym::SimInitMsg simInitMsg;
+  simInitMsg.set_simprocessid(::getpid());
+  simInitMsg.set_wafshellprocessid(::getppid());
 
-  ns3opengym::RequestMsg requestPbMsg;
+  if (obsSpace) {
+    ns3opengym::SpaceDescription spaceDesc;
+    spaceDesc = obsSpace->GetSpaceDescription();
+    simInitMsg.mutable_obsspace()->CopyFrom(spaceDesc);
+  }
 
-  while (true) {
-    requestPbMsg = ReceiveMsg();
-    NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
+  if (actionSpace) {
+    ns3opengym::SpaceDescription spaceDesc;
+    spaceDesc = actionSpace->GetSpaceDescription();
+    simInitMsg.mutable_actspace()->CopyFrom(spaceDesc);
+  }
 
-    if (requestPbMsg.type() == ns3opengym::Init) {
-      ns3opengym::InitializeRequest initRequestPbMsg;
-      NS_LOG_DEBUG("Received Init request");
-      if (requestPbMsg.msg().UnpackTo(&initRequestPbMsg)) {
-        NS_LOG_DEBUG("Decoded Init request: step interval: " << initRequestPbMsg.timestep() << " seed: " << initRequestPbMsg.simseed());
-        rxInitReq = true;
+  // send init msg to python
+  zmq::message_t request(simInitMsg.ByteSize());;
+  simInitMsg.SerializeToArray(request.data(), simInitMsg.ByteSize());
+  m_zmq_socket.send (request);
 
-        ns3opengym::InitializeReply initReplyPbMsg;
-        ns3opengym::ReplyMsg replyPbMsg;
+  // receive init ack msg form python
+  ns3opengym::SimInitAck simInitAck;
+  zmq::message_t reply;
+  m_zmq_socket.recv (&reply);
+  simInitAck.ParseFromArray(reply.data(), reply.size());
 
-        initReplyPbMsg.set_done(true);
-        initReplyPbMsg.set_simprocessid(::getpid());
-        initReplyPbMsg.set_wafshellprocessid(::getppid());
-        replyPbMsg.set_type(ns3opengym::Init);
-        replyPbMsg.mutable_msg()->PackFrom(initReplyPbMsg);
-        
-        SendMsg(replyPbMsg);
-      }
+  bool done = simInitAck.done();
+  NS_LOG_DEBUG("Sim Init Ack: " << done);
 
-    } else if (requestPbMsg.type() == ns3opengym::ActionSpace) {
-        ns3opengym::GetActionSpaceRequest actionSpaceRequestPbMsg;
-        NS_LOG_DEBUG("Received ActionSpace request");
-        rxGetActionSpaceReq = true;
-
-        ns3opengym::SpaceDescription spaceDesc;
-        ns3opengym::GetSpaceReply innerReplyPbMsg;
-        ns3opengym::ReplyMsg replyPbMsg;
-
-        Ptr<OpenGymSpace> actionSpace = GetActionSpace();
-        if (actionSpace) {
-          spaceDesc = actionSpace->GetSpaceDescription();
-          innerReplyPbMsg.mutable_space()->CopyFrom(spaceDesc);
-
-          replyPbMsg.set_type(ns3opengym::ActionSpace);
-          replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);
-        }
-        
-        SendMsg(replyPbMsg);
-
-    } else if (requestPbMsg.type() == ns3opengym::ObservationSpace) {
-        ns3opengym::GetObservationSpaceRequest obsSpaceRequestPbMsg;
-        NS_LOG_DEBUG("Received ObservationSpace request");
-        rxGetObsSpaceReq = true;
-
-        ns3opengym::SpaceDescription spaceDesc;
-        ns3opengym::GetSpaceReply innerReplyPbMsg;
-        ns3opengym::ReplyMsg replyPbMsg;
-
-        Ptr<OpenGymSpace> obsSpace = GetObservationSpace();
-        if (obsSpace) {
-          spaceDesc = obsSpace->GetSpaceDescription();
-          innerReplyPbMsg.mutable_space()->CopyFrom(spaceDesc);
-
-          replyPbMsg.set_type(ns3opengym::ObservationSpace);
-          replyPbMsg.mutable_msg()->PackFrom(innerReplyPbMsg);
-        }
-        
-        SendMsg(replyPbMsg);
-    }
-    else if (requestPbMsg.type() == ns3opengym::StopEnv) {
-      Simulator::Stop();
-      m_stopEnvRequested = true;
-
-      ns3opengym::StopEnvReply StopEnvReplyPbMsg;
-      ns3opengym::ReplyMsg replyPbMsg;
-      StopEnvReplyPbMsg.set_done(true);
-      replyPbMsg.set_type(ns3opengym::StopEnv);
-      replyPbMsg.mutable_msg()->PackFrom(StopEnvReplyPbMsg);
-      SendMsg(replyPbMsg);
-      return;
-
-    } else {
-        NS_LOG_DEBUG("Received unknown request type");
-        ns3opengym::ReplyMsg replyPbMsg;
-        replyPbMsg.set_type(ns3opengym::Unknown);
-        SendMsg(replyPbMsg);
-    }
-
-    // check if ready for next step
-    if (rxInitReq && rxGetActionSpaceReq && rxGetObsSpaceReq) {
-      break;
-    }
+  bool stopSim = simInitAck.stopsimreq();
+  if (stopSim) {
+    NS_LOG_DEBUG("---Stop requested: " << stopSim);
+    m_stopEnvRequested = true;
+    Simulator::Stop();
+    Simulator::Destroy ();
+    std::exit(0);
   }
 }
 
@@ -292,168 +216,80 @@ OpenGymInterface::NotifyCurrentState()
     return;
   }
 
-  NS_LOG_DEBUG("Wait for messages");
-  ns3opengym::RequestMsg requestPbMsg;
-
-  // collect current env state, TODO: provide possibility to set single callback getState(obs, reward, done)
+  // collect current env state
   Ptr<OpenGymDataContainer> obsDataContainer = GetObservation();
   float reward = GetReward();
   bool isGameOver = IsGameOver();
   std::string extraInfo = GetExtraInfo();
 
-  while (true) {
-    requestPbMsg = ReceiveMsg();
-    NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
-
-    if (requestPbMsg.type() == ns3opengym::IsGameOver)
-    {
-      NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
-      m_rxGetGameOver = true;
-
-      ns3opengym::GetIsGameOverReply gameOverReplyPbMsg;
-      ns3opengym::ReplyMsg replyPbMsg;
-
-      if (isGameOver)
-      {
-        gameOverReplyPbMsg.set_isgameover(true);
-        if (m_simEnd) {
-          gameOverReplyPbMsg.set_reason(ns3opengym::GetIsGameOverReply::SimulationEnd);
-        } else {
-          gameOverReplyPbMsg.set_reason(ns3opengym::GetIsGameOverReply::GameOver);
-        }
-
-      } 
-      else
-      {
-        gameOverReplyPbMsg.set_isgameover(false);
-      }
-      
-      replyPbMsg.set_type(ns3opengym::IsGameOver);
-      replyPbMsg.mutable_msg()->PackFrom(gameOverReplyPbMsg);
-        
-      SendMsg(replyPbMsg);
-    }
-    else if (requestPbMsg.type() == ns3opengym::Observation)
-    {
-      m_rxGetObservation = true;
-      NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
-
-      ns3opengym::DataContainer dataContainerPbMsg;
-      ns3opengym::GetObservationReply obsReplyPbMsg;
-      ns3opengym::ReplyMsg replyPbMsg;
-
-      if (obsDataContainer) {
-        dataContainerPbMsg = obsDataContainer->GetDataContainerPbMsg();
-        obsReplyPbMsg.mutable_container()->CopyFrom(dataContainerPbMsg);    
-        replyPbMsg.set_type(ns3opengym::Observation);
-        replyPbMsg.mutable_msg()->PackFrom(obsReplyPbMsg);
-      }
-        
-      SendMsg(replyPbMsg);
-    }
-    else if (requestPbMsg.type() == ns3opengym::Reward)
-    {
-      m_rxGetReward = true;
-      NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
-
-      ns3opengym::GetRewardReply rewardReplyPbMsg;
-      ns3opengym::ReplyMsg replyPbMsg;
-      rewardReplyPbMsg.set_reward(reward);
-     
-      replyPbMsg.set_type(ns3opengym::Reward);
-      replyPbMsg.mutable_msg()->PackFrom(rewardReplyPbMsg);
-        
-      SendMsg(replyPbMsg);
-    }
-    else if (requestPbMsg.type() == ns3opengym::ExtraInfo)
-    {
-      m_rxGetReward = true;
-      NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type() );
-
-      ns3opengym::GetExtraInfoReply rewardReplyPbMsg;
-      ns3opengym::ReplyMsg replyPbMsg;
-      rewardReplyPbMsg.set_info(extraInfo);
-
-      replyPbMsg.set_type(ns3opengym::ExtraInfo);
-      replyPbMsg.mutable_msg()->PackFrom(rewardReplyPbMsg);
-
-      SendMsg(replyPbMsg);
-    }
-    else if (requestPbMsg.type() == ns3opengym::Action)
-    {
-      m_rxSetActions = true;
-      NS_LOG_DEBUG("Received request: msgType: " << requestPbMsg.type());
-
-      ns3opengym::SetActionRequest actionRequestPbMsg;
-      if (requestPbMsg.msg().UnpackTo(&actionRequestPbMsg)) {
-
-        ns3opengym::DataContainer dataContainerPbMsg = actionRequestPbMsg.container();
-        Ptr<OpenGymDataContainer> actDataContainer = OpenGymDataContainer::CreateFromDataContainerPbMsg(dataContainerPbMsg);
-
-        bool done = ExecuteActions(actDataContainer);
-
-        ns3opengym::SetActionReply actionReplyPbMsg;
-        ns3opengym::ReplyMsg replyPbMsg;
-
-        actionReplyPbMsg.set_done(done);
-       
-        replyPbMsg.set_type(ns3opengym::Action);
-        replyPbMsg.mutable_msg()->PackFrom(actionReplyPbMsg);
-          
-        SendMsg(replyPbMsg);
-      }
-    }
-    else if (requestPbMsg.type() == ns3opengym::StopEnv)
-    {
-      Simulator::Stop();
-      m_stopEnvRequested = true;
-
-      ns3opengym::StopEnvReply StopEnvReplyPbMsg;
-      ns3opengym::ReplyMsg replyPbMsg;
-      StopEnvReplyPbMsg.set_done(true);
-      replyPbMsg.set_type(ns3opengym::StopEnv);
-      replyPbMsg.mutable_msg()->PackFrom(StopEnvReplyPbMsg);
-      SendMsg(replyPbMsg);
-      return;
-    }
-    else
-    {
-      NS_LOG_DEBUG("Received unknown request type");
-      ns3opengym::ReplyMsg replyPbMsg;
-      replyPbMsg.set_type(ns3opengym::Unknown);
-      SendMsg(replyPbMsg);
-    }
-
-    // check if ready for next step
-    if (m_rxGetGameOver && m_rxGetObservation && m_rxGetReward && m_rxSetActions) {
-      m_rxGetGameOver = false;
-      m_rxGetObservation = false;
-      m_rxGetReward = false;
-      m_rxSetActions = false;
-      break;
+  ns3opengym::EnvStateMsg envStateMsg;
+  // observation
+  ns3opengym::DataContainer obsDataContainerPbMsg;
+  if (obsDataContainer) {
+    obsDataContainerPbMsg = obsDataContainer->GetDataContainerPbMsg();
+    envStateMsg.mutable_obsdata()->CopyFrom(obsDataContainerPbMsg);
+  }
+  // reward
+  envStateMsg.set_reward(reward);
+  // game over
+  envStateMsg.set_isgameover(false);
+  if (isGameOver)
+  {
+    envStateMsg.set_isgameover(true);
+    if (m_simEnd) {
+      envStateMsg.set_reason(ns3opengym::EnvStateMsg::SimulationEnd);
+    } else {
+      envStateMsg.set_reason(ns3opengym::EnvStateMsg::GameOver);
     }
   }
+
+  // extra info
+  envStateMsg.set_info(extraInfo);
+
+  // send env state msg to python
+  zmq::message_t request(envStateMsg.ByteSize());;
+  envStateMsg.SerializeToArray(request.data(), envStateMsg.ByteSize());
+  m_zmq_socket.send (request);
+
+  // receive act msg form python
+  ns3opengym::EnvActMsg envActMsg;
+  zmq::message_t reply;
+  m_zmq_socket.recv (&reply);
+  envActMsg.ParseFromArray(reply.data(), reply.size());
+
+  if (m_simEnd) {
+    // if sim end only rx ms and quit
+    return;
+  }
+
+  bool stopSim = envActMsg.stopsimreq();
+  if (stopSim) {
+    NS_LOG_DEBUG("---Stop requested: " << stopSim);
+    m_stopEnvRequested = true;
+    Simulator::Stop();
+    Simulator::Destroy ();
+    std::exit(0);
+  }
+
+  // first step after reset is called without actions, just to get current state
+  ns3opengym::DataContainer actDataContainerPbMsg = envActMsg.actdata();
+  Ptr<OpenGymDataContainer> actDataContainer = OpenGymDataContainer::CreateFromDataContainerPbMsg(actDataContainerPbMsg);
+  ExecuteActions(actDataContainer);
+
 }
 
 void
 OpenGymInterface::WaitForStop()
 {
   NS_LOG_FUNCTION (this);
-  NS_LOG_DEBUG("Wait for stop message");
-
-  m_rxGetGameOver = false;
-  m_rxGetObservation = false;
-  m_rxGetReward = false;
-  m_rxSetActions = true;
+  NS_LOG_UNCOND("Wait for stop message");
   NotifyCurrentState();
 }
-
 
 void
 OpenGymInterface::NotifySimulationEnd()
 {
   NS_LOG_FUNCTION (this);
-  m_gameOver = true;
   m_simEnd = true;
   WaitForStop();
 }
@@ -467,7 +303,7 @@ OpenGymInterface::IsGameOver()
   {
     gameOver = m_gameOverCb();
   }
-  return (gameOver || m_gameOver);
+  return (gameOver || m_simEnd);
 }
 
 Ptr<OpenGymSpace>
@@ -499,9 +335,9 @@ OpenGymInterface::GetObservation()
 {
   NS_LOG_FUNCTION (this);
   Ptr<OpenGymDataContainer>  obs;
-  if (!m_stateCb.IsNull())
+  if (!m_obsCb.IsNull())
   {
-    obs = m_stateCb();
+    obs = m_obsCb();
   }
   return obs;
 }

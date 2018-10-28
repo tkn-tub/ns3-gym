@@ -48,28 +48,24 @@ public:
   static TypeId GetTypeId ();
 
   void Init();
-  ns3opengym::RequestMsg ReceiveMsg();
-  int SendMsg(ns3opengym::ReplyMsg replyPbMsg);
-
   void NotifyCurrentState();
   void WaitForStop();
 
   void NotifySimulationEnd();
-  bool IsGameOver();
 
   Ptr<OpenGymSpace> GetActionSpace();
   Ptr<OpenGymSpace> GetObservationSpace();
-  void FillGetSpaceReply(Ptr<OpenGymSpace> space, ns3opengym::GetSpaceReply &spaceReplyPbMsg);
   Ptr<OpenGymDataContainer> GetObservation();
   float GetReward();
+  bool IsGameOver();
   std::string GetExtraInfo();
   bool ExecuteActions(Ptr<OpenGymDataContainer> action);
 
   void SetGetActionSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
   void SetGetObservationSpaceCb(Callback< Ptr<OpenGymSpace> > cb);
-  void SetGetGameOverCb(Callback< bool > cb);
   void SetGetObservationCb(Callback< Ptr<OpenGymDataContainer> > cb);
   void SetGetRewardCb(Callback<float> cb);
+  void SetGetGameOverCb(Callback< bool > cb);
   void SetGetExtraInfoCb(Callback<std::string> cb);
   void SetExecuteActionsCb(Callback<bool, Ptr<OpenGymDataContainer> > cb);
 
@@ -87,23 +83,17 @@ private:
   uint32_t m_port;
   zmq::context_t m_zmq_context;
   zmq::socket_t m_zmq_socket;
-  bool m_gameOver;
+
   bool m_simEnd;
   bool m_stopEnvRequested;
 
   Callback< Ptr<OpenGymSpace> > m_actionSpaceCb;
   Callback< Ptr<OpenGymSpace> > m_observationSpaceCb;
   Callback< bool > m_gameOverCb;
-  Callback< Ptr<OpenGymDataContainer> > m_stateCb;
+  Callback< Ptr<OpenGymDataContainer> > m_obsCb;
   Callback<float> m_rewardCb;
   Callback<std::string> m_extraInfoCb;
   Callback<bool, Ptr<OpenGymDataContainer> > m_actionCb;
-
-  bool m_rxGetGameOver;
-  bool m_rxGetObservation;
-  bool m_rxGetReward;
-  bool m_rxGetExtraInfo;
-  bool m_rxSetActions;
 };
 
 } // end of namespace ns3

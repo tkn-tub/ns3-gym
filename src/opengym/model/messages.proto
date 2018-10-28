@@ -92,83 +92,33 @@ message DictDataContainer {
 //------------------------//
 
 //--------Messages--------//
-message RequestMsg {
-	MsgType type = 1;
-	google.protobuf.Any msg = 2;
+message SimInitMsg {
+	uint64 simProcessId = 1;
+	uint64 wafShellProcessId = 2;
+	SpaceDescription obsSpace = 3;
+	SpaceDescription actSpace = 4;
 }
 
-message ReplyMsg {
-	MsgType type = 1;
-	google.protobuf.Any msg = 2;
-}
-
-message InitializeRequest {
-	double timeStep = 1;
-	uint32 simSeed = 2;
-}
-
-message InitializeReply {
+message SimInitAck {
 	bool done = 1;
-	uint64 simProcessId = 2;
-	uint64 wafShellProcessId = 3;
+	bool stopSimReq = 2;
 }
 
-message GetActionSpaceRequest {
-}
-
-message GetObservationSpaceRequest {
-}
-
-message GetSpaceReply {
-	SpaceDescription space = 1;
-}
-
-message GetIsGameOverRequest {
-}
-
-message GetIsGameOverReply {
-	bool isGameOver = 1;
+message EnvStateMsg {
+	DataContainer obsData = 1;
+	float reward = 2;
+	bool isGameOver = 3;
 
 	enum Reason {
 		SimulationEnd = 0;
 		GameOver = 1;
 	}
-	Reason reason = 2;
+	Reason reason = 4;
+	string info = 5;
 }
 
-message GetObservationRequest {
-}
-
-message GetObservationReply {
-	DataContainer container = 1;
-}
-
-message GetRewardRequest {
-}
-
-message GetRewardReply {
-	float reward = 1;
-}
-
-message GetExtraInfoRequest {
-}
-
-message GetExtraInfoReply {
-	string info = 1;
-}
-
-message SetActionRequest {
-	DataContainer container = 1;
-}
-
-message SetActionReply {
-	bool done = 1;
-}
-
-message StopEnvRequest {
-}
-
-message StopEnvReply {
-	bool done = 1;
+message EnvActMsg {
+	DataContainer actData = 1;
+	bool stopSimReq = 2;
 }
 //------------------------//
