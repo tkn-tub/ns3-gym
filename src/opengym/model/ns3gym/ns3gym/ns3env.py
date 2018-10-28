@@ -37,7 +37,7 @@ class Ns3ZmqBridge(object):
         self.ns3Process = None
 
         context = zmq.Context()
-        self.socket = context.socket(zmq.REQ)
+        self.socket = context.socket(zmq.REP)
         try:
             if port == 0 and self.startSim:
                 port = self.socket.bind_to_random_port('tcp://*', min_port=5001, max_port=10000, max_tries=100)
@@ -71,11 +71,21 @@ class Ns3ZmqBridge(object):
         self._action_space = None
         self._observation_space = None
 
+        self.forceEnvStop = False
+        self.obsData = None
+        self.reward = 0
+        self.gameOver = False
+        self.gameOverReason = None
+        self.extraInfo = None
+        self.newStateRx = False
+
     def close(self):
         try:
             if not self.envStopped:
                 self.envStopped = True
-                self.send_stop_env_request()
+                self.force_env_stop()
+                self.rx_env_state()
+                self.send_close_command()
                 self.ns3Process.kill()
                 if self.simPid:
                     os.kill(self.simPid, signal.SIGTERM)
@@ -85,35 +95,6 @@ class Ns3ZmqBridge(object):
                     self.wafPid = None
         except Exception as e:
             pass
-
-    def send_init_request(self, stepInterval):
-        # print ("Sending INIT request ")
-        msg = pb.InitializeRequest()
-        msg.timeStep = stepInterval
-
-        if self.startSim:
-            msg.simSeed = self.simSeed
-
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.Init
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-
-        self.socket.send(requestMsg)
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        initReplyPbMsg = pb.InitializeReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(initReplyPbMsg)
-        errCode = 0
-        value = int(initReplyPbMsg.done)
-        self.simPid = int(initReplyPbMsg.simProcessId)
-        self.wafPid = int(initReplyPbMsg.wafShellProcessId)
-        return [errCode, value]
-
-    def initialize_env(self, stepInterval):
-        [errCode, value] = self.send_init_request(stepInterval)
-        return value
 
     def _create_space(self, spaceDesc):
         space = None
@@ -166,102 +147,91 @@ class Ns3ZmqBridge(object):
 
         return space
 
-    def send_get_action_space_request(self):
-        msg = pb.GetActionSpaceRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.ActionSpace
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
+    def initialize_env(self, stepInterval):
+        request = self.socket.recv()
+        simInitMsg = pb.SimInitMsg()
+        simInitMsg.ParseFromString(request)
 
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        actionApaceReplyPbMsg = pb.GetSpaceReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(actionApaceReplyPbMsg)
-        return actionApaceReplyPbMsg
+        self.simPid = int(simInitMsg.simProcessId)
+        self.wafPid = int(simInitMsg.wafShellProcessId)
+        self._action_space = self._create_space(simInitMsg.actSpace)
+        self._observation_space = self._create_space(simInitMsg.obsSpace)
+
+        reply = pb.SimInitAck()
+        reply.done = True
+        reply.stopSimReq = False
+        replyMsg = reply.SerializeToString()
+        self.socket.send(replyMsg)
+        return True
 
     def get_action_space(self):
-        spaceReplyPb = self.send_get_action_space_request()
-        actionSpace = self._create_space(spaceReplyPb.space)
-        self._action_space = actionSpace
-        return actionSpace
-
-    def send_get_obs_space_request(self):
-        msg = pb.GetObservationSpaceRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.ObservationSpace
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
-
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        obsApaceReplyPbMsg = pb.GetSpaceReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(obsApaceReplyPbMsg)
-        return obsApaceReplyPbMsg
+        return self._action_space
 
     def get_observation_space(self):
-        spaceReplyPb = self.send_get_obs_space_request()
-        obsSpace = self._create_space(spaceReplyPb.space)
-        self._observation_space = obsSpace
-        return obsSpace
+        return self._observation_space
 
-    def send_stop_env_request(self, timeout=-1):
-        msg = pb.StopEnvRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.StopEnv
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
+    def force_env_stop(self):
+        self.forceEnvStop = True
 
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        innerReplyPbMsg = pb.StopEnvReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(innerReplyPbMsg)
-        return innerReplyPbMsg.done
+    def rx_env_state(self):
+        if self.newStateRx:
+            return
 
-    def send_is_game_over_request(self):
-        msg = pb.GetIsGameOverRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.IsGameOver
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
+        request = self.socket.recv()
+        envStateMsg = pb.EnvStateMsg()
+        envStateMsg.ParseFromString(request)
 
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        innerReplyPbMsg = pb.GetIsGameOverReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(innerReplyPbMsg)
-        return innerReplyPbMsg
+        self.obsData = self._create_data(envStateMsg.obsData)
+        self.reward = envStateMsg.reward
+        self.gameOver = envStateMsg.isGameOver
+        self.gameOverReason = envStateMsg.reason
+
+        if self.gameOver:
+            if self.gameOverReason == pb.EnvStateMsg.SimulationEnd:
+                self.envStopped = True
+                self.send_close_command()
+            else:
+                self.forceEnvStop = True
+                self.send_close_command()
+
+        self.extraInfo = envStateMsg.info
+        if not self.extraInfo:
+            self.extraInfo = {}
+
+        self.newStateRx = True
+
+    def send_close_command(self):
+        reply = pb.EnvActMsg()
+        reply.stopSimReq = True
+
+        replyMsg = reply.SerializeToString()
+        self.socket.send(replyMsg)
+        self.newStateRx = False
+        return True
+
+    def send_actions(self, actions):
+        reply = pb.EnvActMsg()
+
+        actionMsg = self._pack_data(actions, self._action_space)
+        reply.actData.CopyFrom(actionMsg)
+
+        reply.stopSimReq = False
+        if self.forceEnvStop:
+            reply.stopSimReq = True
+
+        replyMsg = reply.SerializeToString()
+        self.socket.send(replyMsg)
+        self.newStateRx = False
+        return True
+
+    def step(self, actions):
+        # exec actions for current state
+        self.send_actions(actions)
+        # get result of above actions
+        self.rx_env_state()
 
     def is_game_over(self):
-        msg = self.send_is_game_over_request()
-
-        if msg.isGameOver:
-            self.envStopped = True
-            if (msg.reason == pb.GetIsGameOverReply.GameOver):
-                done = self.send_stop_env_request()
-
-        return msg.isGameOver
-
-    def send_get_state_request(self):
-        msg = pb.GetObservationRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.Observation
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
-
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        innerReplyPbMsg = pb.GetObservationReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(innerReplyPbMsg)
-        return innerReplyPbMsg
+        return self.gameOver
 
     def _create_data(self, dataContainerPb):
         if (dataContainerPb.type == pb.Discrete):
@@ -312,50 +282,13 @@ class Ns3ZmqBridge(object):
             return data
 
     def get_obs(self):
-        obsMsg = self.send_get_state_request()
-        data = self._create_data(obsMsg.container)
-        return data
-
-    def send_get_reward_request(self):
-        msg = pb.GetRewardRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.Reward
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
-
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        innerReplyPbMsg = pb.GetRewardReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(innerReplyPbMsg)
-        return innerReplyPbMsg
+        return self.obsData
 
     def get_reward(self):
-        rewardMsg = self.send_get_reward_request()
-        return rewardMsg.reward
-
-    def send_get_extra_info(self):
-        msg = pb.GetExtraInfoRequest()
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.ExtraInfo
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
-
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        innerReplyPbMsg = pb.GetExtraInfoReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(innerReplyPbMsg)
-        return innerReplyPbMsg
+        return self.reward
 
     def get_extra_info(self):
-        msg = self.send_get_extra_info()
-        info = msg.info
-        if not info:
-            info = {}
-        return info
+        return self.extraInfo
 
     def _pack_data(self, actions, spaceDesc):
         dataContainer = pb.DataContainer()
@@ -425,28 +358,6 @@ class Ns3ZmqBridge(object):
 
         return dataContainer
 
-    def send_execute_action_request(self, actions):
-        dataContainer = self._pack_data(actions, self._action_space)
-        msg = pb.SetActionRequest()
-        msg.container.CopyFrom(dataContainer)
-
-        requestMsg = pb.RequestMsg()
-        requestMsg.type = pb.Action
-        requestMsg.msg.Pack(msg)
-        requestMsg = requestMsg.SerializeToString()
-        self.socket.send(requestMsg)
-
-        reply = self.socket.recv()
-        replyPbMsg = pb.ReplyMsg()
-        innerReplyPbMsg = pb.SetActionReply()
-        replyPbMsg.ParseFromString(reply)
-        replyPbMsg.msg.Unpack(innerReplyPbMsg)
-        return innerReplyPbMsg
-
-    def execute_action(self, actions):
-        replyMsg = self.send_execute_action_request(actions)
-        return replyMsg.done
-
 
 class Ns3Env(gym.Env):
     def __init__(self, stepTime=0, port=0, startSim=True, simSeed=0, simArgs={}, debug=False):
@@ -470,6 +381,8 @@ class Ns3Env(gym.Env):
         self.ns3ZmqBridge.initialize_env(self.stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
+        # get first observations
+        self.ns3ZmqBridge.rx_env_state()
         self.envDirty = False
         self.seed()
 
@@ -477,36 +390,35 @@ class Ns3Env(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
-    def get_obs(self):
-        # get_extra info is optional, so execute first, otherwise env will move to next step
-        extraInfo = self.ns3ZmqBridge.get_extra_info()
+    def get_state(self):
         obs = self.ns3ZmqBridge.get_obs()
         reward = self.ns3ZmqBridge.get_reward()
         done = self.ns3ZmqBridge.is_game_over()
+        extraInfo = self.ns3ZmqBridge.get_extra_info()
         return (obs, reward, done, extraInfo)
 
     def step(self, action):
-        response = self.ns3ZmqBridge.execute_action(action)
+        response = self.ns3ZmqBridge.step(action)
         self.envDirty = True
-        return self.get_obs()
+        return self.get_state()
 
     def reset(self):
         if not self.envDirty:
-            state = self.get_obs()
-            obs = state[0]
+            obs = self.ns3ZmqBridge.get_obs()
             return obs
 
         if self.ns3ZmqBridge:
             self.ns3ZmqBridge.close()
             self.ns3ZmqBridge = None
 
+        self.envDirty = False
         self.ns3ZmqBridge = Ns3ZmqBridge(self.port, self.startSim, self.simSeed, self.simArgs, self.debug)
         self.ns3ZmqBridge.initialize_env(self.stepTime)
         self.action_space = self.ns3ZmqBridge.get_action_space()
         self.observation_space = self.ns3ZmqBridge.get_observation_space()
-        self.envDirty = False
-        state = self.get_obs()
-        obs = state[0]
+        # get first observations
+        self.ns3ZmqBridge.rx_env_state()
+        obs = self.ns3ZmqBridge.get_obs()
         return obs
 
     def render(self, mode='human'):
