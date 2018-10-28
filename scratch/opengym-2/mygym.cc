@@ -38,7 +38,7 @@ MyGymEnv::MyGymEnv ()
   NS_LOG_FUNCTION (this);
   m_interval = Seconds(0.1);
 
-  Simulator::Schedule (Seconds(0.01), &MyGymEnv::ScheduleNextStateRead, this);
+  Simulator::Schedule (Seconds(0.0), &MyGymEnv::ScheduleNextStateRead, this);
 }
 
 MyGymEnv::MyGymEnv (Time stepTime)
@@ -46,7 +46,7 @@ MyGymEnv::MyGymEnv (Time stepTime)
   NS_LOG_FUNCTION (this);
   m_interval = stepTime;
 
-  Simulator::Schedule (Seconds(0.01), &MyGymEnv::ScheduleNextStateRead, this);
+  Simulator::Schedule (Seconds(0.0), &MyGymEnv::ScheduleNextStateRead, this);
 }
 
 void

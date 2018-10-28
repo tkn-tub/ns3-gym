@@ -80,11 +80,9 @@ OpenGymInterface::Delete (void)
 
 OpenGymInterface::OpenGymInterface(uint32_t port):
   m_port(port), m_zmq_context(1), m_zmq_socket(m_zmq_context, ZMQ_REQ),
-  m_simEnd(false), m_stopEnvRequested(false)
+  m_simEnd(false), m_stopEnvRequested(false), m_initSimMsgSent(false)
 {
   NS_LOG_FUNCTION (this);
-  //we cannot schedule at 0.0 as all objects has to be created, hence delay of 1ms
-  Simulator::Schedule (Seconds(0.001), &OpenGymInterface::Init, this);
 }
 
 OpenGymInterface::~OpenGymInterface ()
@@ -157,6 +155,12 @@ void
 OpenGymInterface::Init()
 {
   NS_LOG_FUNCTION (this);
+  // do not send init msg twice
+  if (m_initSimMsgSent) {
+    return;
+  }
+  m_initSimMsgSent = true;
+
   std::string connectAddr = "tcp://localhost:" + std::to_string(m_port);
   zmq_connect ((void*)m_zmq_socket, connectAddr.c_str());
 
@@ -211,6 +215,10 @@ void
 OpenGymInterface::NotifyCurrentState()
 {
   NS_LOG_FUNCTION (this);
+
+  if (!m_initSimMsgSent) {
+    Init();
+  }
 
   if (m_stopEnvRequested) {
     return;

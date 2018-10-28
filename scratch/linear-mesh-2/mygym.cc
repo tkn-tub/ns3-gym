@@ -47,7 +47,7 @@ MyGymEnv::MyGymEnv (Time stepTime)
   m_rxPktNum = 0;
   m_interval = stepTime;
 
-  Simulator::Schedule (Seconds(0.01), &MyGymEnv::ScheduleNextStateRead, this);
+  Simulator::Schedule (Seconds(0.0), &MyGymEnv::ScheduleNextStateRead, this);
 }
 
 void
