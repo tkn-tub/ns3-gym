@@ -37,3 +37,9 @@ build-dir/
 build/
 /.cproject
 /.project
+
+*.egg-info
+*.pb.h
+*.pb.cc
+*_pb2.py
+*_pb3.py

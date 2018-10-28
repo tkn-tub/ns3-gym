@@ -1,0 +1,124 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+
+package ns3opengym;
+
+//---------Types----------//
+enum MsgType {
+	Unknown = 0;
+	Init = 1;
+	ActionSpace = 2;
+	ObservationSpace = 3;
+	IsGameOver = 4;
+	Observation = 5;
+	Reward = 6;
+	ExtraInfo = 7;
+	Action = 8;
+	StopEnv = 9;
+}
+
+enum SpaceType {
+	NoSpaceType = 0;
+	Discrete = 1;
+	Box = 2;
+	Tuple = 3;
+	Dict = 4;
+}
+
+enum Dtype {
+	NoDType = 0;
+	INT = 1;
+	UINT = 2;
+	FLOAT = 3;
+	DOUBLE = 4;
+}
+//------------------------//
+
+//---Space Descriptions---//
+message SpaceDescription {
+	SpaceType type = 1;
+	google.protobuf.Any space = 2;
+	string name = 3;  //optional
+}
+
+message DiscreteSpace {
+	int32 n = 1;
+}
+
+message BoxSpace {
+	float low = 1;
+	float high = 2;
+	Dtype dtype = 3;
+	repeated uint32 shape = 4;
+}
+
+message TupleSpace {
+	repeated SpaceDescription element = 1;
+}
+
+message DictSpace {
+	repeated SpaceDescription element = 1;
+}
+//------------------------//
+
+//----Data Containers-----//
+message DataContainer {
+	SpaceType type = 1;
+	google.protobuf.Any data = 2;
+	string name = 3; //optional
+}
+
+message DiscreteDataContainer {
+	int32 data = 1;
+}
+
+message BoxDataContainer {
+	Dtype dtype = 1;
+	repeated uint32 shape = 2;
+
+	repeated int32 intData = 3;
+	repeated uint32 uintData = 4;
+	repeated float floatData = 5;
+	repeated double doubleData = 6;
+}
+
+message TupleDataContainer {
+	repeated DataContainer element = 1;
+}
+
+message DictDataContainer {
+	repeated DataContainer element = 1;
+}
+//------------------------//
+
+//--------Messages--------//
+message SimInitMsg {
+	uint64 simProcessId = 1;
+	uint64 wafShellProcessId = 2;
+	SpaceDescription obsSpace = 3;
+	SpaceDescription actSpace = 4;
+}
+
+message SimInitAck {
+	bool done = 1;
+	bool stopSimReq = 2;
+}
+
+message EnvStateMsg {
+	DataContainer obsData = 1;
+	float reward = 2;
+	bool isGameOver = 3;
+
+	enum Reason {
+		SimulationEnd = 0;
+		GameOver = 1;
+	}
+	Reason reason = 4;
+	string info = 5;
+}
+
+message EnvActMsg {
+	DataContainer actData = 1;
+	bool stopSimReq = 2;
+}
+//------------------------//
