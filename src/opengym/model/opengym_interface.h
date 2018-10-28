@@ -86,6 +86,7 @@ private:
 
   bool m_simEnd;
   bool m_stopEnvRequested;
+  bool m_initSimMsgSent;
 
   Callback< Ptr<OpenGymSpace> > m_actionSpaceCb;
   Callback< Ptr<OpenGymSpace> > m_observationSpaceCb;
