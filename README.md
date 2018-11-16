@@ -30,9 +30,9 @@ apt-get install protobuf-compiler
 ./waf build
 ```
 
-4. Install ns3gym located in src/opengym/model/ns3gym (Python3 required)
+4. Install ns3gym located in model/ns3gym (Python3 required)
 ```
-pip3 install ./src/opengym/model/ns3gym
+pip3 install ./model/ns3gym
 ```
 
 5. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
@@ -96,7 +96,7 @@ A more detailed description can be found in our [Technical Report](https://arxiv
 We consider the problem of radio channel selection in a wireless multi-channel environment, e.g. 802.11 networks with external interference. The objective of the agent is to select for the next time slot a channel free of interference. We consider a simple illustrative example where the external interference follows a periodic pattern, i.e. sweeping over all channels one to four in the same order as shown in the table.
 
 <p align="center">
-<img src="src/opengym/doc/figures/interferer-pattern.png" alt="drawing" width="500"/>
+<img src="doc/figures/interferer-pattern.png" alt="drawing" width="500"/>
 </p>
 
 We created such a scenario in ns-3 using existing functionality from ns-3, i.e. interference created using `WaveformGenerator` class and sensing performed using `SpectrumAnalyzer` class.
@@ -115,7 +115,7 @@ We see that after around 80 episodes the agent is able to perfectly predict the 
 The full source code of the example can be found [here](./scratch/interference-pattern/).
 
 <p align="center">
-<img src="src/opengym/doc/figures/cognitive-radio-learning.png" alt="drawing" width="600"/>
+<img src="doc/figures/cognitive-radio-learning.png" alt="drawing" width="600"/>
 </p>
 
 Note, that in a more realistic scenario the simple waveform generator in this example can be replaced by a real wireless technology like LTE unlicensed (LTE-U).
@@ -127,7 +127,7 @@ The proper RL-TCP agent example is still under development. However, we already 
 In order to run it, please execute:
 ```
 cd ./scratch/rl-tcp
-./test_tcp.py 
+./test_tcp.py
 ```
 
 Or in two terminals:
