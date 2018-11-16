@@ -21,7 +21,7 @@ def configure(conf):
     protoc = conf.find_program('protoc', var='PROTOC')
 
     try:
-        cmd= [protoc[0], '--version']
+        cmd = [protoc[0], '--version']
         output = subprocess.check_output(cmd).decode("utf-8")
         output = output.split(" ")[1].rstrip()
         protoc_version = tuple(output.split('.'))
@@ -45,7 +45,7 @@ def configure(conf):
 
     # build protobuff messages
     try:
-        pbSrcDir = "./src/opengym/model/"
+        pbSrcDir = str(conf.path) + "/model/"
         protoc = protoc[0]
         rc = subprocess.call(protoc+" -I="+pbSrcDir+" --cpp_out="+pbSrcDir+" "+pbSrcDir+"messages.proto", shell=True)
 
