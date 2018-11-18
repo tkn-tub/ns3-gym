@@ -122,7 +122,9 @@ Note, that in a more realistic scenario the simple waveform generator in this ex
 
 
 ## RL-TCP
-The proper RL-TCP agent example is still under development. However, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym interface -- see [here](./scratch/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement a RL-based TCP congetsion control algorithms.
+The proper RL-TCP agent example is still under development. However, we have already implemented and released two versions (i.e. time and event-based) of an interface allowing to monitor parameters of a TCP instance and control its `Congestion Window` and `Slow Start Threshold` -- see details [here](./scratch/rl-tcp/tcp_base.py). Note, that both versions inherits from `TcpCongestionOps` and hence can be used as an argument for `ns3::TcpL4Protocol::SocketType`.
+
+Moreover, using the event-based interface, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym -- see [here](./scratch/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement an RL-based TCP congestion control algorithms.
 
 In order to run it, please execute:
 ```
@@ -140,7 +142,7 @@ cd ./scratch/rl-tcp/
 ./test_tcp.py --start=0
 ```
 
-Note, that it our Python TCP NewReno implementation achieves the same number of transmitted packets as the one implemented in ns3 (see output of ns-3 simulation, i.e. `RxPkts: 5265` in both cases). Please exacute the following command to cross-check:
+Note, that our Python TCP NewReno implementation achieves the same number of transmitted packets like the one implemented in ns3 (see the output of ns-3 simulation, i.e. `RxPkts: 5367` in both cases). Please execute the following command to cross-check:
 ```
 ./waf --run "rl-tcp --transport_prot=TcpNewReno"
 ```

@@ -1,6 +1,6 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2013 ResiliNets, ITTC, University of Kansas
+ * Copyright (c) 2018 Piotr Gawlowicz
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,22 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors: Justin P. Rohrer, Truc Anh N. Nguyen <annguyen@ittc.ku.edu>, Siddharth Gangadhar <siddharth@ittc.ku.edu>
+ * Author: Piotr Gawlowicz <gawlowicz.p@gmail.com>
+ * Based on script: ./examples/tcp/tcp-variants-comparison.cc
  *
- * James P.G. Sterbenz <jpgs@ittc.ku.edu>, director
- * ResiliNets Research Group  http://wiki.ittc.ku.edu/resilinets
- * Information and Telecommunication Technology Center (ITTC)
- * and Department of Electrical Engineering and Computer Science
- * The University of Kansas Lawrence, KS USA.
+ * Topology:
  *
- * Work supported in part by NSF FIND (Future Internet Design) Program
- * under grant CNS-0626918 (Postmodern Internet Architecture),
- * NSF grant CNS-1050226 (Multilayer Network Resilience Analysis and Experimentation on GENI),
- * US Department of Defense (DoD), and ITTC at The University of Kansas.
- *
- * “TCP Westwood(+) Protocol Implementation in ns-3”
- * Siddharth Gangadhar, Trúc Anh Ngọc Nguyễn , Greeshma Umapathi, and James P.G. Sterbenz,
- * ICST SIMUTools Workshop on ns-3 (WNS3), Cannes, France, March 2013
+ *   Right Leafs (Clients)                      Left Leafs (Sinks)
+ *           |            \                    /        |
+ *           |             \    bottleneck    /         |
+ *           |              R0--------------R1          |
+ *           |             /                  \         |
+ *           |   access   /                    \ access |
+ *           N -----------                      --------N
  */
 
 #include <iostream>
@@ -41,10 +37,10 @@
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/point-to-point-layout-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/error-model.h"
 #include "ns3/tcp-header.h"
-#include "ns3/udp-header.h"
 #include "ns3/enum.h"
 #include "ns3/event-id.h"
 #include "ns3/flow-monitor-helper.h"
@@ -58,209 +54,69 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpVariantsComparison");
 
-static bool firstCwnd = true;
-static bool firstSshThr = true;
-static bool firstRtt = true;
-static bool firstRto = true;
-static Ptr<OutputStreamWrapper> cWndStream;
-static Ptr<OutputStreamWrapper> ssThreshStream;
-static Ptr<OutputStreamWrapper> rttStream;
-static Ptr<OutputStreamWrapper> rtoStream;
-static Ptr<OutputStreamWrapper> nextTxStream;
-static Ptr<OutputStreamWrapper> nextRxStream;
-static Ptr<OutputStreamWrapper> inFlightStream;
-static uint32_t cWndValue;
-static uint32_t ssThreshValue;
-
-
-static uint32_t rxPkts;
+static std::vector<uint32_t> rxPkts;
 
 static void
-CountRxPkts(Ptr<const Packet> packet, const Address & srcAddr)
+CountRxPkts(uint32_t sinkId, Ptr<const Packet> packet, const Address & srcAddr)
 {
-  rxPkts++;
+  rxPkts[sinkId]++;
 }
 
 static void
-CwndTracer (uint32_t oldval, uint32_t newval)
+PrintRxCount()
 {
-  if (firstCwnd)
-    {
-      *cWndStream->GetStream () << "0.0 " << oldval << std::endl;
-      firstCwnd = false;
-    }
-  *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
-  cWndValue = newval;
-
-  if (!firstSshThr)
-    {
-      *ssThreshStream->GetStream () << Simulator::Now ().GetSeconds () << " " << ssThreshValue << std::endl;
-    }
+  uint32_t size = rxPkts.size();
+  NS_LOG_UNCOND("RxPkts:");
+  for (uint32_t i=0; i<size; i++){
+    NS_LOG_UNCOND("---SinkId: "<< i << " RxPkts: " << rxPkts.at(i));
+  }
 }
 
-static void
-SsThreshTracer (uint32_t oldval, uint32_t newval)
-{
-  if (firstSshThr)
-    {
-      *ssThreshStream->GetStream () << "0.0 " << oldval << std::endl;
-      firstSshThr = false;
-    }
-  *ssThreshStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval << std::endl;
-  ssThreshValue = newval;
-
-  if (!firstCwnd)
-    {
-      *cWndStream->GetStream () << Simulator::Now ().GetSeconds () << " " << cWndValue << std::endl;
-    }
-}
-
-static void
-RttTracer (Time oldval, Time newval)
-{
-  if (firstRtt)
-    {
-      *rttStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
-      firstRtt = false;
-    }
-  *rttStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
-}
-
-static void
-RtoTracer (Time oldval, Time newval)
-{
-  if (firstRto)
-    {
-      *rtoStream->GetStream () << "0.0 " << oldval.GetSeconds () << std::endl;
-      firstRto = false;
-    }
-  *rtoStream->GetStream () << Simulator::Now ().GetSeconds () << " " << newval.GetSeconds () << std::endl;
-}
-
-static void
-NextTxTracer (SequenceNumber32 old, SequenceNumber32 nextTx)
-{
-  NS_UNUSED (old);
-  *nextTxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextTx << std::endl;
-}
-
-static void
-InFlightTracer (uint32_t old, uint32_t inFlight)
-{
-  NS_UNUSED (old);
-  *inFlightStream->GetStream () << Simulator::Now ().GetSeconds () << " " << inFlight << std::endl;
-}
-
-static void
-NextRxTracer (SequenceNumber32 old, SequenceNumber32 nextRx)
-{
-  NS_UNUSED (old);
-  *nextRxStream->GetStream () << Simulator::Now ().GetSeconds () << " " << nextRx << std::endl;
-}
-
-static void
-TraceCwnd (std::string cwnd_tr_file_name)
-{
-  AsciiTraceHelper ascii;
-  cWndStream = ascii.CreateFileStream (cwnd_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow", MakeCallback (&CwndTracer));
-}
-
-static void
-TraceSsThresh (std::string ssthresh_tr_file_name)
-{
-  AsciiTraceHelper ascii;
-  ssThreshStream = ascii.CreateFileStream (ssthresh_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/SlowStartThreshold", MakeCallback (&SsThreshTracer));
-}
-
-static void
-TraceRtt (std::string rtt_tr_file_name)
-{
-  AsciiTraceHelper ascii;
-  rttStream = ascii.CreateFileStream (rtt_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTT", MakeCallback (&RttTracer));
-}
-
-static void
-TraceRto (std::string rto_tr_file_name)
-{
-  AsciiTraceHelper ascii;
-  rtoStream = ascii.CreateFileStream (rto_tr_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/RTO", MakeCallback (&RtoTracer));
-}
-
-static void
-TraceNextTx (std::string &next_tx_seq_file_name)
-{
-  AsciiTraceHelper ascii;
-  nextTxStream = ascii.CreateFileStream (next_tx_seq_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/NextTxSequence", MakeCallback (&NextTxTracer));
-}
-
-static void
-TraceInFlight (std::string &in_flight_file_name)
-{
-  AsciiTraceHelper ascii;
-  inFlightStream = ascii.CreateFileStream (in_flight_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/1/$ns3::TcpL4Protocol/SocketList/0/BytesInFlight", MakeCallback (&InFlightTracer));
-}
-
-
-static void
-TraceNextRx (std::string &next_rx_seq_file_name)
-{
-  AsciiTraceHelper ascii;
-  nextRxStream = ascii.CreateFileStream (next_rx_seq_file_name.c_str ());
-  Config::ConnectWithoutContext ("/NodeList/2/$ns3::TcpL4Protocol/SocketList/1/RxBuffer/NextRxSequence", MakeCallback (&NextRxTracer));
-}
 
 int main (int argc, char *argv[])
 {
   uint32_t openGymPort = 5555;
+  double tcpEnvTimeStep = 0.1;
+
+  uint32_t nLeaf = 1;
   std::string transport_prot = "TcpRl";
   double error_p = 0.0;
-  std::string bandwidth = "2Mbps";
-  std::string delay = "0.01ms";
+  std::string bottleneck_bandwidth = "2Mbps";
+  std::string bottleneck_delay = "0.01ms";
   std::string access_bandwidth = "10Mbps";
-  std::string access_delay = "45ms";
-  bool tracing = false;
+  std::string access_delay = "20ms";
   std::string prefix_file_name = "TcpVariantsComparison";
   uint64_t data_mbytes = 0;
   uint32_t mtu_bytes = 400;
-  uint16_t num_flows = 1;
   double duration = 10.0;
   uint32_t run = 0;
   bool flow_monitor = false;
-  bool pcap = false;
   bool sack = true;
   std::string queue_disc_type = "ns3::PfifoFastQueueDisc";
   std::string recovery = "ns3::TcpClassicRecovery";
-
 
   CommandLine cmd;
   // required parameters for OpenGym interface
   cmd.AddValue ("openGymPort", "Port number for OpenGym env. Default: 5555", openGymPort);
   cmd.AddValue ("simSeed", "Seed for random generator. Default: 1", run);
+  cmd.AddValue ("envTimeStep", "Time step interval for time-based TCP env [s]. Default: 0.1s", tcpEnvTimeStep);
   // other parameters
+  cmd.AddValue ("nLeaf",     "Number of left and right side leaf nodes", nLeaf);
   cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
                 "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus, TcpLedbat, "
-		"TcpLp", transport_prot);
+		            "TcpLp, TcpRl, TcpRlTimeBased", transport_prot);
   cmd.AddValue ("error_p", "Packet error rate", error_p);
-  cmd.AddValue ("bandwidth", "Bottleneck bandwidth", bandwidth);
-  cmd.AddValue ("delay", "Bottleneck delay", delay);
+  cmd.AddValue ("bottleneck_bandwidth", "Bottleneck bandwidth", bottleneck_bandwidth);
+  cmd.AddValue ("bottleneck_delay", "Bottleneck delay", bottleneck_delay);
   cmd.AddValue ("access_bandwidth", "Access link bandwidth", access_bandwidth);
   cmd.AddValue ("access_delay", "Access link delay", access_delay);
-  cmd.AddValue ("tracing", "Flag to enable/disable tracing", tracing);
   cmd.AddValue ("prefix_name", "Prefix of output trace file", prefix_file_name);
   cmd.AddValue ("data", "Number of Megabytes of data to transmit", data_mbytes);
   cmd.AddValue ("mtu", "Size of IP packets to send in bytes", mtu_bytes);
-  cmd.AddValue ("num_flows", "Number of flows", num_flows);
   cmd.AddValue ("duration", "Time to allow flows to run in seconds", duration);
   cmd.AddValue ("run", "Run index (for setting repeatable seeds)", run);
   cmd.AddValue ("flow_monitor", "Enable flow monitor", flow_monitor);
-  cmd.AddValue ("pcap_tracing", "Enable or disable PCAP tracing", pcap);
   cmd.AddValue ("queue_disc_type", "Queue disc type for gateway (e.g. ns3::CoDelQueueDisc)", queue_disc_type);
   cmd.AddValue ("sack", "Enable or disable SACK option", sack);
   cmd.AddValue ("recovery", "Recovery algorithm type to use (e.g., ns3::TcpPrrRecovery", recovery);
@@ -272,7 +128,7 @@ int main (int argc, char *argv[])
   SeedManager::SetRun (run);
 
   NS_LOG_UNCOND("Ns3Env parameters:");
-  if (transport_prot.compare ("ns3::TcpRl") == 0)
+  if (transport_prot.compare ("ns3::TcpRl") == 0 or transport_prot.compare ("ns3::TcpRlTimeBased") == 0)
   {
     NS_LOG_UNCOND("--openGymPort: " << openGymPort);
   } else {
@@ -288,12 +144,15 @@ int main (int argc, char *argv[])
   if (transport_prot.compare ("ns3::TcpRl") == 0)
   {
     openGymInterface = OpenGymInterface::Get(openGymPort);
+    Config::SetDefault ("ns3::TcpRl::Reward", DoubleValue (2.0)); // Reward when increasing congestion window
+    Config::SetDefault ("ns3::TcpRl::Penalty", DoubleValue (-30.0)); // Penalty when decreasing congestion window
   }
 
-  // User may find it convenient to enable logging
-  //LogComponentEnable("TcpVariantsComparison", LOG_LEVEL_ALL);
-  //LogComponentEnable("BulkSendApplication", LOG_LEVEL_INFO);
-  //LogComponentEnable("PfifoFastQueueDisc", LOG_LEVEL_ALL);
+  if (transport_prot.compare ("ns3::TcpRlTimeBased") == 0)
+  {
+    openGymInterface = OpenGymInterface::Get(openGymPort);
+    Config::SetDefault ("ns3::TcpRlTimeBased::StepTime", TimeValue (Seconds(tcpEnvTimeStep))); // Time step of TCP env
+  }
 
   // Calculate the ADU size
   Header* temp_header = new Ipv4Header ();
@@ -315,6 +174,8 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocketBase::Sack", BooleanValue (sack));
+  Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (2));
+
 
   Config::SetDefault ("ns3::TcpL4Protocol::RecoveryType",
                       TypeIdValue (TypeId::LookupByName (recovery)));
@@ -333,14 +194,6 @@ int main (int argc, char *argv[])
       Config::SetDefault ("ns3::TcpL4Protocol::SocketType", TypeIdValue (TypeId::LookupByName (transport_prot)));
     }
 
-  // Create gateways, sources, and sinks
-  NodeContainer gateways;
-  gateways.Create (1);
-  NodeContainer sources;
-  sources.Create (num_flows);
-  NodeContainer sinks;
-  sinks.Create (num_flows);
-
   // Configure the error model
   // Here we use RateErrorModel with packet error rate
   Ptr<UniformRandomVariable> uv = CreateObject<UniformRandomVariable> ();
@@ -350,134 +203,110 @@ int main (int argc, char *argv[])
   error_model.SetUnit (RateErrorModel::ERROR_UNIT_PACKET);
   error_model.SetRate (error_p);
 
-  PointToPointHelper UnReLink;
-  UnReLink.SetDeviceAttribute ("DataRate", StringValue (bandwidth));
-  UnReLink.SetChannelAttribute ("Delay", StringValue (delay));
-  UnReLink.SetDeviceAttribute ("ReceiveErrorModel", PointerValue (&error_model));
+  // Create the point-to-point link helpers
+  PointToPointHelper bottleNeckLink;
+  bottleNeckLink.SetDeviceAttribute  ("DataRate", StringValue (bottleneck_bandwidth));
+  bottleNeckLink.SetChannelAttribute ("Delay", StringValue (bottleneck_delay));
+  //bottleNeckLink.SetDeviceAttribute  ("ReceiveErrorModel", PointerValue (&error_model));
 
+  PointToPointHelper pointToPointLeaf;
+  pointToPointLeaf.SetDeviceAttribute  ("DataRate", StringValue (access_bandwidth));
+  pointToPointLeaf.SetChannelAttribute ("Delay", StringValue (access_delay));
 
+  PointToPointDumbbellHelper d (nLeaf, pointToPointLeaf,
+                                nLeaf, pointToPointLeaf,
+                                bottleNeckLink);
+
+  // Install IP stack
   InternetStackHelper stack;
   stack.InstallAll ();
 
+  // Traffic Control
   TrafficControlHelper tchPfifo;
   tchPfifo.SetRootQueueDisc ("ns3::PfifoFastQueueDisc");
 
   TrafficControlHelper tchCoDel;
   tchCoDel.SetRootQueueDisc ("ns3::CoDelQueueDisc");
 
-  Ipv4AddressHelper address;
-  address.SetBase ("10.0.0.0", "255.255.255.0");
-
-  // Configure the sources and sinks net devices
-  // and the channels between the sources/sinks and the gateways
-  PointToPointHelper LocalLink;
-  LocalLink.SetDeviceAttribute ("DataRate", StringValue (access_bandwidth));
-  LocalLink.SetChannelAttribute ("Delay", StringValue (access_delay));
-
-  Ipv4InterfaceContainer sink_interfaces;
-
   DataRate access_b (access_bandwidth);
-  DataRate bottle_b (bandwidth);
+  DataRate bottle_b (bottleneck_bandwidth);
   Time access_d (access_delay);
-  Time bottle_d (delay);
+  Time bottle_d (bottleneck_delay);
 
   uint32_t size = static_cast<uint32_t>((std::min (access_b, bottle_b).GetBitRate () / 8) *
-    ((access_d + bottle_d) * 2).GetSeconds ());
+    ((access_d + bottle_d + access_d) * 2).GetSeconds ());
 
   Config::SetDefault ("ns3::PfifoFastQueueDisc::MaxSize",
                       QueueSizeValue (QueueSize (QueueSizeUnit::PACKETS, size / mtu_bytes)));
   Config::SetDefault ("ns3::CoDelQueueDisc::MaxSize",
                       QueueSizeValue (QueueSize (QueueSizeUnit::BYTES, size)));
 
-  for (uint32_t i = 0; i < num_flows; i++)
-    {
-      NetDeviceContainer devices;
-      devices = LocalLink.Install (sources.Get (i), gateways.Get (0));
-      tchPfifo.Install (devices);
-      address.NewNetwork ();
-      Ipv4InterfaceContainer interfaces = address.Assign (devices);
+  if (queue_disc_type.compare ("ns3::PfifoFastQueueDisc") == 0)
+  {
+    tchPfifo.Install (d.GetLeft()->GetDevice(1));
+    tchPfifo.Install (d.GetRight()->GetDevice(1));
+  }
+  else if (queue_disc_type.compare ("ns3::CoDelQueueDisc") == 0)
+  {
+    tchCoDel.Install (d.GetLeft()->GetDevice(1));
+    tchCoDel.Install (d.GetRight()->GetDevice(1));
+  }
+  else
+  {
+    NS_FATAL_ERROR ("Queue not recognized. Allowed values are ns3::CoDelQueueDisc or ns3::PfifoFastQueueDisc");
+  }
 
-      devices = UnReLink.Install (gateways.Get (0), sinks.Get (i));
-      if (queue_disc_type.compare ("ns3::PfifoFastQueueDisc") == 0)
-        {
-          tchPfifo.Install (devices);
-        }
-      else if (queue_disc_type.compare ("ns3::CoDelQueueDisc") == 0)
-        {
-          tchCoDel.Install (devices);
-        }
-      else
-        {
-          NS_FATAL_ERROR ("Queue not recognized. Allowed values are ns3::CoDelQueueDisc or ns3::PfifoFastQueueDisc");
-        }
-      address.NewNetwork ();
-      interfaces = address.Assign (devices);
-      sink_interfaces.Add (interfaces.Get (1));
-    }
+  // Assign IP Addresses
+  d.AssignIpv4Addresses (Ipv4AddressHelper ("10.1.1.0", "255.255.255.0"),
+                         Ipv4AddressHelper ("10.2.1.0", "255.255.255.0"),
+                         Ipv4AddressHelper ("10.3.1.0", "255.255.255.0"));
+
 
   NS_LOG_INFO ("Initialize Global Routing.");
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  // Install apps in left and right nodes
   uint16_t port = 50000;
   Address sinkLocalAddress (InetSocketAddress (Ipv4Address::GetAny (), port));
   PacketSinkHelper sinkHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
+  ApplicationContainer sinkApps;
+  for (uint32_t i = 0; i < d.RightCount (); ++i)
+  {
+    sinkHelper.SetAttribute ("Protocol", TypeIdValue (TcpSocketFactory::GetTypeId ()));
+    sinkApps.Add (sinkHelper.Install (d.GetRight (i)));
+  }
+  sinkApps.Start (Seconds (0.0));
+  sinkApps.Stop  (Seconds (stop_time));
 
-  ApplicationContainer sinkApp;
+  for (uint32_t i = 0; i < d.LeftCount (); ++i)
+  {
+    // Create an on/off app sending packets to the left side
+    AddressValue remoteAddress (InetSocketAddress (d.GetRightIpv4Address (i), port));
+    Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
+    BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
+    ftp.SetAttribute ("Remote", remoteAddress);
+    ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
+    ftp.SetAttribute ("MaxBytes", UintegerValue (data_mbytes * 1000000));
 
-  for (uint16_t i = 0; i < sources.GetN (); i++)
-    {
-      AddressValue remoteAddress (InetSocketAddress (sink_interfaces.GetAddress (i, 0), port));
-      Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (tcp_adu_size));
-      BulkSendHelper ftp ("ns3::TcpSocketFactory", Address ());
-      ftp.SetAttribute ("Remote", remoteAddress);
-      ftp.SetAttribute ("SendSize", UintegerValue (tcp_adu_size));
-      ftp.SetAttribute ("MaxBytes", UintegerValue (data_mbytes * 1000000));
-
-      ApplicationContainer sourceApp = ftp.Install (sources.Get (i));
-      sourceApp.Start (Seconds (start_time * i));
-      sourceApp.Stop (Seconds (stop_time - 3));
-
-      sinkHelper.SetAttribute ("Protocol", TypeIdValue (TcpSocketFactory::GetTypeId ()));
-      sinkApp.Add(sinkHelper.Install (sinks.Get (i)));
-      sinkApp.Start (Seconds (start_time * i));
-      sinkApp.Stop (Seconds (stop_time));
-    }
-
-  // Set up tracing if enabled
-  if (tracing)
-    {
-      std::ofstream ascii;
-      Ptr<OutputStreamWrapper> ascii_wrap;
-      ascii.open ((prefix_file_name + "-ascii").c_str ());
-      ascii_wrap = new OutputStreamWrapper ((prefix_file_name + "-ascii").c_str (),
-                                            std::ios::out);
-      stack.EnableAsciiIpv4All (ascii_wrap);
-
-      Simulator::Schedule (Seconds (0.00001), &TraceCwnd, prefix_file_name + "-cwnd.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceSsThresh, prefix_file_name + "-ssth.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceRtt, prefix_file_name + "-rtt.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceRto, prefix_file_name + "-rto.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceNextTx, prefix_file_name + "-next-tx.data");
-      Simulator::Schedule (Seconds (0.00001), &TraceInFlight, prefix_file_name + "-inflight.data");
-      Simulator::Schedule (Seconds (0.1), &TraceNextRx, prefix_file_name + "-next-rx.data");
-    }
-
-  if (pcap)
-    {
-      UnReLink.EnablePcapAll (prefix_file_name, true);
-      LocalLink.EnablePcapAll (prefix_file_name, true);
-    }
+    ApplicationContainer clientApp = ftp.Install (d.GetLeft (i));
+    clientApp.Start (Seconds (start_time * i)); // Start after sink
+    clientApp.Stop (Seconds (stop_time - 3)); // Stop before the sink
+  }
 
   // Flow monitor
   FlowMonitorHelper flowHelper;
   if (flow_monitor)
-    {
-      flowHelper.InstallAll ();
-    }
+  {
+    flowHelper.InstallAll ();
+  }
 
-  // connect OpenGym entity to event source
-  Ptr<PacketSink> pktSink = DynamicCast<PacketSink>(sinkApp.Get(0));
-  pktSink->TraceConnectWithoutContext ("Rx", MakeCallback (&CountRxPkts));
+  // Count RX packets
+  for (uint32_t i = 0; i < d.RightCount (); ++i)
+  {
+    rxPkts.push_back(0);
+    Ptr<PacketSink> pktSink = DynamicCast<PacketSink>(sinkApps.Get(i));
+    pktSink->TraceConnectWithoutContext ("Rx", MakeBoundCallback (&CountRxPkts, i));
+  }
 
   Simulator::Stop (Seconds (stop_time));
   Simulator::Run ();
@@ -487,12 +316,12 @@ int main (int argc, char *argv[])
       flowHelper.SerializeToXmlFile (prefix_file_name + ".flowmonitor", true, true);
     }
 
-  if (transport_prot.compare ("ns3::TcpRl") == 0)
+  if (transport_prot.compare ("ns3::TcpRl") == 0 or transport_prot.compare ("ns3::TcpRlTimeBased") == 0)
   {
     openGymInterface->NotifySimulationEnd();
   }
 
-  NS_LOG_UNCOND("RxPkts: " << rxPkts);
+  PrintRxCount();
   Simulator::Destroy ();
   return 0;
 }
