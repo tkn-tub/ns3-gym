@@ -1,34 +1,35 @@
+from tcp_base import TcpEventBased
+
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2018, Technische Universität Berlin"
 __version__ = "0.1.0"
 __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 
-class Tcp(object):
-    """docstring for Tcp"""
-    def __init__(self):
-        super(Tcp, self).__init__()
-
-    def set_spaces(self, obs, act):
-        self.obsSpace = obs
-        self.actSpace = act
-
-    def get_action(self, obs, reward, done, info):
-        pass
-
-
-class TcpNewReno(Tcp):
+class TcpNewReno(TcpEventBased):
     """docstring for TcpNewReno"""
     def __init__(self):
         super(TcpNewReno, self).__init__()
 
     def get_action(self, obs, reward, done, info):
-        ssThresh = obs[0]
-        cWnd = obs[1]
-        segmentSize = obs[2]
-        segmentsAcked = obs[3]
-        bytesInFlight  = obs[4]
-        simTimeMs  = obs[5]
+        # unique socket ID
+        socketUuid = obs[0]
+        # TCP env type: event-based = 0 / time-based = 1
+        envType = obs[1]
+        # sim time in us
+        simTime_us = obs[2]
+        # unique node ID
+        nodeId = obs[3]
+        # current ssThreshold
+        ssThresh = obs[4]
+        # current contention window size
+        cWnd = obs[5]
+        # segment size
+        segmentSize = obs[6]
+        # number of acked segments
+        segmentsAcked = obs[7]
+        # estimated bytes in flight
+        bytesInFlight  = obs[8]
 
         new_cWnd = 1
         new_ssThresh = 1

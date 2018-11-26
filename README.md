@@ -1,7 +1,7 @@
 ns3-gym
 ============
 
-OpenAI Gym is a toolkit for reinforcement learning widely used in research. The ns–3 network simulator is the de–facto standard for academic and industry research into networking protocols and communications technology. Ns3-gym is a framework which integrates OpenAI Gym into ns-3.
+[OpenAI Gym](https://gym.openai.com/) is a toolkit for reinforcement learning (RL) widely used in research. The network simulator [ns-3](https://www.nsnam.org/) is the de-facto standard for academic and industry studies in the areas of networking protocols and communication technologies. ns3-gym is a framework that integrates both OpenAI Gym and ns-3 in order to encourage usage of RL in networking research.
 
 Installation
 ============
@@ -56,7 +56,7 @@ cd ./scratch/opengym
 Examples
 ========
 
-All examples can be found [here](./scratch/).
+All examples can be found [here](./examples/).
 
 ## Basic Interface
 
@@ -112,7 +112,7 @@ Our proposed RL mapping is:
 The figure below shows the learning performance when using a simple neural network with fully connected input and an output layer.
 We see that after around 80 episodes the agent is able to perfectly predict the next channel state from the current observation hence avoiding any collision with the interference.
 
-The full source code of the example can be found [here](./scratch/interference-pattern/).
+The full source code of the example can be found [here](./examples/interference-pattern/).
 
 <p align="center">
 <img src="doc/figures/cognitive-radio-learning.png" alt="drawing" width="600"/>
@@ -122,7 +122,33 @@ Note, that in a more realistic scenario the simple waveform generator in this ex
 
 
 ## RL-TCP
-The proper RL-TCP agent example is still under development. However, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym interface -- see [here](./scratch/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement a RL-based TCP congetsion control algorithms.
+The proper RL-TCP agent example is still under development. However, we have already implemented and released two versions (i.e. time and event-based) of an interface allowing to monitor parameters of a TCP instance and control its `Congestion Window` and `Slow Start Threshold` -- see details [here](./examples/rl-tcp/tcp_base.py). Note, that both versions inherits from `TcpCongestionOps` and hence can be used as an argument for `ns3::TcpL4Protocol::SocketType`.
+
+Moreover, using the event-based interface, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym -- see [here](./examples/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement an RL-based TCP congestion control algorithms.
+
+In order to run it, please execute:
+```
+cd ./scratch/rl-tcp
+./test_tcp.py
+```
+
+Or in two terminals:
+```
+# Terminal 1:
+./waf --run "rl-tcp --transport_prot=TcpRl"
+
+# Terminal 2:
+cd ./scratch/rl-tcp/
+./test_tcp.py --start=0
+```
+
+Note, that our Python TCP NewReno implementation achieves the same number of transmitted packets like the one implemented in ns3 (see the output of ns-3 simulation, i.e. `RxPkts: 5367` in both cases). Please execute the following command to cross-check:
+```
+./waf --run "rl-tcp --transport_prot=TcpNewReno"
+```
+
+## RL-TCP
+The proper RL-TCP agent example is still under development. However, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym interface -- see [here](./examples/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement a RL-based TCP congetsion control algorithms.
 
 In order to run it, please execute:
 ```

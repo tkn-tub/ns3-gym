@@ -1,69 +1,52 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2018 Technische Universität Berlin
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Piotr Gawlowicz <gawlowicz@tkn.tu-berlin.de>
+ */
+
 #ifndef TCP_RL_H
 #define TCP_RL_H
 
 #include "ns3/tcp-congestion-ops.h"
-#include "ns3/tcp-recovery-ops.h"
-#include "ns3/sequence-number.h"
-#include "ns3/traced-value.h"
-#include "ns3/event-id.h"
 #include "ns3/opengym-module.h"
+#include "ns3/tcp-socket-base.h"
 
 namespace ns3 {
 
-class Packet;
-class TcpHeader;
+class TcpSocketBase;
 class Time;
-class EventId;
-class TcpRl;
+class TcpGymEnv;
 
-class TcpGymEnv : public OpenGymEnv
+
+// used to get pointer to Congestion Algorithm
+class TcpSocketDerived : public TcpSocketBase
 {
 public:
-  TcpGymEnv ();
-  virtual ~TcpGymEnv ();
   static TypeId GetTypeId (void);
-  virtual void DoDispose ();
+  virtual TypeId GetInstanceTypeId () const;
 
-  void SetTcp(Ptr<TcpRl> tcp);
-  void SetExtraInfo(std::string info);
-  void SetTcpSocketState(std::string info);
+  TcpSocketDerived (void);
+  virtual ~TcpSocketDerived (void);
 
-  // OpenGym interface
-  Ptr<OpenGymSpace> GetActionSpace();
-  Ptr<OpenGymSpace> GetObservationSpace();
-  bool GetGameOver();
-  Ptr<OpenGymDataContainer> GetObservation();
-  float GetReward();
-  std::string GetExtraInfo();
-  bool ExecuteActions(Ptr<OpenGymDataContainer> action);
-
-
-  // TCP congestion control interface
-  uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight);
-  void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
-  void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt);
-  void CongestionStateSet (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCongState_t newState);
-  void CwndEvent (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event);
-
-private:
-  Ptr<TcpRl> m_tcp;
-  std::string m_info;
-
-  // state
-  Ptr<const TcpSocketState> m_tcb;
-  uint32_t m_bytesInFlight;
-  uint32_t m_segmentsAcked;
-  Time m_rtt;
-  TcpSocketState::TcpCongState_t m_newState;
-  TcpSocketState::TcpCAEvent_t m_event;
-
-  // actions
-  uint32_t m_new_ssThresh;
-  uint32_t m_new_cWnd;
+  Ptr<TcpCongestionOps> GetCongestionControlAlgorithm ();
 };
 
 
-class TcpRl : public TcpCongestionOps
+class TcpRlBase : public TcpCongestionOps
 {
 public:
   /**
@@ -72,37 +55,68 @@ public:
    */
   static TypeId GetTypeId (void);
 
-  TcpRl ();
+  TcpRlBase ();
 
   /**
    * \brief Copy constructor.
    * \param sock object to copy.
    */
-  TcpRl (const TcpRl& sock);
+  TcpRlBase (const TcpRlBase& sock);
 
-  ~TcpRl ();
+  ~TcpRlBase ();
 
-  std::string GetName () const;
-
-  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb,
-                                uint32_t bytesInFlight);
-
+  virtual std::string GetName () const;
+  virtual uint32_t GetSsThresh (Ptr<const TcpSocketState> tcb, uint32_t bytesInFlight);
   virtual void IncreaseWindow (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked);
-
-  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked,
-                          const Time& rtt);
-
-  virtual void CongestionStateSet (Ptr<TcpSocketState> tcb,
-                                   const TcpSocketState::TcpCongState_t newState);
-
-  virtual void CwndEvent (Ptr<TcpSocketState> tcb,
-                          const TcpSocketState::TcpCAEvent_t event);
-
+  virtual void PktsAcked (Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt);
+  virtual void CongestionStateSet (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCongState_t newState);
+  virtual void CwndEvent (Ptr<TcpSocketState> tcb, const TcpSocketState::TcpCAEvent_t event);
   virtual Ptr<TcpCongestionOps> Fork ();
 
-private:
+protected:
+  static uint64_t GenerateUuid ();
+  virtual void CreateGymEnv();
+  void ConnectSocketCallbacks();
+
   // OpenGymEnv interface
+  Ptr<TcpSocketBase> m_tcpSocket;
   Ptr<TcpGymEnv> m_tcpGymEnv;
+};
+
+
+class TcpRl : public TcpRlBase
+{
+public:
+  static TypeId GetTypeId (void);
+
+  TcpRl ();
+  TcpRl (const TcpRl& sock);
+  ~TcpRl ();
+
+  virtual std::string GetName () const;
+private:
+  virtual void CreateGymEnv();
+  // OpenGymEnv env
+  float m_reward {1.0};
+  float m_penalty {-100.0};
+};
+
+
+class TcpRlTimeBased : public TcpRlBase
+{
+public:
+  static TypeId GetTypeId (void);
+
+  TcpRlTimeBased ();
+  TcpRlTimeBased (const TcpRlTimeBased& sock);
+  ~TcpRlTimeBased ();
+
+  virtual std::string GetName () const;
+
+private:
+  virtual void CreateGymEnv();
+  // OpenGymEnv env
+  Time m_timeStep {MilliSeconds (100)};
 };
 
 } // namespace ns3
