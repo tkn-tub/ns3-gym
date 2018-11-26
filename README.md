@@ -8,8 +8,9 @@ Installation
 
 1. Install all required dependencies required by ns-3.
 ```
-# minimal requirements for C++:
+# minimal requirements for C++ and boost:
 apt-get install gcc g++ python
+apt-get install libboost-all-dev
 
 see https://www.nsnam.org/wiki/Installation
 ```
