@@ -298,7 +298,9 @@ OpenGymInterface::NotifySimulationEnd()
 {
   NS_LOG_FUNCTION (this);
   m_simEnd = true;
-  WaitForStop();
+  if (m_initSimMsgSent) {
+    WaitForStop();
+  }
 }
 
 bool
