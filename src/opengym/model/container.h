@@ -23,11 +23,7 @@
 #define OPENGYM_CONTAINER_H
 
 #include "ns3/object.h"
-#include "ns3/simulator.h"
 #include "ns3/type-name.h"
-#include <map>
-
-#include "spaces.h"
 #include "messages.pb.h"
 
 namespace ns3 {
