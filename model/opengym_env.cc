@@ -19,9 +19,8 @@
  *
  */
 
-#include <algorithm>
 #include "ns3/log.h"
-#include "ns3/type-name.h"
+#include "ns3/object.h"
 #include "opengym_env.h"
 #include "container.h"
 #include "spaces.h"

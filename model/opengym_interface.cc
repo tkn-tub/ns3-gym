@@ -19,12 +19,11 @@
  *
  */
 
-#include <algorithm>
+#include <sys/types.h>
+#include <unistd.h>
 #include "ns3/log.h"
-#include "ns3/node.h"
 #include "ns3/config.h"
-#include <boost/algorithm/string.hpp>
-
+#include "ns3/simulator.h"
 #include "opengym_interface.h"
 #include "opengym_env.h"
 #include "container.h"
@@ -299,7 +298,9 @@ OpenGymInterface::NotifySimulationEnd()
 {
   NS_LOG_FUNCTION (this);
   m_simEnd = true;
-  WaitForStop();
+  if (m_initSimMsgSent) {
+    WaitForStop();
+  }
 }
 
 bool

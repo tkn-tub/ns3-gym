@@ -19,12 +19,9 @@
  *
  */
 
-#include <algorithm>
+#include "ns3/object.h"
 #include "ns3/log.h"
-#include "ns3/node.h"
 #include "spaces.h"
-#include <boost/algorithm/string.hpp>
-
 
 namespace ns3 {
 
