@@ -23,7 +23,6 @@
 #define OPENGYM_ENV_H
 
 #include "ns3/object.h"
-#include "ns3/simulator.h"
 
 namespace ns3 {
 

@@ -19,9 +19,7 @@
  *
  */
 
-#include <algorithm>
 #include "ns3/log.h"
-#include "ns3/type-name.h"
 #include "container.h"
 
 namespace ns3 {

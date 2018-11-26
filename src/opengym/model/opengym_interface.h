@@ -23,13 +23,7 @@
 #define OPENGYM_INTERFACE_H
 
 #include "ns3/object.h"
-#include "ns3/simulator.h"
-#include <map>
-
 #include <zmq.hpp>
-#include <string>
-#include <iostream>
-#include "messages.pb.h"
 
 namespace ns3 {
 

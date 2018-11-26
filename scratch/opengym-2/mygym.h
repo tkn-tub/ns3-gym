@@ -23,6 +23,7 @@
 #define MY_GYM_ENTITY_H
 
 #include "ns3/opengym-module.h"
+#include "ns3/nstime.h"
 
 namespace ns3 {
 
