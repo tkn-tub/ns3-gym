@@ -147,30 +147,6 @@ Note, that our Python TCP NewReno implementation achieves the same number of tra
 ./waf --run "rl-tcp --transport_prot=TcpNewReno"
 ```
 
-## RL-TCP
-The proper RL-TCP agent example is still under development. However, we already have an example Python Gym agent that implements TCP NewReno and communicates with the ns-3 simulation process using ns3gym interface -- see [here](./examples/rl-tcp/tcp_newreno.py). The example can be used as a starting point to implement a RL-based TCP congetsion control algorithms.
-
-In order to run it, please execute:
-```
-cd ./scratch/rl-tcp
-./test_tcp.py
-```
-
-Or in two terminals:
-```
-# Terminal 1:
-./waf --run "rl-tcp --transport_prot=TcpRl"
-
-# Terminal 2:
-cd ./scratch/rl-tcp/
-./test_tcp.py --start=0
-```
-
-Note, that it our Python TCP NewReno implementation achieves the same number of transmitted packets as the one implemented in ns3 (see output of ns-3 simulation, i.e. `RxPkts: 5265` in both cases). Please exacute the following command to cross-check:
-```
-./waf --run "rl-tcp --transport_prot=TcpNewReno"
-```
-
 Contact
 ============
 * Piotr Gawlowicz, TU-Berlin, gawlowicz@tkn
