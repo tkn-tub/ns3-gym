@@ -1,1 +1,4 @@
 pyzmq
+numpy
+protobuf
+gym
