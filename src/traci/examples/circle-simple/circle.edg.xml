@@ -1,0 +1,18 @@
+<edges>
+    <edge from="n1" id="e1" to="n2" />
+    <edge from="n2" id="e2" to="n3" />
+	<edge from="n3" id="e3" to="n4" />
+	<edge from="n4" id="e4" to="n5" />
+	<edge from="n5" id="e5" to="n6" />
+    <edge from="n6" id="e6" to="n7" />
+	<edge from="n7" id="e7" to="n8" />
+	<edge from="n8" id="e8" to="n9" />
+	<edge from="n9" id="e9" to="n10" />
+    <edge from="n10" id="e10" to="n11" />
+	<edge from="n11" id="e11" to="n12" />
+	<edge from="n12" id="e12" to="n13" />
+	<edge from="n13" id="e13" to="n14" />
+    <edge from="n14" id="e14" to="n15" />
+	<edge from="n15" id="e15" to="n16" />
+	<edge from="n16" id="e16" to="n1" />
+</edges>
