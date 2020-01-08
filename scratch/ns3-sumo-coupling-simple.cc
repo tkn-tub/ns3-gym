@@ -77,13 +77,13 @@ main (int argc, char *argv[])
   Ptr<TraciClient> sumoClient = CreateObject<TraciClient> ();
 
 /** scenario1 **/
-  sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/circle-simple/circle.sumo.cfg"));
+  sumoClient->SetAttribute ("SumoConfigPath", StringValue ("rl-fyp/sumo_files/circle-simple/circle.sumo.cfg"));
 
 /** scenario2 **/
-  //sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/sumo-highway-merge/merge-baseline_20191204-1224431575455083.45716.sumo.cfg"));
+  //sumoClient->SetAttribute ("SumoConfigPath", StringValue ("rl-fyp/sumo_files/sumo-highway-merge/merge-baseline_20191204-1224431575455083.45716.sumo.cfg"));
 
 /** scenario3 **/
- //sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/closed-loop/sugiyama_20191204-1142081575452528.806477.sumo.cfg"));
+ //sumoClient->SetAttribute ("SumoConfigPath", StringValue ("rl-fyp/sumo_files/closed-loop/sugiyama_20191204-1142081575452528.806477.sumo.cfg"));
 
 
   sumoClient->SetAttribute ("SumoBinaryPath", StringValue (""));    // use system installation of sumo
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   sumoClient->SumoSetup (setupNewWifiNode, shutdownWifiNode);
 
   /*** 10. Setup and Start Simulation + Animation ***/
-  AnimationInterface anim ("src/traci-applications/examples/ns3-sumo-coupling.xml"); // Mandatory
+  AnimationInterface anim ("rl-fyp/netanim/ns3-sumo-coupling.xml"); // Mandatory
 
   Simulator::Stop (simulationTime);
 
