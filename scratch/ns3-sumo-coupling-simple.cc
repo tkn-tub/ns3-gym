@@ -75,9 +75,17 @@ main (int argc, char *argv[])
 
   /*** 7. Setup Traci and start SUMO ***/
   Ptr<TraciClient> sumoClient = CreateObject<TraciClient> ();
-//  sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/circle-simple/circle.sumo.cfg"));
 
-  sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/sumo-highway-merge/merge-baseline_20191204-1224431575455083.45716.sumo.cfg"));
+/** scenario1 **/
+  sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/circle-simple/circle.sumo.cfg"));
+
+/** scenario2 **/
+  //sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/sumo-highway-merge/merge-baseline_20191204-1224431575455083.45716.sumo.cfg"));
+
+/** scenario3 **/
+ //sumoClient->SetAttribute ("SumoConfigPath", StringValue ("src/traci/examples/closed-loop/sugiyama_20191204-1142081575452528.806477.sumo.cfg"));
+
+
   sumoClient->SetAttribute ("SumoBinaryPath", StringValue (""));    // use system installation of sumo
   sumoClient->SetAttribute ("SynchInterval", TimeValue (Seconds (0.1)));
   sumoClient->SetAttribute ("StartTime", TimeValue (Seconds (0.0)));
