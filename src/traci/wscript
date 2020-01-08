@@ -1,0 +1,35 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+# def options(opt):
+#     pass
+
+# def configure(conf):
+#     conf.check_nonfatal(header_name='stdint.h', define_name='HAVE_STDINT_H')
+
+def build(bld):
+    module = bld.create_ns3_module('traci', ['core', 'mobility', 'internet'])
+    module.source = [
+        'model/traci-client.cc',
+        'model/sumo-socket.cc',
+        'model/sumo-storage.cc',
+        'model/sumo-TraCIAPI.cc',
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'traci'
+    headers.source = [
+        'model/traci-client.h',
+        'model/sumo-TraCIAPI.h',
+        'model/sumo-config.h',
+        'model/sumo-socket.h',
+        'model/sumo-storage.h',
+        'model/sumo-TraCIConstants.h',
+        'model/sumo-TraCIDefs.h',
+        ]
+
+    if bld.env.ENABLE_EXAMPLES:
+        bld.recurse('examples')
+
+    # bld.ns3_python_bindings()
+
