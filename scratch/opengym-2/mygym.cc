@@ -95,8 +95,8 @@ MyGymEnv::GetObservationSpace()
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
 
   Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-  space->Add("box", box);
-  space->Add("discrete", discrete);
+  space->Add("myVector", box);
+  space->Add("myValue", discrete);
 
   NS_LOG_UNCOND ("MyGetObservationSpace: " << space);
   return space;
@@ -118,8 +118,8 @@ MyGymEnv::GetActionSpace()
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
 
   Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-  space->Add("box", box);
-  space->Add("discrete", discrete);
+  space->Add("myActionVector", box);
+  space->Add("myActionValue", discrete);
 
   NS_LOG_UNCOND ("MyGetActionSpace: " << space);
   return space;
@@ -166,13 +166,13 @@ MyGymEnv::GetObservation()
   uint32_t value = rngInt->GetInteger(low, high);
   discrete->SetValue(value);
 
-  Ptr<OpenGymTupleContainer> data = CreateObject<OpenGymTupleContainer> ();
-  data->Add(box);
-  data->Add(discrete);
+  Ptr<OpenGymDictContainer> data = CreateObject<OpenGymDictContainer> ();
+  data->Add("myVector",box);
+  data->Add("myValue",discrete);
 
   // Print data from tuple
-  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get(0));
-  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get(1));
+  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get("myVector"));
+  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get("myValue"));
   NS_LOG_UNCOND ("MyGetObservation: " << data);
   NS_LOG_UNCOND ("---" << mbox);
   NS_LOG_UNCOND ("---" << mdiscrete);
@@ -210,8 +210,8 @@ bool
 MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   Ptr<OpenGymDictContainer> dict = DynamicCast<OpenGymDictContainer>(action);
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("box"));
-  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("discrete"));
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("myActionVector"));
+  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("myActionValue"));
 
   NS_LOG_UNCOND ("MyExecuteActions: " << action);
   NS_LOG_UNCOND ("---" << box);

@@ -10,19 +10,8 @@ __version__ = "0.1.0"
 __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 
-parser = argparse.ArgumentParser(description='Start simulation script on/off')
-parser.add_argument('--start',
-                    type=int,
-                    default=1,
-                    help='Start ns-3 simulation script 0/1, Default: 1')
-parser.add_argument('--iterations',
-                    type=int,
-                    default=1,
-                    help='Number of iterations, Default: 1')
-args = parser.parse_args()
-startSim = bool(args.start)
-iterationNum = int(args.iterations)
-
+startSim = False
+iterationNum = 1
 port = 5555
 simTime = 5 # seconds
 stepTime = 0.5  # seconds
@@ -33,8 +22,6 @@ simArgs = {"--simTime": simTime,
 debug = False
 
 env = ns3env.Ns3Env(port=port, stepTime=stepTime, startSim=startSim, simSeed=seed, simArgs=simArgs, debug=debug)
-# simpler:
-#env = ns3env.Ns3Env()
 env.reset()
 
 ob_space = env.observation_space
@@ -60,6 +47,10 @@ try:
             print("Step: ", stepIdx)
             obs, reward, done, info = env.step(action)
             print("---obs, reward, done, info: ", obs, reward, done, info)
+            myVector = obs["myVector"]
+            myValue = obs["myValue"]
+            print("---myVector: ", myVector)
+            print("---myValue: ", myValue)
 
             if done:
                 stepIdx = 0
