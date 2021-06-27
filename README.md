@@ -19,12 +19,19 @@ see https://www.nsnam.org/wiki/Installation
 sudo add-apt-repository ppa:maarten-fonville/protobuf
 sudo apt-get update
 
+# on Ubuntu 20.04
+sudo apt-apt repository "deb-src http://ppa.launchpad.net/maarten0fonville/protobuf cosmic main"
+
 apt-get install libzmq5 libzmq5-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
 3. Configure and build ns-3 project (if you are going to use Python virtual environment, please execute these commands inside it):
 ```
+# cd into the bake/source from ns3 installation and clone repository
+cd ~/bake/source
+git clone https://github.com/tkn-tub/ns3-gym
+
 # Opengym Protocol Buffer messages (C++ and Python) are build during configure
 ./waf configure
 ./waf build
