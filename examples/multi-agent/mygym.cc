@@ -41,9 +41,10 @@ MyGymEnv::MyGymEnv ()
   Simulator::Schedule (Seconds(0.0), &MyGymEnv::ScheduleNextStateRead, this);
 }
 
-MyGymEnv::MyGymEnv (Time stepTime)
+MyGymEnv::MyGymEnv (uint32_t id, Time stepTime)
 {
   NS_LOG_FUNCTION (this);
+  m_agentId = id;
   m_interval = stepTime;
 
   Simulator::Schedule (Seconds(0.0), &MyGymEnv::ScheduleNextStateRead, this);
@@ -95,10 +96,10 @@ MyGymEnv::GetObservationSpace()
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
 
   Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-  space->Add("myVector", box);
-  space->Add("myValue", discrete);
+  space->Add("box", box);
+  space->Add("discrete", discrete);
 
-  NS_LOG_UNCOND ("MyGetObservationSpace: " << space);
+  NS_LOG_UNCOND ("AgendId: "<< m_agentId << " MyGetObservationSpace: " << space);
   return space;
 }
 
@@ -118,10 +119,10 @@ MyGymEnv::GetActionSpace()
   Ptr<OpenGymBoxSpace> box = CreateObject<OpenGymBoxSpace> (low, high, shape, dtype);
 
   Ptr<OpenGymDictSpace> space = CreateObject<OpenGymDictSpace> ();
-  space->Add("myActionVector", box);
-  space->Add("myActionValue", discrete);
+  space->Add("box", box);
+  space->Add("discrete", discrete);
 
-  NS_LOG_UNCOND ("MyGetActionSpace: " << space);
+  NS_LOG_UNCOND ("AgendId: "<< m_agentId << " MyGetActionSpace: " << space);
   return space;
 }
 
@@ -138,7 +139,7 @@ MyGymEnv::GetGameOver()
   if (stepCounter == 10 && test) {
       isGameOver = true;
   }
-  NS_LOG_UNCOND ("MyGetGameOver: " << isGameOver);
+  NS_LOG_UNCOND ("AgendId: "<< m_agentId << " MyGetGameOver: " << isGameOver);
   return isGameOver;
 }
 
@@ -166,14 +167,14 @@ MyGymEnv::GetObservation()
   uint32_t value = rngInt->GetInteger(low, high);
   discrete->SetValue(value);
 
-  Ptr<OpenGymDictContainer> data = CreateObject<OpenGymDictContainer> ();
-  data->Add("myVector",box);
-  data->Add("myValue",discrete);
+  Ptr<OpenGymTupleContainer> data = CreateObject<OpenGymTupleContainer> ();
+  data->Add(box);
+  data->Add(discrete);
 
   // Print data from tuple
-  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get("myVector"));
-  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get("myValue"));
-  NS_LOG_UNCOND ("MyGetObservation: " << data);
+  Ptr<OpenGymBoxContainer<uint32_t> > mbox = DynamicCast<OpenGymBoxContainer<uint32_t> >(data->Get(0));
+  Ptr<OpenGymDiscreteContainer> mdiscrete = DynamicCast<OpenGymDiscreteContainer>(data->Get(1));
+  NS_LOG_UNCOND ("AgendId: "<< m_agentId << " MyGetObservation: " << data);
   NS_LOG_UNCOND ("---" << mbox);
   NS_LOG_UNCOND ("---" << mdiscrete);
 
@@ -199,7 +200,7 @@ MyGymEnv::GetExtraInfo()
 {
   std::string myInfo = "testInfo";
   myInfo += "|123";
-  NS_LOG_UNCOND("MyGetExtraInfo: " << myInfo);
+  NS_LOG_UNCOND("AgendId: "<< m_agentId << " MyGetExtraInfo: " << myInfo);
   return myInfo;
 }
 
@@ -210,10 +211,10 @@ bool
 MyGymEnv::ExecuteActions(Ptr<OpenGymDataContainer> action)
 {
   Ptr<OpenGymDictContainer> dict = DynamicCast<OpenGymDictContainer>(action);
-  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("myActionVector"));
-  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("myActionValue"));
+  Ptr<OpenGymBoxContainer<uint32_t> > box = DynamicCast<OpenGymBoxContainer<uint32_t> >(dict->Get("box"));
+  Ptr<OpenGymDiscreteContainer> discrete = DynamicCast<OpenGymDiscreteContainer>(dict->Get("discrete"));
 
-  NS_LOG_UNCOND ("MyExecuteActions: " << action);
+  NS_LOG_UNCOND ("AgendId: "<< m_agentId << " MyExecuteActions: " << action);
   NS_LOG_UNCOND ("---" << box);
   NS_LOG_UNCOND ("---" << discrete);
   return true;

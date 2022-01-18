@@ -35,6 +35,10 @@ try:
 
         print("Step: ", stepIdx)
         print("---obs, reward, done, info: ", obs, reward, done, info)
+        myVector = obs["myVector"]
+        myValue = obs["myValue"]
+        print("---myVector: ", myVector)
+        print("---myValue: ", myValue)
 
         if done:
             break
