@@ -90,7 +90,7 @@ bool ExecuteActions(Ptr<OpenGymDataContainer> action);
 ```
 Note, that the generic ns3-gym interface allows to observe any variable or parameter in a simulation.
 
-A more detailed description can be found in our [Technical Report](https://arxiv.org/pdf/1810.03943.pdf).
+A more detailed description can be found in our [Paper](http://www.tkn.tu-berlin.de/fileadmin/fg112/Papers/2019/gawlowicz19_mswim.pdf).
 
 ## Cognitive Radio
 We consider the problem of radio channel selection in a wireless multi-channel environment, e.g. 802.11 networks with external interference. The objective of the agent is to select for the next time slot a channel free of interference. We consider a simple illustrative example where the external interference follows a periodic pattern, i.e. sweeping over all channels one to four in the same order as shown in the table.
@@ -159,12 +159,13 @@ How to reference ns3-gym?
 Please use the following bibtex :
 
 ```
-@article{ns3gym,
-  author    = {Gawlowicz, Piotr and Zubow, Anatolij},
-  title     = {{ns3-gym: Extending OpenAI Gym for Networking Research}},
-  journal   = {CoRR},
-  year      = {2018},
-  url       = {https://arxiv.org/abs/1810.03943},
-  archivePrefix = {arXiv},
+@inproceedings{ns3gym,
+  Title = {{ns-3 meets OpenAI Gym: The Playground for Machine Learning in Networking Research}},
+  Author = {Gaw{\l}owicz, Piotr and Zubow, Anatolij},
+  Booktitle = {{ACM International Conference on Modeling, Analysis and Simulation of Wireless and Mobile Systems (MSWiM)}},
+  Year = {2019},
+  Location = {Miami Beach, USA},
+  Month = {November},
+  Url = {http://www.tkn.tu-berlin.de/fileadmin/fg112/Papers/2019/gawlowicz19_mswim.pdf
 }
 ```
