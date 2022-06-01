@@ -18,6 +18,8 @@
  * Author: Piotr Gawlowicz <gawlowicz@tkn.tu-berlin.de>
  */
 
+#include "mygym.h"
+
 #include "ns3/core-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/packet-sink.h"
@@ -27,8 +29,6 @@
 #include "ns3/spectrum-module.h"
 #include "ns3/stats-module.h"
 #include "ns3/flow-monitor-module.h"
-
-#include "mygym.h"
 
 using namespace ns3;
 
