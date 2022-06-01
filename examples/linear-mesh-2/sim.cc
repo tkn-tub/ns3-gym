@@ -106,10 +106,10 @@ main (int argc, char *argv[])
 
   // WiFi device
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211_5MHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211p);
 
   // Channel
-  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper ();
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
 
   spectrumPhy.SetChannel (spectrumChannel);

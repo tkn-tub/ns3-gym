@@ -80,9 +80,8 @@ Ptr<WifiMacQueue> GetQueue(Ptr<Node> node)
   Ptr<NetDevice> dev = node->GetDevice (0);
   Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
   Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
-  Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (wifi_mac);
   PointerValue ptr;
-  rmac->GetAttribute ("Txop", ptr);
+  wifi_mac->GetAttribute ("Txop", ptr);
   Ptr<Txop> txop = ptr.Get<Txop> ();
   Ptr<WifiMacQueue> queue = txop->GetWifiMacQueue ();
   return queue;
@@ -142,9 +141,8 @@ bool SetCw(Ptr<Node> node, uint32_t cwMinValue=0, uint32_t cwMaxValue=0)
   Ptr<NetDevice> dev = node->GetDevice (0);
   Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
   Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
-  Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (wifi_mac);
   PointerValue ptr;
-  rmac->GetAttribute ("Txop", ptr);
+  wifi_mac->GetAttribute ("Txop", ptr);
   Ptr<Txop> txop = ptr.Get<Txop> ();
 
   // if both set to the same value then we have uniform backoff?
@@ -253,10 +251,10 @@ main (int argc, char *argv[])
 
   // WiFi device
   WifiHelper wifi;
-  wifi.SetStandard (WIFI_PHY_STANDARD_80211_5MHZ);
+  wifi.SetStandard (WIFI_STANDARD_80211p);
 
   // Channel
-  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper::Default ();
+  SpectrumWifiPhyHelper spectrumPhy = SpectrumWifiPhyHelper ();
   Ptr<MultiModelSpectrumChannel> spectrumChannel = CreateObject<MultiModelSpectrumChannel> ();
 
   spectrumPhy.SetChannel (spectrumChannel);

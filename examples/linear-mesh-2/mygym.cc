@@ -123,9 +123,8 @@ MyGymEnv::GetQueue(Ptr<Node> node)
   Ptr<NetDevice> dev = node->GetDevice (0);
   Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
   Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
-  Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (wifi_mac);
   PointerValue ptr;
-  rmac->GetAttribute ("Txop", ptr);
+  wifi_mac->GetAttribute ("Txop", ptr);
   Ptr<Txop> txop = ptr.Get<Txop> ();
   Ptr<WifiMacQueue> queue = txop->GetWifiMacQueue ();
   return queue;
@@ -180,9 +179,8 @@ MyGymEnv::SetCw(Ptr<Node> node, uint32_t cwMinValue, uint32_t cwMaxValue)
   Ptr<NetDevice> dev = node->GetDevice (0);
   Ptr<WifiNetDevice> wifi_dev = DynamicCast<WifiNetDevice> (dev);
   Ptr<WifiMac> wifi_mac = wifi_dev->GetMac ();
-  Ptr<RegularWifiMac> rmac = DynamicCast<RegularWifiMac> (wifi_mac);
   PointerValue ptr;
-  rmac->GetAttribute ("Txop", ptr);
+  wifi_mac->GetAttribute ("Txop", ptr);
   Ptr<Txop> txop = ptr.Get<Txop> ();
 
   // if both set to the same value then we have uniform backoff?
