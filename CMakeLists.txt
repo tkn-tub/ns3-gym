@@ -20,10 +20,19 @@ set(proto_source_files
     model/messages.proto
 )
 
+# generate proto file for C++
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${proto_source_files})
 file(RELATIVE_PATH PROTO_HDRS_REL ${CMAKE_CURRENT_SOURCE_DIR} ${PROTO_HDRS})
 
-# TODO generate python file and move to the right location
+# generate proto file for Python
+FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/model PROTOMODEL_PATH)
+FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/model/ns3gym/ns3gym PROTOBINDING_PATH)
+FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${proto_source_files} proto_source_file_native)
+EXECUTE_PROCESS(COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} --proto_path=${PROTOMODEL_PATH} --python_out=${PROTOBINDING_PATH}
+        ${proto_source_file_native} RESULT_VARIABLE rv)
+IF(${rv})
+    MESSAGE("Generation of ns3gym Protobuf Python messages failed. Source file: ${proto_native}")
+ENDIF()
 
 set(source_files
     helper/opengym-helper.cc
