@@ -10,9 +10,9 @@ Installation
 ```
 # minimal requirements for C++:
 apt-get install gcc g++ python
-
-see [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-started.html#prerequisites/)
 ```
+Check [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-started.html#prerequisites/)
+
 2. Install ZMQ and Protocol Buffers libs:
 ```
 sudo apt-get update
