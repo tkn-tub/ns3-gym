@@ -15,41 +15,48 @@ see https://www.nsnam.org/wiki/Installation
 ```
 2. Install ZMQ and Protocol Buffers libs:
 ```
-# to install protobuf-3.6 on ubuntu 16.04:
-sudo add-apt-repository ppa:maarten-fonville/protobuf
 sudo apt-get update
-
 apt-get install libzmq5 libzmq5-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
-3. Configure and build ns-3 project (if you are going to use Python virtual environment, please execute these commands inside it):
+3. Clone ns3-gym repository in to `contrib` directory and change the branch:
 ```
-# Opengym Protocol Buffer messages (C++ and Python) are build during configure
+cd ./contrib
+git clone git@github.com:tkn-tub/ns3-gym.git ./opengym
+cd opengym/
+git checkout app
+```
+It is important to use the `opengym` as the name of the ns3-gym app directory. 
+
+4. Configure and build ns-3 project (if you are going to use Python virtual environment, please execute these commands inside it):
+```
 ./waf configure
 ./waf build
 ```
+Note: Opengym Protocol Buffer messages (C++ and Python) are build during configure.
 
-4. Install ns3gym located in model/ns3gym (Python3 required)
+5. Install ns3gym located in model/ns3gym (Python3 required)
 ```
-pip3 install ./model/ns3gym
+cd ./contrib/opengym/
+pip3 install -U ./model/ns3gym
 ```
 
-5. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
+6. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
 
-6. Run example:
+7. Run example:
 ```
-cd ./scratch/opengym
+cd ./contrib/opengym/examples/opengym/ 
 ./simple_test.py
 ```
 
-7. (Optional) Start ns-3 simulation script and Gym agent separately in two terminals (useful for debugging):
+8. (Optional) Start ns-3 simulation script and Gym agent separately in two terminals (useful for debugging):
 ```
 # Terminal 1
 ./waf --run "opengym"
 
 # Terminal 2
-cd ./scratch/opengym
+cd ./contrib/opengym/examples/opengym/ 
 ./test.py --start=0
 ```
 
@@ -65,8 +72,10 @@ All examples can be found [here](./examples/).
 import gym
 import ns3gym
 import MyAgent
+from ns3gym import ns3env
 
-env = gym.make('ns3-v0')
+#env = gym.make('ns3-v0')  <--- causes some errors with the new OpenAI Gym framework, please use ns3env.Ns3Env()
+env = ns3env.Ns3Env()
 obs = env.reset()
 agent = MyAgent.Agent()
 
@@ -128,7 +137,7 @@ Moreover, using the event-based interface, we already have an example Python Gym
 
 In order to run it, please execute:
 ```
-cd ./scratch/rl-tcp
+cd ./contrib/opengym/examples/rl-tcp/
 ./test_tcp.py
 ```
 
@@ -138,7 +147,7 @@ Or in two terminals:
 ./waf --run "rl-tcp --transport_prot=TcpRl"
 
 # Terminal 2:
-cd ./scratch/rl-tcp/
+cd ./contrib/opengym/examples/rl-tcp/
 ./test_tcp.py --start=0
 ```
 
