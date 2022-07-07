@@ -15,6 +15,7 @@ see https://www.nsnam.org/wiki/Installation
 ```
 2. Install ZMQ and Protocol Buffers libs:
 ```
+sudo apt-get update
 apt-get install libzmq5 libzmq5-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
