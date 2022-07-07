@@ -1,125 +1,134 @@
 #!/usr/bin/python
 import sys
 import os
-import time
 import subprocess
 
 
-def find_waf_path(cwd):
-	wafPath = cwd
+def find_ns3_path(cwd):
+	"""
+	Find the executable ns3 for building and running ns3 scenarios
+	"""
+	ns3_path = cwd
 
 	found = False
-	myDir = cwd
+	my_dir = cwd
 	while (not found):
-		for fname in os.listdir(myDir):
-			if fname == "waf":
+		for fname in os.listdir(my_dir):
+			if fname == "ns3":
 				found = True
-				wafPath = os.path.join(myDir, fname)
+				ns3_path = os.path.join(my_dir, fname)
 				break
 
-		myDir = os.path.dirname(myDir)
+		my_dir = os.path.dirname(my_dir)
 
-	return wafPath
+	return ns3_path
 
 
 def build_ns3_project(debug=True):
+	"""
+	Actually build the ns3 scenario before running.
+	"""
 	cwd = os.getcwd()
-	simScriptName = os.path.basename(cwd)
-	wafPath = find_waf_path(cwd)
-	baseNs3Dir = os.path.dirname(wafPath)
+	sim_script_name = os.path.basename(cwd)
+	ns3_path = find_ns3_path(cwd)
+	base_ns3_dir = os.path.dirname(ns3_path)
 
-	os.chdir(baseNs3Dir)
+	os.chdir(base_ns3_dir)
 
-	wafString = wafPath + ' build'
+	ns3_string = ns3_path + ' build'
 
 	output = subprocess.DEVNULL
 	if debug:
 		output = None
 
-	buildRequired = False
-	ns3Proc = subprocess.Popen(wafString, shell=True, stdout=subprocess.PIPE, stderr=None, universal_newlines=True)
+	build_required = False
+	ns3_proc = subprocess.Popen(ns3_string, shell=True, stdout=subprocess.PIPE, stderr=None, universal_newlines=True)
 
-	lineHistory = []
-	for line in ns3Proc.stdout:
-		if (True or "Compiling" in line or "Linking" in line) and not buildRequired:
-			buildRequired = True
+	line_history = []
+	for line in ns3_proc.stdout:
+		if (True or "Compiling" in line or "Linking" in line) and not build_required:
+			build_required = True
 			print("Build ns-3 project if required")
-			for l in lineHistory:
+			for l in line_history:
 				sys.stdout.write(l)
-				lineHistory = []
+				line_history = []
 
-		if buildRequired:
+		if build_required:
 			sys.stdout.write(line)
 		else:
-			lineHistory.append(line)
+			line_history.append(line)
 
-	p_status = ns3Proc.wait()
-	if buildRequired:
+	p_status = ns3_proc.wait()
+	if build_required:
 		print("(Re-)Build of ns-3 finished with status: ", p_status)
 	os.chdir(cwd)
 
 
-def start_sim_script(port=5555, simSeed=0, simArgs={}, debug=False):
+def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
+	"""
+	Actually run the ns3 scenario
+	"""
 	cwd = os.getcwd()
-	simScriptName = os.path.basename(cwd)
-	wafPath = find_waf_path(cwd)
-	baseNs3Dir = os.path.dirname(wafPath)
+	sim_script_name = os.path.basename(cwd)
+	ns3_path = find_ns3_path(cwd)
+	base_ns3_dir = os.path.dirname(ns3_path)
 
-	os.chdir(baseNs3Dir)
+	os.chdir(base_ns3_dir)
 
-	wafString = wafPath + ' --run "' + simScriptName
+	ns3_string = ns3_path + ' run "' + sim_script_name
 
 	if port:
-		wafString += ' --openGymPort=' + str(port)
+		ns3_string += ' --openGymPort=' + str(port)
 
-	if simSeed:
-		wafString += ' --simSeed=' + str(simSeed)
+	if sim_seed:
+		ns3_string += ' --simSeed=' + str(sim_seed)
 
-	for k,v in simArgs.items():
-		wafString += " "
-		wafString += str(k)
-		wafString += "="
-		wafString += str(v)
+	for key, value in sim_args.items():
+		ns3_string += " "
+		ns3_string += str(key)
+		ns3_string += "="
+		ns3_string += str(value)
 
-	wafString += '"'
+	ns3_string += '"'
 
-	ns3Proc = None
+	debug = True
+	ns3_proc = None
 	if debug:
-		ns3Proc = subprocess.Popen(wafString, shell=True, stdout=None, stderr=None)
+		ns3_proc = subprocess.Popen(ns3_string, shell=True, stdout=None, stderr=None)
 	else:
-		'''
-		users were complaining that when they start example they have to wait 10 min for initialization.
-		simply ns3 is being built during this time, so now the output of the build will be put to stdout
-		but sometimes build is not required and I would like to avoid unnecessary output on the screen
-		it is not easy to get tell before start ./waf whether the build is required or not
-		here, I use simple trick, i.e. if output of build contains {"Compiling","Linking"}
-		then the build is required and, hence, i put the output to the stdout
-		'''
-		errorOutput = subprocess.DEVNULL
-		ns3Proc = subprocess.Popen(wafString, shell=True, stdout=subprocess.PIPE, stderr=errorOutput, universal_newlines=True)
+		# users were complaining that when they start example they have to wait 10 min for initialization.
+		# simply ns3 is being built during this time, so now the output of the build will be put to stdout
+		# but sometimes build is not required and I would like to avoid unnecessary output on the screen
+		# it is not easy to get tell before start ./waf whether the build is required or not
+		# here, I use simple trick, i.e. if output of build contains {"Compiling","Linking"}
+		# then the build is required and, hence, i put the output to the stdout
+		error_output = subprocess.DEVNULL
+		print(ns3_string)
+		ns3_proc = subprocess.Popen(ns3_string, shell=True, stdout=subprocess.PIPE, stderr=error_output, universal_newlines=True)
 
-		buildRequired = False
-		lineHistory = []
-		for line in ns3Proc.stdout:
-			if ("Compiling" in line or "Linking" in line) and not buildRequired:
-				buildRequired = True
+		build_required = False
+		line_history = []
+		for line in ns3_proc.stdout:
+			print(line)
+			if ("Compiling" in line or "Linking" in line) and not build_required:
+				build_required = True
 				print("Build ns-3 project if required")
-				for l in lineHistory:
-					sys.stdout.write(l)
-					lineHistory = []
+				for subline in line_history:
+					sys.stdout.write(subline)
+					line_history = []
 
-			if buildRequired:
+			if build_required:
 				sys.stdout.write(line)
 			else:
-				lineHistory.append(line)
+				line_history.append(line)
 
-			if ("Waf: Leaving directory" in line):
+			if "Waf: Leaving directory" in line:
 				break
 
 	if debug:
-		print("Start command: ",wafString)
-		print("Started ns3 simulation script, Process Id: ", ns3Proc.pid)
+		print("Start command: ", ns3_string)
+		print("Started ns3 simulation script, Process Id: ", ns3_proc.pid)
 
 	# go back to my dir
 	os.chdir(cwd)
-	return ns3Proc
+	return ns3_proc
