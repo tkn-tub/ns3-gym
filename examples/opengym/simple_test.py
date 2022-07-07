@@ -4,6 +4,7 @@
 import gym
 import argparse
 import ns3gym
+from ns3gym import ns3env
 
 __author__ = "Piotr Gawlowicz"
 __copyright__ = "Copyright (c) 2018, Technische Universität Berlin"
@@ -11,7 +12,8 @@ __version__ = "0.1.0"
 __email__ = "gawlowicz@tkn.tu-berlin.de"
 
 
-env = gym.make('ns3-v0')
+#env = gym.make('ns3-v0')
+env = ns3env.Ns3Env()
 env.reset()
 
 ob_space = env.observation_space
