@@ -31,7 +31,7 @@ It is important to use the `opengym` as the name of the ns3-gym app directory.
 
 4. Configure and build ns-3 project (if you are going to use Python virtual environment, please execute these commands inside it):
 ```
-./waf configure
+./waf configure --enable-examples
 ./waf build
 ```
 Note: Opengym Protocol Buffer messages (C++ and Python) are build during configure.
