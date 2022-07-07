@@ -11,7 +11,7 @@ Installation
 # minimal requirements for C++:
 apt-get install gcc g++ python
 
-see https://www.nsnam.org/wiki/Installation
+see [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-started.html#prerequisites/)
 ```
 2. Install ZMQ and Protocol Buffers libs:
 ```
@@ -23,7 +23,7 @@ apt-get install protobuf-compiler
 3. Clone ns3-gym repository in to `contrib` directory and change the branch:
 ```
 cd ./contrib
-git clone git@github.com:tkn-tub/ns3-gym.git ./opengym
+git clone https://github.com/tkn-tub/ns3-gym.git ./opengym
 cd opengym/
 git checkout app-ns-3.36+
 ```
