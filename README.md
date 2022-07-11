@@ -27,6 +27,8 @@ git clone https://github.com/tkn-tub/ns3-gym.git ./opengym
 cd opengym/
 git checkout app-ns-3.36+
 ```
+Check [working with cmake](https://www.nsnam.org/docs/manual/html/working-with-cmake.html)
+
 It is important to use the `opengym` as the name of the ns3-gym app directory. 
 
 3. Configure and build ns-3 project:
