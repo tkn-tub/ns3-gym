@@ -16,7 +16,7 @@ Check [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-start
 2. Install ZMQ and Protocol Buffers libs:
 ```
 sudo apt-get update
-apt-get install libzmq5 libzmq5-dev
+apt-get install libzmq5 libzmq3-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
@@ -39,7 +39,7 @@ Note: Opengym Protocol Buffer messages (C++ and Python) are build during configu
 5. Install ns3gym located in model/ns3gym (Python3 required)
 ```
 cd ./contrib/opengym/
-pip3 install -U ./model/ns3gym
+pip3 install --user ./model/ns3gym
 ```
 
 6. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
