@@ -17,29 +17,26 @@ Installation
 ```
 # minimal requirements for C++:
 apt-get install gcc g++ python
-
-see https://www.nsnam.org/wiki/Installation
 ```
+Check [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-started.html#prerequisites/)
+
 2. Install ZMQ and Protocol Buffers libs:
 ```
-# to install protobuf-3.6 on ubuntu 16.04:
-sudo add-apt-repository ppa:maarten-fonville/protobuf
 sudo apt-get update
-
-apt-get install libzmq5 libzmq5-dev
+apt-get install libzmq5 libzmq3-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
 ```
 3. Configure and build ns-3 project (if you are going to use Python virtual environment, please execute these commands inside it):
 ```
 # Opengym Protocol Buffer messages (C++ and Python) are build during configure
-./waf configure
+./waf configure --enable-examples
 ./waf build
 ```
 
 4. Install ns3gym located in src/opengym/model/ns3gym (Python3 required)
 ```
-pip3 install ./src/opengym/model/ns3gym
+pip3 install --user ./src/opengym/model/ns3gym
 ```
 
 5. (Optional) Install all libraries required by your agent (like tensorflow, keras, etc.).
@@ -72,8 +69,10 @@ All examples can be found [here](./scratch/).
 import gym
 import ns3gym
 import MyAgent
+from ns3gym import ns3env
 
-env = gym.make('ns3-v0')
+#env = gym.make('ns3-v0')  <--- causes some errors with the new OpenAI Gym framework, please use ns3env.Ns3Env()
+env = ns3env.Ns3Env()
 obs = env.reset()
 agent = MyAgent.Agent()
 
