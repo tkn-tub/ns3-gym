@@ -21,6 +21,9 @@ def find_ns3_path(cwd):
 
 		my_dir = os.path.dirname(my_dir)
 
+		if str(my_dir) == "/": #root folder
+			print("ns3 file not found. Quitting...")
+			sys.exit()
 	return ns3_path
 
 
