@@ -13,12 +13,13 @@ apt-get install gcc g++ python cmake
 ```
 Check [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-started.html#prerequisites/)
 
-2. Install ZMQ and Protocol Buffers libs:
+2. Install ZMQ, Protocol Buffers and pkg-config libs:
 ```
 sudo apt-get update
 apt-get install libzmq5 libzmq3-dev
 apt-get install libprotobuf-dev
 apt-get install protobuf-compiler
+apt-get install pkg-config
 ```
 3. Clone ns3-gym repository in to `contrib` directory and change the branch:
 ```
