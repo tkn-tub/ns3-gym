@@ -20,6 +20,10 @@ def find_ns3_path(cwd):
 				break
 
 		my_dir = os.path.dirname(my_dir)
+			
+			elif fname == "ns-3-dev":
+				found = True
+				ns3_path = os.path.join(my_dir, fname, "ns3")
 
 		if str(my_dir) == "/": #root folder
 			print("ns3 file not found. Quitting...")
@@ -71,9 +75,8 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
 	"""
 	Actually run the ns3 scenario
 	"""
-	cwd = os.getcwd()
-	sim_script_name = os.path.basename(cwd)
-	ns3_path = find_ns3_path(cwd)
+	sim_script_name = os.path.basename(src_dir)
+	ns3_path = find_ns3_path(src_dir)
 	base_ns3_dir = os.path.dirname(ns3_path)
 
 	os.chdir(base_ns3_dir)
