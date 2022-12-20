@@ -10,7 +10,7 @@ if(NOT ZMQ_FOUND)
     return()
 endif()
 
-find_package(Protobuf 3.0.0)
+find_package(Protobuf CONFIG 3.0.0)
 if(NOT Protobuf_FOUND)
     message(STATUS "protobuf not found")
   return()
@@ -20,27 +20,13 @@ set(proto_source_files
     model/messages.proto
 )
 
-# generate proto file for C++
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${proto_source_files})
-file(RELATIVE_PATH PROTO_HDRS_REL ${CMAKE_CURRENT_SOURCE_DIR} ${PROTO_HDRS})
-
-# generate proto file for Python
-FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/model PROTOMODEL_PATH)
-FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/model/ns3gym/ns3gym PROTOBINDING_PATH)
-FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${proto_source_files} proto_source_file_native)
-EXECUTE_PROCESS(COMMAND ${PROTOBUF_PROTOC_EXECUTABLE} --proto_path=${PROTOMODEL_PATH} --python_out=${PROTOBINDING_PATH}
-        ${proto_source_file_native} RESULT_VARIABLE rv)
-IF(${rv})
-    MESSAGE("Generation of ns3gym Protobuf Python messages failed. Source file: ${proto_native}")
-ENDIF()
-
 set(source_files
     helper/opengym-helper.cc
     model/container.cc
     model/opengym_env.cc
     model/opengym_interface.cc
     model/spaces.cc
-    ${PROTO_SRCS}
+    ${proto_source_files}
 )
 
 set(header_files
@@ -49,7 +35,6 @@ set(header_files
     model/opengym_env.h
     model/opengym_interface.h
     model/spaces.h
-    ${PROTO_HDRS_REL}
 )
 
 build_lib(
@@ -59,13 +44,21 @@ build_lib(
   LIBRARIES_TO_LINK
     ${libcore}
     ${ZMQ_LIBRARIES}
-    ${Protobuf_LIBRARIES}
+    protobuf::libprotobuf
   TEST_SOURCES
     test/opengym-test-suite.cc
 )
 
-# add location of generated messages.pb.h to include directories
-target_include_directories(
-  ${libopengym-obj}
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+protobuf_generate(
+  TARGET ${libopengym-obj}
+  IMPORT_DIRS model/
+  LANGUAGE cpp
+  PROTOC_OUT_DIR ${CMAKE_OUTPUT_DIRECTORY}/include
+)
+
+protobuf_generate(
+  TARGET ${libopengym-obj}
+  IMPORT_DIRS model/
+  LANGUAGE python
+  PROTOC_OUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/model/ns3gym/ns3gym
 )
