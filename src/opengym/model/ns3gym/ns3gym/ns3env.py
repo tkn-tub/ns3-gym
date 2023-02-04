@@ -255,6 +255,7 @@ class Ns3ZmqBridge(object):
                 data = boxContainerPb.floatData
 
             # TODO: reshape using shape info
+            data = np.array(data)
             return data
 
         elif (dataContainerPb.type == pb.Tuple):
