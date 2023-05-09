@@ -10,7 +10,7 @@ if(NOT ZMQ_FOUND)
     return()
 endif()
 
-find_package(Protobuf CONFIG 3.0.0)
+find_package(Protobuf REQUIRED)
 if(NOT Protobuf_FOUND)
     message(STATUS "protobuf not found")
   return()
@@ -49,11 +49,21 @@ build_lib(
     test/opengym-test-suite.cc
 )
 
+# need protobuf_generate func to generate messages
+check_function_exists(protobuf_generate protobuf_generate_exists)
+if(${protobuf_generate_exists})
+    message(STATUS "protobuf_generate command found")
+else()
+  message(STATUS "protobuf_generate command not found -> use a local copy from ${CMAKE_CURRENT_SOURCE_DIR}/protobuf-generate.cmake")
+  include(${CMAKE_CURRENT_SOURCE_DIR}/protobuf-generate.cmake)
+endif()
+
+
 protobuf_generate(
   TARGET ${libopengym-obj}
   IMPORT_DIRS model/
   LANGUAGE cpp
-  PROTOC_OUT_DIR ${CMAKE_OUTPUT_DIRECTORY}/include
+  PROTOC_OUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/model
 )
 
 protobuf_generate(
