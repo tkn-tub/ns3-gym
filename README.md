@@ -9,7 +9,7 @@ Installation
 1. Install all required dependencies required by ns-3.
 ```
 # minimal requirements for C++:
-apt-get install gcc g++ python cmake
+apt-get install gcc g++ python3 python3-pip cmake
 ```
 Check [ns-3 requirements](https://www.nsnam.org/docs/tutorial/html/getting-started.html#prerequisites/)
 
