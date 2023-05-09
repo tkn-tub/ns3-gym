@@ -27,6 +27,6 @@ setup(
     description='OpenAI Gym meets ns-3',
     long_description='OpenAI Gym meets ns-3',
     keywords='openAI gym, ML, RL, ns-3',
-    install_requires=['pyzmq', 'numpy', 'protobuf==3.20.0', 'gym'],
+    install_requires=['pyzmq', 'numpy', 'protobuf==3.20.2', 'gym'],
     extras_require={},
 )
