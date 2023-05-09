@@ -59,8 +59,8 @@ Ptr<OpenGymInterface> *
 OpenGymInterface::DoGet (uint32_t port)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  static Ptr<OpenGymInterface> ptr = 0;
-  if (ptr == 0)
+  static Ptr<OpenGymInterface> ptr = nullptr;
+  if (ptr == nullptr)
     {
       ptr = CreateObject<OpenGymInterface> (port);
       Config::RegisterRootNamespaceObject (ptr);
