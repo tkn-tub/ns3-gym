@@ -67,13 +67,12 @@ def build_ns3_project(debug=True):
 	os.chdir(cwd)
 
 
-def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
+def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os.getcwd()):
 	"""
 	Actually run the ns3 scenario
 	"""
-	cwd = os.getcwd()
-	sim_script_name = os.path.basename(cwd)
-	ns3_path = find_ns3_path(cwd)
+	sim_script_name = os.path.basename(src_dir)
+	ns3_path = find_ns3_path(src_dir)
 	base_ns3_dir = os.path.dirname(ns3_path)
 
 	os.chdir(base_ns3_dir)
@@ -133,5 +132,5 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
 		print("Started ns3 simulation script, Process Id: ", ns3_proc.pid)
 
 	# go back to my dir
-	os.chdir(cwd)
+	os.chdir(src_dir)
 	return ns3_proc
