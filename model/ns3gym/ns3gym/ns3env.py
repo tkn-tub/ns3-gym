@@ -291,7 +291,8 @@ class Ns3ZmqBridge(object):
     def get_extra_info(self):
         return self.extraInfo
 
-    def _pack_data(self, actions, spaceDesc):
+    # add a context for the nested action, an Optional[Space]
+    def _pack_data(self, actions, spaceDesc, context=None):
         dataContainer = pb.DataContainer()
 
         spaceType = spaceDesc.__class__
@@ -349,8 +350,21 @@ class Ns3ZmqBridge(object):
 
             subDataList = []
             for sName, subAction in actions.items():
-                subActSpaceType = self._action_space.spaces[sName]
-                subData = self._pack_data(subAction, subActSpaceType)
+                # if there is a context, retrieve its type
+                if context is None:
+                    subActSpaceType = self._action_space.spaces[sName]
+                else:
+                    subActSpaceType = context.spaces[sName]
+                # if there there is a nested dict, create a subcontext
+                if type(subActSpaceType) == spaces.Dict and context is None:
+                    subcontext = self._action_space.spaces[sName]
+                elif type(subActSpaceType) == spaces.Dict:
+                    subcontext = context.spaces[sName]
+                else:
+                    subcontext = None
+                # create the data within the new context
+                subData = self._pack_data(subAction, subActSpaceType, context=subcontext)
+
                 subData.name = sName
                 subDataList.append(subData)
 
