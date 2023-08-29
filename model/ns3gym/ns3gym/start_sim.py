@@ -17,7 +17,9 @@ def find_ns3_path(cwd):
 			if fname == "ns3":
 				found = True
 				ns3_path = os.path.join(my_dir, fname)
-				break
+			if fname == "ns-3-dev":
+				found = True
+				ns3_path = os.path.join(my_dir, fname, "ns3")
 
 		my_dir = os.path.dirname(my_dir)
 
@@ -77,7 +79,7 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os
 
 	os.chdir(base_ns3_dir)
 
-	ns3_string = ns3_path + ' run "' + sim_script_name
+	ns3_string = ns3_path + ' run "' + sim_script_name + '/sim'
 
 	if port:
 		ns3_string += ' --openGymPort=' + str(port)
