@@ -88,10 +88,7 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os
 		ns3_string += ' --simSeed=' + str(sim_seed)
 
 	for key, value in sim_args.items():
-		ns3_string += " "
-		ns3_string += str(key)
-		ns3_string += "="
-		ns3_string += str(value)
+		ns3_string += " --" + str(key) + "=" + str(value)
 
 	ns3_string += '"'
 
