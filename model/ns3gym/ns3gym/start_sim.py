@@ -69,7 +69,7 @@ def build_ns3_project(debug=True):
 	os.chdir(cwd)
 
 
-def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os.getcwd()):
+def start_sim_script(sim_file, port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os.getcwd()):
 	"""
 	Actually run the ns3 scenario
 	"""
@@ -79,7 +79,7 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os
 
 	os.chdir(base_ns3_dir)
 
-	ns3_string = ns3_path + ' run "' + sim_script_name + '/sim'
+	ns3_string = ns3_path + ' run "' + sim_script_name + '/' + str(sim_file)
 
 	if port:
 		ns3_string += ' --openGymPort=' + str(port)
