@@ -17,7 +17,9 @@ def find_ns3_path(cwd):
 			if fname == "ns3":
 				found = True
 				ns3_path = os.path.join(my_dir, fname)
-				break
+			if fname == "ns-3-dev":
+				found = True
+				ns3_path = os.path.join(my_dir, fname, "ns3")
 
 		my_dir = os.path.dirname(my_dir)
 
@@ -67,18 +69,17 @@ def build_ns3_project(debug=True):
 	os.chdir(cwd)
 
 
-def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
+def start_sim_script(sim_file, port=5555, sim_seed=0, sim_args={}, debug=False, src_dir=os.getcwd()):
 	"""
 	Actually run the ns3 scenario
 	"""
-	cwd = os.getcwd()
-	sim_script_name = os.path.basename(cwd)
-	ns3_path = find_ns3_path(cwd)
+	sim_script_name = os.path.basename(src_dir)
+	ns3_path = find_ns3_path(src_dir)
 	base_ns3_dir = os.path.dirname(ns3_path)
 
 	os.chdir(base_ns3_dir)
 
-	ns3_string = ns3_path + ' run "' + sim_script_name
+	ns3_string = ns3_path + ' run "' + sim_script_name + '/' + str(sim_file)
 
 	if port:
 		ns3_string += ' --openGymPort=' + str(port)
@@ -87,10 +88,7 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
 		ns3_string += ' --simSeed=' + str(sim_seed)
 
 	for key, value in sim_args.items():
-		ns3_string += " "
-		ns3_string += str(key)
-		ns3_string += "="
-		ns3_string += str(value)
+		ns3_string += " --" + str(key) + "=" + str(value)
 
 	ns3_string += '"'
 
@@ -133,5 +131,5 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
 		print("Started ns3 simulation script, Process Id: ", ns3_proc.pid)
 
 	# go back to my dir
-	os.chdir(cwd)
+	os.chdir(src_dir)
 	return ns3_proc
