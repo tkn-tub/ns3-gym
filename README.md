@@ -1,5 +1,6 @@
 ns3-gym
 ============
+*Updated version of ns3-gym for ns-3 release ns-3.42.
 
 [OpenAI Gym](https://gym.openai.com/) is a toolkit for reinforcement learning (RL) widely used in research. The network simulator [ns-3](https://www.nsnam.org/) is the de-facto standard for academic and industry studies in the areas of networking protocols and communication technologies. ns3-gym is a framework that integrates both OpenAI Gym and ns-3 in order to encourage usage of RL in networking research.
 
@@ -37,7 +38,7 @@ cd ns-allinone-3.40
 cd ./ns-3.40/contrib
 git clone https://github.com/tkn-tub/ns3-gym.git ./opengym
 cd opengym/
-git checkout app-ns-3.36+
+git checkout app-ns-3.42
 ```
 Check [working with cmake](https://www.nsnam.org/docs/manual/html/working-with-cmake.html)
 

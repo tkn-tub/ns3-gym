@@ -57,10 +57,10 @@ public:
 };
 
 OpengymTestSuite::OpengymTestSuite ()
-  : TestSuite ("opengym", UNIT)
+  : TestSuite ("opengym",  Type::UNIT)
 {
   // TestDuration for TestCase can be QUICK, EXTENSIVE or TAKES_FOREVER
-  AddTestCase (new OpengymTestCase1, TestCase::QUICK);
+  AddTestCase (new OpengymTestCase1,  Duration::QUICK);
 }
 
 // Do not forget to allocate an instance of this TestSuite

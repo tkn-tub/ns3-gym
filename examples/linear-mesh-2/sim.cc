@@ -204,12 +204,13 @@ main (int argc, char *argv[])
   Ipv4Address dest_ip_addr = dest_ipv4_int_addr.GetLocal ();
 
   InetSocketAddress destAddress (dest_ip_addr, port);
-  destAddress.SetTos (0x70); //AC_BE
+  Ptr<Socket> socket = Socket::CreateSocket (srcNode, UdpSocketFactory::GetTypeId ());
+  socket->SetIpTos (0x70); // AC_BE
   UdpClientHelper source (destAddress);
   source.SetAttribute ("MaxPackets", UintegerValue (pktPerSec * simulationTime));
   source.SetAttribute ("PacketSize", UintegerValue (payloadSize));
-  Time interPacketInterval = Seconds (1.0/pktPerSec);
-  source.SetAttribute ("Interval", TimeValue (interPacketInterval)); //packets/s
+  source.SetAttribute ("Interval", TimeValue (Seconds (1.0 / pktPerSec))); // packets/s
+  source.SetAttribute ("Socket", PointerValue (socket));
 
   ApplicationContainer sourceApps = source.Install (srcNode);
   sourceApps.Start (Seconds (0.0));

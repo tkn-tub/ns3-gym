@@ -78,7 +78,9 @@ def start_sim_script(port=5555, sim_seed=0, sim_args={}, debug=False):
 
 	os.chdir(base_ns3_dir)
 
-	ns3_string = ns3_path + ' run "' + sim_script_name
+	# Add '\sim' to the path to run the ns-3 simulation script
+	# ns3_string = ns3_path + ' run "' + sim_script_name
+	ns3_string = ns3_path + ' run "' + sim_script_name + '/sim'
 
 	if port:
 		ns3_string += ' --openGymPort=' + str(port)
