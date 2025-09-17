@@ -27,21 +27,21 @@ apt-get install pkg-config
 3. Download and install ns3
 
 ```
-wget https://www.nsnam.org/releases/ns-allinone-3.40.tar.bz2
-tar xf ns-allinone-3.40.tar.bz2
-cd ns-allinone-3.40
+wget https://www.nsnam.org/releases/ns-allinone-3.45.tar.bz2
+tar xf ns-allinone-3.45.tar.bz2
+cd ns-allinone-3.45
 ```
 
 4. Clone ns3-gym repository into `contrib` directory and change the branch:
 ```
-cd ./ns-3.40/contrib
+cd ./ns-3.45/contrib
 git clone https://github.com/tkn-tub/ns3-gym.git ./opengym
 cd opengym/
-git checkout app-ns-3.36+
+git checkout app-ns-3.45+
 ```
 Check [working with cmake](https://www.nsnam.org/docs/manual/html/working-with-cmake.html)
 
-It is important to use the `opengym` as the name of the ns3-gym app directory. 
+It is important to use the `opengym` as the name of the ns3-gym app directory.
 
 5. Configure and build ns-3 project:
 ```
@@ -69,7 +69,7 @@ pip3 install ./model/ns3gym
 
 8. Run example:
 ```
-cd ./contrib/opengym/examples/opengym/ 
+cd ./contrib/opengym/examples/opengym/
 ./simple_test.py
 ```
 
@@ -79,7 +79,7 @@ cd ./contrib/opengym/examples/opengym/
 ./ns3 run "opengym"
 
 # Terminal 2
-cd ./contrib/opengym/examples/opengym/ 
+cd ./contrib/opengym/examples/opengym/
 ./test.py --start=0
 ```
 

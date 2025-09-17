@@ -33,8 +33,8 @@ build_lib_example(
 )
 
 build_lib_example(
-  NAME opengym
-  SOURCE_FILES opengym/sim.cc
+  NAME opengym-1
+  SOURCE_FILES opengym-1/sim.cc
   LIBRARIES_TO_LINK
     ${libcore}
     ${libopengym}

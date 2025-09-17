@@ -60,14 +60,14 @@ endif()
 
 
 protobuf_generate(
-  TARGET ${libopengym-obj}
+  TARGET opengym
   IMPORT_DIRS model/
   LANGUAGE cpp
   PROTOC_OUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/model
 )
 
 protobuf_generate(
-  TARGET ${libopengym-obj}
+  TARGET opengym
   IMPORT_DIRS model/
   LANGUAGE python
   PROTOC_OUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/model/ns3gym/ns3gym
