@@ -37,7 +37,6 @@ class TcpSocketDerived : public TcpSocketBase
 {
 public:
   static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId () const;
 
   TcpSocketDerived (void);
   virtual ~TcpSocketDerived (void);
