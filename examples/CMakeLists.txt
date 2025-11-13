@@ -63,3 +63,18 @@ build_lib_example(
     ${libpoint-to-point-layout}
     ${libptp}
 )
+
+build_lib_example(
+  NAME vanet-aodv-gym
+  SOURCE_FILES vanet-aodv-nn/vanet-link-env.cc
+               vanet-aodv-nn/vanet-aodv-gym.cc
+  LIBRARIES_TO_LINK
+    ${libopengym}
+    ${libaodv}
+    ${libapplications}
+    ${libcore}
+    ${libflow-monitor}
+    ${libinternet}
+    ${libmobility}
+    ${libwifi}
+)
