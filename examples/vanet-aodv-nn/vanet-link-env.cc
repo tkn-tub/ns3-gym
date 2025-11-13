@@ -287,6 +287,50 @@ VanetLinkEnv::CollectLinkMetrics()
 }
 
 /**
+ * \brief Callback function triggered when a packet is transmitted
+ *
+ * This function is called by the WiFi PHY layer trace (PhyTxBeginTrace) whenever
+ * a node begins transmitting a packet. It updates the transmission counters for
+ * link quality estimation.
+ *
+ * \param nodeId The ID of the node that transmitted the packet
+ *
+ * Purpose:
+ * - Track packet transmissions for PDR (Packet Delivery Ratio) calculation
+ * - Maintain accurate Tx counters for each link
+ */
+void
+VanetLinkEnv::NotifyPacketTransmitted(uint32_t nodeId)
+{
+    NS_LOG_FUNCTION(this << nodeId);
+
+    uint32_t numNodes = m_nodes.GetN();
+
+    // Update transmission counters for all potential links from this node
+    // Since we don't know the specific destination in broadcast/multicast scenarios,
+    // we increment counters for all possible destinations
+    for (uint32_t i = 0; i < numNodes; ++i)
+    {
+        if (i != nodeId)
+        {
+            // Link key: (source_node, destination_node)
+            auto key = std::make_pair(nodeId, i);
+            LinkMetrics& metrics = m_linkMetrics[key];
+
+            // Increment transmission counter
+            metrics.packetsTx++;
+
+            // Update packet loss rate if we have reception data
+            if (metrics.packetsTx > 0)
+            {
+                metrics.packetLoss = 1.0 - (static_cast<double>(metrics.packetsRx) /
+                                           static_cast<double>(metrics.packetsTx));
+            }
+        }
+    }
+}
+
+/**
  * \brief Callback function triggered when a packet is successfully received
  *
  * This function is called by the WiFi PHY layer trace (PhyRxOkTrace) whenever
@@ -310,7 +354,8 @@ VanetLinkEnv::NotifyPacketReceived(uint32_t nodeId, double rssi, double snr)
     uint32_t numNodes = m_nodes.GetN();
 
     // Update metrics for all potential links to this receiving node
-    // In VANET, any node could be the sender, so we update all possible incoming links
+    // Since we track at PHY layer, we update all possible incoming links
+    // The actual sender will have the most accurate metrics
     for (uint32_t i = 0; i < numNodes; ++i)
     {
         if (i != nodeId)
@@ -337,7 +382,7 @@ VanetLinkEnv::NotifyPacketReceived(uint32_t nodeId, double rssi, double snr)
 
             // Provide positive reward for successful packet reception
             // This encourages the ML agent to prefer reliable links
-            m_reward += 0.1;
+            m_reward += 0.01;  // Reduced reward to avoid excessive accumulation
         }
     }
 }

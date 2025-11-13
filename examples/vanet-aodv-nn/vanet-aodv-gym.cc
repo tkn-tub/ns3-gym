@@ -28,16 +28,10 @@ NS_LOG_COMPONENT_DEFINE("VanetAodvGym");
 Ptr<VanetLinkEnv> g_gymEnv;
 Ptr<OpenGymInterface> g_openGym;
 
-// Callback for packet reception
-void
-PhyRxOkTrace(std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble)
+// Helper function to extract node ID from context string
+uint32_t
+ExtractNodeId(const std::string& context)
 {
-    if (!g_gymEnv)
-    {
-        return;
-    }
-
-    // Extract node ID from context
     size_t pos = context.find("/NodeList/");
     if (pos != std::string::npos)
     {
@@ -46,20 +40,59 @@ PhyRxOkTrace(std::string context, Ptr<const Packet> packet, double snr, WifiMode
         if (end != std::string::npos)
         {
             std::string nodeIdStr = context.substr(pos, end - pos);
-            
             try {
-                uint32_t nodeId = std::stoul(nodeIdStr);
-                // Estimate RSSI from SNR (simplified: RSSI ≈ -90 + SNR)
-                double rssi = -90.0 + snr;
-                g_gymEnv->NotifyPacketReceived(nodeId, rssi, snr);
+                return std::stoul(nodeIdStr);
             } catch (...) {
-                // Ignore parse errors
+                return UINT32_MAX;  // Invalid
             }
         }
     }
+    return UINT32_MAX;  // Invalid
 }
 
-// Callback for packet drop
+// Callback for packet transmission - tracks when packets are sent
+void
+PhyTxBeginTrace(std::string context, Ptr<const Packet> packet, double txPowerW)
+{
+    if (!g_gymEnv)
+    {
+        return;
+    }
+
+    uint32_t txNodeId = ExtractNodeId(context);
+    if (txNodeId != UINT32_MAX)
+    {
+        // Notify that this node transmitted a packet
+        // This helps track the total number of transmitted packets per link
+        g_gymEnv->NotifyPacketTransmitted(txNodeId);
+    }
+}
+
+// Callback for packet reception - tracks successful receptions with RSSI/SNR
+void
+PhyRxOkTrace(std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble)
+{
+    if (!g_gymEnv)
+    {
+        return;
+    }
+
+    // Get the receiving node ID from context
+    uint32_t rxNodeId = ExtractNodeId(context);
+    if (rxNodeId != UINT32_MAX)
+    {
+        // Estimate RSSI from SNR (simplified: RSSI ≈ -90 + SNR)
+        // For 802.11a: typical noise floor is around -90 to -95 dBm
+        double rssi = -90.0 + snr;
+
+        // Notify successful reception
+        // Note: We can't easily determine the sender from PHY traces alone
+        // but the environment will track this based on recent transmissions
+        g_gymEnv->NotifyPacketReceived(rxNodeId, rssi, snr);
+    }
+}
+
+// Callback for packet drop - tracks PHY layer drops
 void
 PhyTxDropTrace(std::string context, Ptr<const Packet> packet)
 {
@@ -68,23 +101,10 @@ PhyTxDropTrace(std::string context, Ptr<const Packet> packet)
         return;
     }
 
-    // Extract node ID from context
-    size_t pos = context.find("/NodeList/");
-    if (pos != std::string::npos)
+    uint32_t nodeId = ExtractNodeId(context);
+    if (nodeId != UINT32_MAX)
     {
-        pos += 10;
-        size_t end = context.find("/", pos);
-        if (end != std::string::npos)
-        {
-            std::string nodeIdStr = context.substr(pos, end - pos);
-            
-            try {
-                uint32_t nodeId = std::stoul(nodeIdStr);
-                g_gymEnv->NotifyPacketLost(nodeId);
-            } catch (...) {
-                // Ignore parse errors
-            }
-        }
+        g_gymEnv->NotifyPacketLost(nodeId);
     }
 }
 
@@ -204,7 +224,8 @@ main(int argc, char* argv[])
     Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
 
     // Distribute nodes in a grid-like pattern initially to ensure connectivity
-    double gridSpacing = 150.0;  // 150m spacing ensures overlap with 802.11p range
+    // Reduced spacing to 100m to ensure all nodes stay within 250m communication range
+    double gridSpacing = 100.0;  // 100m spacing keeps max distance under 250m
     uint32_t gridSize = (uint32_t)std::ceil(std::sqrt(numNodes));
 
     for (uint32_t i = 0; i < numNodes; ++i)
@@ -305,8 +326,13 @@ main(int argc, char* argv[])
 
     // Connect PHY layer traces for link quality monitoring
     // Do this AFTER environment is created
+    // Track successful packet transmissions
+    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxBegin",
+                    MakeCallback(&PhyTxBeginTrace));
+    // Track successful packet receptions
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/State/RxOk",
                     MakeCallback(&PhyRxOkTrace));
+    // Track packet drops at PHY layer
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxDrop",
                     MakeCallback(&PhyTxDropTrace));
 

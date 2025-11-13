@@ -48,6 +48,7 @@ public:
     // VANET specific
     void CollectLinkMetrics();
     void SetNodes(NodeContainer nodes) { m_nodes = nodes; }
+    void NotifyPacketTransmitted(uint32_t nodeId);
     void NotifyPacketReceived(uint32_t nodeId, double rssi, double snr);
     void NotifyPacketLost(uint32_t nodeId);
 
