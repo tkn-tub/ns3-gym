@@ -1,0 +1,35 @@
+# VANET Project - Ignore temporary and generated files
+
+# Neural Network Models (large binary files)
+*.pth
+
+# Archive files
+*.zip
+*.tar.gz
+*.tar.bz2
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ns3gym-venv/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+*.o
+*.so
+build/
+
+# Log files
+*.log
