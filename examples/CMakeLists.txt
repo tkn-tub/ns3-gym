@@ -76,5 +76,6 @@ build_lib_example(
     ${libflow-monitor}
     ${libinternet}
     ${libmobility}
+    ${libnetanim}
     ${libwifi}
 )

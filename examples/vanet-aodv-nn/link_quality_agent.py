@@ -154,7 +154,6 @@ class LinkQualityEstimator:
         if not self.collect_data or len(obs) == 0:
             return
 
-        # Save to CSV
         file_exists = os.path.isfile(self.dataset_file)
 
         try:

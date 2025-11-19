@@ -1,12 +1,4 @@
-/*
- * VANET AODV with Neural Network Link Quality Estimation using ns3-gym
- *
- * This simulation implements:
- * - VANET with AODV routing
- * - Real-time link quality monitoring
- * - ns3-gym interface for ML-based route selection
- * - Dataset generation for link quality classification
- */
+// VANET AODV with Neural Network Link Quality Estimation using ns3-gym
 
 #include "vanet-link-env.h"
 #include "ns3/core-module.h"
@@ -15,10 +7,13 @@
 #include "ns3/mobility-module.h"
 #include "ns3/aodv-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/csma-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/opengym-module.h"
 #include "ns3/flow-monitor-module.h"
+#include "ns3/netanim-module.h"
 #include <cmath>
+#include <cstdlib>
 
 using namespace ns3;
 
@@ -70,7 +65,8 @@ PhyTxBeginTrace(std::string context, Ptr<const Packet> packet, double txPowerW)
 
 // Callback for packet reception - tracks successful receptions with RSSI/SNR
 void
-PhyRxOkTrace(std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, WifiPreamble preamble)
+MonitorSnifferRxTrace(std::string context, Ptr<const Packet> packet, uint16_t channelFreqMhz,
+                      WifiTxVector txVector, MpduInfo aMpdu, SignalNoiseDbm signalNoise, uint16_t staId)
 {
     if (!g_gymEnv)
     {
@@ -81,13 +77,12 @@ PhyRxOkTrace(std::string context, Ptr<const Packet> packet, double snr, WifiMode
     uint32_t rxNodeId = ExtractNodeId(context);
     if (rxNodeId != UINT32_MAX)
     {
-        // Estimate RSSI from SNR (simplified: RSSI ≈ -90 + SNR)
-        // For 802.11a: typical noise floor is around -90 to -95 dBm
-        double rssi = -90.0 + snr;
+        // Extract actual RSSI and calculate SNR from signal/noise
+        double rssi = signalNoise.signal;  // Actual received signal strength in dBm
+        double noise = signalNoise.noise;  // Noise floor in dBm
+        double snr = rssi - noise;         // SNR = Signal - Noise (in dB)
 
-        // Notify successful reception
-        // Note: We can't easily determine the sender from PHY traces alone
-        // but the environment will track this based on recent transmissions
+        // Notify successful reception with real RSSI and SNR values
         g_gymEnv->NotifyPacketReceived(rxNodeId, rssi, snr);
     }
 }
@@ -119,27 +114,45 @@ ScheduleNextStateRead(double envStepTime, Ptr<OpenGymInterface> openGym)
 int
 main(int argc, char* argv[])
 {
-    // Simulation parameters
-    uint32_t numNodes = 20;
+    // Simulation Parameters
+    uint32_t numVehicles = 8;
+    uint32_t numRSUs = 4;
+    uint32_t numCSMAServers = 1;
     double simTime = 100.0;
-    double envStepTime = 0.1;  // OpenGym step interval
+    double envStepTime = 0.1;
     uint32_t openGymPort = 5555;
-    double nodeSpeed = 20.0;   // m/s (~72 km/h)
-    uint32_t packetSize = 1024;
-    double packetInterval = 0.1;
+
+    // Mobility parameters
+    double vehicleSpeed = 20.0;
+    double minVehicleSpeed = 10.0;
+    double nodePause = 0.0;
+    double areaWidth = 300.0;
+    double areaHeight = 300.0;
+
+    // Traffic parameters
+    uint32_t packetSize = 256;
+    double packetInterval = 5.0;
+
     bool verbose = false;
+    bool enableNetAnim = true;
+    bool enableMobility = true;
+    std::string sumoTraceFile = "";
 
     // Command line arguments
     CommandLine cmd;
-    cmd.AddValue("numNodes", "Number of vehicles", numNodes);
+    cmd.AddValue("numVehicles", "Number of vehicles", numVehicles);
+    cmd.AddValue("numRSUs", "Number of Road Side Units", numRSUs);
     cmd.AddValue("simTime", "Simulation time (seconds)", simTime);
-    cmd.AddValue("envStepTime", "OpenGym environment step time (seconds)", envStepTime);
+    cmd.AddValue("envStepTime", "OpenGym environment step time", envStepTime);
     cmd.AddValue("openGymPort", "Port number for OpenGym", openGymPort);
-    cmd.AddValue("nodeSpeed", "Maximum node speed (m/s)", nodeSpeed);
+    cmd.AddValue("vehicleSpeed", "Maximum vehicle speed (m/s)", vehicleSpeed);
     cmd.AddValue("verbose", "Enable verbose logging", verbose);
+    cmd.AddValue("enableNetAnim", "Enable NetAnim visualization", enableNetAnim);
+    cmd.AddValue("enableMobility", "Enable vehicle mobility", enableMobility);
+    cmd.AddValue("sumoTraceFile", "SUMO trace file path", sumoTraceFile);
     cmd.Parse(argc, argv);
+    srand(42);
 
-    // Enable logging if verbose
     if (verbose)
     {
         LogComponentEnable("VanetAodvGym", LOG_LEVEL_INFO);
@@ -147,175 +160,205 @@ main(int argc, char* argv[])
         LogComponentEnable("OpenGymInterface", LOG_LEVEL_INFO);
     }
 
-    NS_LOG_UNCOND("======================================");
-    NS_LOG_UNCOND("VANET AODV Neural Network Simulation");
-    NS_LOG_UNCOND("======================================");
-    NS_LOG_UNCOND("Nodes: " << numNodes);
+    NS_LOG_UNCOND("==============================================");
+    NS_LOG_UNCOND(" COMPREHENSIVE VANET AODV NN SIMULATION");
+    NS_LOG_UNCOND("==============================================");
+    NS_LOG_UNCOND("Vehicles:        " << numVehicles);
+    NS_LOG_UNCOND("RSUs:            " << numRSUs);
+    NS_LOG_UNCOND("Total Nodes:     " << (numVehicles + numRSUs));
     NS_LOG_UNCOND("Simulation Time: " << simTime << "s");
-    NS_LOG_UNCOND("OpenGym Port: " << openGymPort);
-    NS_LOG_UNCOND("Max Speed: " << nodeSpeed << " m/s");
-    NS_LOG_UNCOND("======================================");
+    NS_LOG_UNCOND("OpenGym Port:    " << openGymPort);
+    NS_LOG_UNCOND("Max Speed:       " << vehicleSpeed << " m/s");
+    NS_LOG_UNCOND("NetAnim:         " << (enableNetAnim ? "Enabled" : "Disabled"));
+    NS_LOG_UNCOND("Mobility:        " << (enableMobility ? "Enabled" : "Static"));
+    if (!sumoTraceFile.empty())
+    {
+        NS_LOG_UNCOND("SUMO Trace:      " << sumoTraceFile);
+    }
+    NS_LOG_UNCOND("==============================================");
 
     // Create nodes
-    NodeContainer nodes;
-    nodes.Create(numNodes);
-    NS_LOG_UNCOND("Nodes created: " << numNodes);
+    NodeContainer vehicleNodes;
+    vehicleNodes.Create(numVehicles);
+    NodeContainer rsuNodes;
+    rsuNodes.Create(numRSUs);
+    NodeContainer csmaServerNodes;
+    csmaServerNodes.Create(numCSMAServers);
 
-    // ========================================================================
-    // WiFi Configuration for VANET
-    // ========================================================================
-    // Using 802.11a (5 GHz) - proven stable configuration
-    // Provides reliable packet delivery for link quality estimation
-    // ========================================================================
+    NodeContainer wirelessNodes = NodeContainer(vehicleNodes, rsuNodes);
+    NodeContainer allNodes = NodeContainer(wirelessNodes, csmaServerNodes);
+
+    NS_LOG_UNCOND("Created " << numVehicles << " vehicles, " << numRSUs << " RSUs, "
+                  << numCSMAServers << " CSMA servers");
+
+    // WiFi Configuration
 
     WifiHelper wifi;
     wifi.SetStandard(WIFI_STANDARD_80211a);
-
-    // Use ConstantRateWifiManager with standard 802.11a rate
     wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
                                   "DataMode", StringValue("OfdmRate6Mbps"),
                                   "ControlMode", StringValue("OfdmRate6Mbps"));
 
-    // Physical layer configuration optimized for VANET scenarios
     YansWifiPhyHelper wifiPhy;
-
-    // Transmission power: 23 dBm (200 mW) for extended range in vehicular environment
-    // This gives approximately 300-500m range depending on conditions
+    wifiPhy.SetPcapDataLinkType(YansWifiPhyHelper::DLT_IEEE802_11_RADIO);
     wifiPhy.Set("TxPowerStart", DoubleValue(23.0));
     wifiPhy.Set("TxPowerEnd", DoubleValue(23.0));
+    wifiPhy.Set("RxGain", DoubleValue(0.0));
+    wifiPhy.Set("RxNoiseFigure", DoubleValue(7.0));
+    wifiPhy.Set("CcaEdThreshold", DoubleValue(-82.0));
 
-    // Receiver sensitivity and gain configuration
-    wifiPhy.Set("RxGain", DoubleValue(0.0));           // No additional RX gain
-    wifiPhy.Set("RxNoiseFigure", DoubleValue(7.0));    // Typical noise figure
-    wifiPhy.Set("CcaEdThreshold", DoubleValue(-82.0)); // Carrier sense threshold
+    Config::SetDefault("ns3::WifiRemoteStationManager::FragmentationThreshold", StringValue("2200"));
+    Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", StringValue("2200"));
 
-    // Channel configuration with VANET-appropriate propagation models
     YansWifiChannelHelper wifiChannel;
     wifiChannel.SetPropagationDelay("ns3::ConstantSpeedPropagationDelayModel");
-
-    // Use RangePropagationLossModel for predictable behavior + LogDistance for realism
-    // This combination ensures packets are delivered within range while modeling attenuation
-    wifiChannel.AddPropagationLoss("ns3::RangePropagationLossModel",
-                                    "MaxRange", DoubleValue(250.0));  // 250m communication range
-
-    wifiChannel.AddPropagationLoss("ns3::LogDistancePropagationLossModel",
-                                    "Exponent", DoubleValue(2.7),           // Urban environment
-                                    "ReferenceDistance", DoubleValue(1.0),
-                                    "ReferenceLoss", DoubleValue(46.6777)); // Path loss at 1m
-
+    wifiChannel.AddPropagationLoss("ns3::FriisPropagationLossModel",
+                                    "Frequency", DoubleValue(5.9e9),
+                                    "SystemLoss", DoubleValue(1.0));
     wifiPhy.SetChannel(wifiChannel.Create());
 
-    // MAC layer configuration for ad-hoc networking (VANET)
-    // AdhocWifiMac provides infrastructure-less communication suitable for V2V
     WifiMacHelper wifiMac;
     wifiMac.SetType("ns3::AdhocWifiMac");
 
-    // Install WiFi devices
-    NS_LOG_UNCOND("Installing WiFi devices...");
-    NetDeviceContainer devices = wifi.Install(wifiPhy, wifiMac, nodes);
-    NS_LOG_UNCOND("WiFi devices installed");
+    Config::SetDefault("ns3::WifiMacQueue::MaxSize", StringValue("50p"));
+    Config::SetDefault("ns3::WifiPhy::ChannelSwitchDelay", TimeValue(MicroSeconds(250)));
+    Config::SetDefault("ns3::ArpCache::AliveTimeout", TimeValue(Seconds(120)));
 
-    // Mobility model for VANET
-    // Use smaller area (500x500m) to ensure nodes stay within communication range
-    // 802.11p with 20 dBm has ~300-400m range, so 500x500m ensures connectivity
-    MobilityHelper mobility;
+    // Install WiFi
+    NS_LOG_UNCOND("Installing WiFi...");
+    NetDeviceContainer vehicleDevices = wifi.Install(wifiPhy, wifiMac, vehicleNodes);
+    NetDeviceContainer rsuDevices = wifi.Install(wifiPhy, wifiMac, rsuNodes);
+    NetDeviceContainer wifiDevices = NetDeviceContainer(vehicleDevices, rsuDevices);
 
-    // Position allocator - vehicles start in random positions within 500m x 500m
-    Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator>();
+    // Install CSMA
+    CsmaHelper csma;
+    csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
+    csma.SetChannelAttribute("Delay", TimeValue(NanoSeconds(6560)));
+    NetDeviceContainer csmaDevices = csma.Install(csmaServerNodes);
 
-    // Distribute nodes in a grid-like pattern initially to ensure connectivity
-    // Reduced spacing to 100m to ensure all nodes stay within 250m communication range
-    double gridSpacing = 100.0;  // 100m spacing keeps max distance under 250m
-    uint32_t gridSize = (uint32_t)std::ceil(std::sqrt(numNodes));
+    // Mobility Models
+    MobilityHelper mobilityVehicles, mobilityRSUs, mobilityCSMA;
 
-    for (uint32_t i = 0; i < numNodes; ++i)
+    // Vehicle mobility
+    if (enableMobility)
     {
-        uint32_t row = i / gridSize;
-        uint32_t col = i % gridSize;
-        double x = 100.0 + col * gridSpacing;
-        double y = 100.0 + row * gridSpacing;
-        positionAlloc->Add(Vector(x, y, 0.0));
+        ObjectFactory pos;
+        pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
+        pos.Set("X", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(areaWidth) + "]"));
+        pos.Set("Y", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=" + std::to_string(areaHeight) + "]"));
+        Ptr<PositionAllocator> vehiclePositionAlloc = pos.Create()->GetObject<PositionAllocator>();
+
+        std::stringstream ssSpeed, ssPause;
+        ssSpeed << "ns3::UniformRandomVariable[Min=" << minVehicleSpeed << "|Max=" << vehicleSpeed << "]";
+        ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
+
+        mobilityVehicles.SetMobilityModel("ns3::RandomWaypointMobilityModel",
+                                          "Speed", StringValue(ssSpeed.str()),
+                                          "Pause", StringValue(ssPause.str()),
+                                          "PositionAllocator", PointerValue(vehiclePositionAlloc));
+        mobilityVehicles.SetPositionAllocator(vehiclePositionAlloc);
+        mobilityVehicles.Install(vehicleNodes);
+    }
+    else
+    {
+        Ptr<ListPositionAllocator> vehiclePositionAlloc = CreateObject<ListPositionAllocator>();
+        for (uint32_t i = 0; i < numVehicles; ++i)
+            vehiclePositionAlloc->Add(Vector(100.0 + i * 150.0, 100.0 + (i % 2) * 100.0, 1.5));
+        mobilityVehicles.SetPositionAllocator(vehiclePositionAlloc);
+        mobilityVehicles.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+        mobilityVehicles.Install(vehicleNodes);
     }
 
-    mobility.SetPositionAllocator(positionAlloc);
+    // RSU mobility
+    Ptr<ListPositionAllocator> rsuPositions = CreateObject<ListPositionAllocator>();
+    double centerX = areaWidth / 2.0, centerY = areaHeight / 2.0, spacing = 75.0;
+    rsuPositions->Add(Vector(centerX - spacing, centerY - spacing, 10.0));
+    rsuPositions->Add(Vector(centerX + spacing, centerY - spacing, 10.0));
+    rsuPositions->Add(Vector(centerX - spacing, centerY + spacing, 10.0));
+    rsuPositions->Add(Vector(centerX + spacing, centerY + spacing, 10.0));
+    mobilityRSUs.SetPositionAllocator(rsuPositions);
+    mobilityRSUs.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobilityRSUs.Install(rsuNodes);
 
-    // Use ConstantPositionMobilityModel for stable connectivity testing
-    // Nodes stay in their initial grid positions, ensuring reliable links
-    // This is ideal for link quality estimation without mobility effects
-    mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    // CSMA mobility
+    Ptr<ListPositionAllocator> csmaPositions = CreateObject<ListPositionAllocator>();
+    csmaPositions->Add(Vector(areaWidth / 2.0, areaHeight / 2.0, 0.0));
+    mobilityCSMA.SetPositionAllocator(csmaPositions);
+    mobilityCSMA.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+    mobilityCSMA.Install(csmaServerNodes);
 
-    NS_LOG_UNCOND("Installing mobility model...");
-    mobility.Install(nodes);
-    NS_LOG_UNCOND("Mobility model installed");
-
-    // Install Internet stack with AODV routing protocol
-    // Configure AODV parameters optimized for VANET (high mobility scenario)
+    // AODV routing
     AodvHelper aodv;
+    aodv.Set("EnableHello", BooleanValue(false));
+    aodv.Set("ActiveRouteTimeout", TimeValue(Seconds(100.0)));
+    aodv.Set("AllowedHelloLoss", UintegerValue(10));
+    aodv.Set("RreqRetries", UintegerValue(2));
+    aodv.Set("NetDiameter", UintegerValue(10));
 
-    // Enable HELLO messages for neighbor discovery
-    aodv.Set("EnableHello", BooleanValue(true));
-    aodv.Set("HelloInterval", TimeValue(Seconds(1.0)));  // Send HELLO every 1 second
+    // Internet stack
+    InternetStackHelper internetWireless;
+    internetWireless.SetRoutingHelper(aodv);
+    internetWireless.Install(wirelessNodes);
+    InternetStackHelper internetCSMA;
+    internetCSMA.Install(csmaServerNodes);
 
-    // Reduce timeouts for faster route recovery in high mobility
-    aodv.Set("ActiveRouteTimeout", TimeValue(Seconds(3.0)));  // Route expires after 3s
-    aodv.Set("AllowedHelloLoss", UintegerValue(2));  // Allow 2 HELLO losses before link break
-
-    // Install Internet stack with AODV routing
-    NS_LOG_UNCOND("Installing Internet stack with AODV...");
-    InternetStackHelper internet;
-    internet.SetRoutingHelper(aodv);
-    internet.Install(nodes);
-    NS_LOG_UNCOND("Internet stack installed");
-
-    // Assign IP addresses
+    // IP addresses
     Ipv4AddressHelper ipv4;
     ipv4.SetBase("10.1.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer interfaces = ipv4.Assign(devices);
+    Ipv4InterfaceContainer vehicleInterfaces = ipv4.Assign(vehicleDevices);
+    ipv4.SetBase("10.1.2.0", "255.255.255.0");
+    Ipv4InterfaceContainer rsuInterfaces = ipv4.Assign(rsuDevices);
+    ipv4.SetBase("10.1.3.0", "255.255.255.0");
+    Ipv4InterfaceContainer csmaInterfaces = ipv4.Assign(csmaDevices);
 
-    // Setup traffic: UDP echo servers and clients
+    // Applications
     uint16_t port = 9;
-    
-    // Install echo servers on first 5 nodes (or all nodes if less than 5)
-    uint32_t numServers = std::min(5u, numNodes);
-    for (uint32_t i = 0; i < numServers; ++i)
+
+    // RSU servers
+    for (uint32_t i = 0; i < numRSUs; ++i)
     {
-        UdpEchoServerHelper server(port);
-        ApplicationContainer serverApp = server.Install(nodes.Get(i));
+        UdpEchoServerHelper server(port + i);
+        ApplicationContainer serverApp = server.Install(rsuNodes.Get(i));
         serverApp.Start(Seconds(1.0));
         serverApp.Stop(Seconds(simTime));
     }
 
-    // Install echo clients on last nodes (if we have more than 5 nodes)
-    if (numNodes > 5)
+    // V2V flows
+    uint32_t numV2VPairs = std::min(3u, numVehicles / 2);
+    for (uint32_t i = 0; i < numV2VPairs; ++i)
     {
-        uint32_t numClients = std::min(5u, numNodes - 5);
-        for (uint32_t i = 0; i < numClients; ++i)
-        {
-            uint32_t clientIdx = numNodes - 1 - i;
-            uint32_t serverIdx = i % numServers;
-            
-            UdpEchoClientHelper client(interfaces.GetAddress(serverIdx), port);
-            client.SetAttribute("MaxPackets", UintegerValue(static_cast<uint32_t>(simTime / packetInterval)));
-            client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
-            client.SetAttribute("PacketSize", UintegerValue(packetSize));
-
-            ApplicationContainer clientApp = client.Install(nodes.Get(clientIdx));
-            clientApp.Start(Seconds(2.0 + i * 0.1));
-            clientApp.Stop(Seconds(simTime));
-        }
+        UdpEchoClientHelper client(vehicleInterfaces.GetAddress(i), port + i);
+        client.SetAttribute("MaxPackets", UintegerValue(UINT32_MAX));
+        client.SetAttribute("Interval", TimeValue(Seconds(packetInterval)));
+        client.SetAttribute("PacketSize", UintegerValue(packetSize));
+        ApplicationContainer clientApp = client.Install(vehicleNodes.Get(numVehicles - 1 - i));
+        clientApp.Start(Seconds(10.0 + i * 2.0));
+        clientApp.Stop(Seconds(simTime));
     }
 
-    NS_LOG_UNCOND("About to create OpenGym interface...");
+    // V2I flows
+    uint32_t numV2IFlows = std::min(numVehicles, numRSUs * 2);
+    for (uint32_t i = 0; i < numV2IFlows; ++i)
+    {
+        uint32_t rsuIdx = i % numRSUs;
+        UdpEchoClientHelper client(rsuInterfaces.GetAddress(rsuIdx), port + 10 + rsuIdx);
+        client.SetAttribute("MaxPackets", UintegerValue(UINT32_MAX));
+        client.SetAttribute("Interval", TimeValue(Seconds(packetInterval * 1.5)));
+        client.SetAttribute("PacketSize", UintegerValue(packetSize));
+        ApplicationContainer clientApp = client.Install(vehicleNodes.Get(i));
+        clientApp.Start(Seconds(20.0 + i * 2.0));
+        clientApp.Stop(Seconds(simTime));
+    }
 
-    // IMPORTANT: Create OpenGym interface FIRST, before environment
+    // OpenGym interface
     NS_LOG_UNCOND("Creating OpenGym interface...");
     g_openGym = CreateObject<OpenGymInterface>(openGymPort);
     NS_LOG_UNCOND("OpenGym interface created successfully");
 
-    // Then create the environment with nodes
-    NS_LOG_UNCOND("Creating OpenGym environment (VanetLinkEnv)...");
-    g_gymEnv = CreateObject<VanetLinkEnv>(nodes);
-    NS_LOG_UNCOND("VanetLinkEnv created successfully");
+    // Then create the environment with vehicle nodes only (monitoring vehicle links)
+    NS_LOG_UNCOND("Creating OpenGym environment (VanetLinkEnv for vehicles)...");
+    g_gymEnv = CreateObject<VanetLinkEnv>(vehicleNodes);
+    NS_LOG_UNCOND("VanetLinkEnv created successfully (monitoring " << numVehicles << " vehicles)");
 
     // Link them together
     g_gymEnv->SetOpenGymInterface(g_openGym);
@@ -325,14 +368,10 @@ main(int argc, char* argv[])
     NS_LOG_UNCOND("Waiting for Python agent to connect on port " << openGymPort << "...");
 
     // Connect PHY layer traces for link quality monitoring
-    // Do this AFTER environment is created
-    // Track successful packet transmissions
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxBegin",
                     MakeCallback(&PhyTxBeginTrace));
-    // Track successful packet receptions
-    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/State/RxOk",
-                    MakeCallback(&PhyRxOkTrace));
-    // Track packet drops at PHY layer
+    Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/MonitorSnifferRx",
+                    MakeCallback(&MonitorSnifferRxTrace));
     Config::Connect("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxDrop",
                     MakeCallback(&PhyTxDropTrace));
 
@@ -340,17 +379,46 @@ main(int argc, char* argv[])
     // Start after a small delay to let Python connect
     Simulator::Schedule(Seconds(0.5), &ScheduleNextStateRead, envStepTime, g_openGym);
 
-    // Install flow monitor
+    // ========================================================================
+    // Flow Monitor for Statistics
+    // ========================================================================
     FlowMonitorHelper flowmon;
     Ptr<FlowMonitor> monitor = flowmon.InstallAll();
+
+    // NetAnim
+    AnimationInterface* anim = nullptr;
+    if (enableNetAnim)
+    {
+        anim = new AnimationInterface("vanet-aodv-gym.xml");
+        anim->EnablePacketMetadata(false);
+
+        for (uint32_t i = 0; i < numVehicles; ++i)
+        {
+            anim->UpdateNodeDescription(vehicleNodes.Get(i), "V-" + std::to_string(i));
+            anim->UpdateNodeColor(vehicleNodes.Get(i), 0, 255, 0);
+            anim->UpdateNodeSize(vehicleNodes.Get(i)->GetId(), 5.0, 5.0);
+        }
+        for (uint32_t i = 0; i < numRSUs; ++i)
+        {
+            anim->UpdateNodeDescription(rsuNodes.Get(i), "RSU-" + std::to_string(i));
+            anim->UpdateNodeColor(rsuNodes.Get(i), 255, 0, 0);
+            anim->UpdateNodeSize(rsuNodes.Get(i)->GetId(), 8.0, 8.0);
+        }
+        for (uint32_t i = 0; i < numCSMAServers; ++i)
+        {
+            anim->UpdateNodeDescription(csmaServerNodes.Get(i), "S-" + std::to_string(i));
+            anim->UpdateNodeColor(csmaServerNodes.Get(i), 0, 0, 255);
+            anim->UpdateNodeSize(csmaServerNodes.Get(i)->GetId(), 10.0, 10.0);
+        }
+    }
 
     // Run simulation
     Simulator::Stop(Seconds(simTime));
     Simulator::Run();
 
-    // Print flow statistics
+    // Flow statistics
     NS_LOG_UNCOND("\n======================================");
-    NS_LOG_UNCOND("        Flow Statistics");
+    NS_LOG_UNCOND("        Flow Statistics (First 4)");
     NS_LOG_UNCOND("======================================");
     
     monitor->CheckForLostPackets();
@@ -361,28 +429,40 @@ main(int argc, char* argv[])
     double totalRxPackets = 0;
     double totalThroughput = 0;
 
+    uint32_t flowCount = 0;
     for (auto& flow : stats)
     {
         Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow(flow.first);
-        
-        totalTxPackets += flow.second.txPackets;
-        totalRxPackets += flow.second.rxPackets;
-        
-        double throughput = flow.second.rxBytes * 8.0 / simTime / 1024.0;  // kbps
-        totalThroughput += throughput;
 
-        NS_LOG_UNCOND("Flow " << flow.first 
-                     << " (" << t.sourceAddress << " -> " << t.destinationAddress << ")");
-        NS_LOG_UNCOND("  Tx Packets:   " << flow.second.txPackets);
-        NS_LOG_UNCOND("  Rx Packets:   " << flow.second.rxPackets);
-        
-        if (flow.second.txPackets > 0)
+        // Only process first 4 flows for statistics
+        if (flowCount < 4)
         {
-            double pdr = (flow.second.rxPackets * 100.0) / flow.second.txPackets;
-            NS_LOG_UNCOND("  PDR:          " << pdr << " %");
+            totalTxPackets += flow.second.txPackets;
+            totalRxPackets += flow.second.rxPackets;
+
+            double throughput = flow.second.rxBytes * 8.0 / simTime / 1024.0;
+            totalThroughput += throughput;
+
+            NS_LOG_UNCOND("Flow " << flow.first
+                         << " (" << t.sourceAddress << " -> " << t.destinationAddress << ")");
+            NS_LOG_UNCOND("  Tx Packets:   " << flow.second.txPackets);
+            NS_LOG_UNCOND("  Rx Packets:   " << flow.second.rxPackets);
+
+            if (flow.second.txPackets > 0)
+            {
+                double pdr = (flow.second.rxPackets * 100.0) / flow.second.txPackets;
+                NS_LOG_UNCOND("  PDR:          " << pdr << " %");
+            }
+
+            NS_LOG_UNCOND("  Throughput:   " << throughput << " kbps");
+            NS_LOG_UNCOND("");
         }
-        
-        NS_LOG_UNCOND("  Throughput:   " << throughput << " kbps");
+        flowCount++;
+    }
+
+    if (stats.size() > 4)
+    {
+        NS_LOG_UNCOND("... (" << (stats.size() - 4) << " more flows not shown)");
         NS_LOG_UNCOND("");
     }
 
@@ -402,11 +482,19 @@ main(int argc, char* argv[])
 
     // Notify simulation end
     g_openGym->NotifySimulationEnd();
-    
+
     // Cleanup
     Simulator::Destroy();
-    
+
+    if (anim)
+    {
+        delete anim;
+        NS_LOG_UNCOND("NetAnim file written successfully");
+    }
+
+    NS_LOG_UNCOND("\n==============================================");
     NS_LOG_UNCOND("Simulation completed successfully!");
-    
+    NS_LOG_UNCOND("==============================================");
+
     return 0;
 }
