@@ -1,4 +1,4 @@
 pyzmq
 numpy
-protobuf==3.20.3
+protobuf==7.34.0rc1
 gym
